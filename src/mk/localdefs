@@ -1,9 +1,0 @@
-
-LIBXAPIAN=-L/usr/local/lib -lxapian
-XAPIANCXXFLAGS=-I/usr/local/include
-
-LIBICONV=-L/usr/local/lib -liconv
-INCICONV=-I/usr/local/include
-
-LOCALCXXFLAGS = $(INCICONV) $(XAPIANCXXFLAGS) -DRECOLL_PREFIX=\"/usr/local\"
-

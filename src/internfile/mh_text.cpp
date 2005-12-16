@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: mh_text.cpp,v 1.2 2005-11-24 07:16:15 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: mh_text.cpp,v 1.2.2.1 2005-12-16 10:06:12 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 #include <iostream>
@@ -31,7 +31,7 @@ MimeHandler::Status MimeHandlerText::mkDoc(RclConfig *conf, const string &fn,
     } else
 	charset = conf->getDefCharset();
     string utf8;
-    LOGDEB1(("textPlainToDoc: transcod from %s to %s\n", charset, "UTF-8"));
+    LOGDEB1(("textPlainToDoc: transcod from %s to %s\n", charset.c_str(), "UTF-8"));
 
     if (!transcode(otext, utf8, charset, "UTF-8")) {
 	cerr << "textPlainToDoc: transcode failed: charset '" << charset

@@ -12815,9 +12815,9 @@ int unac_string(const char* charset,
     *out_lengthp = 0;
   } else {
     char* utf16 = 0;
-    int utf16_length = 0;
+    size_t utf16_length = 0;
     char* utf16_unaccented = 0;
-    int utf16_unaccented_length = 0;
+    size_t utf16_unaccented_length = 0;
   
     if(convert(charset, utf16be(), in, in_length, &utf16, &utf16_length) < 0) {
       return -1;

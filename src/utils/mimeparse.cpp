@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: mimeparse.cpp,v 1.8 2005-11-24 07:16:16 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: mimeparse.cpp,v 1.8.2.1 2005-12-16 10:06:13 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 
 #ifndef TEST_MIMEPARSE
@@ -38,7 +38,8 @@ class Lexical {
 };
 
 // Skip mime comment. This must be called with in[start] == '('
-int skip_comment(const string &in, unsigned int start, Lexical &lex)
+string::size_type skip_comment(const string &in, string::size_type start, 
+			       Lexical &lex)
 {
     int commentlevel = 0;
     for (; start < in.size(); start++) {
@@ -67,8 +68,9 @@ int skip_comment(const string &in, unsigned int start, Lexical &lex)
 }
 
 // Skip initial whitespace and (possibly nested) comments. 
-int skip_whitespace_and_comment(const string &in, unsigned int start, 
-				Lexical &lex)
+string::size_type skip_whitespace_and_comment(const string &in, 
+					      string::size_type start, 
+					      Lexical &lex)
 {
     while (1) {
 	if ((start = in.find_first_not_of(" \t\r\n", start)) == string::npos)
@@ -90,8 +92,8 @@ int skip_whitespace_and_comment(const string &in, unsigned int start,
 /// @param start the starting position
 /// @param lex  the returned token and its description
 /// @param delims separators we should look for
-int find_next_token(const string &in, unsigned int start, 
-		    Lexical &lex, string delims = ";=")
+string::size_type find_next_token(const string &in, string::size_type start, 
+				  Lexical &lex, string delims = ";=")
 {
     char oquot, cquot;
 
@@ -100,7 +102,7 @@ int find_next_token(const string &in, unsigned int start,
 	return start;
 
     // Begins with separator ? return it.
-    unsigned int delimi = delims.find_first_of(in[start]);
+    string::size_type delimi = delims.find_first_of(in[start]);
     if (delimi != string::npos) {
 	lex.what = Lexical::separator;
 	lex.value = delims[delimi];
@@ -117,7 +119,7 @@ int find_next_token(const string &in, unsigned int start,
 
     if (cquot != 0) {
 	// Quoted string parsing
-	unsigned int end;
+	string::size_type end;
 	start++; // Skip quote character
 	for (end = start;end < in.size() && in[end] != cquot; end++) {
 	    if (in[end] == '\\') {
@@ -141,7 +143,7 @@ int find_next_token(const string &in, unsigned int start,
 	lex.quote = oquot;
 	return ++end;
     } else {
-	unsigned int end = in.find_first_of(delims + " \t(", start);
+	string::size_type end = in.find_first_of(delims + " \t(", start);
 	lex.what = Lexical::token;
 	lex.quote = 0;
 	if (end == string::npos) {
@@ -156,7 +158,7 @@ int find_next_token(const string &in, unsigned int start,
 
 void stringtolower(string &out, const string& in)
 {
-    for (unsigned int i = 0; i < in.size(); i++)
+    for (string::size_type i = 0; i < in.size(); i++)
 	out.append(1, char(tolower(in[i])));
 }
 
@@ -166,7 +168,7 @@ bool parseMimeHeaderValue(const string& value, MimeHeaderValue& parsed)
     parsed.params.clear();
 
     Lexical lex;
-    unsigned int start = 0;
+    string::size_type start = 0;
     start = find_next_token(value, start, lex);
     if (start == string::npos || lex.what != Lexical::token) 
 	return false;
@@ -205,7 +207,7 @@ bool parseMimeHeaderValue(const string& value, MimeHeaderValue& parsed)
 bool qp_decode(const string& in, string &out) 
 {
     out.reserve(in.length());
-    unsigned int ii;
+    string::size_type ii;
     for (ii = 0; ii < in.length(); ii++) {
 	if (in[ii] == '=') {
 	    ii++; // Skip '='
@@ -300,7 +302,7 @@ bool rfc2047_decode(const std::string& in, std::string &out)
 
     out = "";
 
-    for (unsigned int ii = 0; ii < in.length(); ii++) {
+    for (string::size_type ii = 0; ii < in.length(); ii++) {
 	char ch = in[ii];
 	switch (state) {
 	case rfc2047base: 

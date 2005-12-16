@@ -18,6 +18,7 @@ config.status
 excludefile
 makesrcdist.sh
 recollinstall
+mk/localdefs
 sysconf
 qtgui/Makefile
 qtgui/preview/Makefile

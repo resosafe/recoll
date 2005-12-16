@@ -36,10 +36,10 @@ Recoll
                     * gaim log files.
 
             With external helpers
-                    * pdf (xpdf).
-                    * postscript (ghostscript).
-                    * msword (antiword).
-                    * rtf text (unrtf).
+                    * pdf with xpdf.
+                    * postscript with ghostscript and pstotext.
+                    * msword with antiword.
+                    * rtf with unrtf.
 
      * Powerful query facilities, with boolean searches, phrases, filter on
        file types and directory tree.

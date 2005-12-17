@@ -1,4 +1,4 @@
-# @(#$Id: recoll.conf.in,v 1.4 2005-12-02 16:17:29 dockes Exp $  (C) 2004 J.F.Dockes
+# @(#$Id: recoll.conf.in,v 1.4.2.1 2005-12-17 07:45:56 dockes Exp $  (C) 2004 J.F.Dockes
 
 # Recoll default configuration file. This should be copied to
 # ~/.recoll/recoll.conf 
@@ -8,7 +8,7 @@ topdirs = ~
 
 # Wildcard expressions for names of files and directories that we should
 # ignore:
-skippedNames = *~ #* .* bin CVS  Cache caughtspam  tmp
+skippedNames = *~ #* bin CVS  Cache caughtspam  tmp
 
 # Debug messages
 loglevel = 4

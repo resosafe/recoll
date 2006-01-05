@@ -8,18 +8,20 @@ fatal()
 }
 usage()
 {
-    fatal 'Usage: recollinstall [<dir>], ie: recollinstall /usr/local'
+    fatal 'Usage: recollinstall [<prefixdir>], ie: recollinstall /usr/local'
 }
 
 if test $# -eq 0 ; then
    PREFIX=@prefix@
 elif test $# -eq 1 ; then
-PREFIX=$1
+   PREFIX=$1
 else
    usage
 fi
 
 echo "Installing to $PREFIX"
+test -n "$bindir" || bindir=$PREFIX/bin
+test -n "$datadir" || datadir=$PREFIX/share
 
 INSTALL=${INSTALL:=install -c}
 STRIP=${STRIP:=strip}
@@ -27,16 +29,14 @@ STRIP=${STRIP:=strip}
 test -x qtgui/recoll || fatal "qtgui/recoll does not exist." \
      " You need to build first (type 'make')."
 
-for d in ${PREFIX} \
-	    ${PREFIX}/bin \
-	    ${PREFIX}/share \
-	    ${PREFIX}/share/recoll \
-	    ${PREFIX}/share/recoll/examples \
-	    ${PREFIX}/share/recoll/filters \
-	    ${PREFIX}/share/recoll/images \
-	    ${PREFIX}/share/recoll/translations
+for d in \
+    ${bindir} \
+    ${datadir}/recoll/examples \
+    ${datadir}/recoll/filters \
+    ${datadir}/recoll/images \
+    ${datadir}/recoll/translations
 do
-  test -d $d || mkdir $d || exit 1
+    test -d $d || mkdir -p $d || exit 1
 done
 
 ${INSTALL} qtgui/recoll index/recollindex $PREFIX/bin || exit 1

@@ -8,19 +8,17 @@ A more complete version of this document can be found at http://www.recoll.org
      * Downloads
      * Installation
      * User manual
-   [IMG]
+     * Support
+   Thumbnail of recoll main screen
 
 Recoll
 
    Recoll is a personal full text search package for Linux, FreeBSD and other
-   Unix systems.
+   Unix systems. It is based on a very strong backend (Xapian), for which it
+   provides an easy to use, feature-rich, easy administration interface.
 
-   Recoll is based on a very strong backend (Xapian), for which it provides
-   an easy to use, feature-rich, easy administration interface.
-
-   Recoll is free and copyrighted under the GPL license, see COPYING inside
-   the distribution. A lot of the code is imported from other packages, see
-   the Credits.
+   Recoll is free and copyrighted under the GPL license. A lot of the code is
+   imported from other packages, see the Credits.
 
   Features:
 
@@ -29,17 +27,18 @@ Recoll
        versions):
 
             Natively
-                    * text.
-                    * html.
-                    * OpenOffice files.
-                    * maildir and mailbox (Mozilla and Thunderbird mail ok).
-                    * gaim log files.
+                       * text.
+                       * html.
+                       * OpenOffice files.
+                       * maildir and mailbox (Mozilla and Thunderbird mail
+                         ok).
+                       * gaim log files.
 
             With external helpers
-                    * pdf with xpdf.
-                    * postscript with ghostscript and pstotext.
-                    * msword with antiword.
-                    * rtf with unrtf.
+                       * pdf with xpdf.
+                       * postscript with ghostscript and pstotext.
+                       * msword with antiword.
+                       * rtf with unrtf.
 
      * Powerful query facilities, with boolean searches, phrases, filter on
        file types and directory tree.
@@ -70,15 +69,26 @@ Recoll
      * A few more filters for less common file types.
      * Integration with the KDE desktop.
 
-   I very much welcome suggestions or (gasp) code.
+  Support
 
-   In hope that this can be useful to somebody, it already is for me.
+   If you have any kind of problem with the package or its installation,
+   please e-mail me. I very much want to improve things, and can only do so
+   if people will report problems. We shall set up a mailing list if the
+   volume of questions increases.
+
+   We also very much welcome functional suggestions or (gasp) code.
+
+  Help wanted
+
+   As might be obvious from the screenshots, Recoll needs some help from a
+   better GUI designer.
      * Home
      * Screenshots
      * Credits
      * Downloads
      * Installation
      * User manual
+     * Support
 
   Credits
 
@@ -98,103 +108,3 @@ Recoll
      * Binc IMAP for MIME parsing code.
      * I fear that bugs found elsewhere are mostly mine:
        jean-francois.dockes@wanadoo.fr
-     * Home
-     * Screenshots
-     * Credits
-     * Downloads
-     * Installation
-     * User manual
-
-Introduction: full text search.
-
-   A full text search program will let you search for data by specifying the
-   terms that you think appear in the content you are looking for.
-
-   You do not need to remember in what file or email message you stored a
-   given piece of information. You just ask for related terms, and the tool
-   will return a list of documents where those terms are prominent.
-
-   In addition, the tool will automatically expand your search to terms
-   related to the ones you specified. Ie: a search for floor will also look
-   for floors, flooring etc. With Recoll you can disable this expansion when
-   entering the query.
-
-   Recoll, like most such search tools, works by remembering where terms
-   appear in your document files. The acquisition process is called
-   indexation. The resulting database can be big, in practise, roughly the
-   size of the original document set.
-
-   Recoll is not a document archive. It can only display data from files that
-   still exist where they lived when they were indexed.
-
-Using Recoll
-
-  Indexation
-
-   By default, Recoll will index your home directory. If you want to change
-   this, you need to edit the configuration file ($HOME/.recoll/recoll.conf
-   or $RECOLL_CONFDIR/recoll.conf if RECOLL_CONFDIR is set). Follow the
-   comments in the file to adjust the parameters.
-
-   Indexation is performed either by starting the recollindex program, or the
-   indexing thread inside the recoll program (use the File menu).
-
-   It is best to avoid interrupting the indexation process, as this may
-   sometimes leave the database in a bad state. This is not a serious
-   problem, as you then just need to clear everything and restart the
-   indexation. The database files are normally stored in the
-   $HOME/.recoll/xapiandb directory, which you can just delete when needed.
-   Alternatively, you can start recollindex -z, which will reset the database
-   before indexing.
-
-  Simple search
-
-   Start the recoll program, then enter search term(s) in the text field at
-   the top left of the window. Clicking the Search button or hitting the
-   Enter key will start a search. By default, this will look for documents
-   with any of the terms (the ones with more terms will get better scores).
-   Use the Tools / Advanced search dialog for other kinds of searches
-
-   A list of results will be displayed in the main list window. Clicking on
-   an entry will open an internal preview window for the document.
-   Double-clicking will attempt to start an external viewer (have a look at
-   the ~/.recoll/mimeconf file to see how these are configured).
-
-   Documents that you actually view (with the internal preview or an external
-   tool) are entered into the document history, which is remembered. You can
-   display the history list by using the Tools / Doc History menu entry.
-
-   By default, the document list is presented in order of relevance (how well
-   the system estimates that the document matches the query). You can specify
-   a different ordering by using the Tools / Sort parameters dialog.
-
-  Search tips, shortcuts
-
-   Entering a capitalized word in any search field will prevent stem
-   expansion (example: Recoll will not look for gardening if you enter Garden
-   instead of garden). This is the only case where character case will make a
-   difference for a Recoll search.
-
-   A phrase can be looked for by enclosing it in double quotes. Example:
-   "user manual" will look only for occurrences of user immediately followed
-   by manual.
-
-   Entering ^Q almost anywhere will close the application.
-
-   Entering ^W in a preview tab will close it (and, for the last tab, close
-   the preview window).
-
-  Complex/advanced search
-
-   The advanced search dialog has fields that will allow a more refined
-   search, looking for documents with all given words, a given exact phrase,
-   or none of the given words (all fields may be combined by an implicit AND
-   clause).
-
-   It will let you search for documents of specific mime types (ie: only
-   text/plain, or text/html or application/pdf etc...)
-
-   It will let you restrict the search results to a subtree of the indexed
-   area.
-
-   In other respects, it works like the simple search.

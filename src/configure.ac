@@ -85,23 +85,15 @@ if test X$QTDIR != X ; then
    PATH=$QTDIR/bin:$PATH
    export PATH
 fi
-echo $PATH
+
 AC_PATH_PROG([QMAKE], [qmake], NOTFOUND)
 if test X$QMAKE = XNOTFOUND ; then 
    AC_MSG_ERROR([Cannot find the qmake program. Maybe you need to install
 it and/or set the QTDIR environment variable?])
 fi
 
-test -d tmp || mkdir tmp || exit 1
-cd tmp
-cat > bogus.pro <<EOF
-TEMPLATE        = app
-LANGUAGE        = C++
-CONFIG  += qt warn_on thread release debug
-SOURCES += bogus.cpp
-EOF
-echo " " > bogus.cpp
-${QMAKE} bogus.pro
+cd qtgui
+${QMAKE} recoll.pro
 if test $? != 0 ; then
    AC_MSG_ERROR([Cannot use qmake to generate a Makefile. Maybe you need to
 check the QTDIR and QMAKESPEC environment variables?])
@@ -114,7 +106,6 @@ if test X$QTDIR = X ; then
 installation. If there is no default mkspecs, you should also set QMAKESPEC])
    fi
 fi
-rm -f bogus.pro bogus.cpp Makefile
 cd ..
 
 AC_SUBST(LIBXAPIAN)

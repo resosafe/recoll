@@ -1,10 +1,10 @@
-# @(#$Id: Makefile,v 1.24 2006-01-10 12:58:39 dockes Exp $  (C) 2005 J.F.Dockes
+# @(#$Id: Makefile,v 1.24.2.1 2006-01-14 11:47:30 dockes Exp $  (C) 2005 J.F.Dockes
 
 all: mk/sysconf common/rclversion.h
 	cd lib; ${MAKE}
 	cd bincimapmime; ${MAKE}
 	cd index; ${MAKE} recollindex
-	cd qtgui; qmake recoll.pro; \
+	cd qtgui; PATH=${PATH}:${QTDIR}/bin; export PATH; qmake recoll.pro; \
 	   cat ../mk/sysconf Makefile | \
 	       ${MAKE} -f -
 
@@ -21,7 +21,8 @@ static:
 	cd bincimapmime; ${MAKE}
 	cd index; rm -f recollindex; \
 	   ${MAKE} BSTATIC=-Wl,-Bstatic BDYNAMIC=-Wl,-Bdynamic recollindex
-	cd qtgui; qmake recoll.pro; rm -f recoll; \
+	cd qtgui; PATH=${PATH}:${QTDIR}/bin; export PATH; qmake recoll.pro; \
+	   rm -f recoll; \
 	   cat ../mk/sysconf ../mk/localdefs Makefile | ${MAKE} -f - \
 	       BSTATIC=-Wl,-Bstatic BDYNAMIC=-Wl,-Bdynamic
 

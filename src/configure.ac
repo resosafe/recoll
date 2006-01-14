@@ -60,6 +60,63 @@ XAPIANCXXFLAGS=`$XAPIAN_CONFIG --cxxflags`
 #echo LIBXAPIAN $LIBXAPIAN
 #echo XAPIANCXXFLAGS $XAPIANCXXFLAGS
 
+#### QT
+# The way qt and its tools (qmake especially) are installed is very
+# different between systems (and maybe qt versions)
+#
+# In general we need QTDIR to be set, because it is used inside the
+# qmake-generated makefiles. But there are exceptions: ie on debian3.1 (at
+# least on the sourceforge compile farm), QTDIR is not needed because qmake
+# generates hard paths (and is installed in /usr/bin). We don't want to
+# force the user to set QTDIR if it is not needed.
+#
+# The logic is then to first look for qmake, possibly using QTDIR if it is
+# set.
+# 
+# If QTDIR is not set, we then generate a bogus qt project and check if
+# QTDIR is needed in the Makefile, in which case we complain.
+#
+# QMAKESPEC: on most Linux system, there is a 'default' link inside the
+# mkspecs directory, so that QMAKESPEC is not needed.
+# If QMAKESPEC is not set and needed, the qmake test at the previous test
+# will have failed, and we tell the user to check his environment.
+
+if test X$QTDIR != X ; then
+   PATH=$QTDIR/bin:$PATH
+   export PATH
+fi
+echo $PATH
+AC_PATH_PROG([QMAKE], [qmake], NOTFOUND)
+if test X$QMAKE = XNOTFOUND ; then 
+   AC_MSG_ERROR([Cannot find the qmake program. Maybe you need to install
+it and/or set the QTDIR environment variable?])
+fi
+
+test -d tmp || mkdir tmp || exit 1
+cd tmp
+cat > bogus.pro <<EOF
+TEMPLATE        = app
+LANGUAGE        = C++
+CONFIG  += qt warn_on thread release debug
+SOURCES += bogus.cpp
+EOF
+echo " " > bogus.cpp
+${QMAKE} bogus.pro
+if test $? != 0 ; then
+   AC_MSG_ERROR([Cannot use qmake to generate a Makefile. Maybe you need to
+check the QTDIR and QMAKESPEC environment variables?])
+fi
+# is QTDIR set and do we actually need it ?
+if test X$QTDIR = X ; then
+   QTDIRNEEDED=`grep INCPATH Makefile | grep = | grep QTDIR`
+   if test "X$QTDIRNEEDED" != "X" ; then
+       AC_MSG_ERROR([You need to set the QTDIR variable to point to the QT
+installation. If there is no default mkspecs, you should also set QMAKESPEC])
+   fi
+fi
+rm -f bogus.pro bogus.cpp Makefile
+cd ..
+
 AC_SUBST(LIBXAPIAN)
 AC_SUBST(XAPIANCXXFLAGS)
 AC_SUBST(LIBICONV)

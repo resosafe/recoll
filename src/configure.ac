@@ -1,4 +1,4 @@
-AC_INIT(Recoll, 1.0)
+AC_INIT(Recoll, 1.5)
 AC_PREREQ(2.53)
 AC_CONFIG_SRCDIR(index/recollindex.cpp)
 
@@ -58,7 +58,7 @@ LIBXAPIAN=`$XAPIAN_CONFIG --libs`
 # libstdc++.la in the lib list
 for i in $LIBXAPIAN ; do
     case $i in
-    *stdc++*|-lm|-lgcc_s);;
+    *stdc++*|-lm|-lgcc_s|-lc);;
     *) tmpxaplib="$tmpxaplib $i";;
     esac
 done

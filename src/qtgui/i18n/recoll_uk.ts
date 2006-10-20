@@ -3,106 +3,106 @@
     <name>AdvSearch</name>
     <message>
         <source>Cannot execute pure negative query. Please enter common terms in the &apos;any words&apos; field</source>
-        <translation type="unfinished">Неможна виконати суцільно негативний запит.  Будь ласка, введіть загальні терміни у полі &quot;будь-які слова&quot;</translation>
+        <translation>Неможна виконати суцільно негативний запит.  Будь ласка, введіть загальні терміни у полі &quot;будь-які слова&quot;</translation>
     </message>
 </context>
 <context>
     <name>AdvSearchBase</name>
     <message>
         <source>Advanced search</source>
-        <translation type="unfinished">Складний пошук</translation>
+        <translation>Складний пошук</translation>
     </message>
     <message>
         <source>Search for files&lt;br&gt;having all of:</source>
-        <translation type="unfinished">Шукати файли,&lt;br&gt;в яких є все з:</translation>
+        <translation>Шукати&lt;br&gt;файли:</translation>
     </message>
     <message>
         <source>All non blank fields will be combined with AND conjunctions. &lt;br&gt;All fields except &quot;exact phrase&quot; can accept a mix of simple words, and phrases enclosed in double quotes.</source>
-        <translation type="unfinished"></translation>
+        <translation>Вісі непусті поля будуть поєднані логічним ТА.&lt;br&gt;Всі поля, окрім &quot;точної фрази&quot;, приймають суміш простих слів та фраз у подвійних лапках.</translation>
     </message>
     <message>
         <source>All of these</source>
-        <translation type="unfinished"></translation>
+        <translation>з усіма словами</translation>
     </message>
     <message>
         <source>Enter words, and/or quoted phrases.</source>
-        <translation type="unfinished"></translation>
+        <translation>Введіть слова та/або фрази у лапках.</translation>
     </message>
     <message>
         <source>This exact phrase</source>
-        <translation type="unfinished">Точна фраза</translation>
+        <translation>із точною фразою</translation>
     </message>
     <message>
         <source>Enter words.</source>
-        <translation type="unfinished"></translation>
+        <translation>Введіть слова.</translation>
     </message>
     <message>
         <source>Any of these</source>
-        <translation type="unfinished"></translation>
+        <translation>з усіма словами</translation>
     </message>
     <message>
         <source>None of these</source>
-        <translation type="unfinished"></translation>
+        <translation>без цих слів</translation>
     </message>
     <message>
         <source>File name matching</source>
-        <translation type="unfinished">Пошук по іменах файлів</translation>
+        <translation>з ім&apos;ям</translation>
     </message>
     <message>
         <source>Enter file name. * and ? are wildcards.</source>
-        <translation type="unfinished"></translation>
+        <translation>Введіть ім&apos;я файлу. * та ? є шаблонами.</translation>
     </message>
     <message>
         <source>Restrict file types</source>
-        <translation type="unfinished">Обмежити типи файлів</translation>
+        <translation>Обмежити типи файлів</translation>
     </message>
     <message>
         <source>Save as default</source>
-        <translation type="unfinished"></translation>
+        <translation>Зберегти як типові</translation>
     </message>
     <message>
         <source>Searched file types</source>
-        <translation type="unfinished">Шукати в файлах типу</translation>
+        <translation>Бажані</translation>
     </message>
     <message>
         <source>All ----&gt;</source>
-        <translation type="unfinished">Всі -----&gt;</translation>
+        <translation>Всі -----&gt;</translation>
     </message>
     <message>
         <source>Sel -----&gt;</source>
-        <translation type="unfinished">Виб -----&gt;</translation>
+        <translation>Виб -----&gt;</translation>
     </message>
     <message>
         <source>&lt;----- Sel</source>
-        <translation type="unfinished">&lt;----- Виб</translation>
+        <translation>&lt;----- Виб</translation>
     </message>
     <message>
         <source>&lt;----- All</source>
-        <translation type="unfinished">&lt;----- Всі</translation>
+        <translation>&lt;----- Всі</translation>
     </message>
     <message>
         <source>Ignored file types</source>
-        <translation type="unfinished">Ігнорувати файли типу</translation>
+        <translation>Ігноровані</translation>
     </message>
     <message>
         <source>Enter top directory for search</source>
-        <translation type="unfinished"></translation>
+        <translation>Шукати тільки у каталозі</translation>
     </message>
     <message>
         <source>Browse</source>
-        <translation type="unfinished">Перегляд</translation>
+        <translation>Перегляд</translation>
     </message>
     <message>
         <source>Restrict results to files in subtree:</source>
-        <translation type="unfinished">Обмежити пошук по файлах з піддерева:</translation>
+        <translation>Обмежити пошук по файлах з піддерева:</translation>
     </message>
     <message>
         <source>Start Search</source>
-        <translation type="unfinished">Шукати</translation>
+        <translation>Шукати</translation>
     </message>
     <message>
         <source>Dismiss</source>
-        <translation type="unfinished">Відмінити</translation>
+        <translation>Відмінити</translation>
     </message>
 </context>
 <context>
@@ -128,7 +128,7 @@ Click Cancel if you want to edit the configuration file before indexation starts
     </message>
     <message>
         <source>Configuration problem (dynconf</source>
-        <translation type="unfinished"></translation>
+        <translation>Проблема конфігурації (dynconf</translation>
     </message>
 </context>
 <context>
@@ -198,43 +198,43 @@ Click Cancel if you want to edit the configuration file before indexation starts
     <name>PreviewBase</name>
     <message>
         <source>Preview</source>
-        <translation type="unfinished">Перегляд</translation>
+        <translation>Перегляд</translation>
     </message>
     <message>
         <source>Preview 1</source>
-        <translation type="unfinished">Перегляд 1</translation>
+        <translation>Перегляд 1</translation>
     </message>
     <message>
         <source>&amp;Search for:</source>
-        <translation type="unfinished">&amp;Шукати:</translation>
+        <translation>&amp;Шукати:</translation>
     </message>
     <message>
         <source>&amp;Next</source>
-        <translation type="unfinished">&amp;Наступне</translation>
+        <translation>&amp;Наступна</translation>
     </message>
     <message>
         <source>Alt+N</source>
-        <translation type="unfinished">Alt+N</translation>
+        <translation>Alt+N</translation>
     </message>
     <message>
         <source>&amp;Previous</source>
-        <translation type="unfinished">&amp;Попереднє</translation>
+        <translation>&amp;Попередня</translation>
     </message>
     <message>
         <source>Alt+P</source>
-        <translation type="unfinished">Alt+P</translation>
+        <translation>Alt+P</translation>
     </message>
     <message>
         <source>Clear</source>
-        <translation type="unfinished">Стерти</translation>
+        <translation>Стерти</translation>
     </message>
     <message>
         <source>Match &amp;Case</source>
-        <translation type="unfinished">&amp;Чутливість до реєстру</translation>
+        <translation>&amp;Чутливість до реєстру</translation>
     </message>
     <message>
         <source>Alt+C</source>
-        <translation type="unfinished">Alt+C</translation>
+        <translation>Alt+C</translation>
     </message>
 </context>
 <context>
@@ -337,7 +337,7 @@ Click Cancel if you want to edit the configuration file before indexation starts
     </message>
     <message>
         <source>This search is not active any more</source>
-        <translation type="unfinished"></translation>
+        <translation>Цей пошук вже неактивний</translation>
     </message>
 </context>
 <context>
@@ -516,80 +516,80 @@ Click Cancel if you want to edit the configuration file before indexation starts
     <name>ResList</name>
     <message>
         <source>Result list</source>
-        <translation type="unfinished">Список результатів</translation>
+        <translation>Список результатів</translation>
     </message>
     <message>
         <source>Unavailable document</source>
-        <translation type="unfinished">Документ недосяжний</translation>
+        <translation>Документ недосяжний</translation>
     </message>
     <message>
         <source>Show query details</source>
-        <translation type="unfinished">Показати запит</translation>
+        <translation>Показати запит</translation>
     </message>
     <message>
         <source>&lt;b&gt;Displaying results starting at index %1 (maximum set size %2)&lt;/b&gt;&lt;/p&gt;
 </source>
-        <translation type="unfinished">&lt;b&gt;Результати починаючи з %1 (максимально %2)&lt;/b&gt;&lt;/p&gt;
+        <translation>&lt;b&gt;Результати починаючи з %1 (не більше за %2)&lt;/b&gt;&lt;/p&gt;
 </translation>
     </message>
     <message>
         <source>Previous</source>
-        <translation type="unfinished"></translation>
+        <translation>Попередня</translation>
     </message>
     <message>
         <source>Next</source>
-        <translation type="unfinished"></translation>
+        <translation>Наступна</translation>
     </message>
     <message>
         <source>&lt;p&gt;&lt;b&gt;No results found&lt;/b&gt;&lt;br&gt;</source>
-        <translation type="unfinished">&lt;p&gt;&lt;b&gt;Не знайдено&lt;/b&gt;&lt;br&gt;</translation>
+        <translation>&lt;p&gt;&lt;b&gt;Не знайдено&lt;/b&gt;&lt;br&gt;</translation>
     </message>
     <message>
         <source>&amp;Preview</source>
-        <translation type="unfinished">&amp;Переглянути</translation>
+        <translation>&amp;Переглянути</translation>
     </message>
     <message>
         <source>&amp;Edit</source>
-        <translation type="unfinished">&amp;Редагувати</translation>
+        <translation>&amp;Редагувати</translation>
     </message>
     <message>
         <source>&amp;Copy File Name</source>
-        <translation type="unfinished">&amp;Копіювати ім&apos;я файлу</translation>
+        <translation>&amp;Копіювати ім&apos;я файлу</translation>
     </message>
     <message>
         <source>Copy &amp;Url</source>
-        <translation type="unfinished">Копіювати &amp;Url</translation>
+        <translation>Копіювати &amp;Url</translation>
     </message>
     <message>
         <source>Find &amp;similar documents</source>
-        <translation type="unfinished"></translation>
+        <translation>Знайти &amp;схожі документи</translation>
     </message>
     <message>
         <source>Query details</source>
-        <translation type="unfinished">Деталі запиту</translation>
+        <translation>Деталі запиту</translation>
     </message>
 </context>
 <context>
     <name>SSearch</name>
     <message>
         <source>Any term</source>
-        <translation type="unfinished">Будь-яке слово</translation>
+        <translation>Будь-яке слово</translation>
     </message>
     <message>
         <source>All terms</source>
-        <translation type="unfinished">Усі слова</translation>
+        <translation>Усі слова</translation>
     </message>
     <message>
         <source>File name</source>
-        <translation type="unfinished">Ім&apos;я файлу</translation>
+        <translation>Ім&apos;я файлу</translation>
     </message>
     <message>
         <source>Completions</source>
-        <translation type="unfinished">Доповнення</translation>
+        <translation>Доповнення</translation>
     </message>
     <message>
         <source>Select an item:</source>
-        <translation type="unfinished">Оберіть:</translation>
+        <translation>Оберіть:</translation>
     </message>
 </context>
 <context>
@@ -648,7 +648,7 @@ Click Cancel if you want to edit the configuration file before indexation starts
     </message>
     <message>
         <source>Enter search terms here. CTRL-TAB for completions of current term.</source>
-        <translation type="unfinished"></translation>
+        <translation>Введіть слова для пошуку. Ctrl-Tab доповнює поточне.</translation>
     </message>
 </context>
 <context>
@@ -682,27 +682,27 @@ Click Cancel if you want to edit the configuration file before indexation starts
     <name>SortFormBase</name>
     <message>
         <source>Sort Criteria</source>
-        <translation type="unfinished">Критерії сортування</translation>
+        <translation>Критерії сортування</translation>
     </message>
     <message>
         <source>Sort the</source>
-        <translation type="unfinished">Сортувати</translation>
+        <translation>Сортувати</translation>
     </message>
     <message>
         <source>most relevant results by:</source>
-        <translation type="unfinished">кращі результати за:</translation>
+        <translation>кращих результатів за:</translation>
     </message>
     <message>
         <source>Descending</source>
-        <translation type="unfinished">Спаданням</translation>
+        <translation>спаданням</translation>
     </message>
     <message>
         <source>Reset</source>
-        <translation type="unfinished">Скинути</translation>
+        <translation>Скинути</translation>
     </message>
     <message>
         <source>Close</source>
-        <translation type="unfinished">Закрити</translation>
+        <translation>Закрити</translation>
     </message>
 </context>
 <context>
@@ -863,188 +863,188 @@ May be slow for big documents.</source>
     </message>
     <message>
         <source>(no stemming)</source>
-        <translation type="unfinished"></translation>
+        <translation>(без словоформ)</translation>
     </message>
     <message>
         <source>The selected directory does not appear to be a Xapian index</source>
-        <translation type="unfinished"></translation>
+        <translation>Обрана тека не схожа на індекс Xapian</translation>
     </message>
     <message>
         <source>This is the main/local index!</source>
-        <translation type="unfinished"></translation>
+        <translation>Це основний/локальний індекс!</translation>
     </message>
     <message>
         <source>The selected directory is already in the index list</source>
-        <translation type="unfinished"></translation>
+        <translation>Обрана тека вже у списку індексів</translation>
     </message>
     <message>
         <source>Select xapian index directory (ie: /home/buddy/.recoll/xapiandb)</source>
-        <translation type="unfinished"></translation>
+        <translation>Оберіть теку із індексом Xapian (наприклад, /home/приятель/.recoll/xapiandb)</translation>
     </message>
 </context>
 <context>
     <name>UIPrefsDialogBase</name>
     <message>
         <source>MyDialog</source>
-        <translation type="unfinished">MyDialog</translation>
+        <translation>MyDialog</translation>
     </message>
     <message>
         <source>User interface</source>
-        <translation type="unfinished">Інтерфейс</translation>
+        <translation>Інтерфейс</translation>
     </message>
     <message>
         <source>Number of entries in a result page</source>
-        <translation type="unfinished">Кількість результатів на сторінку</translation>
+        <translation>Кількість результатів на сторінку</translation>
     </message>
     <message>
         <source>Result list font</source>
-        <translation type="unfinished">Шрифт списку результатів</translation>
+        <translation>Шрифт списку результатів</translation>
     </message>
     <message>
         <source>Helvetica-10</source>
-        <translation type="unfinished">Helvetica-10</translation>
+        <translation>Helvetica-10</translation>
     </message>
     <message>
         <source>Opens a dialog to select the result list font</source>
-        <translation type="unfinished">Відкриває діалог вибору шрифту списку результатів</translation>
+        <translation>Відкриває діалог вибору шрифту списку результатів</translation>
     </message>
     <message>
         <source>Reset</source>
-        <translation type="unfinished">Скинути</translation>
+        <translation>Скинути</translation>
     </message>
     <message>
         <source>Resets the result list font to the system default</source>
-        <translation type="unfinished">Повертає шрифт у типовий системний</translation>
+        <translation>Повертає шрифт у типовий системний</translation>
     </message>
     <message>
         <source>HTML help browser</source>
-        <translation type="unfinished">Переглядач довідки у HTML</translation>
+        <translation>Переглядач довідки у HTML</translation>
     </message>
     <message>
         <source>Select file</source>
-        <translation type="unfinished">Оберіть файл</translation>
+        <translation>Оберіть файл</translation>
     </message>
     <message>
         <source>Show document type icons in result list.</source>
-        <translation type="unfinished"></translation>
+        <translation>Відображати типи документів у списку результатів.</translation>
     </message>
     <message>
         <source>Auto-start simple search on whitespace entry.</source>
-        <translation type="unfinished"></translation>
+        <translation>Починати простий пошук при введенні пробілу.</translation>
     </message>
     <message>
         <source>Start with advanced search dialog open.</source>
-        <translation type="unfinished"></translation>
+        <translation>Відкривати діалог складного пошуку при старті.</translation>
     </message>
     <message>
         <source>Start with sort dialog open.</source>
-        <translation type="unfinished"></translation>
+        <translation>Відкривати діалог сортування при старті.</translation>
     </message>
     <message>
         <source>Search parameters</source>
-        <translation type="unfinished">Параметри пошуку</translation>
+        <translation>Параметри пошуку</translation>
     </message>
     <message>
         <source>Stemming language</source>
-        <translation type="unfinished">Мова словоутворення</translation>
+        <translation>Мова словоформ</translation>
     </message>
     <message>
         <source>Automatically add phrase to simple searchs</source>
-        <translation type="unfinished"></translation>
+        <translation>Автоматично додавати фразу до простого пошуку</translation>
     </message>
     <message>
         <source>A search for [rolling stones] (2 terms) will be changed to [rolling or stones or (rolling phrase 2 stones)].</source>
-        <translation type="unfinished"></translation>
+        <translation>Пошук [rolling stones] (2 terms) буде замінено на [rolling or stones or (rolling phrase 2 stones)].</translation>
     </message>
     <message>
         <source>Dynamically build abstracts</source>
-        <translation type="unfinished">Динамічно будувати реферати</translation>
+        <translation>Динамічно будувати конспекти</translation>
     </message>
     <message>
         <source>Do we try to build abstracts for result list entries by using the context of query terms ? 
 May be slow for big documents.</source>
-        <translation type="unfinished">Чи намагатися будувати реферати для результатів пошуку, використовуючі контекст знайдених слів?
+        <translation>Чи намагатися будувати конспекти для результатів пошуку, використовуючі контекст знайдених слів?
 Може працювати повільно для великих документів.</translation>
     </message>
     <message>
         <source>Replace abstracts from documents</source>
-        <translation type="unfinished">Заміняти реферати з документів</translation>
+        <translation>Заміняти наявні у документах конспекти</translation>
     </message>
     <message>
         <source>Do we synthetize an abstract even if the document seemed to have one?</source>
-        <translation type="unfinished">Чи робити новий реферат, навіть якщо якийсь вже є в документі?</translation>
+        <translation>Чи робити новий конспект, навіть якщо якийсь вже є в документі?</translation>
     </message>
     <message>
         <source>Synthetic abstract size (characters)</source>
-        <translation type="unfinished"></translation>
+        <translation>Розмір синтетичного конспекту (у символах)</translation>
     </message>
     <message>
         <source>Synthetic abstract context words</source>
-        <translation type="unfinished"></translation>
+        <translation>Контекстних слів у конспекті</translation>
     </message>
     <message>
         <source>External Indexes</source>
-        <translation type="unfinished"></translation>
+        <translation>Зовнішні індекси</translation>
     </message>
     <message>
         <source>Add index</source>
-        <translation type="unfinished"></translation>
+        <translation>Додати індекс</translation>
     </message>
     <message>
         <source>Select the xapiandb directory for the index you want to add, then click Add Index</source>
-        <translation type="unfinished"></translation>
+        <translation>Оберіть потрібну теку із індексом Xapian та натисніть &quot;Додати індекс&quot;</translation>
     </message>
     <message>
         <source>Browse</source>
-        <translation type="unfinished">Перегляд</translation>
+        <translation>Перегляд</translation>
     </message>
     <message>
         <source>All indexes</source>
-        <translation type="unfinished"></translation>
+        <translation>Всі індекси</translation>
     </message>
     <message>
         <source>Indexes currently not used</source>
-        <translation type="unfinished"></translation>
+        <translation>Не використовувані</translation>
     </message>
     <message>
         <source>All ----&gt;</source>
-        <translation type="unfinished">Всі -----&gt;</translation>
+        <translation>Всі -----&gt;</translation>
     </message>
     <message>
         <source>Sel -----&gt;</source>
-        <translation type="unfinished">Виб -----&gt;</translation>
+        <translation>Виб -----&gt;</translation>
     </message>
     <message>
         <source>&lt;----- Sel</source>
-        <translation type="unfinished">&lt;----- Виб</translation>
+        <translation>&lt;----- Виб</translation>
     </message>
     <message>
         <source>&lt;----- All</source>
-        <translation type="unfinished">&lt;----- Всі</translation>
+        <translation>&lt;----- Всі</translation>
     </message>
     <message>
         <source>Active indexes</source>
-        <translation type="unfinished"></translation>
+        <translation>Активні</translation>
     </message>
     <message>
         <source>Indexes that will be searched in addition to the main one</source>
-        <translation type="unfinished"></translation>
+        <translation>Індекси, які будуть використані для пошуку у додаток до основного</translation>
     </message>
     <message>
         <source>&amp;OK</source>
-        <translation type="unfinished">&amp;OK</translation>
+        <translation>&amp;OK</translation>
     </message>
     <message>
         <source>Apply changes</source>
-        <translation type="unfinished">Застосувати зміни</translation>
+        <translation>Застосувати зміни</translation>
     </message>
     <message>
         <source>&amp;Cancel</source>
-        <translation type="unfinished">&amp;Відміна</translation>
+        <translation>&amp;Відміна</translation>
     </message>
     <message>
         <source>Discard changes</source>
-        <translation type="unfinished">Відмінити зміни</translation>
+        <translation>Відмінити зміни</translation>
     </message>
 </context>
 <context>

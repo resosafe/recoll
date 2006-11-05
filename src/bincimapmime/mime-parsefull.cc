@@ -1,4 +1,4 @@
-/* -*- Mode: c++; -*- */
+ /* -*- mode:c++;c-basic-offset:2 -*- */
 /*  --------------------------------------------------------------------
  *  Filename:
  *    mime-parsefull.cc
@@ -6,7 +6,7 @@
  *  Description:
  *    Implementation of main mime parser components
  *  --------------------------------------------------------------------
- *  Copyright 2002-2004 Andreas Aardal Hanssen
+ *  Copyright 2002-2005 Andreas Aardal Hanssen
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -641,6 +641,10 @@ static void parseSinglePart(const string &toboundary,
       mimeSource->ungetChar();
       mimeSource->ungetChar();
     }
+  } else {
+    // Recoll: in the case of a null boundary (probably illegal but wtf), eof
+    // was not set and multipart went into a loop until bad alloc.
+    *eof = true;
   }
 
   // make sure bodylength doesn't overflow    

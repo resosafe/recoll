@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: reslist.cpp,v 1.3 2006-09-29 08:24:16 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: reslist.cpp,v 1.3.2.1 2006-11-07 18:28:28 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 #include <time.h>
@@ -351,7 +351,7 @@ void ResList::resultPageNext()
 	    time_t mtime = doc.dmtime.empty() ?
 		atol(doc.fmtime.c_str()) : atol(doc.dmtime.c_str());
 	    struct tm *tm = localtime(&mtime);
-	    strftime(datebuf, 99, "&nbsp;%Y-%m-%d&nbsp;%H:%M:%S", tm);
+	    strftime(datebuf, 99, "&nbsp;%Y-%m-%d&nbsp;%H:%M:%S %z", tm);
 	}
 
 	// Size information. We print both doc and file if they differ a lot
@@ -636,4 +636,3 @@ void ResList::showQueryDetails()
     QString desc = tr("Query details") + ": " + 
 	QString::fromUtf8(oq.c_str());
     QMessageBox::information(this, tr("Query details"), desc);
-}

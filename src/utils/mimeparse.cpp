@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: mimeparse.cpp,v 1.14 2006-09-19 14:19:32 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: mimeparse.cpp,v 1.14.2.1 2006-11-07 18:28:28 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -723,7 +723,7 @@ time_t rfc2822DateToUxTime(const string& dt)
     DATEDEB((stderr, "Tz: [%s] -> %d\n", it->c_str(), zonesecs));
  nozone:
 
-    time_t tim = mktime(&tm);
+    time_t tim = timegm(&tm);
     tim += zonesecs;
     DATEDEB((stderr, "Date: %s  uxtime %ld \n", ctime(&tim), tim));
     return tim;

@@ -1,4 +1,4 @@
-# @(#$Id: Makefile.in,v 1.7 2006-06-24 07:40:04 dockes Exp $  (C) 2005 J.F.Dockes
+# @(#$Id: Makefile.in,v 1.7.2.1 2006-11-09 14:49:42 dockes Exp $  (C) 2005 J.F.Dockes
 
 prefix = @prefix@
 exec_prefix = @exec_prefix@
@@ -23,7 +23,7 @@ common/rclversion.h: VERSION
 	echo 'static const char *rclversion = "'`cat VERSION`'";' \
 	   > common/rclversion.h
 
-static:
+static:  mk/sysconf common/rclversion.h
 	cd lib; ${MAKE}
 	cd bincimapmime; ${MAKE}
 	cd index; rm -f recollindex; \

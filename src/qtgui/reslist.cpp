@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: reslist.cpp,v 1.3.2.1 2006-11-07 18:28:28 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: reslist.cpp,v 1.3.2.2 2006-11-09 08:36:22 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 #include <time.h>
@@ -636,3 +636,4 @@ void ResList::showQueryDetails()
     QString desc = tr("Query details") + ": " + 
 	QString::fromUtf8(oq.c_str());
     QMessageBox::information(this, tr("Query details"), desc);
+}

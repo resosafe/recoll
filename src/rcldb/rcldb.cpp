@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.79 2006-09-29 08:26:02 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.79.2.1 2006-11-09 14:47:27 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -1518,17 +1518,19 @@ string Native::makeAbstract(Xapian::docid docid, const list<string>& terms)
     // immediately into chunks because there might be overlaps
     for (vector<unsigned int>::const_iterator it = qtermposs.begin();
 	 it != qtermposs.end(); it++) {
+	if (int(abslen) > m_db->m_synthAbsLen)
+	    break;
 	unsigned int ipos = *it;
 	unsigned int start = MAX(0, ipos-m_db->m_synthAbsWordCtxLen);
 	unsigned int end = MIN(ipos+m_db->m_synthAbsWordCtxLen, 
 			       termsVec.size()-1);
 	for (unsigned int ii = start; ii <= end; ii++) {
+	    if (int(abslen) > m_db->m_synthAbsLen)
+		break;
 	    if (!termsVec[ii].empty()) {
 		mabs[ii] = termsVec[ii];
 		abslen += termsVec[ii].length();
 	    }
-	    if (int(abslen) > m_db->m_synthAbsLen)
-		break;
 	}
 	// Possibly add a ... at the end of chunk if it's not
 	// overlapping and not at the end of doc

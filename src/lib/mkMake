@@ -3,25 +3,43 @@
 mk=Makefile
 depth=..
 
-SRCS="${depth}/utils/conftree.cpp ${depth}/index/csguess.cpp \
-     ${depth}/utils/debuglog.cpp ${depth}/utils/execmd.cpp \
-     ${depth}/utils/idfile.cpp ${depth}/utils/md5.cpp \
-     ${depth}/utils/wipedir.cpp ${depth}/utils/fstreewalk.cpp \
-     ${depth}/common/mh_html.cpp ${depth}/common/mh_mail.cpp \
-     ${depth}/common/mh_exec.cpp ${depth}/common/mh_text.cpp \
-     ${depth}/common/htmlparse.cpp ${depth}/index/indexer.cpp \
-     ${depth}/common/internfile.cpp ${depth}/common/mimehandler.cpp \
-     ${depth}/utils/mimeparse.cpp ${depth}/index/mimetype.cpp \
-     ${depth}/common/myhtmlparse.cpp ${depth}/common/pathhash.cpp \
-     ${depth}/utils/pathut.cpp ${depth}/common/rclconfig.cpp \
-     ${depth}/common/rcldb.cpp ${depth}/common/rclinit.cpp \
-     ${depth}/common/stemdb.cpp \
-     ${depth}/utils/base64.cpp ${depth}/utils/readfile.cpp \
-     ${depth}/utils/smallut.cpp ${depth}/common/textsplit.cpp \
-     ${depth}/utils/transcode.cpp ${depth}/common/unacpp.cpp \
-     ${depth}/query/history.cpp \
-     ${depth}/query/docseq.cpp ${depth}/query/sortseq.cpp \
-     ${depth}/utils/copyfile.cpp"
+SRCS="\
+${depth}/common/rclconfig.cpp \
+${depth}/common/rclinit.cpp \
+${depth}/common/textsplit.cpp \
+${depth}/common/unacpp.cpp \
+${depth}/index/csguess.cpp \
+${depth}/index/indexer.cpp \
+${depth}/index/mimetype.cpp \
+${depth}/internfile/htmlparse.cpp \
+${depth}/internfile/internfile.cpp \
+${depth}/internfile/mh_exec.cpp \
+${depth}/internfile/mh_html.cpp \
+${depth}/internfile/mh_mail.cpp \
+${depth}/internfile/mh_text.cpp \
+${depth}/internfile/mimehandler.cpp \
+${depth}/internfile/myhtmlparse.cpp \
+${depth}/query/docseq.cpp \
+${depth}/query/history.cpp \
+${depth}/query/sortseq.cpp \
+${depth}/rcldb/pathhash.cpp \
+${depth}/rcldb/rcldb.cpp \
+${depth}/rcldb/stemdb.cpp \
+${depth}/utils/base64.cpp \
+${depth}/utils/conftree.cpp \
+${depth}/utils/copyfile.cpp \
+${depth}/utils/debuglog.cpp \
+${depth}/utils/execmd.cpp \
+${depth}/utils/fstreewalk.cpp \
+${depth}/utils/idfile.cpp \
+${depth}/utils/md5.cpp \
+${depth}/utils/mimeparse.cpp \
+${depth}/utils/pathut.cpp \
+${depth}/utils/readfile.cpp \
+${depth}/utils/smallut.cpp \
+${depth}/utils/transcode.cpp \
+${depth}/utils/wipedir.cpp \
+"
 
 
 for c in $SRCS;do

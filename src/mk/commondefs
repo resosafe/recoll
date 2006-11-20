@@ -4,6 +4,7 @@
 COMMONCXXFLAGS = -I. -I$(depth)/index \
 	       -I$(depth)/utils -I$(depth)/common \
 	       -I$(depth)/unac -I$(depth)/bincimapmime \
+               -I$(depth)/internfile -I$(depth)/rcldb \
 	       -I/usr/local/include
 
 # We happen to be using gcc on all platforms for now. Can be overridden in

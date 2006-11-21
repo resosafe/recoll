@@ -13,16 +13,16 @@ or keep only the modified parameters.
 
 
 1.6.0
- - Real time monitoring/indexing support.
  - Term explorer: a multimode wildcard-regexp-spell/phonetic tool to search
-   the index for terms.
- - The advanced search window has been made more dynamic. You now have a
-   choice of the top level conjunction (OR/AND) and of any number of
-   clauses, including NEAR and PHRASE clauses with an adjustable proximity
-   parameter. 
- - The format of the result-list entries is now user-settable, as an HTML
-   string with %xx printf-like replacement (accessible from the user
-   preferences). 
+   the index for terms. This uses aspell for the orthographic/phonetic part.
+ - A more dynamic advanced search window. You now have a choice of the top
+   level conjunction (OR/AND) and of any number of clauses, including NEAR
+   and PHRASE clauses with an adjustable proximity parameter.
+ - User-settable format for the result-list entries, which use an HTML
+   string with %xx printf-like replacements (accessible from the user
+   preferences).
+ - Real time monitoring/indexing support. This is not configured by
+   default, and must be specified at build time (configure --help).
  - Improved phrase/group highlighting in abstracts and preview
  - Better sample selection for synthetic abstracts.
  - Improved performance of the text splitter, good for indexing and previewing.

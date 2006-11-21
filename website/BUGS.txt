@@ -6,20 +6,27 @@ versions.
 
 Latest:
 
-- 1.6 has added NEAR searches. Unlike what recoll did with PHRASES,
-  stemming expansion is performed on terms inside NEAR clauses (except if
-  prevented by a capitalized entry of course). There is a bug in Xapian at
-  least up to 0.9.9, where NEAR does not support multiple OR subclauses, as
-  would result from a multiple expansion. This manifests itself by a 'not
-  implemented' xapian exception and a recoll crash.
-  Workarounds:
+- 1.6 NEAR crashes: 1.6 has added NEAR searches. Unlike what recoll did
+  with PHRASES, stemming expansion is performed on terms inside NEAR
+  clauses (except if prevented by a capitalized entry of course). There is
+  a bug in Xapian at least up to 0.9.9, where NEAR does not support
+  multiple OR subclauses, as would result from a multiple expansion. This
+  manifests itself by a 'not implemented' Xapian exception and a recoll
+  crash.  Workarounds:
+
       - Prevent expansion of NEAR terms (possibly except one) by
         capitalizing them.
-      - Apply the following patch to xapian 0.9.9, inside the "api/"
+
+      - Or apply the following patch to xapian 0.9.9, inside the "api/"
         directory: 
          http://www.recoll.org/xapian/xapNearDistrib.patch
-	 then recompile, and install.
+        or fetch the already patched source:
+	 http://www.recoll.org/xapian/xapian-core-0.9.9-recollNEARpatch.tar.gz
+
+        then recompile, and install.
+
   I hope that the fix will make it into xapian at some point.
+
 - If you are seeing a delay of a few seconds before the result list
   displays for the first query of a recoll instance, try changing the
   result list font in the query preferences. This is not a recoll problem,

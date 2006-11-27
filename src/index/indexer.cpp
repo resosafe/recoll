@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: indexer.cpp,v 1.44 2006-11-07 06:41:44 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: indexer.cpp,v 1.44.2.1 2006-11-27 10:00:53 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -161,14 +161,16 @@ bool DbIndexer::createStemmingDatabases()
     return true;
 }
 
-bool DbIndexer::init(bool resetbefore)
+bool DbIndexer::init(bool resetbefore, bool rdonly)
 {
     if (m_tmpdir.empty() || access(m_tmpdir.c_str(), 0) < 0)
 	if (!maketmpdir(m_tmpdir)) {
 	    LOGERR(("DbIndexer: cannot create temporary directory\n"));
 	    return false;
 	}
-    if (!m_db.open(m_dbdir, resetbefore ? Rcl::Db::DbTrunc : Rcl::Db::DbUpd)) {
+    Rcl::Db::OpenMode mode = rdonly ? Rcl::Db::DbRO :
+	resetbefore ? Rcl::Db::DbTrunc : Rcl::Db::DbUpd;
+    if (!m_db.open(m_dbdir, mode)) {
 	LOGERR(("DbIndexer: error opening database in %s\n", m_dbdir.c_str()));
 	return false;
     }
@@ -177,7 +179,7 @@ bool DbIndexer::init(bool resetbefore)
 
 bool DbIndexer::createStemDb(const string &lang)
 {
-    if (!init())
+    if (!init(false, true))
 	return false;
     return m_db.createStemDb(lang);
 }
@@ -188,7 +190,12 @@ bool DbIndexer::createAspellDict()
 {
     LOGDEB2(("DbIndexer::createAspellDict()\n"));
 #ifdef RCL_USE_ASPELL
-    if (!init())
+    bool noaspell = false;
+    m_config->getConfParam("noaspell", &noaspell);
+    if (noaspell)
+	return true;
+
+    if (!init(false, true))
 	return false;
     Aspell aspell(m_config);
     string reason;

@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: spell_w.cpp,v 1.6 2006-11-21 08:47:51 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: spell_w.cpp,v 1.6.2.1 2006-11-27 10:00:53 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -48,7 +48,10 @@ void SpellW::init()
     /*1*/expTypeCMB->insertItem(tr("Regexp"));
     /*2*/expTypeCMB->insertItem(tr("Stem expansion"));
 #ifdef RCL_USE_ASPELL
-    /*3*/expTypeCMB->insertItem(tr("Spelling/Phonetic"));
+    bool noaspell = false;
+    rclconfig->getConfParam("noaspell", &noaspell);
+    if (!noaspell)
+	/*3*/expTypeCMB->insertItem(tr("Spelling/Phonetic"));
 #endif
 
     int typ = prefs.termMatchType;

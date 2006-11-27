@@ -16,7 +16,7 @@
  */
 #ifndef _INDEXER_H_INCLUDED_
 #define _INDEXER_H_INCLUDED_
-/* @(#$Id: indexer.h,v 1.21 2006-10-24 14:28:38 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: indexer.h,v 1.21.2.1 2006-11-27 10:00:53 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 #include <list>
@@ -144,7 +144,7 @@ class DbIndexer : public FsTreeWalkerCB {
     string       m_tmpdir;
     DbIxStatusUpdater *m_updater;
 
-    bool init(bool rst = false);
+    bool init(bool rst = false, bool rdonly = false);
 };
 
 /** Helper methods in recollindex.cpp for initial checks/setup to index 

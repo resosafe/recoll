@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: smallut.cpp,v 1.18 2006-11-10 13:30:03 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: smallut.cpp,v 1.18.2.1 2006-11-27 10:00:53 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -313,7 +313,7 @@ bool stringToBool(const string &s)
 	int val = atoi(s.c_str());
 	return val ? true : false;
     }
-    if (strchr("yYoOtT", s[0]))
+    if (s.find_first_of("yYtT") == 0)
 	return true;
     return false;
 }

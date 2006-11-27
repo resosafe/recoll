@@ -1,6 +1,6 @@
 #ifndef TEST_RCLASPELL
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclaspell.cpp,v 1.5.2.1 2006-11-27 09:12:39 dockes Exp $ (C) 2006 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclaspell.cpp,v 1.5.2.2 2006-11-27 10:00:53 dockes Exp $ (C) 2006 J.F.Dockes";
 #endif
 #ifdef HAVE_CONFIG_H
 #include "autoconfig.h"
@@ -101,11 +101,6 @@ bool Aspell::init(string &reason)
 	if (!lang.compare("C"))
 	    lang = "en";
 	m_lang = lang.substr(0, lang.find_first_of("_"));
-    } else {
-	if (!m_lang.compare("disable")) {
-	    reason = "Aspell disabled in recoll configuration file";
-	    return false;
-	}
     }
 
     m_data = new AspellData;

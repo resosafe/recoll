@@ -1,6 +1,6 @@
 #ifndef TEST_RCLASPELL
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclaspell.cpp,v 1.5 2006-11-21 13:05:16 dockes Exp $ (C) 2006 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclaspell.cpp,v 1.5.2.1 2006-11-27 09:12:39 dockes Exp $ (C) 2006 J.F.Dockes";
 #endif
 #ifdef HAVE_CONFIG_H
 #include "autoconfig.h"
@@ -192,6 +192,11 @@ string Aspell::dicPath()
 }
 
 
+// The data source for the create dictionary aspell command. We walk
+// the term list, filtering out things that are probably not words.
+// Note that the manual for the current version (0.60) of aspell
+// states that utf-8 is not well supported, so that we should maybe
+// also filter all 8bit chars.
 class AspExecPv : public ExecCmdProvide {
 public:
     string *m_input; // pointer to string used as input buffer to command
@@ -203,12 +208,13 @@ public:
     void newData() {
 	while (m_db.termWalkNext(m_tit, *m_input)) {
 	    // Filter out terms beginning with upper case (special stuff) and 
-	    // containing numbers
-	    if (m_input->empty())
+	    // containing numbers, or too long. Note that the 50 limit is a
+	    // byte count, so not so high if there are multibyte chars.
+	    if (m_input->empty() || m_input->length() > 50)
 		continue;
 	    if ('A' <= m_input->at(0) && m_input->at(0) <= 'Z')
 		continue;
-	    if (m_input->find_first_of("0123456789+-._@") != string::npos)
+	    if (m_input->find_first_of("0123456789.@+-,#_") != string::npos)
 		continue;
 	    // Got a non-empty sort-of appropriate term, let's send it to
 	    // aspell
@@ -231,6 +237,7 @@ bool Aspell::buildDict(Rcl::Db &db, string &reason)
     ExecCmd aspell;
     list<string> args;
     args.push_back(string("--lang=")+ m_lang);
+    args.push_back("--encoding=utf-8");
     args.push_back("create");
     args.push_back("master");
     args.push_back(dicPath());

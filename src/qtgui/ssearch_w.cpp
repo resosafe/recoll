@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: ssearch_w.cpp,v 1.11 2006-11-13 08:58:47 dockes Exp $ (C) 2006 J.F.Dockes";
+static char rcsid[] = "@(#$Id: ssearch_w.cpp,v 1.11.2.1 2006-11-27 09:18:00 dockes Exp $ (C) 2006 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -69,34 +69,29 @@ void SSearch::searchTextChanged( const QString & text )
 
 void SSearch::startSimpleSearch()
 {
-    LOGDEB(("SSearch::startSimpleSearch\n"));
-
     if (queryText->currentText().length() == 0)
 	return;
     RefCntr<Rcl::SearchData> sdata(new Rcl::SearchData(Rcl::SCLT_AND));
-    QCString u8 = queryText->currentText().utf8();
+    string u8 = (const char *)queryText->currentText().utf8();
+
+    LOGDEB(("SSearch::startSimpleSearch: [%s]\n", u8.c_str()));
+
     switch (searchTypCMB->currentItem()) {
     case 0:
     default: 
-	{
-	    QString comp = queryText->currentText();
-	    // If this is an or and we're set for autophrase and there are
-	    // no quotes in the query, add a phrase search
-	    if (prefs.ssearchAutoPhrase && comp.find('"', 0) == -1) {
-		comp += QString::fromAscii(" \"") + comp + 
-		    QString::fromAscii("\"");
-		u8 = comp.utf8();
-	    }
-	    sdata->addClause(new Rcl::SearchDataClauseSimple(Rcl::SCLT_OR, 
-							    (const char *)u8));
+	// If this is an or and we're set for autophrase and there are
+	// no quotes in the query, add a phrase search
+	if (prefs.ssearchAutoPhrase && 
+	    u8.find_first_of("\"") == string::npos) {
+	    u8 += string(" \"") + u8 + "\"";
 	}
+	sdata->addClause(new Rcl::SearchDataClauseSimple(Rcl::SCLT_OR, u8));
 	break;
     case 1:
-	sdata->addClause(new Rcl::SearchDataClauseSimple(Rcl::SCLT_AND, 
-							(const char *)u8));
+	sdata->addClause(new Rcl::SearchDataClauseSimple(Rcl::SCLT_AND, u8));
 	break;
     case 2:
-	sdata->addClause(new Rcl::SearchDataClauseFilename((const char *)u8));
+	sdata->addClause(new Rcl::SearchDataClauseFilename(u8));
 	break;
     }
 

@@ -2,11 +2,11 @@
 # Date created:        5 December 2005
 # Whom:                J.F. Dockes <jean-francois.dockes@wanadoo.fr>
 #
-# $FreeBSD: ports/deskutils/recoll/Makefile,v 1.8 2006/07/26 08:14:38 lbr Exp $
+# $FreeBSD: ports/deskutils/recoll/Makefile,v 1.10 2006/11/21 19:45:14 miwi Exp $
 #
 
 PORTNAME=	recoll
-PORTVERSION=	1.5.2
+PORTVERSION=	1.6.1
 CATEGORIES=	deskutils
 MASTER_SITES=	http://www.lesbonscomptes.com/recoll/
 

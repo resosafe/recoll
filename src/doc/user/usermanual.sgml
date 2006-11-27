@@ -24,7 +24,7 @@
       Dockes</holder>
     </copyright>
 
-    <releaseinfo>$Id: usermanual.sgml,v 1.27 2006-11-21 09:18:21 dockes Exp $</releaseinfo>
+    <releaseinfo>$Id: usermanual.sgml,v 1.27.2.1 2006-11-27 15:15:32 dockes Exp $</releaseinfo>
 
     <abstract>
       <para>This document introduces full text search notions
@@ -1049,10 +1049,16 @@ RECOLL_CONFDIR=$recollconf $recolldata/examples/rclmon.sh stop
 %A %K
         </programlisting>
         You may, for example, try the following for a more web-like
-        experience (but the document title will not act as a link):
-        <programlisting>&lt;u>&lt;b>&lt;font size=+1 color=#1111cf>%T&lt;/font>&lt;/b>&lt;/u>&lt;br>
+        experience:
+        <programlisting>&lt;u>&lt;b>&lt;a href="P%N"&gt;%T&lt;/a&gt;&lt;/b>&lt;/u>&lt;br>
 %A&lt;font color=#008000>%U - %S&lt;/font> - %L
         </programlisting>
+	The format of the Preview and Edit links is 
+	<literal>&lt;a href="P<replaceable>docnum</replaceable>"&gt;</literal>
+	and 
+        <literal>&lt;a href="E<replaceable>docnum</replaceable>"&gt;</literal>
+        where <replaceable>docnum</replaceable> is what %N would
+        print. This makes the title a preview link in the above format.
 	</para>
 	</listitem>
 

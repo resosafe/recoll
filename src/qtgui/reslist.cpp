@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: reslist.cpp,v 1.12 2006-11-18 12:31:16 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: reslist.cpp,v 1.12.2.1 2006-11-27 09:16:33 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 #include <time.h>
@@ -352,7 +352,7 @@ void ResList::resultPageNext()
 
 	// Result number
 	char numbuf[20];
-	sprintf(numbuf, "%.2d", m_winfirst+1+i);
+	sprintf(numbuf, "%d", m_winfirst+1+i);
 
 	// Document date: either doc or file modification time
 	char datebuf[100];
@@ -431,7 +431,7 @@ void ResList::resultPageNext()
 	LOGDEB2(("Chunk: [%s]\n", result.c_str()));
 	QString str = QString::fromUtf8(result.c_str(), result.length());
 	append(str);
-	setCursorPosition(0,0);
+	//	setCursorPosition(0,0);
 
         m_pageParaToReldocnums[paragraphs()-1] = i;
 	m_curDocs.push_back(doc);

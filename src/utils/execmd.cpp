@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: execmd.cpp,v 1.19 2006-10-11 16:09:45 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: execmd.cpp,v 1.19.2.1 2006-11-27 09:03:36 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -126,6 +126,9 @@ int ExecCmd::doexec(const string &cmd, const list<string>& args,
     }
 
     if (e.pid) {
+	// Ignore SIGPIPE in here.
+	void (*osig)(int);
+	osig = signal(SIGPIPE, SIG_IGN);
 	// Father process
 	if (input) {
 	    close(e.pipein[0]);
@@ -219,6 +222,7 @@ int ExecCmd::doexec(const string &cmd, const list<string>& args,
 
     out:
 	int status = -1;
+	signal(SIGPIPE, osig);
 	if (!m_cancelRequest) {
 	    (void)waitpid(e.pid, &status, 0);
 	    e.pid = -1;

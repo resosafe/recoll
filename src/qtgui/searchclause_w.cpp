@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: searchclause_w.cpp,v 1.2 2006-11-14 17:41:12 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: searchclause_w.cpp,v 1.2.2.1 2006-11-27 16:15:42 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -40,7 +40,7 @@ SearchClauseW::SearchClauseW(QWidget* parent, const char* name, WFlags fl)
 	setName("SearchClauseW");
     searchClauseLayout = new QVBoxLayout(this);
 
-    hLayout = new QHBoxLayout(0, 0, 6, "hLayout"); 
+    hLayout = new QHBoxLayout(0, 0, 3, "hLayout"); 
 
     sTpCMB = new QComboBox(FALSE, this, "sTpCMB");
     hLayout->addWidget(sTpCMB);
@@ -56,8 +56,7 @@ SearchClauseW::SearchClauseW(QWidget* parent, const char* name, WFlags fl)
     resize(QSize(0, 0).expandedTo(minimumSizeHint()));
     clearWState(WState_Polished);
 
-    connect(sTpCMB, SIGNAL(activated(int)),
-	    this, SLOT(tpChange(int)));
+    connect(sTpCMB, SIGNAL(activated(int)), this, SLOT(tpChange(int)));
 }
 
 /*

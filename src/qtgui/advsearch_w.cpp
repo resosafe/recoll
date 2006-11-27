@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: advsearch_w.cpp,v 1.12 2006-11-17 15:26:40 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: advsearch_w.cpp,v 1.12.2.1 2006-11-27 16:15:41 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -49,7 +49,7 @@ using std::string;
 
 extern RclConfig *rclconfig;
 
-static const int initclausetypes[] = {1, 3, 0, 0, 2, 5};
+static const int initclausetypes[] = {1, 3, 0, 2, 5};
 static const unsigned int iclausescnt = sizeof(initclausetypes) / sizeof(int);
 
 void AdvSearch::init()
@@ -176,6 +176,10 @@ void AdvSearch::addClause()
 {
     addClause(0);
 }
+
+#define HORADJ 50
+#define VERTADJ 30
+
 void AdvSearch::addClause(int tp)
 {
     SearchClauseW *w = new SearchClauseW(this);
@@ -192,7 +196,7 @@ void AdvSearch::addClause(int tp)
     }
     // Have to adjust the size else we lose the bottom buttons! Why?
     QSize sz = AdvSearchBaseLayout->sizeHint();
-    resize(QSize(sz.width()+40, sz.height()+80));
+    resize(QSize(sz.width()+HORADJ, sz.height()+VERTADJ));
 }
 
 void AdvSearch::delClause()
@@ -207,14 +211,14 @@ void AdvSearch::delClause()
 	delClausePB->setEnabled(false);
     }
     QSize sz = AdvSearchBaseLayout->sizeHint();
-    resize(QSize(sz.width()+40, sz.height()+80));
+    resize(QSize(sz.width()+HORADJ, sz.height()+VERTADJ));
 }
 
 void AdvSearch::polish()
 {
-    QSize sz = AdvSearchBaseLayout->sizeHint();
-    resize(QSize(sz.width()+40, sz.height()+80));
     AdvSearchBase::polish();
+    QSize sz = sizeHint();
+    resize(QSize(sz.width()+HORADJ+10, sz.height()+VERTADJ-20));
 }
 
 // Move selected file types from the ignored to the searched box
@@ -255,6 +259,7 @@ void AdvSearch::restrictFtCB_toggled(bool on)
     delAFiltypPB->setEnabled(on);
     addAFiltypPB->setEnabled(on);
     noFiltypsLB->setEnabled(on);
+    saveFileTypesPB->setEnabled(on);
 }
 
 using namespace Rcl;

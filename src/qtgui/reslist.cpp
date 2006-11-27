@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: reslist.cpp,v 1.12.2.1 2006-11-27 09:16:33 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: reslist.cpp,v 1.12.2.2 2006-11-27 16:15:41 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 #include <time.h>
@@ -352,7 +352,8 @@ void ResList::resultPageNext()
 
 	// Result number
 	char numbuf[20];
-	sprintf(numbuf, "%d", m_winfirst+1+i);
+	int docnumforlinks = m_winfirst+1+i;
+	sprintf(numbuf, "%d", docnumforlinks);
 
 	// Document date: either doc or file modification time
 	char datebuf[100];
@@ -387,12 +388,12 @@ void ResList::resultPageNext()
 	string linksbuf;
 	char vlbuf[100];
 	if (canIntern(doc.mimetype, rclconfig)) { 
-	    sprintf(vlbuf, "\"P%d\"", m_winfirst+i);
+	    sprintf(vlbuf, "\"P%d\"", docnumforlinks);
 	    linksbuf += string("<a href=") + vlbuf + ">" + "Preview" + "</a>" 
 		+ "&nbsp;&nbsp;";
 	}
 	if (!rclconfig->getMimeViewerDef(doc.mimetype).empty()) {
-	    sprintf(vlbuf, "E%d", m_winfirst+i);
+	    sprintf(vlbuf, "E%d", docnumforlinks);
 	    linksbuf += string("<a href=") + vlbuf + ">" + "Edit" + "</a>";
 	}
 
@@ -535,7 +536,7 @@ void ResList::doubleClicked(int, int)
 void ResList::linkWasClicked(const QString &s, int clkmod)
 {
     LOGDEB(("ResList::linkClicked: [%s]\n", s.ascii()));
-    int i = atoi(s.ascii()+1);
+    int i = atoi(s.ascii()+1) -1;
     int what = s.ascii()[0];
     switch (what) {
     case 'H': 

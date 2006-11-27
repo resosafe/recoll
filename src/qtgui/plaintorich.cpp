@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: plaintorich.cpp,v 1.17.2.1 2006-11-27 09:16:05 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: plaintorich.cpp,v 1.17.2.2 2006-11-27 19:04:16 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -62,6 +62,8 @@ class myTextSplitCB : public TextSplitCB {
     // Out: first query term found in text
     string firstTerm;
     int    firstTermOcc;
+    int m_firstTermPos;
+    int m_firstTermBPos;
 
     // Out: begin and end byte positions of query terms/groups in text
     vector<pair<int, int> > tboffs;  
@@ -96,6 +98,7 @@ class myTextSplitCB : public TextSplitCB {
 	    if (firstTerm.empty()) {
 		firstTerm = term;
 		m_firstTermPos = pos;
+		m_firstTermBPos = bts;
 	    }
 	}
 	
@@ -117,7 +120,6 @@ private:
     virtual bool matchGroup(const vector<string>& terms, int dist);
 
     int m_wcount;
-    int m_firstTermPos;
 
     // In: user query terms
     set<string>    m_terms; 
@@ -239,6 +241,20 @@ bool myTextSplitCB::matchGroup(const vector<string>& terms, int window)
 
     LOGDEB0(("myTextSplitCB::matchGroup: MATCH [%d,%d]\n", sta, sto)); 
 
+    // Translate the position window into a byte offset window
+    int bs = 0;
+    map<int, pair<int, int> >::iterator i1 =  m_gpostobytes.find(sta);
+    map<int, pair<int, int> >::iterator i2 =  m_gpostobytes.find(sto);
+    if (i1 != m_gpostobytes.end() && i2 != m_gpostobytes.end()) {
+	LOGDEB1(("myTextSplitCB::matchGroup: pushing %d %d\n",
+		 i1->second.first, i2->second.second));
+	tboffs.push_back(pair<int, int>(i1->second.first, i2->second.second));
+	bs = i1->second.first;
+    } else {
+	LOGDEB(("myTextSplitCB::matchGroup: no bpos found for %d or %d\n", 
+		sta, sto));
+    }
+
     if (firstTerm.empty() || m_firstTermPos > sta) {
 	// firsTerm is used to try an position the preview window over
 	// the match. As it's difficult to divine byte/word positions
@@ -252,18 +268,8 @@ bool myTextSplitCB::matchGroup(const vector<string>& terms, int window)
 	    firstTerm = it->second;
 	LOGDEB(("myTextSplitCB:: best group term %s, firstTermOcc %d\n",
 		firstTerm.c_str(), firstTermOcc));
-    }
-
-    // Translate the position window into a byte offset window
-    map<int, pair<int, int> >::iterator i1 =  m_gpostobytes.find(sta);
-    map<int, pair<int, int> >::iterator i2 =  m_gpostobytes.find(sto);
-    if (i1 != m_gpostobytes.end() && i2 != m_gpostobytes.end()) {
-	LOGDEB1(("myTextSplitCB::matchGroup: pushing %d %d\n",
-		 i1->second.first, i2->second.second));
-	tboffs.push_back(pair<int, int>(i1->second.first, i2->second.second));
-    } else {
-	LOGDEB(("myTextSplitCB::matchGroup: no bpos found for %d or %d\n", 
-		sta, sto));
+	m_firstTermPos = sta;
+	m_firstTermBPos = bs;
     }
 
     return true;
@@ -294,6 +300,12 @@ bool myTextSplitCB::matchGroups()
     return true;
 }
 
+const char *firstTermAnchorName = "FIRSTTERM";
+
+#ifdef QT_SCROLL_TO_ANCHOR_BUG
+const char *firstTermBeacon = "\xe2\xa0\x91\xe2\x96\x9f\x20\x01\x9a";
+#endif
+
 // Fix result text for display inside the gui text window.
 //
 // To compute the term character positions in the output text, we used
@@ -305,9 +317,7 @@ bool myTextSplitCB::matchGroups()
 // editor's find() function to position on it
 bool plaintorich(const string& in, string& out, 
 		 RefCntr<Rcl::SearchData> sdata,
-		 string *firstTerm, 
-		 int *firstTermOcc,
-		 bool noHeader)
+		 bool noHeader, bool fft)
 {
     Chrono chron;
     out.erase();
@@ -343,11 +353,6 @@ bool plaintorich(const string& in, string& out,
 
     cb.matchGroups();
 
-    if (firstTerm)
-	*firstTerm = cb.firstTerm;
-    if (firstTermOcc)
-	*firstTermOcc = cb.firstTermOcc;
-
     // Rich text output
     if (noHeader)
 	out = "";
@@ -381,6 +386,15 @@ bool plaintorich(const string& in, string& out,
 	// If we still have terms positions, check (byte) position
 	if (tPosIt != tboffsend) {
 	    int ibyteidx = chariter.getBpos();
+
+	    if (fft && ibyteidx == cb.m_firstTermBPos) {
+		out += string("<a name=\"") + firstTermAnchorName + "\"> "
+#ifdef QT_SCROLL_TO_ANCHOR_BUG
+		    + "<font color=\"white\"> " + firstTermBeacon + " </font> "
+#endif
+		    + "</a>";
+	    }
+
 	    if (ibyteidx == tPosIt->first) {
 		out += "<termtag>";
 	    } else if (ibyteidx == tPosIt->second) {

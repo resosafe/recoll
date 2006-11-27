@@ -16,7 +16,7 @@
  */
 #ifndef _PLAINTORICH_H_INCLUDED_
 #define _PLAINTORICH_H_INCLUDED_
-/* @(#$Id: plaintorich.h,v 1.10 2006-11-18 12:31:16 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: plaintorich.h,v 1.10.2.1 2006-11-27 19:04:16 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 
@@ -38,7 +38,16 @@
  */
 extern bool plaintorich(const string &in, string &out,
 			RefCntr<Rcl::SearchData> sdata,
-			string* firstTerm, int *frsttocc, 
-			bool noHeader = false);
+			bool noHeader = false,
+			bool fft = false);
+
+extern const char *firstTermAnchorName;
+
+#define QT_SCROLL_TO_ANCHOR_BUG
+#ifdef QT_SCROLL_TO_ANCHOR_BUG
+// For some reason, can't get scrollToAnchor() to work. We use a string made
+// of a few rare utf8 chars as a beacon for the match area.
+extern const char *firstTermBeacon;
+#endif
 
 #endif /* _PLAINTORICH_H_INCLUDED_ */

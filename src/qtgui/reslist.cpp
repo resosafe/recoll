@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: reslist.cpp,v 1.12.2.2 2006-11-27 16:15:41 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: reslist.cpp,v 1.12.2.3 2006-11-27 19:04:16 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 #include <time.h>
@@ -382,7 +382,7 @@ void ResList::resultPageNext()
 
 	// Abstract
 	string abst;
-	plaintorich(doc.abstract, abst, m_searchData, 0, 0, true);
+	plaintorich(doc.abstract, abst, m_searchData, true);
 
 	// Links;
 	string linksbuf;

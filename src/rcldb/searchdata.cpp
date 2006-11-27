@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: searchdata.cpp,v 1.5 2006-11-18 12:30:14 dockes Exp $ (C) 2006 J.F.Dockes";
+static char rcsid[] = "@(#$Id: searchdata.cpp,v 1.5.2.1 2006-11-27 09:14:35 dockes Exp $ (C) 2006 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -182,7 +182,8 @@ void StringToXapianQ::maybeStemExp(bool nostemexp,
 				   const string& term, 
 				   list<string>& exp)
 {
-    LOGDEB2(("maybeStemExp: [%s]\n", term.c_str()));
+    LOGDEB2(("maybeStemExp: term [%s] stemlang [%s] nostemexp %d\n", 
+	    term.c_str(), m_stemlang.c_str(), nostemexp));
     if (term.empty()) {
 	exp.clear();
 	return;
@@ -191,7 +192,10 @@ void StringToXapianQ::maybeStemExp(bool nostemexp,
     string term1;
     dumb_string(term, term1);
 
-    if (!m_stemlang.empty() && !nostemexp) {
+    if (m_stemlang.empty())
+	nostemexp = true;
+
+    if (!nostemexp) {
 	// Check if the first letter is a majuscule in which
 	// case we do not want to do stem expansion. Note that
 	// the test is convoluted and possibly problematic
@@ -267,6 +271,7 @@ bool StringToXapianQ::translate(const string &iq,
 				int slack, bool useNear)
 {
     string qstring = iq;
+    LOGDEB2(("StringToXapianQ:: query string: [%s]\n", iq.c_str()));
     ermsg.erase();
     m_terms.clear();
     m_groups.clear();

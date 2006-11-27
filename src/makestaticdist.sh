@@ -37,7 +37,8 @@ strip index/recollindex qtgui/recoll
 
 files="COPYING README INSTALL VERSION Makefile recoll.desktop recollinstall
 filters sampleconf doc/user doc/man
-index/recollindex qtgui/recoll qtgui/i18n/*.qm qtgui/mtpics/*.png recoll.png"
+index/recollindex index/rclmon.sh qtgui/recoll qtgui/i18n/*.qm 
+qtgui/mtpics/*.png recoll.png"
 
 $TAR chf - $files  | (cd $topdir; $TAR xf -)
 

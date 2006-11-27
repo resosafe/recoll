@@ -6,4 +6,4 @@ Exec=recoll
 Icon=recoll
 Type=Application
 Terminal=false
-Categories=Qt;Utility;
+Categories=Utility;Filesystem;Database;

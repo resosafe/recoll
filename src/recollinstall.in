@@ -57,13 +57,14 @@ for d in \
     ${datadir}/recoll/examples \
     ${datadir}/recoll/filters \
     ${datadir}/recoll/images \
-    ${datadir}/recoll/translations
+    ${datadir}/recoll/translations \
+    ${datadir}/icons/hicolor/48x48/apps
 do
     test -d $d || mkdir -p $d || exit 1
 done
 
 ${INSTALL} -m 0444 recoll.desktop ${datadir}/applications
-${INSTALL} -m 0444 recoll.png ${datadir}/icons
+${INSTALL} -m 0444 recoll.png ${datadir}/icons/hicolor/48x48/apps
 ${INSTALL} -m 0444 doc/user/usermanual.html doc/user/docbook.css \
 			${datadir}/recoll/doc 
 
@@ -75,13 +76,13 @@ ${STRIP} ${bindir}/recoll ${bindir}/recollindex
 
 ${INSTALL} -m 0755 filters/rcl* ${datadir}/recoll/filters/ || exit 1
 
-${INSTALL} -m 0755 index/rclmon.sh ${datadir}/recoll/examples/ || exit 1
-
 # Clean up possible old filters in examples
 rm -f ${datadir}/recoll/examples/rcl*
-
 ${INSTALL} -m 0444 sampleconf/recoll.conf sampleconf/mimeconf \
 	           sampleconf/mimemap ${datadir}/recoll/examples/ || exit 1
+${INSTALL} -m 0755 index/rclmon.sh ${datadir}/recoll/examples/ || exit 1
+
 
 ${INSTALL} -m 0444 ${QTGUI}/mtpics/*.png ${datadir}/recoll/images || exit 1
+
 ${INSTALL} -m 0444 ${I18N}/recoll*.qm ${datadir}/recoll/translations || exit 1

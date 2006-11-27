@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: plaintorich.cpp,v 1.17 2006-11-18 12:56:16 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: plaintorich.cpp,v 1.17.2.1 2006-11-27 09:16:05 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -269,14 +269,17 @@ bool myTextSplitCB::matchGroup(const vector<string>& terms, int window)
     return true;
 }
 
-/** Sort integer pairs by their first value */
+/** Sort integer pairs by increasing first value and decreasing width */
 class PairIntCmpFirst {
 public:
     bool operator()(pair<int,int> a, pair<int, int>b) {
-	return a.first < b.first;
+	if (a.first != b.first)
+	    return a.first < b.first;
+	return a.second > b.second;
     }
 };
 
+// Do the phrase match thing, then merge the highlight lists
 bool myTextSplitCB::matchGroups()
 {
     vector<vector<string> >::const_iterator vit = m_groups.begin();
@@ -285,6 +288,8 @@ bool myTextSplitCB::matchGroups()
 	matchGroup(*vit, *sit + (*vit).size());
     }
 
+    // Sort by start and end offsets. The merging of overlapping entries
+    // will be handled during output.
     std::sort(tboffs.begin(), tboffs.end(), PairIntCmpFirst());
     return true;
 }
@@ -379,9 +384,12 @@ bool plaintorich(const string& in, string& out,
 	    if (ibyteidx == tPosIt->first) {
 		out += "<termtag>";
 	    } else if (ibyteidx == tPosIt->second) {
-		if (tPosIt != cb.tboffs.end())
-		    tPosIt++;
+		// Output end tag, then skip all highlight areas that
+		// would overlap this one
 		out += "</termtag>";
+		int crend = tPosIt->second;
+		while (tPosIt != cb.tboffs.end() && tPosIt->first < crend)
+		    tPosIt++;
 	    }
 	}
 	switch(*chariter) {
@@ -414,7 +422,7 @@ bool plaintorich(const string& in, string& out,
     }
 #if 0
     {
-	FILE *fp = fopen("/tmp/debugplaintorich", "w");
+	FILE *fp = fopen("/tmp/debugplaintorich", "a");
 	fprintf(fp, "%s\n", out.c_str());
 	fclose(fp);
     }

@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: searchclause_w.cpp,v 1.2.2.1 2006-11-27 16:15:42 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: searchclause_w.cpp,v 1.2.2.2 2006-11-28 09:34:35 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -114,7 +114,6 @@ SearchClauseW::getClause()
 				(const char *)wordsLE->text().utf8(),
 					proxSlackSB->value());
     case 4:
-	fprintf(stderr, "NEAR\n");
 	return new SearchDataClauseDist(SCLT_NEAR,
 				(const char *)wordsLE->text().utf8(),
 					proxSlackSB->value());

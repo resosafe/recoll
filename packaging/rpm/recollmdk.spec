@@ -1,5 +1,5 @@
 %define name recoll
-%define version 1.6.0
+%define version 1.6.1
 %define release  %mkrel 1
 
 Name:           %{name}
@@ -51,7 +51,7 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-,root,root,-)
 %{_bindir}/*
 %{_datadir}/applications/recoll.desktop
-%{_datadir}/icons/recoll.png
+%{_datadir}/icons/hicolor/48x48/apps/recoll.png
 %{_datadir}/%{name}
 %{_mandir}/man1/recoll*
 %{_mandir}/man5/recoll*
@@ -60,6 +60,8 @@ rm -rf $RPM_BUILD_ROOT
 # ---------------------------------------------------------------------------
 
 %changelog
+* Tue Nov 28 2006 Jean-Francois Dockes <jean-francois.dockes@wanadoo.fr> 1.6.1-1
+- Update to release 1.6.1
 * Mon Nov 20 2006 Jean-Francois Dockes <jean-francois.dockes@wanadoo.fr> 1.5.11-1
 - Update to release 1.5.11
 * Mon Oct 2 2006 Jean-Francois Dockes <jean-francois.dockes@wanadoo.fr> 1.5.2-1

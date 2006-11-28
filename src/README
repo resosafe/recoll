@@ -396,7 +396,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
    Starting and stopping the daemon could be performed, for example, as part
    of the user session script. For example, my out of fashion xdm-based
-   session has an .xsession script with the following lines at the end:
+   session has a .xsession script with the following lines at the end:
 
  recollconf=$HOME/.recoll-home
  recolldata=/usr/local/share/recoll
@@ -411,6 +411,15 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    stopped, then the session ends (at script exit). This should be adjusted
    for your flavour of session management, and of course, there are other
    possibilities.
+
+   Under KDE, you can place a small script to start recollindex -m under
+   $HOME/.kde/Autostart. This will be executed when the session begins, and
+   the process seems to get a SIGHUP signal and be terminated when the
+   session ends.
+
+   There is a similar mechanism under Gnome (find the session control tool in
+   the menus and use the "Startup programs" tab). I could find an easy way to
+   stop recollindex at the end of the session though.
 
    By default, the indexing daemon will write its messages to a file inside
    the configuration directory (this is controlled by the daemlogfilename and
@@ -852,12 +861,16 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
  %A %K
        
 
-       You may, for example, try the following for a more web-like experience
-       (but the document title will not act as a link):
+       You may, for example, try the following for a more web-like
+       experience:
 
- <u><b><font size=+1 color=#1111cf>%T</font></b></u><br>
+ <u><b><a href="P%N">%T</a></b></u><br>
  %A<font color=#008000>%U - %S</font> - %L
        
+
+       The format of the Preview and Edit links is <a href="Pdocnum"> and <a
+       href="Edocnum"> where docnum is what %N would print. This makes the
+       title a preview link in the above format.
 
      * HTML help browser: this will let you chose your preferred browser
        which will be started from the Help menu to read the user manual. You

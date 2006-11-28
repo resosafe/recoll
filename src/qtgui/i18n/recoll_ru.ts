@@ -224,6 +224,10 @@ Click Cancel if you want to edit the configuration file before indexation starts
         <source>Cancel</source>
         <translation>Отмена</translation>
     </message>
+    <message>
+        <source>Close Tab</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>PreviewBase</name>

@@ -24,7 +24,7 @@
       Dockes</holder>
     </copyright>
 
-    <releaseinfo>$Id: usermanual.sgml,v 1.27.2.1 2006-11-27 15:15:32 dockes Exp $</releaseinfo>
+    <releaseinfo>$Id: usermanual.sgml,v 1.27.2.2 2006-11-28 07:12:27 dockes Exp $</releaseinfo>
 
     <abstract>
       <para>This document introduces full text search notions
@@ -441,8 +441,9 @@ recoll
 
       <para>Starting and stopping the daemon could be performed, for
       example, as part of the user session script. For example, my
-      out of fashion xdm-based session has an .xsession script with
-      the following lines at the end:</para> 
+      out of fashion xdm-based session has a
+      <filename>.xsession</filename> script with the following lines 
+      at the end:</para> 
 
       <programlisting>recollconf=$HOME/.recoll-home
 recolldata=/usr/local/share/recoll
@@ -458,6 +459,17 @@ RECOLL_CONFDIR=$recollconf $recolldata/examples/rclmon.sh stop
       indexing daemon is stopped, then the session ends (at script
       exit). This should be adjusted for your flavour of session
       management, and of course, there are other possibilities.</para>
+
+      <para>Under KDE, you can place a small script to start
+      <command>recollindex -m</command> under
+      <filename>$HOME/.kde/Autostart</filename>. This will be executed
+      when the session begins, and the process seems to get a SIGHUP
+      signal and be terminated when the session ends.</para>
+      
+      <para>There is a similar mechanism under Gnome (find the session
+      control tool in the menus and use the "Startup programs" tab). I
+      could find an easy way to stop <command>recollindex</command> at
+      the end of the session though.</para>
 
       <para>By default, the indexing daemon will write its messages to
       a file inside the configuration directory (this is controlled by

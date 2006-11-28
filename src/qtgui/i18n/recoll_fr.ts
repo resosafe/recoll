@@ -223,6 +223,10 @@ Click Cancel if you want to edit the configuration file before indexation starts
         <source>Cancel</source>
         <translation>Annuler</translation>
     </message>
+    <message>
+        <source>Close Tab</source>
+        <translation>Fermer l&apos;onglet</translation>
+    </message>
 </context>
 <context>
     <name>PreviewBase</name>

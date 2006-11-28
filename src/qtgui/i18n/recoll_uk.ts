@@ -221,6 +221,10 @@ Click Cancel if you want to edit the configuration file before indexation starts
         <source>Loading preview text into editor</source>
         <translation>Завантажую текст перегляду в редактор</translation>
     </message>
+    <message>
+        <source>Close Tab</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>PreviewBase</name>

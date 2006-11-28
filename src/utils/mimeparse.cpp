@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: mimeparse.cpp,v 1.16 2006-11-09 08:59:40 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: mimeparse.cpp,v 1.16.2.1 2006-11-28 12:45:21 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -723,8 +723,27 @@ time_t rfc2822DateToUxTime(const string& dt)
     DATEDEB((stderr, "Tz: [%s] -> %d\n", it->c_str(), zonesecs));
  nozone:
 
+    // Compute the UTC Unix time value
+#ifndef sun
     time_t tim = timegm(&tm);
+#else
+    // No timegm on Sun. Use mktime, then correct for local timezone
+    time_t tim = mktime(&tm);
+    // altzone and timezone hold the difference in seconds between UTC
+    // and local. They are negative for places east of greenwich
+    // 
+    // mktime takes our buffer to be local time, so it adds timezone
+    // to the conversion result (if timezone is < 0 it's currently
+    // earlier in greenwhich). 
+    //
+    // We have to substract it back (hey! hopefully! maybe we have to
+    // add it). Who can really know?
+    tim -= timezone;
+#endif
+
+    // And add in the correction from the email's Tz
     tim += zonesecs;
+
     DATEDEB((stderr, "Date: %s  uxtime %ld \n", ctime(&tim), tim));
     return tim;
 }

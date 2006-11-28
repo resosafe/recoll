@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: reslist.cpp,v 1.12.2.4 2006-11-28 07:02:02 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: reslist.cpp,v 1.12.2.5 2006-11-28 12:45:21 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 #include <time.h>
@@ -362,7 +362,11 @@ void ResList::resultPageNext()
 	    time_t mtime = doc.dmtime.empty() ?
 		atol(doc.fmtime.c_str()) : atol(doc.dmtime.c_str());
 	    struct tm *tm = localtime(&mtime);
+#ifndef sun
 	    strftime(datebuf, 99, "&nbsp;%Y-%m-%d&nbsp;%H:%M:%S&nbsp;%z", tm);
+#else
+	    strftime(datebuf, 99, "&nbsp;%Y-%m-%d&nbsp;%H:%M:%S&nbsp;%Z", tm);
+#endif
 	}
 
 	// Size information. We print both doc and file if they differ a lot

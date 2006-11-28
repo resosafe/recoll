@@ -7,4 +7,4 @@ ALL_CXXFLAGS = $(CXXFLAGS) $(COMMONCXXFLAGS) $(LOCALCXXFLAGS) \
 CC = gcc
 CXX = g++
 
-LIBSYS = -lpthread -lnsl -lsocket
+LIBSYS = -lpthread -lnsl -lsocket -ldl

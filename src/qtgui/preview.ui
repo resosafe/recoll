@@ -8,8 +8,8 @@
         <rect>
             <x>0</x>
             <y>0</y>
-            <width>751</width>
-            <height>727</height>
+            <width>640</width>
+            <height>480</height>
         </rect>
     </property>
     <property name="sizePolicy">
@@ -20,18 +20,15 @@
             <verstretch>0</verstretch>
         </sizepolicy>
     </property>
-    <property name="minimumSize">
-        <size>
-            <width>130</width>
-            <height>30</height>
-        </size>
-    </property>
     <property name="caption">
         <string>Preview</string>
     </property>
     <vbox>
         <property name="name">
             <cstring>unnamed</cstring>
+        </property>
+        <property name="margin">
+            <number>4</number>
         </property>
         <widget class="QLayoutWidget">
             <property name="name">
@@ -55,6 +52,9 @@
                         <vbox>
                             <property name="name">
                                 <cstring>unnamed</cstring>
+                            </property>
+                            <property name="margin">
+                                <number>0</number>
                             </property>
                             <widget class="QTextEdit">
                                 <property name="name">

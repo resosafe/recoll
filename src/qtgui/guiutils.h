@@ -17,7 +17,7 @@
 #ifndef _GUIUTILS_H_INCLUDED_
 #define _GUIUTILS_H_INCLUDED_
 /* 
- * @(#$Id: guiutils.h,v 1.17 2006-11-21 08:47:51 dockes Exp $  (C) 2005 Jean-Francois Dockes 
+ * @(#$Id: guiutils.h,v 1.17.2.1 2006-11-28 06:50:51 dockes Exp $  (C) 2005 Jean-Francois Dockes 
  *                         jean-francois.dockes@wanadoo.fr
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -71,6 +71,8 @@ class PrefsPack {
     QString queryStemLang;
     int mainwidth;
     int mainheight;
+    int pvwidth; // Preview window geom
+    int pvheight;
     int ssearchTyp;
     QString htmlBrowser;
     bool queryBuildAbstract;

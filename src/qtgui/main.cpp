@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: main.cpp,v 1.52 2006-10-11 14:16:26 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: main.cpp,v 1.52.2.1 2006-11-28 06:50:51 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -270,10 +270,11 @@ int main(int argc, char **argv)
     RclMain w;
     mainWindow = &w;
 #endif
-    QSize s(prefs.mainwidth, prefs.mainheight);
-    mainWindow->resize(s);
-    //    fprintf(stderr, "Main win created\n");
 
+    if (prefs.mainwidth > 100) {
+	QSize s(prefs.mainwidth, prefs.mainheight);
+	mainWindow->resize(s);
+    }
 
     mainWindow->sSearch->searchTypCMB->setCurrentItem(prefs.ssearchTyp);
     dbdir = rclconfig->getDbDir();

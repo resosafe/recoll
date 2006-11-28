@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: preview_w.cpp,v 1.7.2.1 2006-11-27 19:04:16 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: preview_w.cpp,v 1.7.2.2 2006-11-28 06:50:51 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -58,6 +58,18 @@ using std::pair;
 
 void Preview::init()
 {
+#if 0
+    // Couldn't get a small button really in the corner. stays on the left of
+    // the button area and looks ugly
+    QPixmap px = QPixmap::fromMimeSource("cancel.png");
+    QPushButton * bt = new QPushButton(px, "", this);
+    bt->setFixedSize(px.size());
+#else
+    QPushButton * bt = new QPushButton(tr("Close Tab"), this);
+#endif
+
+    pvTab->setCornerWidget(bt);
+
     // signals and slots connections
     connect(searchTextLine, SIGNAL(textChanged(const QString&)), 
 	    this, SLOT(searchTextLine_textChanged(const QString&)));
@@ -66,12 +78,16 @@ void Preview::init()
     connect(clearPB, SIGNAL(clicked()), searchTextLine, SLOT(clear()));
     connect(pvTab, SIGNAL(currentChanged(QWidget *)), 
 	    this, SLOT(currentChanged(QWidget *)));
+    connect(bt, SIGNAL(clicked()), this, SLOT(closeCurrentTab()));
 
     searchTextLine->installEventFilter(this);
     dynSearchActive = false;
     canBeep = true;
     tabData.push_back(TabData(pvTab->currentPage()));
     currentW = 0;
+    if (prefs.pvwidth > 100) {
+	resize(prefs.pvwidth, prefs.pvheight);
+    }
 }
 
 void Preview::destroy()
@@ -80,6 +96,8 @@ void Preview::destroy()
 
 void Preview::closeEvent(QCloseEvent *e)
 {
+    prefs.pvwidth = width();
+    prefs.pvheight = height();
     emit previewExposed(m_searchId, -1);
     emit previewClosed((QWidget *)this);
     QWidget::closeEvent(e);

@@ -11,8 +11,9 @@ values, and the user ones only for overrides. Your old configuration files
 will still work, but, you may want to remove them if they are unmodified,
 or keep only the modified parameters.
 
-
-1.6.0
+1.6.2
+ - Minor solaris compilation glitches only.
+1.6.1
  - Term explorer: a multimode wildcard-regexp-spell/phonetic tool to search
    the index for terms. This uses aspell for the orthographic/phonetic part.
  - A more dynamic advanced search window. You now have a choice of the top

@@ -4,15 +4,14 @@ Bugs that are listed in an older version section are supposedly fixed in
 later versions. Bugs listed in the topmost section may also exist in older
 versions. 
 
-Latest:
+Latest (1.6.2):
 
 - 1.6 NEAR crashes: 1.6 has added NEAR searches. Unlike what recoll did
   with PHRASES, stemming expansion is performed on terms inside NEAR
   clauses (except if prevented by a capitalized entry of course). There is
   a bug in Xapian at least up to 0.9.9, where NEAR does not support
   multiple OR subclauses, as would result from a multiple expansion. This
-  manifests itself by a 'not implemented' Xapian exception and a recoll
-  crash.  Workarounds:
+  manifests itself by a 'not implemented' Xapian exception. Workarounds:
 
       - Prevent expansion of NEAR terms (possibly except one) by
         capitalizing them.
@@ -48,6 +47,13 @@ Latest:
   probably a Kwin bug, possibly related to 
   http://bugs.kde.org/show_bug.cgi?id=79183 or a correction thereof.
 
+- Under Solaris, it is necessary to perform initial indexing with the
+  recollindex program (the recoll index thread doesn't work for creating
+  the database). Don't know the reason. Only idea I have is problem with
+  exception handling (recoll catches an exception while trying the
+  yest inexistant db).
+
+***************************************************************************
 1.5.10
 - If a defaultcharset was set in the configuration file for a subdirectory,
   it would stay in effect for all subsequent files/directories (except if

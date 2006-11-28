@@ -54,24 +54,22 @@
 	decide what you may want to install.</p>
 
       <h3>Source</h3>
-
-      <p><span class="application">Recoll 1.6.0</span> is out ! This
-	version has quite a few improvements (see <a
-	href="CHANGES.txt">changes</a>). As a <em>.0</em> version, it
-	may not be for everybody, which is why the binary packages
-	stay with 1.5 for now. <br>Download the
-	source: <a
-	href="recoll-1.6.0.tar.gz">recoll-1.6.0.tar.gz</a>. The <a
-	href="usermanual-1.6">new documentation</a> is here too. Some
-	NEAR searches can crash recoll. Have a look at the 
-	<a href="BUGS.txt">errata</a> for a workaround.
-      </p>
 	
-      <p><b>Current version:</b> 1.5.11:
-	<a href="recoll-1.5.11.tar.gz">recoll-1.5.11.tar.gz</a>. 
+      <p><b>Current version:</b> 
+	1.6.1: <a href="recoll-1.6.1.tar.gz">recoll-1.6.1.tar.gz</a>
 	See the <a href="BUGS.txt">known bugs and issues</a> and <a
 	  href="CHANGES.txt">changes</a>.</p> 
+
+      <p>recoll 1.6 has the capacity to perform proximity searches (a
+	bit like phrases, but unordered). There is a still unpatched
+	problem in Xapian 0.9.9 which will make NEAR searches fail.
+	If you intend to perform proximity searches, have a look at the 
+	<a href="BUGS.txt">errata</a> for a workaround and Xapian
+	patch. All the statically linked binary packages below use a
+	patched Xapian-core library in order for NEAR searches to work.</p>
+
       <p>Older recoll releases:
+	<a href="recoll-1.5.11.tar.gz">1.5.11</a>. 
 	<a href="recoll-1.5.6.tar.gz">1.5.6</a>. 
 	<a href="recoll-1.4.3.tar.gz">1.4.3</a>. 
 	<a href="recoll-1.3.3.tar.gz">1.3.3</a>.
@@ -83,36 +81,42 @@
       <h3>RPMS</h3>
       <p>The executables inside the binary rpms have a static link to
 	xapian, there is no dependency except Qt 3.3. Of course you need
-	xapian-core installed to use the source rpm.</p>
+	xapian-core installed to use the source rpm. </p>
 
       <p><b>Fedora Core 5</b>
-	RPM: <a href="recoll-1.5.11-1.i386.rpm">recoll-1.5.11-1.i386.rpm</a>. 
+	RPM: 
+	<a href="recoll-1.6.1-1.i386.rpm">
+	  recoll-1.6.1-1.i386.rpm</a>. 
 	Source: 
-	<a href="recoll-1.5.11-1.src.rpm">recoll-1.5.11-1.src.rpm</a></p>
+	<a href="recoll-1.6.1-1.src.rpm">
+	  recoll-1.6.1-1.src.rpm</a>
+      </p>
 
       <p><b>Mandriva 2006</b>  (also works on 2005 and 2007)
-	RPM: <a
-	  href="recoll-1.5.11-0.1.20060mdk.i586.rpm">recoll-1.5.11-0.1.20060mdk.i586.rpm</a>. 
-	Source: <a
-	  href="recoll-1.5.11-0.1.20060mdk.src.rpm">recoll-1.5.11-0.1.20060mdk.src.rpm</a></p> 
+	RPM: 
+	<a href="recoll-1.6.1-0.1.20060mdk.i586.rpm">
+	  recoll-1.6.1-0.1.20060mdk.i586.rpm</a>. 
+	Source: 
+	<a href="recoll-1.6.1-0.1.20060mdk.src.rpm">
+	  recoll-1.6.1-0.1.20060mdk.src.rpm</a>
+      </p>
 
-      <p><b>Suse 10.1</b> It seems that the binaries in previous set of
-      rpms, which were built with the xapian packages from opensuse had a
-      serious tendancy to segfault on exceptions. I hope that the
-      current ones, with a local xapian build will work better. If
-      there are still problems, please compile from source.
+      <p><b>Suse 10.1</b> 
 
-	RPM: <a
-	  href="recoll-1.5.11-0.i586.rpm">recoll-1.5.11-0.i586.rpm</a>. 
-	Source: <a
-	  href="recoll-1.5.11-0.src.rpm">recoll-1.5.11-0.src.rpm</a></p> 
+	RPM: 
+	<a href="recoll-1.6.1-0.i586.rpm">
+	  recoll-1.6.1-0.i586.rpm</a>. 
+	Source: 
+	<a href="recoll-1.6.1-0.src.rpm">
+	  recoll-1.6.1-0.src.rpm</a></p> 
     </p>
 
 
       <h3>Binary bundles</h3>
 
       <p>These are just prebuilt trees (without the source files).
-	The executables were built with xapian 0.9.[6-9] and libiconv
+	The executables were built with xapian 0.9.9 (patched for the
+	NEAR bug) and libiconv
 	1.9.2 (where relevant) as static libraries. They depend on qt
 	3.3. For Solaris, you should be able to find a qt package <a
 	  href="http://www.sunfreeware.com/">here</a>.</p> 
@@ -120,24 +124,30 @@
       <p>The installation instructions are <a
 	  href="usermanual/rcl.install.binary.html"> there</a>.</p>
 
-      <p><span class="application">FreeBSD</span> 5.5 i386: <a
-	  href="recoll-1.5.11-FreeBSD-5.5-RELEASE.tgz">
-	  recoll-1.5.11-FreeBSD-5.5-RELEASE.tgz</a></p>
+      <p><span class="application">FreeBSD</span> 5.5 i386: 
+	<a href="recoll-1.6.1-FreeBSD-5.5-RELEASE.tgz">
+	  recoll-1.6.1-FreeBSD-5.5-RELEASE.tgz</a>
+      </p>
 
-      <p><span class="application">Solaris 8</span> sparc.
-	<a href="recoll-1.5.4-SunOS-5.8.tgz">
-	  recoll-1.5.4-SunOS-5.8.tgz</a>.</p>
+      <p><span class="application">Solaris 8</span> sparc. 
+	Note to Solaris users: you need to perform the initial
+	indexing pass with "recollindex", not the recoll GUI indexing
+	thread. See <a href="BUGS.txt">errata</a>.
+	<a href="recoll-1.6.2-SunOS-5.8.tgz">
+	  recoll-1.6.2-SunOS-5.8.tgz</a>.
+      </p> 
 
       <h3>FreeBSD ports</h3> 
 
       <p>There are ports for both xapian-core
 	and recoll in the standard tree, you may just need to update
 	your ports (cvsup), or you can get the ports from the FreeBSD
-	site: <a
-	  href="http://cvsweb.freebsd.org/ports/databases/xapian-core">xapian
-	  port</a> <a
-	  href="http://cvsweb.freebsd.org/ports/deskutils/recoll">recoll
-	  port</a>.</p>
+	site. The ports are not yet updated for recoll 1.6 or the
+	xapian NEAR problem though.
+	<a href="http://cvsweb.freebsd.org/ports/databases/xapian-core">
+	  xapian port</a> 
+	<a href="http://cvsweb.freebsd.org/ports/deskutils/recoll">
+	  recoll port</a>.</p>
 
     </div>
   </body>

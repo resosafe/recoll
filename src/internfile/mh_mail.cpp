@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: mh_mail.cpp,v 1.20.4.1 2006-12-07 07:05:36 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: mh_mail.cpp,v 1.20.4.2 2006-12-07 08:06:54 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -94,7 +94,7 @@ MimeHandlerMail::mkDoc(RclConfig *cnf, const string &fn,
 	return MimeHandler::MHError;
 }
 
-static const  char *frompat = "^From .* [1-2][0-9][0-9][0-9]\n$";
+static const  char *frompat = "^From .* [1-2][0-9][0-9][0-9][\r]*\n$";
 static regex_t fromregex;
 static bool regcompiled;
 
@@ -153,7 +153,7 @@ MimeHandlerMail::processmbox(const string &fn, Rcl::Doc &docout, string& ipath)
 		// another return code here
 		return MimeHandler::MHError;
 	    }
-	    if (line[0] == '\n') {
+	    if (line[0] == '\n' || line[0] == '\r') {
 		hademptyline = true;
 		continue;
 	    }
@@ -179,7 +179,7 @@ MimeHandlerMail::processmbox(const string &fn, Rcl::Doc &docout, string& ipath)
 	    if (mtarg <= 0 || m_msgnum == mtarg) {
 		msgtxt += line;
 	    }
-	    if (line[0] == '\n') {
+	    if (line[0] == '\n' || line[0] == '\r') {
 		hademptyline = true;
 	    } else {
 		hademptyline = false;

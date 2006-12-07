@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: mh_mail.cpp,v 1.20 2006-09-23 07:39:18 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: mh_mail.cpp,v 1.20.4.1 2006-12-07 07:05:36 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -23,6 +23,7 @@ static char rcsid[] = "@(#$Id: mh_mail.cpp,v 1.20 2006-09-23 07:39:18 dockes Exp
 #include <errno.h>
 #include <unistd.h>
 #include <time.h>
+#include <regex.h>
 
 #include <map>
 #include <sstream>
@@ -93,6 +94,10 @@ MimeHandlerMail::mkDoc(RclConfig *cnf, const string &fn,
 	return MimeHandler::MHError;
 }
 
+static const  char *frompat = "^From .* [1-2][0-9][0-9][0-9]\n$";
+static regex_t fromregex;
+static bool regcompiled;
+
 MimeHandler::Status 
 MimeHandlerMail::processmbox(const string &fn, Rcl::Doc &docout, string& ipath)
 {
@@ -116,6 +121,10 @@ MimeHandlerMail::processmbox(const string &fn, Rcl::Doc &docout, string& ipath)
     } else {
 	fp = (FILE *)m_vfp;
     }
+    if (!regcompiled) {
+	regcomp(&fromregex, frompat, REG_NOSUB);
+	regcompiled = true;
+    }
 
     // If we are called to retrieve a specific message, seek to bof
     // (then scan up to the message). This is for the case where the
@@ -132,54 +141,55 @@ MimeHandlerMail::processmbox(const string &fn, Rcl::Doc &docout, string& ipath)
 
     off_t start, end;
     bool iseof = false;
+    bool hademptyline = true;
+    string msgtxt;
     do  {
 	// Look for next 'From ' Line, start of message. Set start to
 	// line after this
-	char line[301];
+	char line[501];
 	for (;;) {
-	    if (!fgets(line, 300, fp)) {
+	    if (!fgets(line, 500, fp)) {
 		// Eof hit while looking for 'From ' -> file done. We'd need
 		// another return code here
 		return MimeHandler::MHError;
 	    }
-
-	    if (!strncmp("From ", line, 5)) {
+	    if (line[0] == '\n') {
+		hademptyline = true;
+		continue;
+	    }
+	    if (hademptyline && !regexec(&fromregex, line, 0, 0, 0)) {
 		start = ftello(fp);
+		m_msgnum++;
 		break;
 	    }
+	    hademptyline = false;
 	}
 
-	// Look for next 'From ' line or eof, end of message (we let a
-	// spurious empty line in)
+	// Look for next 'From ' line or eof, end of message.
 	for (;;) {
 	    end = ftello(fp);
-	    if (!fgets(line, 300, fp) || !strncmp("From ", line, 5)) {
+	    if (!fgets(line, 500, fp)) {
 		if (ferror(fp) || feof(fp))
 		    iseof = true;
 		break;
 	    }
+	    if (hademptyline && !regexec(&fromregex, line, 0, 0, 0)) {
+		break;
+	    }
+	    if (mtarg <= 0 || m_msgnum == mtarg) {
+		msgtxt += line;
+	    }
+	    if (line[0] == '\n') {
+		hademptyline = true;
+	    } else {
+		hademptyline = false;
+	    }
 	}
-	m_msgnum++;
 	fseek(fp, end, SEEK_SET);
     } while (mtarg > 0 && m_msgnum < mtarg);
 
-
-    size_t size = end - start;
-    fseek(fp, start, SEEK_SET);
-    char *cp = (char *)malloc(size);
-    if (cp == 0) {
-	LOGERR(("MimeHandlerMail::processmbox: malloc(%d) failed\n", size));
-	return MimeHandler::MHError;
-    }
-    if (fread(cp, 1, size, fp) != size) {
-	LOGERR(("MimeHandlerMail::processmbox: fread failed (errno %d)\n",
-		errno));
-	free(cp);
-	return MimeHandler::MHError;
-    }
-    string msgbuf(cp, size);
-    free(cp);
-    stringstream s(msgbuf);
+    stringstream s(msgtxt);
+    LOGDEB2(("Message text: [%s]\n", msgtxt.c_str()));
     Binc::MimeDocument doc;
     doc.parseFull(s);
     if (!doc.isHeaderParsed() && !doc.isAllParsed()) {
@@ -187,8 +197,9 @@ MimeHandlerMail::processmbox(const string &fn, Rcl::Doc &docout, string& ipath)
 		fn.c_str()));
 	return MimeHandler::MHError;
     }
-    LOGDEB2(("Calling processMsg with msgnum %d\n", m_msgnum));
+
     MimeHandler::Status ret = processMsg(docout, doc, 0);
+
     if (ret == MimeHandler::MHError)
 	return ret;
     char buf[20];

@@ -16,7 +16,7 @@
  */
 #ifndef _SMALLUT_H_INCLUDED_
 #define _SMALLUT_H_INCLUDED_
-/* @(#$Id: smallut.h,v 1.19 2006-11-13 11:59:11 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: smallut.h,v 1.19.2.1 2006-12-07 07:06:05 dockes Exp $  (C) 2004 J.F.Dockes */
 #include <string>
 #include <list>
 #include <map>
@@ -64,6 +64,10 @@ extern string escapeHtml(const string &in);
 /** Replace some chars with spaces (ie: newline chars). This is not utf8-aware
  *  so chars should only contain ascii */
 extern string neutchars(const string &str, string chars);
+
+/** turn string into something that won't be expanded by a shell. In practise
+ * quote with single-quotes and escape internal singlequotes */
+extern string escapeShell(const string &str);
 
 /** Truncate a string to a given maxlength, avoiding cutting off midword
  *  if reasonably possible. */

@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclmain_w.cpp,v 1.9 2006-11-17 12:55:59 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclmain_w.cpp,v 1.9.2.1 2006-12-07 07:06:05 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -639,12 +639,14 @@ void RclMain::startNativeViewer(int docnum)
 
     string fn = urltolocalpath(doc.url);
     string url = url_encode(doc.url, 7);
+    string ipath = doc.ipath;
 
     // Substitute %u (url) and %f (file name) inside prototype command
     string ncmd;
     map<char, string> subs;
-    subs['u'] = string("'") + url + "'";
-    subs['f'] = string("'") + fn + "'";
+    subs['u'] = escapeShell(url);
+    subs['f'] = escapeShell(fn);
+    subs['i'] = escapeShell(ipath);
     pcSubst(cmd, ncmd, subs);
 
     ncmd += " &";

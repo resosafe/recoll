@@ -1,4 +1,4 @@
-# @(#$Id: Makefile.in,v 1.9 2006-12-24 08:07:15 dockes Exp $  (C) 2005 J.F.Dockes
+# @(#$Id: Makefile.in,v 1.9.2.1 2007-01-10 15:59:52 dockes Exp $  (C) 2005 J.F.Dockes
 
 prefix = @prefix@
 exec_prefix = @exec_prefix@
@@ -45,13 +45,23 @@ clean:
 	@-cd qt4gui; ${MAKE} clean
 	rm -f qtgui/Makefile qtgui/preview/Makefile qtgui/recoll
 	rm -f qt4gui/Makefile qt4gui/preview/Makefile qt4gui/recoll
+	rm -f common/rclversion.h
+	rm -rf qtgui/.moc qtgui/.ui
+	rm -rf qt4gui/.moc qt4gui/.ui
 
 distclean: clean
 	rm -f mk/sysconf mk/localdefs sampleconf/recoll.conf \
-	   $(QTGUI)/recoll.pro Makefile config.log config.status \
+	   qtgui/recoll.pro qt4gui/recoll.pro \
+	   Makefile config.log config.status \
 	   recollinstall \
-	   doc/user/*.html* doc/user/*.txt doc/user/HTML.manifest \
-	  lib/*.dep
+	   lib/*.dep common/autoconfig.h \
+	   wasabi/Makefile wasabi/client/Makefile wasabi/server/Makefile
+	rm -rf autom4te.cache
+
+maintainer-clean: distclean
+	rm -f doc/user/*.html* doc/user/*.txt doc/user/HTML.manifest
+	rm -f qtgui/i18n/*.qm
+	rm -f qt4gui/i18n/*.qm
 
 # recollinstall can be executed by the user and will compute 'normal'
 # values for bindir etc., relative to the prefix argument.  When executed

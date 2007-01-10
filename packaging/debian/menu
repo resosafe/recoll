@@ -1,0 +1,2 @@
+?package(recoll):needs="X11" section="Apps/Databases"\
+  title="recoll" command="/usr/bin/recoll"

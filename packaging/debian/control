@@ -1,0 +1,33 @@
+Source: recoll
+Section: x11
+Priority: optional
+Maintainer: Jean-Francois Dockes <jean-francois.dockes@wanadoo.fr>
+Build-Depends: debhelper (>= 5), autotools-dev, libqt3-mt-dev, qt3-dev-tools, libqt3-headers, libxapian-dev
+Standards-Version: 3.7.2
+
+Package: recoll
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: a personal full text search package with a QT GUI
+ The Recoll personal full text search package is based on a very strong 
+ backend (Xapian), for which it provides an easy to use and feature-rich 
+ interface.
+ .
+ Features:
+    * QT-based GUI.
+    * Supports the following document types (and their compressed versions): 
+      - Natively: text, html, OpenOffice files, maildir and mailbox 
+        (Mozilla and Thunderbird mail ok) with attachments, gaim log files.
+      - With external helpers:  pdf (pdftotext), postscript (ghostscript),
+        msword (antiword), excel, ppt (catdoc), rtf (unrtf), 
+    * Powerful query facilities, with boolean searches, phrases, filter on
+      file types and directory tree. 
+    * Support for multiple charsets. Internal processing and storage uses
+      Unicode UTF-8. 
+    * Stemming performed at query time (can switch stemming language after
+      indexing) 
+    * Easy installation. No database daemon, web server or exotic language
+      necessary. 
+    * An indexer which runs either as a thread inside the GUI or as an
+      external, cron'able program. 
+

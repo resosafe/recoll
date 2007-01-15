@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: mh_mail.cpp,v 1.27 2006-12-18 12:06:11 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: mh_mail.cpp,v 1.27.2.1 2007-01-15 13:07:19 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -262,7 +262,7 @@ bool MimeHandlerMail::processMsg(Binc::MimePart *doc, int depth)
 //      Simple:    text, image, audio, video, application, 
 //      Composite: multipart, message.
 // 
-// multipart can be mixed, alternative, parallel, digest.
+// multipart can be mixed, signed, alternative, parallel, digest.
 // message/rfc822 may also be of interest.
 void MimeHandlerMail::walkmime(Binc::MimePart* doc, int depth)
 {
@@ -281,6 +281,7 @@ void MimeHandlerMail::walkmime(Binc::MimePart* doc, int depth)
 	std::vector<Binc::MimePart>::iterator it;
 
 	if (!stringicmp("mixed", doc->getSubType()) || 
+	    !stringicmp("signed", doc->getSubType()) ||
 	    !stringicmp("related", doc->getSubType())) {
 	    // Multipart mixed and related:  process each part.
 	    for (it = doc->members.begin(); it != doc->members.end();it++) {

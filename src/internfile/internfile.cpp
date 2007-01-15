@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: internfile.cpp,v 1.23 2006-12-20 14:28:35 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: internfile.cpp,v 1.23.2.1 2007-01-15 13:06:57 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -266,7 +266,7 @@ bool FileInterner::dijontorcl(Rcl::Doc& doc)
 // While we're at it, we also set the mimetype and filename, which are special 
 // properties: we want to get them from the topmost doc
 // with an ipath, not the last one which is usually text/plain
-void FileInterner::collectIpathAndMT(Rcl::Doc& doc, string& ipath)
+void FileInterner::collectIpathAndMT(Rcl::Doc& doc, string& ipath) const
 {
     bool hasipath = false;
 
@@ -307,6 +307,8 @@ void FileInterner::collectIpathAndMT(Rcl::Doc& doc, string& ipath)
 // Remove handler from stack. Clean up temp file if needed.
 void FileInterner::popHandler()
 {
+    if (m_handlers.empty())
+	return;
     int i = m_handlers.size()-1;
     if (m_tmpflgs[i]) {
 	m_tempfiles.pop_back();
@@ -357,9 +359,16 @@ FileInterner::Status FileInterner::internfile(Rcl::Doc& doc, string& ipath)
 	    continue;
 	}
 
+	// Don't stop on next_document() error. There might be ie an
+	// error while decoding an attachment, but we still want to
+	// process the rest of the mbox!
 	if (!m_handlers.back()->next_document()) {
-	    LOGERR(("FileInterner::internfile: next_document failed\n"));
-	    return FIError;
+	    Rcl::Doc doc; string ipath;
+	    collectIpathAndMT(doc, ipath);
+	    LOGERR(("FileInterner::internfile: next_document error [%s%s%s]\n",
+		    m_fn.c_str(), ipath.empty()?"":"|", ipath.c_str()));
+	    popHandler();
+	    continue;
 	}
 
 	// Look at what we've got

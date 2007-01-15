@@ -16,7 +16,7 @@
  */
 #ifndef _INTERNFILE_H_INCLUDED_
 #define _INTERNFILE_H_INCLUDED_
-/* @(#$Id: internfile.h,v 1.10 2006-12-19 08:40:50 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: internfile.h,v 1.10.2.1 2007-01-15 13:06:57 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
 #include <vector>
@@ -106,7 +106,7 @@ class FileInterner {
 
     void tmpcleanup();
     bool dijontorcl(Rcl::Doc&);
-    void collectIpathAndMT(Rcl::Doc&, string& ipath);
+    void collectIpathAndMT(Rcl::Doc&, string& ipath) const;
     bool dataToTempFile(const string& data, const string& mt, string& fn);
     void popHandler();
 };

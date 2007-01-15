@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid [] = "@(#$Id: debuglog.cpp,v 1.4 2006-11-08 15:34:20 dockes Exp $  (C) 2002 OKYZ";
+static char rcsid[] = "@(#$Id: debuglog.cpp,v 1.4.4.1 2007-01-15 16:53:20 dockes Exp $ (C) 2006 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify

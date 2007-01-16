@@ -1,5 +1,5 @@
 %define name recoll
-%define version 1.7.3
+%define version 1.7.5
 %define release  %mkrel 1
 
 Name:           %{name}
@@ -60,6 +60,8 @@ rm -rf $RPM_BUILD_ROOT
 # ---------------------------------------------------------------------------
 
 %changelog
+* Mon Jan 15 2007 Jean-Francois Dockes <jean-francois.dockes@wanadoo.fr> 1.7.5-1
+- Update to release 1.7.5
 * Mon Jan 08 2007 Jean-Francois Dockes <jean-francois.dockes@wanadoo.fr> 1.7.3-1
 - Update to release 1.7.3
 * Tue Nov 28 2006 Jean-Francois Dockes <jean-francois.dockes@wanadoo.fr> 1.6.1-1

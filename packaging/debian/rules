@@ -37,41 +37,22 @@ config.status: configure
 
 
 #Architecture 
-build: build-arch build-indep
+build: build-arch
 
 build-arch: build-arch-stamp
 build-arch-stamp:  config.status
-	$(MAKE) static
-	touch $@
-
-build-indep: build-indep-stamp
-build-indep-stamp:  config.status
+	$(MAKE)
 	touch $@
 
 clean:
 	dh_testdir
 	dh_testroot
-	rm -f build-arch-stamp build-indep-stamp #CONFIGURE-STAMP#
-
+	rm -f build-arch-stamp #CONFIGURE-STAMP#
 	# Add here commands to clean up after the build process.
 	-$(MAKE) distclean
-ifneq "$(wildcard /usr/share/misc/config.sub)" ""
-	cp -f /usr/share/misc/config.sub config.sub
-endif
-ifneq "$(wildcard /usr/share/misc/config.guess)" ""
-	cp -f /usr/share/misc/config.guess config.guess
-endif
-
-
 	dh_clean 
 
-install: install-indep install-arch
-install-indep:
-	dh_testdir
-	dh_testroot
-	dh_clean -k -i 
-	dh_installdirs -i
-	dh_install -i
+install: install-arch
 
 install-arch:
 	dh_testdir
@@ -101,13 +82,10 @@ binary-common:
 	dh_gencontrol
 	dh_md5sums
 	dh_builddeb
-# Build architecture independant packages using the common target.
-binary-indep: build-indep install-indep
-	$(MAKE) -f debian/rules DH_OPTIONS=-i binary-common
 
 # Build architecture dependant packages using the common target.
 binary-arch: build-arch install-arch
 	$(MAKE) -f debian/rules DH_OPTIONS=-s binary-common
 
-binary: binary-arch binary-indep
-.PHONY: build clean binary-indep binary-arch binary install install-indep install-arch 
+binary: binary-arch 
+.PHONY: build clean binary-arch binary install install-arch 

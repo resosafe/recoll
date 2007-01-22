@@ -1,5 +1,5 @@
 #!/bin/sh
-# @(#$Id: rclscribus,v 1.1 2007-01-22 16:32:55 dockes Exp $  (C) 2004 J.F.Dockes
+# @(#$Id: rclscribus,v 1.1.2.1 2007-01-22 16:34:20 dockes Exp $  (C) 2004 J.F.Dockes
 # There may still be code from Estraier in here:
 #================================================================
 # Estraier: a personal full-text search system

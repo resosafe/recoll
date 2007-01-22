@@ -1,0 +1,151 @@
+#!/bin/sh
+# @(#$Id: rclscribus,v 1.1 2007-01-22 16:32:55 dockes Exp $  (C) 2004 J.F.Dockes
+# There may still be code from Estraier in here:
+#================================================================
+# Estraier: a personal full-text search system
+# Copyright (C) 2003-2004 Mikio Hirabayashi
+#================================================================
+#================================================================
+# rclscribus
+# Convert a scribus file to recoll HTML. This only handles the newer .sla
+# files until I can have a look at an older .scd.
+#
+# We just hack into the scribus XML, taking advantage that the tag of
+# interest is apparently always output on a single line.
+# The text seems to be found in attribute CH of tag ITEXT, it is utf-8
+
+# set variables
+LANG=C ; export LANG
+LC_ALL=C ; export LC_ALL
+progname="rclscribus"
+
+# show help message
+if test $# -ne 1 -o "$1" = "--help" 
+then
+  printf 'Extract scribus text as basic HTML.\n'
+  printf 'Usage: %s [infile]\n' "$progname"
+  exit 1
+fi
+
+infile="$1"
+
+# check the input file existence
+if test ! -f "$infile"
+then
+  printf '%s: %s: no such file\n' "$progname" "$infile"
+  exit 1
+fi
+
+iscmd()
+{
+    cmd=$1
+    case $cmd in
+    */*)
+	if test -x $cmd ; then return 0; else return 1; fi ;;
+    *)
+      oldifs=$IFS; IFS=":"; set -- $PATH; IFS=$oldifs
+      for d in $*;do test -x $d/$cmd && return 0;done
+      return 1 ;;
+    esac
+}
+checkcmds()
+{
+    for cmd in $*;do
+      if iscmd $cmd 
+      then 
+        a=1
+      else 
+        echo $cmd not found 1>&2 
+	exit 1
+      fi
+    done
+}
+checkcmds grep awk sed
+
+# A small sed program to join lines where they are broken inside an
+# attribute value. The idea is that all scribus tag are apparently on one
+# line except when there are embedded new lines in an attribute lie
+# 'comments'. The first version of the sed script joins line which does not
+# end with > with the next. It doesn't guard against an embedded '>'. The
+# seconf joins line not beginning with '<' with the previous. It is much
+# slower for some reason.
+sedjoinprog=':a
+/[^>] *$/N; s/\n/ /; ta'
+#sedjoinprog1=':a
+#$!N;/^ *[^<]/s/\n/ /;ta
+#P;D'
+
+# Extract description title author and keywords
+description=`sed -e "$sedjoinprog" < $infile | \
+awk '
+/<DOCUMENT / {
+    if (match($0, " COMMENTS=\"[^\"]+")) { 
+       s=substr($0, RSTART+11, RLENGTH-11)
+       printf("%s", s);
+       # Note: there is no way to know if this ends a frame, so no "<br>"
+    }
+}
+'`
+
+title=`sed -e "$sedjoinprog" < $infile | \
+awk '
+/<DOCUMENT / {
+    if (match($0, " TITLE=\"[^\"]+")) { 
+       s=substr($0, RSTART+8, RLENGTH-8)
+       printf("%s", s);
+       # Note: there is no way to know if this ends a frame, so no "<br>"
+    }
+}
+'`
+
+author=`sed -e "$sedjoinprog" < $infile | \
+awk '
+/<DOCUMENT / {
+    if (match($0, " AUTHOR=\"[^\"]+")) { 
+       s=substr($0, RSTART+9, RLENGTH-9)
+       printf("%s", s);
+       # Note: there is no way to know if this ends a frame, so no "<br>"
+    }
+}
+'`
+
+keywords=`sed -e "$sedjoinprog" < $infile | \
+awk '
+/<DOCUMENT / {
+    if (match($0, " KEYWORDS=\"[^\"]+")) { 
+       s=substr($0, RSTART+11, RLENGTH-11)
+       printf("%s", s);
+       # Note: there is no way to know if this ends a frame, so no "<br>"
+    }
+}
+'`
+
+#echo description: [$description];echo title: [$title];
+#echo author: [$author];echo keywords: [$keywords]
+
+cat <<EOF
+<html><head>
+<title>$title</title>
+<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+<meta name="author" content="$author">
+<meta name="description" content="$description">
+<meta name="keywords" content="$keywords">
+</head>
+<body><p>
+EOF
+
+
+sed -e ':a' -e '/[^>] *$/N; s/\n/ /; ta' < $infile | \
+awk '
+/<ITEXT / {
+    if (match($0, " CH=\"[^\"]+")) { 
+       s=substr($0, RSTART+5, RLENGTH-5)
+       printf("%s", s);
+       # Note: there is no way to know if this ends a frame, so no "<br>"
+    }
+}
+END {
+    print "</p></body></html>"
+}
+' | \
+sed -e 's/&#x5;/<br>/g' -e 's/&#x1c;/<br>/g'

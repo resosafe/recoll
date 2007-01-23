@@ -1,5 +1,5 @@
 #!/bin/sh
-# @(#$Id: rcllyx,v 1.1.2.1 2007-01-23 07:14:36 dockes Exp $  (C) 2004 J.F.Dockes
+# @(#$Id: rcllyx,v 1.1.2.2 2007-01-23 07:16:45 dockes Exp $  (C) 2004 J.F.Dockes
 # There may still be code from Estraier in here:
 #================================================================
 # Estraier: a personal full-text search system
@@ -95,7 +95,7 @@ cleanup()
     rmdir $tmpdir
 }
     
-#trap cleanup EXIT HUP QUIT INT TERM
+trap cleanup EXIT HUP QUIT INT TERM
 
 workdir=$tmpdir/rcllyxtmp
 case "$infile" in

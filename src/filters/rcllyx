@@ -1,5 +1,5 @@
 #!/bin/sh
-# @(#$Id: rcllyx,v 1.1.2.3 2007-01-23 07:22:08 dockes Exp $  (C) 2004 J.F.Dockes
+# @(#$Id: rcllyx,v 1.1.2.4 2007-01-23 07:23:31 dockes Exp $  (C) 2004 J.F.Dockes
 # There may still be code from Estraier in here:
 #================================================================
 # Estraier: a personal full-text search system
@@ -129,7 +129,7 @@ if test -n "$langline" ; then
    set $langline
    lang=$2
 fi
-echo format: [$format] charset: [$charset] lang [$lang]
+#echo format: [$format] charset: [$charset] lang [$lang]
 
 if test "$format" -ge 249 ; then
   charset=utf-8
@@ -174,7 +174,7 @@ if test -n "$charset" ; then
 else
    inputcmd=cat
 fi
-echo inputcmd: [$inputcmd]
+#echo inputcmd: [$inputcmd]
 
 cat <<EOF
 <html>

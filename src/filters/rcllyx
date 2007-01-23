@@ -1,5 +1,5 @@
 #!/bin/sh
-# @(#$Id: rcllyx,v 1.1.2.2 2007-01-23 07:16:45 dockes Exp $  (C) 2004 J.F.Dockes
+# @(#$Id: rcllyx,v 1.1.2.3 2007-01-23 07:22:08 dockes Exp $  (C) 2004 J.F.Dockes
 # There may still be code from Estraier in here:
 #================================================================
 # Estraier: a personal full-text search system
@@ -129,7 +129,7 @@ if test -n "$langline" ; then
    set $langline
    lang=$2
 fi
-#echo format: [$format] charset: [$charset] lang [$lang]
+echo format: [$format] charset: [$charset] lang [$lang]
 
 if test "$format" -ge 249 ; then
   charset=utf-8
@@ -138,7 +138,7 @@ else
   # to work, the logic has built-in inconsistencies even beyond the numerous
   # external ones (what if the ukrainian writer prefers koi8-r ?). This is a
   # joke. 
-  if test -n "$charset" -o "$charset" = default -o "$charset" = auto ; then
+  if test -z "$charset" -o "$charset" = default -o "$charset" = auto ; then
     case "$lang" in
     american|afrikaans|basque|catalan|danish|dutch|english|faeroese|finnish|french|galician|german|icelandic|irish|italian|norwegian|portuguese|spanish|swedish)
       charset=iso-8859-1;;
@@ -174,7 +174,7 @@ if test -n "$charset" ; then
 else
    inputcmd=cat
 fi
-#echo inputcmd: [$inputcmd]
+echo inputcmd: [$inputcmd]
 
 cat <<EOF
 <html>

@@ -1,4 +1,4 @@
-# @(#$Id: mimemap,v 1.17.2.2 2007-01-23 07:14:36 dockes Exp $  (C) 2004 J.F.Dockes
+# @(#$Id: mimemap,v 1.17.2.3 2007-01-24 11:00:11 dockes Exp $  (C) 2004 J.F.Dockes
 # Recoll: associations of file name extensions to mime types
 
 .txt = text/plain
@@ -56,6 +56,7 @@
 
 .lyx = application/x-lyx
 .sla = application/x-scribus
+.scd = application/x-scribus
 
 .wpd = application/vnd.wordperfect
 .rtf = text/rtf

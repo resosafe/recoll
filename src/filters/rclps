@@ -1,5 +1,5 @@
 #!/bin/sh
-# @(#$Id: rclps,v 1.7 2006-04-04 16:03:28 dockes Exp $  (C) 2004 J.F.Dockes
+# @(#$Id: rclps,v 1.7.6.1 2007-01-30 11:39:32 dockes Exp $  (C) 2004 J.F.Dockes
 # Parts taken from Estraier:
 #================================================================
 # Estraier: a personal full-text search system
@@ -74,9 +74,11 @@ then
 fi
 
 # output the result
+# The strange 'BEGIN' setup is to prevent 'file' from thinking this file
+# is an awk program
 $decoder "$infile" |
-awk '
-BEGIN {
+awk 'BEGIN'\
+' {
   printf("<html><head><title></title>\n")
   printf("<meta http-equiv=\"Content-Type\" content=\"text/html;charset=UTF-8\">\n")
   printf("</head>\n<body><p>");

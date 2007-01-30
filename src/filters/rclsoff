@@ -1,5 +1,5 @@
 #!/bin/sh
-# @(#$Id: rclsoff,v 1.6.6.1 2007-01-21 16:41:49 dockes Exp $  (C) 2004 J.F.Dockes
+# @(#$Id: rclsoff,v 1.6.6.2 2007-01-30 11:39:32 dockes Exp $  (C) 2004 J.F.Dockes
 # Parts taken from Estraier:
 #================================================================
 # Estraier: a personal full-text search system
@@ -122,9 +122,11 @@ echo '<meta name="description" content="' "$description $subject" '">'
 echo '<meta name="keywords" content="' "$keywords" '">'
 echo '</head><body><p>'
 
+# The strange 'BEGIN' setup is to prevent 'file' from thinking this file
+# is an awk program
 echo "$content" | sed -e "s/&apos;/'/g" -e 's/&quot;/"/g' |\
-awk '
-BEGIN {
+awk 'BEGIN'\
+' {
   cont = ""
 }
 {

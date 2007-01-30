@@ -1,5 +1,5 @@
 #!/bin/sh
-# @(#$Id: rclscribus,v 1.1.2.1 2007-01-22 16:34:20 dockes Exp $  (C) 2004 J.F.Dockes
+# @(#$Id: rclscribus,v 1.1.2.2 2007-01-30 11:39:32 dockes Exp $  (C) 2004 J.F.Dockes
 # There may still be code from Estraier in here:
 #================================================================
 # Estraier: a personal full-text search system
@@ -140,7 +140,7 @@ awk '
 /<ITEXT / {
     if (match($0, " CH=\"[^\"]+")) { 
        s=substr($0, RSTART+5, RLENGTH-5)
-       printf("%s", s);
+       printf("%s", s)
        # Note: there is no way to know if this ends a frame, so no "<br>"
     }
 }
@@ -148,4 +148,4 @@ END {
     print "</p></body></html>"
 }
 ' | \
-sed -e 's/&#x5;/<br>/g' -e 's/&#x1c;/<br>/g'
+sed -e 's/&#x5;/<br>/g' -e 's/&#x1c;/<br>/g' -e 's//<br>/g'

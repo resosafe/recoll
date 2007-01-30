@@ -1,5 +1,5 @@
 #!/bin/sh
-# @(#$Id: rclrtf,v 1.2 2005-11-23 10:17:53 dockes Exp $  (C) 2004 J.F.Dockes
+# @(#$Id: rclrtf,v 1.2.10.1 2007-01-30 11:39:32 dockes Exp $  (C) 2004 J.F.Dockes
 # Some inspiration from estraier
 #================================================================
 # rclrtf
@@ -57,9 +57,11 @@ checkcmds()
 checkcmds awk unrtf
 
 # output the result
+# The strange 'BEGIN' setup is to prevent 'file' from thinking this file
+# is an awk program
 unrtf --nopict --html "$infile" 2> /dev/null |
-awk '
-BEGIN {
+awk 'BEGIN'\
+' {
   gothead = 0
 }
 /<\/head>/{

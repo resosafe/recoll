@@ -1,4 +1,4 @@
-<!&#68;DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 
 <html>
   <head>
@@ -38,7 +38,7 @@
     <div class="content">
 
       <h1><a href="http://www.recoll.org/">Recoll</a> est 
-	un outil personnel de recherche textuelle pour Unix et Linux</h1>
+      un outil personnel de recherche textuelle pour Unix et Linux</h1>
 
       <p>Il est basé sur le puissant moteur d'indexation <a href=
 	  "http://www.xapian.org">Xapian</a>, pour lequel il offre une
@@ -46,18 +46,29 @@
 	  mettre en oeuvre.</p>
 
       <p><span class="application">Recoll</span> est un logiciel libre
-	gratuit, dont le code source est disponible sous licence GPL. 
-	La dernière version est 
-	<a class="important" href="download.html">1.10.1</a></p>
+      gratuit, dont le code source est disponible sous licence GPL. 
+      La version à jour est 
+      <a class="important" href="download.html">1.8.2</a></p>
 
-      <p>L'interface utilisateur de 
-	<span class="application">Recoll</span> est traduite en
-	Français, mais pas encore la documentation, malheureusement,
-	et la plupart des liens de cette page pointent sur des textes
-	en Anglais.</p>
+      <p><span class="application">Recoll</span> emprunte beaucoup de code
+	d'autres logiciels libres, et accueille volontiers les
+	contributions en code ou en suggestions, voir la page des 
+	<a class="important" href="credits.html">Attributions</a>.</p>
 
+      <p>L'interface utilisateur de <span
+      class="application">Recoll</span> est traduite en Français, mais
+      pas encore la documentation, malheureusement, et la plupart des
+      liens de cette page pointent sur des textes en Anglais.</p>
 
-      <h2>Caractéristiques: </h2>
+      <blockquote>
+      <p><b><i>Déjà utilisateur ?</i></b> Il est possible qu'il 
+	  y ait encore quelques astuces qui vous aient echappé. Un coup
+	  d'oeil rapide sur la page des 
+	  <a href="usermanual/rcl.search.tips.html">petites recettes
+	de recherche</a> pourrait s'avérer fructueux !</p>
+      </blockquote>
+
+      <h2>Caractéristiques: </h1>
 
       <ul>
         <li>Installation facile, peu de dépendances. Pas besoin de
@@ -83,37 +94,26 @@
 
 	<li><a class="weak" href="fr/features.html">
 	    (plus de détails)</a></li>
-      </ul>
-      
-      <p><b><i>Déjà utilisateur ?</i></b> Il est possible qu'il 
-	y ait encore quelques astuces qui vous aient échappées. Un coup
-	d'oeil rapide sur la page des 
-	<a href="usermanual/rcl.search.tips.html">petites recettes
-	  de recherche</a> pourrait s'avérer fructueux !</p>
 
-      <h2>Nouvelles: </h2>
-      <ul>
-	<li>2007-01-29 Recoll 1.10.1 est sorti.</li>
       </ul>
 
-      <h2><a name="support">Support</a></h2>
+      <h2>Nouvelles: </h1>
+      <p>Il y a de nouveaux filtres d'indexation pour les fichiers
+	<span class="application">kword</span> et 
+	<span class="application">abiword</span>. Ils sont téléchargeables
+	dans la   <a href="filters/filters.html">zone des nouveaux
+	filtres</a>, et sont utilisable avec une installation existante de 
+	<span class="application">Recoll</span> 1.8.</p>
+
+
+      <h2><a name="support">Support</a></h3>
 
       <p>Si vous avez un problème quelconque avec le logiciel ou son
       installation, ou une idée de fonctions à ajouter, merci de me
 	<a href=
 	  "mailto:jean-francois.dockes@wanadoo.fr">contacter</a>.</p>
 
-      <p>Voir aussi la <a href="devel.html">page sur le
-      développement</a>.</p>
-      <p><a href="BUGS.txt">Liste des probl&egrave;mes connus</a> (en
-      anglais). </p>
-
-      <h2>Remerciements</h2>
-      <p><span class="application">Recoll</span> emprunte beaucoup de code
-	d'autres logiciels libres, et accueille volontiers les
-	contributions en code ou en suggestions, voir la page des 
-	<a class="important" href="credits.html">Attributions</a>.</p>
-
+      <p>Voir aussi la <a href="devel.html">page sur le développement</a>.</p>
 
     </div>
   </body>

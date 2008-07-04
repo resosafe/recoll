@@ -3,10 +3,10 @@ html {
     margin 0;
 }
 body {
-       position: relative;
-       color: black; 
-       font-family: Verdana, Helvetica, Arial, sans-serif;
-       margin: 1em;
+    position: relative;
+    margin: 0;
+    color: black; 
+    font-family: Verdana, Helvetica, Arial, sans-serif;
 }
 
 a img {
@@ -33,7 +33,7 @@ div.rightlinks {
 /*-Main content area-------------------------*/
 .content {
     margin-top: 2em;
-    margin-left: 2em;
+    margin-left: 25px;
     margin-right: 145px;
 }
 
@@ -46,7 +46,6 @@ div.rightlinks {
 }
 
 h1, h2, h3, h4, h5, h6 {
-    margin-left: -1em;
     color: #222299;
 }
 
@@ -78,9 +77,6 @@ p.indexthumb {
 .application {
     font-weight: bold;
 }
-.literal {
-    font-family: monospace;
-}
 .command {
     font-family: monospace;
 }
@@ -89,7 +85,7 @@ p.indexthumb {
     color: #007a00;
 }
 
-.important {
+a.important {
     background: yellow;
 }
 a.weak {

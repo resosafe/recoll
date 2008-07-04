@@ -1,15 +1,10 @@
-Known bugs in current and older versions:
+Known bugs in current version and older versions:
 
 Bugs that are listed in an older version section are supposedly fixed in
 later versions. Bugs listed in the topmost section may also exist in older
 versions. 
 
-Latest (recoll 1.10.2 + xapian 1.0.x):
-
-- In a preview window, when walking the search term hits with the
-  Previous/Next buttons, 'Previous' actually acts as 'Next' (it does work
-  normally for the local search).
-
+Latest (recoll 1.9.0 + xapian 1.0.2):
 - If the user-chosen result list entry format results in several paragraphs
   (in the qt textedit sense), right clicks will only work inside the first
   one for each entry.
@@ -28,7 +23,7 @@ Latest (recoll 1.10.2 + xapian 1.0.x):
         "api/" directory: 
          http://www.recoll.org/xapian/xapNearDistrib-1.0.patch
         or fetch the already patched source:
-	 http://www.recoll.org/xapian/xapian-core-1.0.5-recollNEARpatch.tar.gz
+	 http://www.recoll.org/xapian/xapian-core-1.0.2-recollNEARpatch.tar.gz
 
         then recompile, and install.
 
@@ -45,6 +40,10 @@ Latest (recoll 1.10.2 + xapian 1.0.x):
   compressed (ie: xxx.txt.gz), recoll will try to start the external viewer
   on the compressed file, which will not work in most cases.
 
+- Problems have been reported indexing big mailstores (several hundreds of
+  thousands of messages): resulting in a very big database and even
+  crashes.
+
 - Under some versions of KDE (ie: Fedora FC5 KDE 3.5.4-0.5.fc5), there is a
   problem with the window stacking order. Opening the "browse" file
   selection dialog from the advanced search dialog will stack the latter
@@ -57,33 +56,6 @@ Latest (recoll 1.10.2 + xapian 1.0.x):
   the database). Don't know the reason. Only idea I have is problem with
   exception handling (recoll catches an exception while trying the
   yet inexistant db).
-
-1.10.1 + xapian 1.0.x
-
-- The decoding of base-64 data in emails fails in a relatively uncommon but
-  sometimes encountered case.
-- The "Previous" button in the preview window would actually go forward
-  when walking the search terms 
-
-1.10.0
-
-- If a filter fails while trying to extract the data from a file, the file
-  will not be indexed at all (not even the file name). The file
-  name should be indexed in this case. This happens in particular in the
-  very common case where the helper application is not installed (ie:
-  missing Exiftool -> no *.jpg names in the index).
-
-- If several query language "ext:" qualifiers are specified, they will be
-  joined by an AND instead of OR, resulting in no results. Using an
-  explicit OR doesn't work (actually OR + field names is generally
-  broken). In some cases, you can use a "type:" qualifier as a workaround.
-
-
-1.9.x
-- Problems have been reported indexing big mailstores (several hundreds of
-  thousands of messages): resulting in a very big database and even
-  crashes.
-
 
 1.8.2
 - Under ubuntu (at least, maybe debian too), the default awk interpreter

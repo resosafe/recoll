@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: mh_mbox.cpp,v 1.3 2007-12-13 06:58:21 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: mh_mbox.cpp,v 1.3.2.1 2008-08-29 13:47:20 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -115,16 +115,26 @@ static inline void stripendnl(line_type& line, int& ll)
 //      From dockes Fri Dec  1 20:36:39 +0100 2006
 // The modified regexp gives the exact same results on the ietf mail archive
 // and my own's.
+// Update, 2008-08-29: some old? Thunderbird versions apparently use a date
+// in "Date: " header format, like:   From - Mon, 8 May 2006 10:57:32
+// This was added as an alternative format. By the way it also fools "mail" and
+// emacs-vm, Recoll is not alone
+//
 static const  char *frompat =  
 #if 0 //1.9.0
     "^From .* [1-2][0-9][0-9][0-9]$";
 #endif
 #if 1
-"^From[ ]+[^ ]+[ ]+"                                  // From toto@tutu
+"^From[ ]+[^ ]+[ ]+"                                  // From whatever
 "[[:alpha:]]{3}[ ]+[[:alpha:]]{3}[ ]+[0-3 ][0-9][ ]+" // Date
 "[0-2][0-9]:[0-5][0-9](:[0-5][0-9])?[ ]+"             // Time, seconds optional
 "([^ ]+[ ]+)?"                                        // Optional tz
 "[12][0-9][0-9][0-9]"            // Year, unanchored, more data may follow
+"|"      // Or standard mail Date: header format
+"^From[ ]+[^ ]+[ ]+"                                  // From toto@tutu
+"[[:alpha:]]{3},[ ]+[0-3]?[0-9][ ]+[[:alpha:]]{3}[ ]+" // Date Mon, 8 May
+"[12][0-9][0-9][0-9][ ]+"            // Year
+"[0-2][0-9]:[0-5][0-9](:[0-5][0-9])?" // Time, secs optional: 10:57(:32)?
     ;
 #endif
     //    "([ ]+[-+][0-9]{4})?$"

@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.134 2008-07-01 11:51:51 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.134.2.1 2008-08-30 07:38:30 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -926,6 +926,11 @@ bool Db::add(const string &fn, const Doc &idoc, const struct stat *stp)
     // the simple file name.
     // We also add a term for the filename extension if any.
     if (dumb_string(doc.utf8fn, noacc) && !noacc.empty()) {
+	// We should truncate after extracting the extension, but then
+	// we'd have to check its size too and this is a pathological
+	// case anyway
+	if (noacc.size() > 230)
+	    utf8truncate(noacc, 230);
 	string::size_type pos = noacc.rfind('.');
 	if (pos != string::npos && pos != noacc.length() -1) {
 	    newdocument.add_term(string("XE") + noacc.substr(pos+1));

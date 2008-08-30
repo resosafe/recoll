@@ -16,7 +16,7 @@
  */
 #ifndef _SMALLUT_H_INCLUDED_
 #define _SMALLUT_H_INCLUDED_
-/* @(#$Id: smallut.h,v 1.28 2008-05-08 09:57:29 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: smallut.h,v 1.28.2.1 2008-08-30 07:31:16 dockes Exp $  (C) 2004 J.F.Dockes */
 #include <string>
 #include <list>
 #include <vector>
@@ -81,7 +81,10 @@ extern string escapeShell(const string &str);
 
 /** Truncate a string to a given maxlength, avoiding cutting off midword
  *  if reasonably possible. */
-extern string truncate_to_word(string &input, string::size_type maxlen);
+extern string truncate_to_word(const string &input, string::size_type maxlen);
+
+/** Truncate in place in an utf8-legal way */
+extern void utf8truncate(string &s, int maxlen);
 
 /** Small utility to substitute printf-like percents cmds in a string */
 bool pcSubst(const string& in, string& out, map<char, string>& subs);

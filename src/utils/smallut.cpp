@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: smallut.cpp,v 1.29 2008-07-01 11:51:51 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: smallut.cpp,v 1.29.2.1 2008-08-30 07:31:16 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -31,6 +31,7 @@ static char rcsid[] = "@(#$Id: smallut.cpp,v 1.29 2008-07-01 11:51:51 dockes Exp
 #include <string>
 
 #include "smallut.h"
+#include "utf8iter.h"
 
 #ifndef NO_NAMESPACES
 using namespace std;
@@ -374,7 +375,7 @@ string neutchars(const string &str, string delims)
  * we have enough, this would be cleanly utf8-aware but would remove 
  * punctuation */
 static const string SEPAR = " \t\n\r-:.;,/[]{}";
-string truncate_to_word(string & input, string::size_type maxlen)
+string truncate_to_word(const string &input, string::size_type maxlen)
 {
     string output;
     if (input.length() <= maxlen) {
@@ -396,6 +397,17 @@ string truncate_to_word(string & input, string::size_type maxlen)
 	output += " ...";
     }
     return output;
+}
+
+void utf8truncate(string &s, int maxlen)
+{
+    Utf8Iter iter(s);
+    int pos = 0;
+    while (iter++ != string::npos) 
+	if (iter.getBpos() < string::size_type(maxlen))
+	    pos = iter.getBpos();
+
+    s.erase(pos);
 }
 
 // Escape things that would look like markup
@@ -563,6 +575,9 @@ float Chrono::secs(int frozen)
 #else
 
 #include <string>
+using namespace std;
+#include <iostream>
+
 #include "smallut.h"
 
 struct spair {
@@ -618,11 +633,17 @@ int main(int argc, char **argv)
 	}
 	printf("\n");
     }
-#else
+#elif 0
     for (int i = 0; i < nsuffpairs; i++) {
 	int c = stringisuffcmp(suffpairs[i].s1, suffpairs[i].s2);
 	printf("[%s] %s [%s] \n", suffpairs[i].s1, 
 	       c == 0 ? "matches" : c < 0 ? "<" : ">", suffpairs[i].s2);
+    }
+#elif 1
+    std::string testit("\303\251l\303\251gant");
+    for (int sz = 10; sz >= 0; sz--) {
+	utf8truncate(testit, sz);
+	cout << testit << endl;
     }
 #endif
 

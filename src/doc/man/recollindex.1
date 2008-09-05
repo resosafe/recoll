@@ -1,4 +1,4 @@
-.\" $Id: recollindex.1,v 1.6 2007-07-10 09:23:28 dockes Exp $ (C) 2005 J.F.Dockes\$
+.\" $Id: recollindex.1,v 1.6.2.1 2008-09-05 10:26:41 dockes Exp $ (C) 2005 J.F.Dockes\$
 .TH RECOLLINDEX 1 "8 January 2006"
 .SH NAME
 recollindex \- indexing command for the Recoll full text search system
@@ -88,23 +88,23 @@ is given, the database will be erased before starting.
 .PP
 If option 
 .B
--m 
+\-m 
 is given, recollindex is started for real time monitoring, using the
 file system monitoring package it was configured for (either fam, gamin, or
 inotify). This mode must have been explicitely configured when building the
 package, it is not available by default. The program will normally detach
 from the controlling terminal and become a daemon. If option
 .B
--D 
+\-D 
 is given, it will stay in the foreground. Option
 .B
--w 
+\-w 
 <seconds> can be used to specify that the program should sleep for the
 specified time before indexing begins. The default value is 60. The daemon
 normally monitors the X11 session and exits when it is reset.
 Option 
 .B
--x
+\-x
 disables this X11 session monitoring (daemon will stay alive even if it
 cannot connect to the X11 server).
 .PP

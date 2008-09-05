@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: internfile.cpp,v 1.38 2008-05-27 05:40:58 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: internfile.cpp,v 1.38.2.1 2008-09-05 11:34:42 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -379,10 +379,16 @@ FileInterner::Status FileInterner::internfile(Rcl::Doc& doc, string& ipath)
     }
 
     /* Try to get doc from the topmost filter */
-    // Security counter: we try not to loop but ...
+
+    // Security counter: looping happens when we stack one other
+    // handler or when walking the file document tree without finding
+    // something to index (typical exemple: email with multiple image
+    // attachments and no image filter installed). So we need to be
+    // quite generous here, especially because there is another
+    // security in the form of a maximum handler stack size.
     int loop = 0;
     while (!m_handlers.empty()) {
-	if (loop++ > 30) {
+	if (loop++ > 500) {
 	    LOGERR(("FileInterner:: looping!\n"));
 	    return FIError;
 	}

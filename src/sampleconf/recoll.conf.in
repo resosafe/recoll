@@ -1,4 +1,4 @@
-# @(#$Id: recoll.conf.in,v 1.21 2007-08-30 09:01:52 dockes Exp $  (C) 2004 J.F.Dockes
+# @(#$Id: recoll.conf.in,v 1.21.4.1 2008-12-05 13:11:41 dockes Exp $  (C) 2004 J.F.Dockes
 #
 # Recoll default configuration file. This typically lives in
 # @prefix@/share/recoll/examples and provides default values. You can
@@ -13,7 +13,7 @@ topdirs = ~
 # ".*" in there (as was the case with an older sample config)
 # These are simple names, not paths (must contain no / )
 skippedNames = #* bin CVS  Cache cache* caughtspam  tmp .thumbnails .svn \
-	     *~ recollrc .beagle
+	     *~ recollrc .beagle .git .hg .bzr
 
 # Wildcard expressions for paths we shouldn't go into. The database and
 # configuration directories will be added in there, else the default value

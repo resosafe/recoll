@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: textsplit.cpp,v 1.36 2007-12-13 06:58:21 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: textsplit.cpp,v 1.36.4.1 2008-12-05 11:17:51 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -59,6 +59,7 @@ enum CharClass {LETTER=256, SPACE=257, DIGIT=258, WILD=259};
 static int charclasses[256];
 
 static set<unsigned int> unicign;
+static set<unsigned int> visiblewhite;
 static void setcharclasses()
 {
     static int init = 0;
@@ -91,9 +92,14 @@ static void setcharclasses()
     for (i = 0; i  < strlen(special); i++)
 	charclasses[int(special[i])] = special[i];
 
-    for (i = 0; i < sizeof(uniign); i++) 
+    for (i = 0; i < sizeof(uniign) / sizeof(int); i++) {
 	unicign.insert(uniign[i]);
+    }
     unicign.insert((unsigned int)-1);
+
+    for (i = 0; i < sizeof(avsbwht) / sizeof(int); i++) {
+	visiblewhite.insert(avsbwht[i]);
+    }
 
     init = 1;
 }
@@ -531,6 +537,102 @@ int TextSplit::countWords(const string& s, TextSplit::Flags flgs)
     TextSplit splitter(&cb, flgs);
     splitter.text_to_words(s);
     return cb.wcnt;
+}
+
+bool TextSplit::hasVisibleWhite(const string &in)
+{
+    setcharclasses();
+    Utf8Iter it(in);
+    for (; !it.eof(); it++) {
+	unsigned int c = *it;
+	LOGDEB3(("TextSplit::hasVisibleWhite: testing 0x%04x\n", c));
+	if (c == (unsigned int)-1) {
+	    LOGERR(("hasVisibleWhite: error while scanning UTF-8 string\n"));
+	    return false;
+	}
+	if (visiblewhite.find(c) != visiblewhite.end())
+	    return true;
+    }
+    return false;
+}
+
+template <class T> bool u8stringToStrings(const string &s, T &tokens)
+{
+    setcharclasses();
+    Utf8Iter it(s);
+
+    string current;
+    tokens.clear();
+    enum states {SPACE, TOKEN, INQUOTE, ESCAPE};
+    states state = SPACE;
+    for (; !it.eof(); it++) {
+	unsigned int c = *it;
+	if (visiblewhite.find(c) != visiblewhite.end()) 
+	    c = ' ';
+	LOGDEB3(("TextSplit::stringToStrings: 0x%04x\n", c));
+	if (c == (unsigned int)-1) {
+	    LOGERR(("TextSplit::stringToStrings: error while "
+		    "scanning UTF-8 string\n"));
+	    return false;
+	}
+
+	switch (c) {
+	    case '"': 
+	    switch(state) {
+	    case SPACE: state = INQUOTE; continue;
+	    case TOKEN: goto push_char;
+	    case ESCAPE: state = INQUOTE; goto push_char;
+	    case INQUOTE: tokens.push_back(current);current.clear();
+		state = SPACE; continue;
+	    }
+	    break;
+	    case '\\': 
+	    switch(state) {
+	    case SPACE: 
+	    case TOKEN: state=TOKEN; goto push_char;
+	    case INQUOTE: state = ESCAPE; continue;
+	    case ESCAPE: state = INQUOTE; goto push_char;
+	    }
+	    break;
+
+	    case ' ': 
+	    case '\t': 
+	    case '\n': 
+	    case '\r': 
+	    switch(state) {
+	      case SPACE: continue;
+	      case TOKEN: tokens.push_back(current); current.clear();
+		state = SPACE; continue; 
+	    case INQUOTE: 
+	    case ESCAPE: goto push_char;
+	    }
+	    break;
+
+	    default:
+	    switch(state) {
+	      case ESCAPE: state = INQUOTE; break;
+	      case SPACE:  state = TOKEN;  break;
+	      case TOKEN: 
+	      case INQUOTE: break;
+	    }
+	push_char:
+	    it.appendchartostring(current);
+	}
+    }
+
+    // End of string. Process residue, and possible error (unfinished quote)
+    switch(state) {
+    case SPACE: break;
+    case TOKEN: tokens.push_back(current); break;
+    case INQUOTE: 
+    case ESCAPE: return false;
+    }
+    return true;
+}
+
+bool TextSplit::stringToStrings(const string &s, list<string> &tokens)
+{
+    return u8stringToStrings<list<string> >(s, tokens);
 }
 
 #else  // TEST driver ->

@@ -16,7 +16,9 @@
  */
 #ifndef _PROPLIST_H_INCLUDED_
 #define _PROPLIST_H_INCLUDED_
-/* @(#$Id: uproplist.h,v 1.2 2006-01-30 11:15:27 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: uproplist.h,v 1.2.12.1 2008-12-05 11:17:51 dockes Exp $  (C) 2004 J.F.Dockes */
+
+
 /* 
  * A subset of Unicode chars that we consider whitespace when we split text in
  * words. 
@@ -36,19 +38,22 @@
 # For terms of use, see http://www.unicode.org/terms_of_use.html
 # For documentation, see UCD.html
 */
-
 static const unsigned int uniign[] = {
-    0x0085, /*    ; White_Space # Cc       <control-0085>*/
-    0x00A0, /*  ; White_Space # Zs       NO-BREAK SPACE*/
-    0x00A1, /* misc signs, bullet etc... */
-    0x00A2,
-    0x00A3,
-    0x00A4,
-    0x00A5,
-    0x00A6,
-    0x00A9, /*  copyright sign */
-    0x00AA,
-    0x00AE, /*  registered sign */
+    0x0085, /* NEXT LINE NEL;Cc */
+    0x00A0, /* NO-BREAK SPACE; Zs */
+    0x00A1, /* INVERTED EXCLAMATION MARK;Po */
+    0x00A2, /* CENT SIGN;Sc */
+    0x00A3, /* POUND SIGN;Sc; */
+    0x00A4, /* CURRENCY SIGN;Sc; */
+    0x00A5, /* YEN SIGN;Sc; */
+    0x00A6, /* BROKEN BAR;So */
+    0x00A7, /* SECTION SIGN;So; */
+    0x00A8, /* DIAERESIS;Sk; */
+    0x00A9, /* COPYRIGHT SIGN;So */
+    0x00AA, /* FEMININE ORDINAL INDICATOR;Ll */
+    0x00AB, /* LEFT-POINTING DOUBLE ANGLE QUOTATION MARK;Pi */
+    0x00AC, /* NOT SIGN;Sm */
+    0x00AE, /* registered sign */
     0x1680, /*  ; White_Space # Zs       OGHAM SPACE MARK*/
     0x180E, /*  ; White_Space # Zs       MONGOLIAN VOWEL SEPARATOR*/
     0x2000, /*  ; White_Space # Zs  [11] EN QUAD..HAIR SPACE*/
@@ -181,4 +186,30 @@ static const unsigned int uniign[] = {
     0xFF61, /*  ; STerm # Po       HALFWIDTH IDEOGRAPHIC FULL STOP*/
 };
 
-#endif /*PLIST_H_INCLUDED_ */
+/* Things that would visibly break a block of text, rendering obvious the need
+ * of quotation if a phrase search is wanted */
+static const unsigned int avsbwht[] = {
+    0x0009, /* CHARACTER TABULATION */
+    0x000A, /* LINE FEED */
+    0x000D, /* CARRIAGE RETURN */
+    0x0020, /* SPACE;Zs;0;WS */
+    0x00A0, /* NO-BREAK SPACE;Zs;0;CS */
+    0x1680, /* OGHAM SPACE MARK;Zs;0;WS */
+    0x180E, /* MONGOLIAN VOWEL SEPARATOR;Zs;0;WS */
+    0x2000, /* EN QUAD;Zs;0;WS */
+    0x2001, /* EM QUAD;Zs;0;WS */
+    0x2002, /* EN SPACE;Zs;0;WS */
+    0x2003, /* EM SPACE;Zs;0;WS */
+    0x2004, /* THREE-PER-EM SPACE;Zs;0;WS */
+    0x2005, /* FOUR-PER-EM SPACE;Zs;0;WS */
+    0x2006, /* SIX-PER-EM SPACE;Zs;0;WS */
+    0x2007, /* FIGURE SPACE;Zs;0;WS */
+    0x2008, /* PUNCTUATION SPACE;Zs;0;WS */
+    0x2009, /* THIN SPACE;Zs;0;WS */
+    0x200A, /* HAIR SPACE;Zs;0;WS */
+    0x202F, /* NARROW NO-BREAK SPACE;Zs;0;CS */
+    0x205F, /* MEDIUM MATHEMATICAL SPACE;Zs;0;WS */
+    0x3000, /* IDEOGRAPHIC SPACE;Zs;0;WS */
+};
+
+#endif // _PROPLIST_H_INCLUDED_

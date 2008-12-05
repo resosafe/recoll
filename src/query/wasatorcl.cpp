@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: wasatorcl.cpp,v 1.16 2008-10-07 06:52:57 dockes Exp $ (C) 2006 J.F.Dockes";
+static char rcsid[] = "@(#$Id: wasatorcl.cpp,v 1.16.2.1 2008-12-05 11:17:51 dockes Exp $ (C) 2006 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -101,7 +101,7 @@ Rcl::SearchData *wasaQueryToRcl(WasaQuery *wasa)
 		break;
 	    } 
 
-	    if ((*it)->m_value.find_first_of(" \t\n\r") != string::npos) {
+	    if (TextSplit::hasVisibleWhite((*it)->m_value)) {
 		int slack = (mods & WasaQuery::WQM_PHRASESLACK) ? 10 : 0;
 		Rcl::SClType tp = Rcl::SCLT_PHRASE;
 		if (mods & WasaQuery::WQM_PROX) {

@@ -16,11 +16,13 @@
  */
 #ifndef _TEXTSPLIT_H_INCLUDED_
 #define _TEXTSPLIT_H_INCLUDED_
-/* @(#$Id: textsplit.h,v 1.20 2007-10-04 12:21:52 dockes Exp $  (C) 2004 J.F.Dockes */
+/* @(#$Id: textsplit.h,v 1.20.4.1 2008-12-05 11:17:51 dockes Exp $  (C) 2004 J.F.Dockes */
 
 #include <string>
+#include <list>
 #ifndef NO_NAMESPACES
 using std::string;
+using std::list;
 #endif
 
 /**
@@ -74,15 +76,27 @@ public:
     {
     }
 
-    /**
-     * Split text, emit words and positions.
-     */
+    /** Split text, emit words and positions. */
     bool text_to_words(const string &in);
 
-    // Utility functions : these does not need the user to setup a callback 
+    //Utility functions : these does not need the user to setup a callback 
     // etc.
+
+    /** Count words in string, as the splitter would generate them */
     static int countWords(const string &in, Flags flgs = TXTS_ONLYSPANS);
 
+    /** Check if this is visibly not a single block of text */
+    static bool hasVisibleWhite(const string &in);
+
+    /** Split text span into strings, at white space, allowing for substrings
+     * quoted with " . Escaping with \ works as usual inside the quoted areas.
+     * This has to be kept separate from smallut.cpp's stringsToStrings, which
+     * basically works only if whitespace is ascii, and which processes 
+     * non-utf-8 input (iso-8859 config files work ok). This hopefully
+     * handles all Unicode whitespace, but needs correct utf-8 input
+     */
+    static bool stringToStrings(const string &s, list<string> &tokens);
+    
 private:
     Flags         m_flags;
     TextSplitCB  *m_cb;

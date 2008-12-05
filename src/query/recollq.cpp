@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: recollq.cpp,v 1.20 2008-10-13 08:23:36 dockes Exp $ (C) 2006 J.F.Dockes";
+static char rcsid[] = "@(#$Id: recollq.cpp,v 1.20.2.1 2008-12-05 11:17:51 dockes Exp $ (C) 2006 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -203,7 +203,7 @@ int recollq(RclConfig **cfp, int argc, char **argv)
 	    // If there is no white space inside the query, then the user
 	    // certainly means it as a phrase.
 	    bool isreallyaphrase = false;
-	    if (qs.find_first_of(" \t") == string::npos)
+	    if (!TextSplit::hasVisibleWhite(qs))
 		isreallyaphrase = true;
 	    clp = isreallyaphrase ? 
 		new Rcl::SearchDataClauseDist(Rcl::SCLT_PHRASE, qs, 0) :

@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: searchdata.cpp,v 1.26 2008-10-14 07:50:13 dockes Exp $ (C) 2006 J.F.Dockes";
+static char rcsid[] = "@(#$Id: searchdata.cpp,v 1.26.2.1 2008-12-05 11:17:51 dockes Exp $ (C) 2006 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -380,7 +380,7 @@ bool StringToXapianQ::processUserString(const string &iq,
     // depends on separators: [paul@dom.net] would still be a word
     // (span), but [about:me] will probably be handled as a phrase.
     list<string> phrases;
-    stringToStrings(iq, phrases);
+    TextSplit::stringToStrings(iq, phrases);
 
     // Process each element: textsplit into terms, handle stem/wildcard 
     // expansion and transform into an appropriate Xapian::Query
@@ -568,7 +568,7 @@ bool SearchDataClauseFilename::toNativeQuery(Rcl::Db &db, void *p,
     *qp = Xapian::Query();
 
     list<string> patterns;
-    stringToStrings(m_text, patterns);
+    TextSplit::stringToStrings(m_text, patterns);
     list<string> names;
     for (list<string>::iterator it = patterns.begin();
 	 it != patterns.end(); it++) {

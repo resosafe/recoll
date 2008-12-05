@@ -1,4 +1,4 @@
-# @(#$Id: mimeconf,v 1.46 2008-10-09 09:21:38 dockes Exp $  (C) 2004 J.F.Dockes
+# @(#$Id: mimeconf,v 1.46.2.1 2008-12-05 13:11:05 dockes Exp $  (C) 2004 J.F.Dockes
 
 # Recoll : associations of mime types to processing filters.
 # There are different sections for decompression, 'interning' for indexing
@@ -23,8 +23,10 @@ application/x-bzip2 =  uncompress rcluncomp bunzip2 %f %t
 ## ###################################
 # Filters for indexing and internal preview. 
 # The "internal" filters are hardwired in the c++ code.
-# The external "exec" filters are typically scripts. They output the
+# The external "exec" filters are typically scripts. By default, they output the
 # document in simple html format, have a look at the scripts.
+# A different format (ie text/plain), and a character set can be defined for
+# each filter, see the exemples below (ie: msword)
 [index]
 # Note: rcldoc did some work to splice hyphenated words at eol. Seems
 # actually not needed because antiword apparently does it too
@@ -199,28 +201,3 @@ other = application/vnd.sun.xml.draw \
         application/vnd.sun.xml.math \
         application/x-fsdirectory \
         image/svg+xml \
-
-
-[prefixes]
-
-# This allows extending the set of fields that recoll understand/searches. 
-# See the manual for exact usage.
-# Important: 
-#   - the field names MUST be all lowercase here. They can be anycased
-#     in the documents:
-#   - The extension field prefixes MUST begin with X and be all UPPERCASE.
-title = S
-caption = S
-subject = S
-
-author = A
-creator = A
-from = A
-
-keyword = K
-tag = K
-keywords = K
-tags = K
-
-# testing /example :
-recollspecialfield = XRCLSF

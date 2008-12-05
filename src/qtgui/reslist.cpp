@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: reslist.cpp,v 1.47 2008-09-29 11:33:55 dockes Exp $ (C) 2005 J.F.Dockes";
+static char rcsid[] = "@(#$Id: reslist.cpp,v 1.47.2.1 2008-12-05 13:10:38 dockes Exp $ (C) 2005 J.F.Dockes";
 #endif
 
 #include <time.h>
@@ -770,11 +770,15 @@ void ResList::menuEdit()
 }
 void ResList::menuCopyFN()
 {
+    LOGDEB(("menuCopyFN\n"));
     Rcl::Doc doc;
     if (getDoc(m_popDoc, doc)) {
+	LOGDEB(("menuCopyFN: Got doc, fn: [%s]\n", doc.url.c_str()));
 	// Our urls currently always begin with "file://"
 	QApplication::clipboard()->setText(doc.url.c_str()+7, 
 					   QClipboard::Selection);
+	QApplication::clipboard()->setText(doc.url.c_str()+7, 
+					   QClipboard::Clipboard);
     }
 }
 void ResList::menuCopyURL()
@@ -784,8 +788,11 @@ void ResList::menuCopyURL()
 	string url =  url_encode(doc.url, 7);
 	QApplication::clipboard()->setText(url.c_str(), 
 					   QClipboard::Selection);
+	QApplication::clipboard()->setText(url.c_str(), 
+					   QClipboard::Clipboard);
     }
 }
+
 void ResList::menuExpand()
 {
     emit docExpand(m_popDoc);

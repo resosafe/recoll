@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: mimetype.cpp,v 1.21 2008-07-01 10:29:45 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: mimetype.cpp,v 1.21.4.1 2008-12-05 13:13:02 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -147,6 +147,7 @@ string mimetype(const string &fn, const struct stat *stp,
 #include <stdio.h>
 #include <sys/stat.h>
 
+#include <cstdlib>
 #include <iostream>
 
 #include "debuglog.h"

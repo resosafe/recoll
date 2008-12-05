@@ -1,5 +1,5 @@
 #ifndef lint
-static char	rcsid[] = "@(#$Id: csguess.cpp,v 1.7 2007-12-13 06:58:21 dockes Exp $ (C) 2004 J.F.Dockes";
+static char	rcsid[] = "@(#$Id: csguess.cpp,v 1.7.4.1 2008-12-05 13:13:02 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -190,6 +190,7 @@ string csguess(const string &in, const string &dflt)
 
 #include <errno.h>
 
+#include <cstdlib>
 #include <string>
 #include <iostream>
 

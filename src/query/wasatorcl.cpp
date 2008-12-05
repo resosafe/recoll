@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: wasatorcl.cpp,v 1.16.2.1 2008-12-05 11:17:51 dockes Exp $ (C) 2006 J.F.Dockes";
+static char rcsid[] = "@(#$Id: wasatorcl.cpp,v 1.16.2.2 2008-12-05 13:13:02 dockes Exp $ (C) 2006 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -17,6 +17,7 @@ static char rcsid[] = "@(#$Id: wasatorcl.cpp,v 1.16.2.1 2008-12-05 11:17:51 dock
  *   Free Software Foundation, Inc.,
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
+#include <cstdio>
 #include <string>
 #include <list>
 using std::string;

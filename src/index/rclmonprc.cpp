@@ -2,7 +2,7 @@
 
 #ifdef RCL_MONITOR
 #ifndef lint
-static char rcsid[] = "@(#$Id: rclmonprc.cpp,v 1.13 2007-12-13 06:58:21 dockes Exp $ (C) 2006 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rclmonprc.cpp,v 1.13.4.1 2008-12-05 13:13:02 dockes Exp $ (C) 2006 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -33,6 +33,7 @@ static char rcsid[] = "@(#$Id: rclmonprc.cpp,v 1.13 2007-12-13 06:58:21 dockes E
 #include <errno.h>
 #include <signal.h>
 #include <cstring>
+#include <cstdio>
 #include <cstdlib>
 
 #include "debuglog.h"

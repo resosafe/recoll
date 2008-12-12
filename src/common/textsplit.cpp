@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: textsplit.cpp,v 1.36.4.1 2008-12-05 11:17:51 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: textsplit.cpp,v 1.36.4.2 2008-12-12 12:28:24 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -148,6 +148,11 @@ static inline int whatcc(unsigned int c)
      || ((p) >= 0xFF00 && (p) <= 0xFFEF)                                \
      || ((p) >= 0x20000 && (p) <= 0x2A6DF)                              \
      || ((p) >= 0x2F800 && (p) <= 0x2FA1F))
+
+bool TextSplit::isCJK(int c)
+{
+    return UNICODE_IS_CJK(c);
+}
 
 bool          TextSplit::o_processCJK = true;
 unsigned int  TextSplit::o_CJKNgramLen = 2;

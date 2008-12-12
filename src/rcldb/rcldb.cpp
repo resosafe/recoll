@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.148 2008-10-07 06:44:23 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.148.2.1 2008-12-12 12:28:24 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -444,10 +444,19 @@ string Db::Native::makeAbstract(Xapian::docid docid, Query *query)
 
     // Finally build the abstract by walking the map (in order of position)
     string abstract;
+    abstract.reserve(sparseDoc.size() * 10);
+    bool incjk = false;
     for (map<unsigned int, string>::const_iterator it = sparseDoc.begin();
 	 it != sparseDoc.end(); it++) {
 	LOGDEB2(("Abtract:output %u -> [%s]\n", it->first,it->second.c_str()));
-	abstract += it->second + " ";
+	Utf8Iter uit(it->second);
+	bool newcjk = false;
+	if (TextSplit::isCJK(*uit))
+	    newcjk = true;
+	if (!incjk || (incjk && !newcjk))
+	    abstract += " ";
+	incjk = newcjk;
+	abstract += it->second;
     }
 
     // This happens for docs with no terms (only filename) indexed? I'll fix 

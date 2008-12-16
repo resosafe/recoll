@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: wasastringtoquery.cpp,v 1.9 2008-08-26 13:50:13 dockes Exp $ (C) 2006 J.F.Dockes";
+static char rcsid[] = "@(#$Id: wasastringtoquery.cpp,v 1.9.2.1 2008-12-16 08:54:00 dockes Exp $ (C) 2006 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -25,11 +25,13 @@ static char rcsid[] = "@(#$Id: wasastringtoquery.cpp,v 1.9 2008-08-26 13:50:13 d
 
 #include "wasastringtoquery.h"
 
-//#define DEB_WASASTRINGTOQ 1
+// #define DEB_WASASTRINGTOQ 1
 #ifdef DEB_WASASTRINGTOQ
 #define DPRINT(X) fprintf X
+#define DUMPQ(Q) {string D;Q->describe(D);fprintf(stderr, "%s\n", D.c_str());}
 #else
 #define DPRINT(X)
+#define DUMPQ(Q)
 #endif
 
 WasaQuery::~WasaQuery()
@@ -289,9 +291,9 @@ StringToWasaQuery::Internal::stringToQuery(const string& str, string& reason)
 		orChain->m_op = WasaQuery::OP_OR;
 	    }
 
-	    // We need to transfer the previous query from the main vector
-	    // to the OR subquery
-	    if (!query->m_subs.empty()) {
+	    // For the first OR, we need to transfer the previous
+	    // query from the main vector to the OR subquery
+	    if (orChain->m_subs.empty() && !query->m_subs.empty()) {
 		orChain->m_subs.push_back(query->m_subs.back());
 		query->m_subs.pop_back();
 	    }
@@ -416,8 +418,10 @@ StringToWasaQuery::Internal::stringToQuery(const string& str, string& reason)
 
     if (orChain) {
 	// Getting out of OR. Add the OR subquery to the main one
+	DPRINT((stderr, "Adding OR chain to main.Before: \n"));
+	DUMPQ(query);
+	DUMPQ(orChain);
 	query->m_subs.push_back(orChain);
-	DPRINT((stderr, "Adding OR chain to main\n"));
     }
 
     regfree(&m_rx);
@@ -451,7 +455,7 @@ int main(int argc, char **argv)
     }
     string desc;
     q->describe(desc);
-    printf("%s\n", desc.c_str());
+    fprintf(stderr, "Finally: %s\n", desc.c_str());
     exit(0);
 }
 

@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.148.2.2 2008-12-17 14:37:23 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.148.2.3 2008-12-17 16:20:06 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -369,9 +369,12 @@ string Db::Native::makeAbstract(Xapian::docid docid, Query *query)
 		    }
 		}
 		// Add ... at the end. This may be replaced later by
-		// an overlapping extract
-		if (sparseDoc[sto+1].empty())
+		// an overlapping extract. Take care not to replace an
+		// empty string here, we really want an empty slot,
+		// use find()
+		if (sparseDoc.find(sto+1) == sparseDoc.end()) {
 		    sparseDoc[sto+1] = ellipsis;
+		}
 
 		// Limit to allocated occurences and total size
 		if (++occurrences >= maxoccs || 

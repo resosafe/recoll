@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.148.2.1 2008-12-12 12:28:24 dockes Exp $ (C) 2004 J.F.Dockes";
+static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.148.2.2 2008-12-17 14:37:23 dockes Exp $ (C) 2004 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -310,6 +310,10 @@ string Db::Native::makeAbstract(Xapian::docid docid, Query *query)
 	return string();
     }
 
+    // This is used to mark positions overlapped by a multi-word match term
+    const string occupiedmarker("?");
+    const string ellipsis("...");
+
     // Let's go populate
     for (multimap<double, string>::reverse_iterator qit = byQ.rbegin(); 
 	 qit != byQ.rend(); qit++) {
@@ -324,7 +328,10 @@ string Db::Native::makeAbstract(Xapian::docid docid, Query *query)
 	    LOGABS(("makeAbstract: [%s] %d max occs (coef %.2f)\n", 
 		    qterm.c_str(), maxoccs, q));
 	}
-		
+
+	// The match term may span several words
+	int qtrmwrdcnt = TextSplit::countWords(qterm, TextSplit::TXTS_NOSPANS);
+
 	Xapian::PositionIterator pos;
 	// There may be query terms not in this doc. This raises an
 	// exception when requesting the position list, we catch it.
@@ -333,22 +340,39 @@ string Db::Native::makeAbstract(Xapian::docid docid, Query *query)
 	    unsigned int occurrences = 0;
 	    for (pos = db.positionlist_begin(docid, qterm); 
 		 pos != db.positionlist_end(docid, qterm); pos++) {
-		unsigned int ipos = *pos;
-		if (ipos < baseTextPosition) // Not in text body
+		int ipos = *pos;
+		if (ipos < int(baseTextPosition)) // Not in text body
 		    continue;
 		LOGABS(("makeAbstract: [%s] at %d occurrences %d maxoccs %d\n",
 			qterm.c_str(), ipos, occurrences, maxoccs));
 		// Remember the term position
 		qtermposs.push_back(ipos);
-		// Add adjacent slots to the set to populate at next step
+
+		// Add adjacent slots to the set to populate at next
+		// step by inserting empty strings. Special provisions
+		// for adding ellipsis and for positions overlapped by
+		// the match term.
 		unsigned int sta = MAX(0, ipos-m_db->m_synthAbsWordCtxLen);
-		unsigned int sto = ipos+m_db->m_synthAbsWordCtxLen;
+		unsigned int sto = ipos + qtrmwrdcnt-1 + 
+		    m_db->m_synthAbsWordCtxLen;
 		for (unsigned int ii = sta; ii <= sto;  ii++) {
-		    if (ii == ipos)
+		    if (ii == (unsigned int)ipos) {
 			sparseDoc[ii] = qterm;
-		    else
+		    } else if (ii > (unsigned int)ipos && 
+			       ii < (unsigned int)ipos + qtrmwrdcnt) {
+			sparseDoc[ii] = occupiedmarker;
+		    } else if (!sparseDoc[ii].compare(ellipsis)) {
+			// For an empty, slot, the test has a side
+			// effect of inserting an empty string which
+			// is what we want
 			sparseDoc[ii] = emptys;
+		    }
 		}
+		// Add ... at the end. This may be replaced later by
+		// an overlapping extract
+		if (sparseDoc[sto+1].empty())
+		    sparseDoc[sto+1] = ellipsis;
+
 		// Limit to allocated occurences and total size
 		if (++occurrences >= maxoccs || 
 		    qtermposs.size() >= maxtotaloccs)
@@ -430,18 +454,6 @@ string Db::Native::makeAbstract(Xapian::docid docid, Query *query)
 
     LOGDEB(("makeAbstract:%d: extracting\n", chron.millis()));
 
-    // Add "..." at ends of chunks
-    for (vector<unsigned int>::const_iterator pos = qtermposs.begin();
-	 pos != qtermposs.end(); pos++) {
-	unsigned int sto = *pos + m_db->m_synthAbsWordCtxLen;
-
-	// Possibly add a ... at the end of chunk if it's not
-	// overlapping
-	if (sparseDoc.find(sto) != sparseDoc.end() && 
-	    sparseDoc.find(sto+1) == sparseDoc.end())
-	    sparseDoc[sto+1] = "...";
-    }
-
     // Finally build the abstract by walking the map (in order of position)
     string abstract;
     abstract.reserve(sparseDoc.size() * 10);
@@ -449,6 +461,8 @@ string Db::Native::makeAbstract(Xapian::docid docid, Query *query)
     for (map<unsigned int, string>::const_iterator it = sparseDoc.begin();
 	 it != sparseDoc.end(); it++) {
 	LOGDEB2(("Abtract:output %u -> [%s]\n", it->first,it->second.c_str()));
+	if (!occupiedmarker.compare(it->second))
+	    continue;
 	Utf8Iter uit(it->second);
 	bool newcjk = false;
 	if (TextSplit::isCJK(*uit))

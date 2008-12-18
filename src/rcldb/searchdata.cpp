@@ -1,5 +1,5 @@
 #ifndef lint
-static char rcsid[] = "@(#$Id: searchdata.cpp,v 1.26.2.1 2008-12-05 11:17:51 dockes Exp $ (C) 2006 J.F.Dockes";
+static char rcsid[] = "@(#$Id: searchdata.cpp,v 1.26.2.2 2008-12-18 15:09:15 dockes Exp $ (C) 2006 J.F.Dockes";
 #endif
 /*
  *   This program is free software; you can redistribute it and/or modify
@@ -224,7 +224,7 @@ public:
     }
 
 private:
-    void stripExpandTerm(bool dont, const string& term, list<string>& exp, 
+    void expandTerm(bool dont, const string& term, list<string>& exp, 
 		      string& sterm);
 
     Db&           m_db;
@@ -235,7 +235,7 @@ private:
     vector<vector<string> > m_groups; 
 };
 
-/** Unaccent and lowercase term, possibly expand stem and wildcards
+/** Expand stem and wildcards
  *
  * @param nostemexp don't perform stem expansion. This is mainly used to
  *   prevent stem expansion inside phrases (because the user probably
@@ -245,24 +245,20 @@ private:
  *   capitalized term, or wildcard(s)
  * @param term input single word
  * @param exp output expansion list
- * @param sterm output lower-cased+unaccented version of the input term 
- *              (only for stem expansion, not wildcards)
+ * @param sterm output original input term if there were no wildcards
  */
-void StringToXapianQ::stripExpandTerm(bool nostemexp, 
+void StringToXapianQ::expandTerm(bool nostemexp, 
 				      const string& term, 
 				      list<string>& exp,
 				      string &sterm)
 {
-    LOGDEB2(("stripExpandTerm: term [%s] stemlang [%s] nostemexp %d\n", 
+    LOGDEB2(("expandTerm: term [%s] stemlang [%s] nostemexp %d\n", 
 	     term.c_str(), m_stemlang.c_str(), nostemexp));
     sterm.erase();
     exp.clear();
     if (term.empty()) {
 	return;
     }
-    // term1 is lowercase and without diacritics
-    string term1;
-    dumb_string(term, term1);
 
     bool haswild = term.find_first_of("*?[") != string::npos;
 
@@ -287,16 +283,16 @@ void StringToXapianQ::stripExpandTerm(bool nostemexp,
 
     if (nostemexp && !haswild) {
 	// Neither stemming nor wildcard expansion: just the word
-	sterm = term1;
-	exp.push_front(term1);
+	sterm = term;
+	exp.push_front(term);
 	exp.resize(1);
     } else {
 	list<TermMatchEntry> l;
 	if (haswild) {
-	    m_db.termMatch(Rcl::Db::ET_WILD, m_stemlang, term1, l);
+	    m_db.termMatch(Rcl::Db::ET_WILD, m_stemlang, term, l);
 	} else {
-	    sterm = term1;
-	    m_db.termMatch(Rcl::Db::ET_STEM, m_stemlang, term1, l);
+	    sterm = term;
+	    m_db.termMatch(Rcl::Db::ET_STEM, m_stemlang, term, l);
 	}
 	for (list<TermMatchEntry>::const_iterator it = l.begin(); 
 	     it != l.end(); it++) {
@@ -361,7 +357,7 @@ static void addPrefix(list<string>& terms, const string& prefix)
  * @return the subquery count (either or'd stem-expanded terms or phrase word
  *   count)
  */
-bool StringToXapianQ::processUserString(const string &iq,
+bool StringToXapianQ::processUserString(const string &_iq,
 					const string &prefix,
 					string &ermsg,
 					list<Xapian::Query> &pqueries,
@@ -369,10 +365,18 @@ bool StringToXapianQ::processUserString(const string &iq,
 					int slack, bool useNear
 					)
 {
-    LOGDEB(("StringToXapianQ:: query string: [%s]\n", iq.c_str()));
+    LOGDEB(("StringToXapianQ:: query string: [%s]\n", _iq.c_str()));
     ermsg.erase();
     m_terms.clear();
     m_groups.clear();
+
+    // First unaccent/normalize the input: do it first so that it
+    // happens in the same order as when indexing: unac then split. As
+    // the character count can change during normalisation, this is
+    // specially important for cjk because the artificial cjk split is
+    // based on character counts
+    string iq;
+    dumb_string(_iq, iq);
 
     // Split input into user-level words and double-quoted phrases:
     // word1 word2 "this is a phrase". The text splitter may still
@@ -430,7 +434,7 @@ bool StringToXapianQ::processUserString(const string &iq,
 		    string term = splitData->terms.front();
 		    list<string> exp;  
 		    string sterm; // dumb version of user term
-		    stripExpandTerm(false, term, exp, sterm);
+		    expandTerm(false, term, exp, sterm);
 		    m_terms.insert(m_terms.end(), exp.begin(), exp.end());
 		    // Push either term or OR of stem-expanded set
 		    addPrefix(exp, prefix);
@@ -471,7 +475,7 @@ bool StringToXapianQ::processUserString(const string &iq,
 
 		    string sterm;
 		    list<string>exp;
-		    stripExpandTerm(nostemexp, *it, exp, sterm);
+		    expandTerm(nostemexp, *it, exp, sterm);
 		    groups.push_back(vector<string>(exp.begin(), exp.end()));
 		    addPrefix(exp, prefix);
 		    orqueries.push_back(Xapian::Query(Xapian::Query::OP_OR, 

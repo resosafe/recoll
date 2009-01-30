@@ -392,6 +392,21 @@ Drücken Sie Abbrechen, um die Konfigurationsdatei vor dem Start der Indizierung
     </message>
 </context>
 <context>
+    <name>QtGuiResListPager</name>
+    <message>
+        <source>Previous</source>
+        <translation type="obsolete">Voriges</translation>
+    </message>
+    <message>
+        <source>Next</source>
+        <translation type="obsolete">Nächstes</translation>
+    </message>
+    <message>
+        <source>(show query)</source>
+        <translation type="obsolete">(Suche zeigen)</translation>
+    </message>
+</context>
+<context>
     <name>RclMain</name>
     <message>
         <source>Advanced search</source>
@@ -870,7 +885,7 @@ Soll der Voreinstellungsdialog geöffnet werden?</translation>
     </message>
     <message>
         <source>Unavailable document</source>
-        <translation type="obsolete">Dokument nicht verfügbar</translation>
+        <translation type="unfinished">Dokument nicht verfügbar</translation>
     </message>
     <message>
         <source>Show query details</source>
@@ -884,15 +899,15 @@ Soll der Voreinstellungsdialog geöffnet werden?</translation>
     </message>
     <message>
         <source>Previous</source>
-        <translation type="obsolete">Voriges</translation>
+        <translation type="unfinished">Voriges</translation>
     </message>
     <message>
         <source>Next</source>
-        <translation type="obsolete">Nächstes</translation>
+        <translation type="unfinished">Nächstes</translation>
     </message>
     <message>
         <source>&lt;p&gt;&lt;b&gt;No results found&lt;/b&gt;&lt;br&gt;</source>
-        <translation type="obsolete">&lt;p&gt;&lt;b&gt;keine Ergebnisse&lt;/b&gt;&lt;br&gt;</translation>
+        <translation type="unfinished">&lt;p&gt;&lt;b&gt;keine Ergebnisse&lt;/b&gt;&lt;br&gt;</translation>
     </message>
     <message>
         <source>&amp;Preview</source>
@@ -956,6 +971,22 @@ Soll der Voreinstellungsdialog geöffnet werden?</translation>
     </message>
     <message>
         <source>Save to File</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Documents &lt;b&gt;%d-%d&lt;/b&gt; out of at least &lt;b&gt;%d&lt;/b&gt; for </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Documents &lt;b&gt;%d-%d&lt;/b&gt; for </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Preview</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Open</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

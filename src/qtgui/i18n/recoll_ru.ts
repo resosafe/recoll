@@ -396,6 +396,33 @@ Click Cancel if you want to edit the configuration file before indexation starts
     </message>
 </context>
 <context>
+    <name>QtGuiResListPager</name>
+    <message>
+        <source>&lt;p&gt;&lt;b&gt;No results found&lt;/b&gt;&lt;br&gt;</source>
+        <translation type="obsolete">&lt;p&gt;&lt;b&gt;Не найдено&lt;/b&gt;&lt;br&gt;</translation>
+    </message>
+    <message>
+        <source>Previous</source>
+        <translation type="obsolete">Предыдущая</translation>
+    </message>
+    <message>
+        <source>Next</source>
+        <translation type="obsolete">Следующая</translation>
+    </message>
+    <message>
+        <source>Unavailable document</source>
+        <translation type="obsolete">Документ недоступен</translation>
+    </message>
+    <message>
+        <source>Preview</source>
+        <translation type="obsolete">Предв. просмотр</translation>
+    </message>
+    <message>
+        <source>(show query)</source>
+        <translation type="obsolete">(показать запрос)</translation>
+    </message>
+</context>
+<context>
     <name>RclMain</name>
     <message>
         <source>Indexing in progress</source>
@@ -957,7 +984,7 @@ Do you want to start the  preferences dialog ?</source>
     </message>
     <message>
         <source>Unavailable document</source>
-        <translation type="obsolete">Документ недоступен</translation>
+        <translation type="unfinished">Документ недоступен</translation>
     </message>
     <message>
         <source>Show query details</source>
@@ -971,15 +998,15 @@ Do you want to start the  preferences dialog ?</source>
     </message>
     <message>
         <source>Previous</source>
-        <translation type="obsolete">Предыдущая</translation>
+        <translation type="unfinished">Предыдущая</translation>
     </message>
     <message>
         <source>Next</source>
-        <translation type="obsolete">Следующая</translation>
+        <translation type="unfinished">Следующая</translation>
     </message>
     <message>
         <source>&lt;p&gt;&lt;b&gt;No results found&lt;/b&gt;&lt;br&gt;</source>
-        <translation type="obsolete">&lt;p&gt;&lt;b&gt;Не найдено&lt;/b&gt;&lt;br&gt;</translation>
+        <translation type="unfinished">&lt;p&gt;&lt;b&gt;Не найдено&lt;/b&gt;&lt;br&gt;</translation>
     </message>
     <message>
         <source>&amp;Preview</source>
@@ -1043,6 +1070,22 @@ Do you want to start the  preferences dialog ?</source>
     </message>
     <message>
         <source>Save to File</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Documents &lt;b&gt;%d-%d&lt;/b&gt; out of at least &lt;b&gt;%d&lt;/b&gt; for </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Documents &lt;b&gt;%d-%d&lt;/b&gt; for </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Preview</source>
+        <translation type="unfinished">Предв. просмотр</translation>
+    </message>
+    <message>
+        <source>Open</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

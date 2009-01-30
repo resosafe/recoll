@@ -320,6 +320,33 @@ Click Cancel if you want to edit the configuration file before indexation starts
     </message>
 </context>
 <context>
+    <name>QtGuiResListPager</name>
+    <message>
+        <source>&lt;p&gt;&lt;b&gt;No results found&lt;/b&gt;&lt;br&gt;</source>
+        <translation type="obsolete">&lt;p&gt;&lt;b&gt;Sonuç bulunamadı&lt;/b&gt;&lt;br&gt;</translation>
+    </message>
+    <message>
+        <source>Previous</source>
+        <translation type="obsolete">Önceki</translation>
+    </message>
+    <message>
+        <source>Next</source>
+        <translation type="obsolete">Sonraki</translation>
+    </message>
+    <message>
+        <source>Unavailable document</source>
+        <translation type="obsolete">Erişilemez belge</translation>
+    </message>
+    <message>
+        <source>Preview</source>
+        <translation type="obsolete">Önizle</translation>
+    </message>
+    <message>
+        <source>(show query)</source>
+        <translation type="obsolete">(sorguyu göster)</translation>
+    </message>
+</context>
+<context>
     <name>RclMain</name>
     <message>
         <source>(no stemming)</source>
@@ -643,7 +670,7 @@ Tercihler penceresini  açmak ister misiniz?</translation>
     </message>
     <message>
         <source>&lt;p&gt;&lt;b&gt;No results found&lt;/b&gt;&lt;br&gt;</source>
-        <translation type="obsolete">&lt;p&gt;&lt;b&gt;Sonuç bulunamadı&lt;/b&gt;&lt;br&gt;</translation>
+        <translation type="unfinished">&lt;p&gt;&lt;b&gt;Sonuç bulunamadı&lt;/b&gt;&lt;br&gt;</translation>
     </message>
     <message>
         <source>Documents &lt;b&gt;%1-%2&lt;/b&gt; out of at least &lt;b&gt;%3&lt;/b&gt; for </source>
@@ -659,15 +686,15 @@ Tercihler penceresini  açmak ister misiniz?</translation>
     </message>
     <message>
         <source>Unavailable document</source>
-        <translation type="obsolete">Erişilemez belge</translation>
+        <translation type="unfinished">Erişilemez belge</translation>
     </message>
     <message>
         <source>Previous</source>
-        <translation type="obsolete">Önceki</translation>
+        <translation type="unfinished">Önceki</translation>
     </message>
     <message>
         <source>Next</source>
-        <translation type="obsolete">Sonraki</translation>
+        <translation type="unfinished">Sonraki</translation>
     </message>
     <message>
         <source>&amp;Preview</source>
@@ -711,6 +738,22 @@ Tercihler penceresini  açmak ister misiniz?</translation>
     </message>
     <message>
         <source>Save to File</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Documents &lt;b&gt;%d-%d&lt;/b&gt; out of at least &lt;b&gt;%d&lt;/b&gt; for </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Documents &lt;b&gt;%d-%d&lt;/b&gt; for </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Preview</source>
+        <translation type="unfinished">Önizle</translation>
+    </message>
+    <message>
+        <source>Open</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

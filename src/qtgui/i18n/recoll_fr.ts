@@ -390,6 +390,29 @@ Click Cancel if you want to edit the configuration file before indexation starts
     </message>
 </context>
 <context>
+    <name>QtGuiResListPager</name>
+    <message>
+        <source>&lt;p&gt;&lt;b&gt;No results found&lt;/b&gt;&lt;br&gt;</source>
+        <translation type="obsolete">&lt;p&gt;&lt;b&gt;Aucun résultat&lt;/b&gt;&lt;br&gt;</translation>
+    </message>
+    <message>
+        <source>Previous</source>
+        <translation type="obsolete">Précédent</translation>
+    </message>
+    <message>
+        <source>Next</source>
+        <translation type="obsolete">Suivant</translation>
+    </message>
+    <message>
+        <source>Unavailable document</source>
+        <translation type="obsolete">Document inaccessible</translation>
+    </message>
+    <message>
+        <source>(show query)</source>
+        <translation type="obsolete">(requête)</translation>
+    </message>
+</context>
+<context>
     <name>RclMain</name>
     <message>
         <source>Advanced search</source>
@@ -870,7 +893,7 @@ Voulez vous ouvrir le dialogue de paramétrage ?</translation>
     </message>
     <message>
         <source>Unavailable document</source>
-        <translation type="obsolete">Document inaccessible</translation>
+        <translation>Document inaccessible</translation>
     </message>
     <message>
         <source>Show query details</source>
@@ -884,15 +907,15 @@ Voulez vous ouvrir le dialogue de paramétrage ?</translation>
     </message>
     <message>
         <source>Previous</source>
-        <translation type="obsolete">Précédent</translation>
+        <translation>Précédent</translation>
     </message>
     <message>
         <source>Next</source>
-        <translation type="obsolete">Suivant</translation>
+        <translation>Suivant</translation>
     </message>
     <message>
         <source>&lt;p&gt;&lt;b&gt;No results found&lt;/b&gt;&lt;br&gt;</source>
-        <translation type="obsolete">&lt;p&gt;&lt;b&gt;Aucun résultat&lt;/b&gt;&lt;br&gt;</translation>
+        <translation>&lt;p&gt;&lt;b&gt;Aucun résultat&lt;/b&gt;&lt;br&gt;</translation>
     </message>
     <message>
         <source>&amp;Preview</source>
@@ -957,6 +980,22 @@ Voulez vous ouvrir le dialogue de paramétrage ?</translation>
     <message>
         <source>Save to File</source>
         <translation>Sauver dans un fichier</translation>
+    </message>
+    <message>
+        <source>Documents &lt;b&gt;%d-%d&lt;/b&gt; out of at least &lt;b&gt;%d&lt;/b&gt; for </source>
+        <translation>Documents &lt;b&gt;%d-%d&lt;/b&gt; parmi au moins &lt;b&gt;%d&lt;/b&gt; pour </translation>
+    </message>
+    <message>
+        <source>Documents &lt;b&gt;%d-%d&lt;/b&gt; for </source>
+        <translation>Documents &lt;b&gt;%d-%d&lt;/b&gt; pour </translation>
+    </message>
+    <message>
+        <source>Preview</source>
+        <translation>Prévisualisation</translation>
+    </message>
+    <message>
+        <source>Open</source>
+        <translation>Ouvrir</translation>
     </message>
 </context>
 <context>

@@ -346,6 +346,18 @@ void ResList::resultPageFirst()
 
 void ResList::append(const QString &text)
 {
+    // These has to go somewhere for translations to work
+    static const char* strings[] = {
+	QT_TR_NOOP("<p><b>No results found</b><br>"),
+	QT_TR_NOOP("Documents <b>%d-%d</b> out of at least <b>%d</b> for "),
+	QT_TR_NOOP("Documents <b>%d-%d</b> for "),
+	QT_TR_NOOP("Previous"),
+	QT_TR_NOOP("Next"),
+	QT_TR_NOOP("Unavailable document"),
+	QT_TR_NOOP("Preview"),
+	QT_TR_NOOP("Open"),
+	QT_TR_NOOP("(show query)"),
+    };
     QTEXTBROWSER::append(text);
 #if 0
     {
@@ -380,7 +392,7 @@ string QtGuiResListPager::trans(const string& in)
 string QtGuiResListPager::detailsLink()
 {
     string chunk = "<a href=\"H-1\">";
-    chunk += (const char*)ResList::tr("(show query)");
+    chunk += trans("(show query)");
     chunk += "</a>";
     return chunk;
 }

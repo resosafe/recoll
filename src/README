@@ -12,9 +12,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
    This document introduces full text search notions and describes the
    installation and use of the Recoll application. It currently describes
-   Recoll 1.9.
-
-   [ Split HTML / Single HTML ]
+   Recoll 1.12.
 
      ----------------------------------------------------------------------
 
@@ -50,7 +48,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
                 2.5. Real time indexing
 
-   3. Searching
+   3. Searching with the Qt graphical user interface
 
                 3.1. Simple search
 
@@ -72,7 +70,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
                 3.9. Document history
 
-                3.10. Sorting search results
+                3.10. Sorting search results and collapsing duplicates
 
                 3.11. Search tips, shortcuts
 
@@ -84,51 +82,59 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
                 3.12. Customizing the search interface
 
-   4. Programming interface
+   4. Searching with the KDE KIO slave
 
-                4.1. Writing a document filter
+                4.1. What's this
 
-                             4.1.1. Filter HTML output
+                4.2. Searchable documents
 
-                4.2. Field data processing configuration
+   5. Searching on the command line
 
-                4.3. API
+   6. Programming interface
 
-                             4.3.1. Interface elements
+                6.1. Writing a document filter
 
-                             4.3.2. Python interface
+                             6.1.1. Filter HTML output
 
-   5. Installation
+                6.2. Field data processing configuration
 
-                5.1. Installing a prebuilt copy
+                6.3. API
 
-                             5.1.1. Installing through a package system
+                             6.3.1. Interface elements
 
-                             5.1.2. Installing a prebuilt Recoll
+                             6.3.2. Python interface
 
-                5.2. Supporting packages
+   7. Installation
 
-                5.3. Building from source
+                7.1. Installing a prebuilt copy
 
-                             5.3.1. Prerequisites
+                             7.1.1. Installing through a package system
 
-                             5.3.2. Building
+                             7.1.2. Installing a prebuilt Recoll
 
-                             5.3.3. Installation
+                7.2. Supporting packages
 
-                5.4. Configuration overview
+                7.3. Building from source
 
-                             5.4.1. Main configuration file
+                             7.3.1. Prerequisites
 
-                             5.4.2. The mimemap file
+                             7.3.2. Building
 
-                             5.4.3. The mimeconf file
+                             7.3.3. Installation
 
-                             5.4.4. The mimeview file
+                7.4. Configuration overview
 
-                             5.4.5. Examples of configuration adjustments
+                             7.4.1. Main configuration file
 
-                5.5. The KDE Kicker Recoll applet
+                             7.4.2. The mimemap file
+
+                             7.4.3. The mimeconf file
+
+                             7.4.4. The mimeview file
+
+                             7.4.5. Examples of configuration adjustments
+
+                7.5. The KDE Kicker Recoll applet
 
      ----------------------------------------------------------------------
 
@@ -143,7 +149,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
    Do not do this if your home directory contains a huge number of documents
    and you do not want to wait or are very short on disk space. In this case,
-   you may want to edit the configuration file first to restrict the indexed
+   you may first want to customize the configuration to restrict the indexed
    area.
 
    Also be aware that you may need to install the appropriate supporting
@@ -216,15 +222,14 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    currently makes no attempt at automatic language recognition.
 
    Recoll has many parameters which define exactly what to index, and how to
-   classify and decode the source documents. These are kept in a
-   configuration file. A default configuration is copied into a standard
-   location (usually something like /usr/[local/]share/recoll/examples)
-   during installation. The default parameters from this file may be
-   overridden by values that you set inside your personal configuration,
-   found by default in the .recoll sub-directory of your home directory. The
-   default configuration will index your home directory with default
-   parameters and should be sufficient for giving Recoll a try, but you may
-   want to adjust it later.
+   classify and decode the source documents. These are kept in configuration
+   files. A default configuration is copied into a standard location (usually
+   something like /usr/[local/]share/recoll/examples) during installation.
+   The default parameters from this file may be overridden by values that you
+   set inside your personal configuration, found by default in the .recoll
+   sub-directory of your home directory. The default configuration will index
+   your home directory with default parameters and should be sufficient for
+   giving Recoll a try, but you may want to adjust it later.
 
    Indexing is started automatically the first time you execute the recoll
    search graphical user interface, or by executing the recollindex command.
@@ -419,9 +424,9 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
   2.3.1. The indexing configuration GUI
 
-   As of Recoll 1.10, most parameters for a given indexing configuration can
-   be set from a recoll GUI running on this configuration (either as default,
-   or by setting RECOLL_CONFDIR or the -c option.)
+   Most parameters for a given indexing configuration can be set from a
+   recoll GUI running on this configuration (either as default, or by setting
+   RECOLL_CONFDIR or the -c option.)
 
    The interface is started from the Preferences menu. It has two main
    panels. The first panel allows setting global variables, like the list of
@@ -533,10 +538,10 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
      ----------------------------------------------------------------------
 
-                              Chapter 3. Searching
+           Chapter 3. Searching with the Qt graphical user interface
 
-   The recoll program provides the user interface for searching. It is based
-   on the QT library.
+   The recoll program provides the main user interface for searching. It is
+   based on the QT library.
 
    recoll has two search modes:
 
@@ -554,10 +559,10 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    from another text window, punctation and all.
 
    The main case where you should enter text differently from how it is
-   printed is for east-oriental languages written with Chinese characters.
-   Words composed of single or multiple characters should be entered
-   separated by white space in this case (they would typically be printed
-   without white space).
+   printed is for east-asian languages (Chinese, Japanese, Korean). Words
+   composed of single or multiple characters should be entered separated by
+   white space in this case (they would typically be printed without white
+   space).
 
      ----------------------------------------------------------------------
 
@@ -565,7 +570,8 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
     1. Start the recoll program.
 
-    2. Possibly choose a search mode: Any term or All terms or File name.
+    2. Possibly choose a search mode: Any term, All terms, File name or Query
+       language.
 
     3. Enter search term(s) in the text field at the top of the window.
 
@@ -579,7 +585,9 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    File name will specifically look for file names. The entry will be split
    at white space characters, and each pattern will be separately expanded.
    If you want to search for a pattern including white space, you need to use
-   double quotes.
+   double quotes. The point of having a separate file name search is that
+   wild card expansion can be performed more efficiently on a relatively
+   small subset of the index.
 
    The fourth entry (Query Language) is described in its own section.
 
@@ -593,8 +601,8 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    Character case has no influence on search, except that you can disable
    stem expansion for any term by capitalizing it. Ie: a search for floor
    will also normally look for flooring, floored, etc., but a search for
-   Floor will only look for floor, in any character case (stemming can also
-   be disabled globally in the preferences).
+   Floor will only look for floor, in any character case. Sstemming can also
+   be disabled globally in the preferences.
 
    Recoll remembers the last few searches that you performed. You can use the
    simple search text entry widget (a combobox) to recall them (click on the
@@ -634,16 +642,19 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    documents side by side. (You can also browse successive results in a
    single preview window by typing Shift+ArrowUp/Down in the window).
 
-   Clicking the Edit link will attempt to start an external viewer. The
-   viewers can be configured through the user preferences dialog, or by
+   Clicking the Edit link will attempt to start an external editor. The
+   editors can be configured through the user preferences dialog, or by
    editing the mimeview configuration file.
 
    The Preview and Edit edit links may not be present for all entries,
    meaning that Recoll has no configured way to preview a given file type
-   (which was indexed by name only), or no configured external viewer for the
+   (which was indexed by name only), or no configured external editor for the
    file type. This can sometimes be adjusted simply by tweaking the mimemap
    and mimeview configuration files (the latter can be modified with the user
    preferences dialog).
+
+   The format of the result list entries is entirely configurable by using
+   the preference dialog to edit an HTML fragment.
 
    You can click on the Query details link at the top of the results page to
    see the query actually performed, after stem expansion and other
@@ -672,7 +683,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
      * Copy Url
 
-     * Find similar
+     * Save to File
 
      * Find similar
 
@@ -682,6 +693,12 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
    The Copy File Name and Copy Url copy the relevant data to the clipboard,
    for later pasting.
+
+   Save to File allows saving the contents of a result document to a chosen
+   file. This entry will only appear if the document does not correspond to
+   an existing file, but is a subdocument inside such a file (ie: an email
+   attachment). It is especially useful to extract attachments with no
+   associated editor.
 
    The Find similar entry will select a number of relevant term from the
    current document and enter them into the simple search field. You can then
@@ -731,6 +748,11 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    results, the search is initiated for each successive document. If the
    string is found, the cursor will be positioned at the first occurrence of
    the search string.
+
+   A right-click menu in the text area allows switching between displaying
+   the main text or the contents of fields associated to the document (ie:
+   author, abtract, etc.). This is especially useful in cases where the term
+   match did not occur in the main text but in one of the fields.
 
      ----------------------------------------------------------------------
 
@@ -833,39 +855,60 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
 3.5. Complex/advanced search
 
-   The advanced search dialog has a number of fields that will allow a more
-   refined search. Each entry field is configurable for the following modes:
+   The advanced search dialog helps you build more complex queries. It can be
+   opened through the Tools menu or through the main toolbar.
 
-     * All terms.
+   The dialog has three parts:
 
-     * Any term.
+     * The top part allows constructing a query by combining multiple clauses
+       of different types. Each entry field is configurable for the following
+       modes:
 
-     * None of the terms.
+          * All terms.
 
-     * Phrase (exact terms in order within an adjustable window).
+          * Any term.
 
-     * Proximity (terms in any order within an adjustable window).
+          * None of the terms.
 
-     * Filename search with wildcards.
+          * Phrase (exact terms in order within an adjustable window).
 
-   Additional entry fields can be created by clicking the Add clause button.
+          * Proximity (terms in any order within an adjustable window).
 
-   You can choose that all relevant fields will be combined by either an AND
-   or an OR conjunction. All types of clauses except "phrase" and "near" can
-   accept a mix of single words and phrases enclosed in double quotes.
-   Stemming expansion will be performed for all terms not beginning with a
-   capital letter, except for terms inside "phrase" clauses. Wildcards will
-   be processed everywhere.
+          * Filename search.
 
-   Advanced search will also let you search for documents of specific mime
-   types (ie: only text/plain, or text/HTML or application/pdf etc...). The
-   state of the file type selection can be saved as the default (the file
-   type filter will not be activated at program start-up, but the lists will
-   be in the restored state).
+       Additional entry fields can be created by clicking the Add clause
+       button.
 
-   You can also restrict the search results to a sub-tree of the indexed
-   area. If you need to do this often, you may think of setting up multiple
-   indexes instead, as the performance will be much better.
+       When searching, the non-empty clauses will be combined either with an
+       AND or an OR conjunction, depending on the choice made on the left
+       (All clauses or Any clause).
+
+       Entries of all types except "Phrase" and "Near" accept a mix of single
+       words and phrases enclosed in double quotes. Stemming and wildcard
+       expansion will be performed as for simple search.
+
+     * The next part allows filtering the results by their mime types.
+
+       The state of the file type selection can be saved as the default (the
+       file type filter will not be activated at program start-up, but the
+       lists will be in the restored state).
+
+     * The bottom part allows restricting the search results to a sub-tree of
+       the indexed area. If you need to do this often, you may think of
+       setting up multiple indexes instead, as the performance will be much
+       better.
+
+   Phrases and Proximity searches. These two clauses work in similar ways,
+   with the difference that proximity searches do not impose an order on the
+   words. In both cases, an adjustable number (slack) of non-matched words
+   may be accepted between the searched ones (use the counter on the left to
+   adjust this count). For phrases, the default count is zero (exact match).
+   For proximity it is ten (meaning that two search terms, would be matched
+   if found within a window of twelve words). Examples: a phrase search for
+   quick fox with a slack of 0 will match quick fox but not quick brown fox.
+   With a slack of 1 it will match the latter, but not fox quick. A proximity
+   search for quick fox with the default slack will match the latter, and
+   also a fox is a cunning and quick animal.
 
    Click on the Start Search button in the advanced search dialog, or type
    Enter in any text field to start the search. The button in the main window
@@ -1020,7 +1063,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
      ----------------------------------------------------------------------
 
-3.10. Sorting search results
+3.10. Sorting search results and collapsing duplicates
 
    The documents in a result list are normally sorted in order of relevance.
    It is possible to specify different sort parameters by using the Sort
@@ -1037,6 +1080,13 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    sorting is normally always inactive when the program starts. It is
    possible to keep the sorting activation state between program invocations
    by checking the Remember sort activation state option in the preferences.
+
+   It is also possible to hide duplicate entries inside the result list
+   (documents with the exact same contents as the displayed one). The test of
+   identity is based on an MD5 hash of the document container, not only of
+   the text contents (so that ie, a text document with an image added will
+   not be a duplicate of the text only). Duplicates hiding is controlled by
+   an entry in the Query configuration dialog, and is off by default.
 
      ----------------------------------------------------------------------
 
@@ -1081,10 +1131,10 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
    Phrases and Proximity searches. A phrase can be looked for by enclosing it
    in double quotes. Example: "user manual" will look only for occurrences of
-   user immediately followed by manual. You can use the This exact phrase
-   field of the advanced search dialog to the same effect. Phrases can be
-   entered along simple terms in all simple or advanced search entry fields
-   (except This exact phrase).
+   user immediately followed by manual. You can use the This phrase field of
+   the advanced search dialog to the same effect. Phrases can be entered
+   along simple terms in all simple or advanced search entry fields (except
+   This exact phrase).
 
    AutoPhrases. This option can be set in the preferences dialog. If it is
    set, a phrase will be automatically built and added to simple searches
@@ -1135,6 +1185,9 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    User interface parameters:
 
      * Number of results in a result page:
+
+     * Hide duplicate results: decides if result list entries are shown for
+       identical documents found in different places.
 
      * Highlight color for query terms: Terms from the user query are
        highlighted in the result list samples and the preview window. The
@@ -1267,7 +1320,107 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
      ----------------------------------------------------------------------
 
-                        Chapter 4. Programming interface
+                  Chapter 4. Searching with the KDE KIO slave
+
+4.1. What's this
+
+   The Recoll KIO slave allows performing a Recoll search by entering an
+   appropriate URL in a KDE open dialog, or with an HTML-based interface
+   displayed in Konqueror.
+
+   The HTML-based interface is similar to the QT-based interface, but
+   slightly less powerful for now. Its advantage is that you can perform your
+   search while staying fully within the KDE framework: drag and drop from
+   the result list works normally and you have your normal choice of
+   applications for opening files.
+
+   The alternative interface uses a directory view of search results. Due to
+   limitations in the current KIO slave interface, it is currently not
+   obviously useful (to me).
+
+   The interface is described in more detail inside a help file which you can
+   access by entering recoll:/ inside the konqueror URL line (this works only
+   if the recoll KIO slave has been previously installed).
+
+   The instructions for building this module are located in the source tree.
+   See: kde/kio/recoll/00README.txt
+
+     ----------------------------------------------------------------------
+
+4.2. Searchable documents
+
+   As a sample application, the Recoll KIO slave could allow preparing a set
+   of HTML documents (for example a manual) so that they become their own
+   search interface inside konqueror.
+
+   This can be done by either explicitely inserting <a href="recoll:/...">
+   links around some document areas, or automatically by adding a very small
+   javascript program to the documents, like the following example, which
+   would initiate a search by double-clicking any term:
+
+ <script language="JavaScript">
+     function recollsearch() {
+         var t = document.getSelection();
+         window.location.href = 'recoll://search/query?qtp=a&p=0&q=' +
+             encodeURIComponent(t);
+     }
+ </script>
+  ....
+ <body ondblclick="recollsearch()">
+
+     ----------------------------------------------------------------------
+
+                    Chapter 5. Searching on the command line
+
+   There are several ways to obtain search results as a text stream, without
+   a graphical interface:
+
+     * By passing option -t to the recoll program.
+
+     * By using the recollq program.
+
+     * By writing a custom Python program, using the Recoll Python API.
+
+   The first two methods work in the same way and accept/need the same
+   arguments (except for the additional -t to recoll). The query to be
+   executed is specified as command line arguments.
+
+   recollq is not built by default. You can use the Makefile in the query
+   directory to build it. This is a very simple program, and it will often be
+   useful to taylor its output format to your needs.
+
+   recollq has a man page (not installed by default, look in the doc/man
+   directory). The Usage string is as follows:
+
+ recollq [-o|-a|-f] <query string>
+  Runs a recoll query and displays result lines.
+   Default: will interpret the argument(s) as a query language string
+   -o Emulate the gui simple search in ANY TERM mode
+   -a Emulate the gui simple search in ALL TERMS mode
+   -f Emulate the gui simple search in filename mode
+ Common options:
+     -c <configdir> : specify config directory, overriding $RECOLL_CONFDIR
+     -d also dump file contents
+     -n <cnt> limit the maximum number of results (0->no limit, default 2000)
+     -b : basic. Just output urls, no mime types or titles
+     -m : dump the whole document meta[] array
+     -S fld : sort by field name
+     -D : sort descending
+
+   Sample execution:
+
+ recollq 'ilur -nautique mime:text/html'
+ Recoll query: ((((ilur:(wqf=11) OR ilurs) AND_NOT (nautique:(wqf=11)
+   OR nautiques OR nautiqu OR nautiquement)) FILTER Ttext/html))
+ 4 results
+ text/html   [file:///Users/uncrypted-dockes/projets/bateaux/ilur/comptes.html]  [comptes.html]  18593   bytes  
+ text/html   [file:///Users/uncrypted-dockes/projets/nautique/webnautique/articles/ilur1/index.html] [Constructio...
+ text/html   [file:///Users/uncrypted-dockes/projets/pagepers/index.html]    [psxtcl/writemime/recoll]...
+ text/html   [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/recu-chasse-maree....
+
+     ----------------------------------------------------------------------
+
+                        Chapter 6. Programming interface
 
    Recoll has an Application programming Interface, usable both for indexing
    and searching, currently accessible from the Python language.
@@ -1280,7 +1433,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
      ----------------------------------------------------------------------
 
-4.1. Writing a document filter
+6.1. Writing a document filter
 
    Recoll filters are executable programs which translate from a specific
    format (ie: openoffice, acrobat, etc.) to the Recoll indexing input
@@ -1334,7 +1487,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
      ----------------------------------------------------------------------
 
-  4.1.1. Filter HTML output
+  6.1.1. Filter HTML output
 
    The output HTML could be very minimal like the following example:
 
@@ -1367,7 +1520,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
      ----------------------------------------------------------------------
 
-4.2. Field data processing configuration
+6.2. Field data processing configuration
 
    Fields are named pieces of information in or about documents, like title,
    author, abstract.
@@ -1402,9 +1555,9 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
      ----------------------------------------------------------------------
 
-4.3. API
+6.3. API
 
-  4.3.1. Interface elements
+  6.3.1. Interface elements
 
    A few elements in the interface are specific and and need an explanation.
 
@@ -1445,9 +1598,9 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
      ----------------------------------------------------------------------
 
-  4.3.2. Python interface
+  6.3.2. Python interface
 
-    4.3.2.1. Introduction
+    6.3.2.1. Introduction
 
    Recoll versions after 1.11 define a Python programming interface, both for
    searching and indexing.
@@ -1463,7 +1616,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
      ----------------------------------------------------------------------
 
-    4.3.2.2. Interface manual
+    6.3.2.2. Interface manual
 
    NAME
        recoll - This is an interface to the Recoll full text indexer.
@@ -1653,7 +1806,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
      ----------------------------------------------------------------------
 
-    4.3.2.3. Example code
+    6.3.2.3. Example code
 
    The following sample would query the index with a user language string.
    See the python/samples directory inside the Recoll source for other
@@ -1684,9 +1837,9 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
      ----------------------------------------------------------------------
 
-                            Chapter 5. Installation
+                            Chapter 7. Installation
 
-5.1. Installing a prebuilt copy
+7.1. Installing a prebuilt copy
 
    Recoll binary packages from the Recoll web site are always linked
    statically to the Xapian libraries, and have no other dependencies. You
@@ -1697,14 +1850,14 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
      ----------------------------------------------------------------------
 
-  5.1.1. Installing through a package system
+  7.1.1. Installing through a package system
 
    If you use a BSD-type port system or a prebuilt package (RPM or other),
    just follow the usual procedure for your system.
 
      ----------------------------------------------------------------------
 
-  5.1.2. Installing a prebuilt Recoll
+  7.1.2. Installing a prebuilt Recoll
 
    The unpackaged binary versions on the Recoll web site are just compressed
    tar files of a build tree, where only the useful parts were kept
@@ -1719,7 +1872,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
      ----------------------------------------------------------------------
 
-5.2. Supporting packages
+7.2. Supporting packages
 
    Recoll uses external applications to index some file types. You need to
    install them for the file types that you wish to have indexed (these are
@@ -1767,9 +1920,9 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
      ----------------------------------------------------------------------
 
-5.3. Building from source
+7.3. Building from source
 
-  5.3.1. Prerequisites
+  7.3.1. Prerequisites
 
    At the very least, you will need to download and install the xapian core
    package (Recoll 1.9 normally uses version 1.0.2, but any 0.9 or 1.0.x
@@ -1787,7 +1940,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
      ----------------------------------------------------------------------
 
-  5.3.2. Building
+  7.3.2. Building
 
    Recoll has been built on Linux (redhat7.3, mandriva 2005/6, Fedora Core
    3/4/5/6), FreeBSD 5/6, macosx, and Solaris 8. If you build on another
@@ -1827,7 +1980,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
      ----------------------------------------------------------------------
 
-  5.3.3. Installation
+  7.3.3. Installation
 
    Either type make install or execute recollinstall prefix, in the root of
    the source tree. This will copy the commands to prefix/bin and the sample
@@ -1842,24 +1995,37 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
      ----------------------------------------------------------------------
 
-5.4. Configuration overview
+7.4. Configuration overview
 
    Most of the parameters specific to the recoll GUI are set through the
    Preferences menu and stored in the standard QT place ($HOME/.qt/recollrc).
    You probably do not want to edit this by hand.
 
-   For other options, Recoll uses text configuration files. You will have to
-   edit them by hand for now (there is still some hope for a GUI
-   configuration tool in the future). The most accurate documentation for the
-   configuration parameters is given by comments inside the default files,
-   and we will just give a general overview here.
+   Recoll indexing options are set inside text configuration files located in
+   a configuration directory. There can be several such directories, each of
+   which define the parameters for one index.
 
-   There are two sets of configuration files. The system-wide files are kept
-   in a directory named like /usr/[local/]share/recoll/examples, they define
-   default values for the system. A parallel set of files exists by default
-   in the .recoll directory in your home. This directory can be changed with
-   the RECOLL_CONFDIR environment variable or the -c option parameter to
-   recoll and recollindex.
+   The configuration files can be edited by hand or through the Indexing
+   configuration dialog (Preferences menu). The GUI tool will try to respect
+   your formatting and comments as much as possible, so it is quite possible
+   to use both ways.
+
+   The most accurate documentation for the configuration parameters is given
+   by comments inside the default files, and we will just give a general
+   overview here.
+
+   For each index, there are two sets of configuration files. System-wide
+   configuration files are kept in a directory named like
+   /usr/[local/]share/recoll/examples, and define default values, shared by
+   all indexes. For each index, a parallel set of files defines the
+   customized parameters.
+
+   The default location of the configuration is the .recoll directory in your
+   home. Most people will only use this directory.
+
+   This location can be changed, or others can be added with the
+   RECOLL_CONFDIR environment variable or the -c option parameter to recoll
+   and recollindex.
 
    If the .recoll directory does not exist when recoll or recollindex are
    started, it will be created with a set of empty configuration files.
@@ -1902,7 +2068,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
      ----------------------------------------------------------------------
 
-  5.4.1. Main configuration file
+  7.4.1. Main configuration file
 
    recoll.conf is the main configuration file. It defines things like what to
    index (top directories and things to ignore), and the default character
@@ -2059,6 +2225,14 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
            If the variable is unspecified or the list empty (the default),
            all supported types are processed.
 
+   compressedfilemaxkbs
+
+           Size limit for compressed (.gz or .bz2) files. These need to be
+           decompressed in a temporary directory for identification, which
+           can be very wasteful if 'uninteresting' big compressed files are
+           present. Negative means no limit, 0 means no processing of any
+           compressed file. Defaults to -1.
+
    indexallfilenames
 
            Recoll indexes file names in a special section of the database to
@@ -2112,7 +2286,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
      ----------------------------------------------------------------------
 
-  5.4.2. The mimemap file
+  7.4.2. The mimemap file
 
    mimemap specifies the file name extension to mime type mappings.
 
@@ -2138,7 +2312,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
      ----------------------------------------------------------------------
 
-  5.4.3. The mimeconf file
+  7.4.3. The mimeconf file
 
    mimeconf specifies how the different mime types are handled for indexing,
    and which icons are displayed in the recoll result lists.
@@ -2152,7 +2326,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
      ----------------------------------------------------------------------
 
-  5.4.4. The mimeview file
+  7.4.4. The mimeview file
 
    mimeview specifies which programs are started when you click on an Edit
    link in a result list. Ie: HTML is normally displayed using firefox, but
@@ -2175,9 +2349,9 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
      ----------------------------------------------------------------------
 
-  5.4.5. Examples of configuration adjustments
+  7.4.5. Examples of configuration adjustments
 
-    5.4.5.1. Adding an external viewer for an non-indexed type
+    7.4.5.1. Adding an external viewer for an non-indexed type
 
    Imagine that you have some kind of file which does not have indexable
    content, but for which you would like to have a functional Edit link in
@@ -2210,7 +2384,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
      ----------------------------------------------------------------------
 
-    5.4.5.2. Adding indexing support for a new file type
+    7.4.5.2. Adding indexing support for a new file type
 
    Let us now imagine that the above .blob files actually contain indexable
    text and that you know how to extract it with a command line program.
@@ -2241,7 +2415,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
      ----------------------------------------------------------------------
 
-5.5. The KDE Kicker Recoll applet
+7.5. The KDE Kicker Recoll applet
 
    The Recoll source tree contains the source code to the recoll_applet, a
    small application derived from the find_applet. This can be used to add a

@@ -11,21 +11,21 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
    --------------------------------------------------------------------------
 
-                            Chapter 5. Installation
+                            Chapter 7. Installation
 
    Table of Contents
 
-   5.1. Installing a prebuilt copy
+   7.1. Installing a prebuilt copy
 
-   5.2. Supporting packages
+   7.2. Supporting packages
 
-   5.3. Building from source
+   7.3. Building from source
 
-   5.4. Configuration overview
+   7.4. Configuration overview
 
-   5.5. The KDE Kicker Recoll applet
+   7.5. The KDE Kicker Recoll applet
 
-                        5.1. Installing a prebuilt copy
+                        7.1. Installing a prebuilt copy
 
    Recoll binary packages from the Recoll web site are always linked
    statically to the Xapian libraries, and have no other dependencies. You
@@ -34,12 +34,12 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    have a look at the configuration section (but this may not be necessary
    for a quick test with default parameters).
 
-5.1.1. Installing through a package system
+7.1.1. Installing through a package system
 
    If you use a BSD-type port system or a prebuilt package (RPM or other),
    just follow the usual procedure for your system.
 
-5.1.2. Installing a prebuilt Recoll
+7.1.2. Installing a prebuilt Recoll
 
    The unpackaged binary versions on the Recoll web site are just compressed
    tar files of a build tree, where only the useful parts were kept
@@ -62,11 +62,11 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    Link: NEXT
 
                                Recoll user manual
-   Prev                     Chapter 5. Installation                      Next 
+   Prev                     Chapter 7. Installation                      Next 
 
    --------------------------------------------------------------------------
 
-                            5.2. Supporting packages
+                            7.2. Supporting packages
 
    Recoll uses external applications to index some file types. You need to
    install them for the file types that you wish to have indexed (these are
@@ -122,13 +122,13 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    Link: NEXT
 
                                Recoll user manual
-   Prev                     Chapter 5. Installation                      Next 
+   Prev                     Chapter 7. Installation                      Next 
 
    --------------------------------------------------------------------------
 
-                           5.3. Building from source
+                           7.3. Building from source
 
-5.3.1. Prerequisites
+7.3.1. Prerequisites
 
    At the very least, you will need to download and install the xapian core
    package (Recoll 1.9 normally uses version 1.0.2, but any 0.9 or 1.0.x
@@ -144,7 +144,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    not be critical). On Linux systems, the iconv interface is part of libc
    and you should not need to do anything special.
 
-5.3.2. Building
+7.3.2. Building
 
    Recoll has been built on Linux (redhat7.3, mandriva 2005/6, Fedora Core
    3/4/5/6), FreeBSD 5/6, macosx, and Solaris 8. If you build on another
@@ -182,7 +182,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    manually copy and modify one of the existing files (the new file name
    should be the output of uname -s).
 
-5.3.3. Installation
+7.3.3. Installation
 
    Either type make install or execute recollinstall prefix, in the root of
    the source tree. This will copy the commands to prefix/bin and the sample
@@ -205,28 +205,41 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    Link: NEXT
 
                                Recoll user manual
-   Prev                     Chapter 5. Installation                      Next 
+   Prev                     Chapter 7. Installation                      Next 
 
    --------------------------------------------------------------------------
 
-                          5.4. Configuration overview
+                          7.4. Configuration overview
 
    Most of the parameters specific to the recoll GUI are set through the
    Preferences menu and stored in the standard QT place ($HOME/.qt/recollrc).
    You probably do not want to edit this by hand.
 
-   For other options, Recoll uses text configuration files. You will have to
-   edit them by hand for now (there is still some hope for a GUI
-   configuration tool in the future). The most accurate documentation for the
-   configuration parameters is given by comments inside the default files,
-   and we will just give a general overview here.
+   Recoll indexing options are set inside text configuration files located in
+   a configuration directory. There can be several such directories, each of
+   which define the parameters for one index.
 
-   There are two sets of configuration files. The system-wide files are kept
-   in a directory named like /usr/[local/]share/recoll/examples, they define
-   default values for the system. A parallel set of files exists by default
-   in the .recoll directory in your home. This directory can be changed with
-   the RECOLL_CONFDIR environment variable or the -c option parameter to
-   recoll and recollindex.
+   The configuration files can be edited by hand or through the Indexing
+   configuration dialog (Preferences menu). The GUI tool will try to respect
+   your formatting and comments as much as possible, so it is quite possible
+   to use both ways.
+
+   The most accurate documentation for the configuration parameters is given
+   by comments inside the default files, and we will just give a general
+   overview here.
+
+   For each index, there are two sets of configuration files. System-wide
+   configuration files are kept in a directory named like
+   /usr/[local/]share/recoll/examples, and define default values, shared by
+   all indexes. For each index, a parallel set of files defines the
+   customized parameters.
+
+   The default location of the configuration is the .recoll directory in your
+   home. Most people will only use this directory.
+
+   This location can be changed, or others can be added with the
+   RECOLL_CONFDIR environment variable or the -c option parameter to recoll
+   and recollindex.
 
    If the .recoll directory does not exist when recoll or recollindex are
    started, it will be created with a set of empty configuration files.
@@ -267,7 +280,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    White space is used for separation inside lists. List elements with
    embedded spaces can be quoted using double-quotes.
 
-5.4.1. Main configuration file
+7.4.1. Main configuration file
 
    recoll.conf is the main configuration file. It defines things like what to
    index (top directories and things to ignore), and the default character
@@ -424,6 +437,14 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
            If the variable is unspecified or the list empty (the default),
            all supported types are processed.
 
+   compressedfilemaxkbs
+
+           Size limit for compressed (.gz or .bz2) files. These need to be
+           decompressed in a temporary directory for identification, which
+           can be very wasteful if 'uninteresting' big compressed files are
+           present. Negative means no limit, 0 means no processing of any
+           compressed file. Defaults to -1.
+
    indexallfilenames
 
            Recoll indexes file names in a special section of the database to
@@ -475,7 +496,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
            cases. A value of 3 would allow more precision and efficiency on
            longer words, but the index will be approximately twice as large.
 
-5.4.2. The mimemap file
+7.4.2. The mimemap file
 
    mimemap specifies the file name extension to mime type mappings.
 
@@ -499,7 +520,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    given Recoll version. Having it there avoids cluttering the more
    user-oriented and locally customized skippedNames.
 
-5.4.3. The mimeconf file
+7.4.3. The mimeconf file
 
    mimeconf specifies how the different mime types are handled for indexing,
    and which icons are displayed in the recoll result lists.
@@ -511,7 +532,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    recoll in the result lists (the values are the basenames of the png images
    inside the iconsdir directory (specified in recoll.conf).
 
-5.4.4. The mimeview file
+7.4.4. The mimeview file
 
    mimeview specifies which programs are started when you click on an Edit
    link in a result list. Ie: HTML is normally displayed using firefox, but
@@ -532,9 +553,9 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    user preferences, all mimeview entries will be ignored except the one
    labelled application/x-all (which is set to use xdg-open by default).
 
-5.4.5. Examples of configuration adjustments
+7.4.5. Examples of configuration adjustments
 
-  5.4.5.1. Adding an external viewer for an non-indexed type
+  7.4.5.1. Adding an external viewer for an non-indexed type
 
    Imagine that you have some kind of file which does not have indexable
    content, but for which you would like to have a functional Edit link in
@@ -565,7 +586,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    The entries you add in your personal file override those in the central
    configuration, which you do not need to alter
 
-  5.4.5.2. Adding indexing support for a new file type
+  7.4.5.2. Adding indexing support for a new file type
 
    Let us now imagine that the above .blob files actually contain indexable
    text and that you know how to extract it with a command line program.

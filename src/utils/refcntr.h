@@ -32,18 +32,12 @@ public:
 	    (*pcount)++;
 	return  *this;
     }
-    void release()
-    {
-	if (pcount && --(*pcount) == 0) {
-	    delete rep;
-	    delete pcount;
-	}
-	rep = 0;
-	pcount = 0;
-    }
     ~RefCntr() 
     {
-	release();
+	if (pcount && --(*pcount) == 0) {
+	    delete rep; 
+	    delete pcount; 
+	}
     }
     X *operator->() {return rep;}
     X *getptr() const {return rep;}

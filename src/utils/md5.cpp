@@ -28,6 +28,7 @@
  * edited for clarity and style only.
  */
 #ifndef TEST_MD5
+#include <stdio.h>
 #include <string.h>
 
 #include "md5.h"

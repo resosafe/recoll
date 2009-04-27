@@ -9,7 +9,7 @@ public:
     RefCntr() 
 	: rep(0), pcount(0) 
     {}
-    RefCntr(X *pp) 
+    explicit RefCntr(X *pp) 
 	: rep(pp), pcount(new int(1)) 
     {}
     RefCntr(const RefCntr &r) 
@@ -32,12 +32,18 @@ public:
 	    (*pcount)++;
 	return  *this;
     }
-    ~RefCntr() 
+    void release()
     {
 	if (pcount && --(*pcount) == 0) {
-	    delete rep; 
-	    delete pcount; 
+	    delete rep;
+	    delete pcount;
 	}
+	rep = 0;
+	pcount = 0;
+    }
+    ~RefCntr() 
+    {
+	release();
     }
     X *operator->() {return rep;}
     X *getptr() const {return rep;}

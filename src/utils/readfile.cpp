@@ -28,6 +28,7 @@ static char rcsid[] = "@(#$Id: readfile.cpp,v 1.9 2008-12-08 11:22:58 dockes Exp
 #define O_STREAMING 0
 #endif
 #include <errno.h>
+#include <cstdio>
 #include <cstring>
 
 #include <string>

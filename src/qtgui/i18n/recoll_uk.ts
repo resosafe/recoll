@@ -1,10 +1,11 @@
-<!DOCTYPE TS><TS>
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE TS><TS version="1.1" language="uk">
 <defaultcodec></defaultcodec>
 <context>
     <name>AdvSearch</name>
     <message>
         <source>Cannot execute pure negative query. Please enter common terms in the &apos;any words&apos; field</source>
-        <translation type="unfinished">Неможна виконати суцільно негативний запит.  Будь ласка, введіть загальні терміни у полі &quot;будь-які слова&quot;</translation>
+        <translation>Неможна виконати суцільно негативний запит.  Будь ласка, введіть загальні терміни у полі &quot;будь-які слова&quot;</translation>
     </message>
     <message>
         <source>All clauses</source>
@@ -175,7 +176,7 @@
     </message>
     <message>
         <source>All non empty fields on the right will be combined with AND (&quot;All clauses&quot; choice) or OR (&quot;Any clause&quot; choice) conjunctions. &lt;br&gt;&quot;Any&quot; &quot;All&quot; and &quot;None&quot; field types can accept a mix of simple words, and phrases enclosed in double quotes.&lt;br&gt;Fields with no data are ignored.</source>
-        <translation type="unfinished"></translation>
+        <translation>Всі непусті поля буде об&apos;єднано за допомогою АБО (&quot;усі слова&quot;) або ТА (&quot;будь-які слова&quot;).&lt;br&gt;Поля типу &quot;будь-які слова&quot;, &quot;усі слова&quot; та &quot;без цих слів&quot; приймають суміш слів та фраз у подвійних лапках.&lt;br&gt;Поля без даних не беруться до уваги.</translation>
     </message>
 </context>
 <context>
@@ -330,11 +331,11 @@ Click Cancel if you want to edit the configuration file before indexation starts
     <name>PreviewTextEdit</name>
     <message>
         <source>Show fields</source>
-        <translation type="unfinished"></translation>
+        <translation>Показувати поля</translation>
     </message>
     <message>
         <source>Show main text</source>
-        <translation type="unfinished"></translation>
+        <translation>Показувати основний текст</translation>
     </message>
 </context>
 <context>
@@ -555,77 +556,79 @@ Do you want to start the  preferences dialog ?</source>
     </message>
     <message>
         <source>Update &amp;Index</source>
-        <translation type="unfinished"></translation>
+        <translation>Поновити &amp;індекс</translation>
     </message>
     <message>
         <source>Indexing interrupted</source>
-        <translation type="unfinished"></translation>
+        <translation>Індексування перервано</translation>
     </message>
     <message>
         <source>Stop &amp;Indexing</source>
-        <translation type="unfinished"></translation>
+        <translation>Пе&amp;рервати індексування</translation>
     </message>
     <message>
         <source>Can&apos;t start query: </source>
-        <translation type="unfinished"></translation>
+        <translation>Неможливо почати запит:</translation>
     </message>
     <message>
         <source>All</source>
-        <translation type="unfinished"></translation>
+        <translation>всі</translation>
     </message>
     <message>
         <source>media</source>
-        <translation type="unfinished">мультимедіа</translation>
+        <translation>медіа</translation>
     </message>
     <message>
         <source>message</source>
-        <translation type="unfinished"></translation>
+        <translation>повідомлення</translation>
     </message>
     <message>
         <source>other</source>
-        <translation type="unfinished">інше</translation>
+        <translation>інше</translation>
     </message>
     <message>
         <source>presentation</source>
-        <translation type="unfinished"></translation>
+        <translation>презентації</translation>
     </message>
     <message>
         <source>spreadsheet</source>
-        <translation type="unfinished"></translation>
+        <translation>таблиці</translation>
     </message>
     <message>
         <source>text</source>
-        <translation type="unfinished"></translation>
+        <translation>текст</translation>
     </message>
     <message>
         <source>sorted</source>
-        <translation type="unfinished"></translation>
+        <translation>сортоване</translation>
     </message>
     <message>
         <source>filtered</source>
-        <translation type="unfinished"></translation>
+        <translation>фільтроване</translation>
     </message>
     <message>
         <source>External applications/commands needed and not found for indexing your file types:
 
 </source>
-        <translation type="unfinished"></translation>
+        <translation>Відсутні зовнішні додатки/команди, що потрібні для індексування ваших документів:
+
+</translation>
     </message>
     <message>
         <source>No helpers found missing</source>
-        <translation type="unfinished"></translation>
+        <translation>Всі додаткові програми наявні</translation>
     </message>
     <message>
         <source>Missing helper programs</source>
-        <translation type="unfinished"></translation>
+        <translation>Відсутні додаткові програми</translation>
     </message>
     <message>
         <source>Save file dialog</source>
-        <translation type="unfinished"></translation>
+        <translation>Зберегти файл</translation>
     </message>
     <message>
         <source>Choose a file name to save under</source>
-        <translation type="unfinished"></translation>
+        <translation>Оберіть ім&apos;я файла для збереження</translation>
     </message>
 </context>
 <context>
@@ -780,11 +783,11 @@ Do you want to start the  preferences dialog ?</source>
     </message>
     <message>
         <source>All</source>
-        <translation type="unfinished"></translation>
+        <translation>всі</translation>
     </message>
     <message>
         <source>&amp;Show missing helpers</source>
-        <translation type="unfinished"></translation>
+        <translation>Відсутні програми</translation>
     </message>
 </context>
 <context>
@@ -844,7 +847,7 @@ Do you want to start the  preferences dialog ?</source>
     </message>
     <message>
         <source>Unavailable document</source>
-        <translation type="unfinished">Документ недосяжний</translation>
+        <translation>Документ недосяжний</translation>
     </message>
     <message>
         <source>Show query details</source>
@@ -858,15 +861,15 @@ Do you want to start the  preferences dialog ?</source>
     </message>
     <message>
         <source>Previous</source>
-        <translation type="unfinished">Попередня</translation>
+        <translation>Попередня</translation>
     </message>
     <message>
         <source>Next</source>
-        <translation type="unfinished">Наступна</translation>
+        <translation>Наступна</translation>
     </message>
     <message>
         <source>&lt;p&gt;&lt;b&gt;No results found&lt;/b&gt;&lt;br&gt;</source>
-        <translation type="unfinished">&lt;p&gt;&lt;b&gt;Не знайдено&lt;/b&gt;&lt;br&gt;</translation>
+        <translation>&lt;p&gt;&lt;b&gt;Не знайдено&lt;/b&gt;&lt;br&gt;</translation>
     </message>
     <message>
         <source>&amp;Preview</source>
@@ -914,39 +917,39 @@ Do you want to start the  preferences dialog ?</source>
     </message>
     <message>
         <source>Copy &amp;URL</source>
-        <translation type="unfinished"></translation>
+        <translation>Копіювати &amp;URL</translation>
     </message>
     <message>
         <source>filtered</source>
-        <translation type="unfinished"></translation>
+        <translation>фільтроване</translation>
     </message>
     <message>
         <source>sorted</source>
-        <translation type="unfinished"></translation>
+        <translation>сортоване</translation>
     </message>
     <message>
         <source>Document history</source>
-        <translation type="unfinished">Історія документів</translation>
+        <translation>Історія документів</translation>
     </message>
     <message>
         <source>Save to File</source>
-        <translation type="unfinished"></translation>
+        <translation>Зберегти в файл</translation>
     </message>
     <message>
         <source>Documents &lt;b&gt;%d-%d&lt;/b&gt; out of at least &lt;b&gt;%d&lt;/b&gt; for </source>
-        <translation type="unfinished"></translation>
+        <translation>Документи &lt;b&gt;%d-%d&lt;/b&gt; з принаймні &lt;b&gt;%d&lt;/b&gt; по</translation>
     </message>
     <message>
         <source>Documents &lt;b&gt;%d-%d&lt;/b&gt; for </source>
-        <translation type="unfinished"></translation>
+        <translation>Документи &lt;b&gt;%d-%d&lt;/b&gt; по </translation>
     </message>
     <message>
         <source>Preview</source>
-        <translation type="unfinished">Перегляд</translation>
+        <translation>Перегляд</translation>
     </message>
     <message>
         <source>Open</source>
-        <translation type="unfinished"></translation>
+        <translation>Відкрити</translation>
     </message>
 </context>
 <context>
@@ -1052,7 +1055,7 @@ Do you want to start the  preferences dialog ?</source>
     </message>
     <message>
         <source>Choose search type.</source>
-        <translation type="unfinished"></translation>
+        <translation>Оберіть тип пошуку.</translation>
     </message>
 </context>
 <context>
@@ -1643,27 +1646,27 @@ This should give higher precedence to the results where the search terms appear 
     </message>
     <message>
         <source>Highlight color for query terms</source>
-        <translation type="unfinished"></translation>
+        <translation>Колір виділення ключових слів</translation>
     </message>
     <message>
         <source>Deactivate All</source>
-        <translation type="unfinished"></translation>
+        <translation>Виключити все</translation>
     </message>
     <message>
         <source>Prefer Html to plain text for preview.</source>
-        <translation type="unfinished"></translation>
+        <translation>Віддавати перевагу HTML над текстом для перегляду.</translation>
     </message>
     <message>
         <source>If checked, results with the same content under different names will only be shown once.</source>
-        <translation type="unfinished"></translation>
+        <translation>Якщо увімкнене, результати с таким самим змістом та різними назвами буде показано не більше одного разу.</translation>
     </message>
     <message>
         <source>Hide duplicate results.</source>
-        <translation type="unfinished"></translation>
+        <translation>Ховати дублікати</translation>
     </message>
     <message>
         <source>Choose editor applications</source>
-        <translation type="unfinished"></translation>
+        <translation>Оберіть редактори</translation>
     </message>
 </context>
 <context>
@@ -1701,7 +1704,7 @@ This should give higher precedence to the results where the search terms appear 
     </message>
     <message>
         <source>Select one or several mime types then click &quot;Change Action&quot;</source>
-        <translation type="unfinished"></translation>
+        <translation>Виділіть один чи декілька MIME-типів та натисніть &quot;Змінити дію&quot;</translation>
     </message>
 </context>
 <context>
@@ -1820,11 +1823,11 @@ This should give higher precedence to the results where the search terms appear 
     </message>
     <message>
         <source>Max. compressed file size (KB)</source>
-        <translation type="unfinished"></translation>
+        <translation>Межа розміру стиснених файлів (KB)</translation>
     </message>
     <message>
         <source>This value sets a threshold beyond which compressedfiles will not be processed. Set to -1 for no limit, to 0 for no decompression ever.</source>
-        <translation type="unfinished"></translation>
+        <translation>Це значення встановлює поріг розміру стиснених файлів, більші за нього не буде опрацьовано.  -1 вимикає ліміт, 0 вимикає декомпресію.</translation>
     </message>
 </context>
 <context>
@@ -1919,15 +1922,15 @@ This should give higher precedence to the results where the search terms appear 
     </message>
     <message>
         <source>These are names of directories which indexing will not enter.&lt;br&gt; May contain wildcards. Must match the paths seen by the indexer (ie: if topdirs includes &apos;/home/me&apos; and &apos;/home&apos; is actually a link to &apos;/usr/home&apos;, a correct skippedPath entry would be &apos;/home/me/tmp*&apos;, not &apos;/usr/home/me/tmp*&apos;)</source>
-        <translation type="unfinished"></translation>
+        <translation>Це назви тек, у які індексування не потрапить.&lt;br&gt; Може містити шаблони.  Має співпадати із шляхами, що бачить індексатор (наприклад, якщо topdirs містить  &apos;/home/me&apos; та &apos;/home&apos; є посиланням на &apos;/usr/home&apos;, то вірний запис буде &apos;/home/me/tmp*&apos;, а не &apos;/usr/home/me/tmp*&apos;)</translation>
     </message>
     <message>
         <source>This value adjust the amount of data which is indexed between flushes to disk.&lt;br&gt;This helps control the indexer memory usage. Default 10MB </source>
-        <translation type="unfinished"></translation>
+        <translation>Скільки даних буде проіндексовано між скиданнями індексу на диск.&lt;br&gt;Допомагає контролювати використання пам&apos;яті індексатором. Типово: 10Мб </translation>
     </message>
     <message>
         <source>Disables use of aspell to generate spelling approximation in the term explorer tool.&lt;br&gt; Useful if aspell is absent or does not work. </source>
-        <translation type="unfinished"></translation>
+        <translation>Вимикає використання aspell для генерації наближень у написання в навіґаторі термінів.&lt;br&gt;Корисне, коли aspell відсутній або зламаний. </translation>
     </message>
 </context>
 </TS>

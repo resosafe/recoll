@@ -1,10 +1,11 @@
-<!DOCTYPE TS><TS>
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE TS><TS version="1.1" language="ru">
 <defaultcodec></defaultcodec>
 <context>
     <name>AdvSearch</name>
     <message>
         <source>Cannot execute pure negative query. Please enter common terms in the &apos;any words&apos; field</source>
-        <translation type="unfinished">Невозможно выполнить полностью негативный запрос. Пожалуйста, введите общие термины в поле &quot;любые слова&quot;</translation>
+        <translation>Невозможно выполнить полностью негативный запрос. Пожалуйста, введите общие термины в поле &quot;любые слова&quot;</translation>
     </message>
     <message>
         <source>All clauses</source>
@@ -175,7 +176,7 @@
     </message>
     <message>
         <source>All non empty fields on the right will be combined with AND (&quot;All clauses&quot; choice) or OR (&quot;Any clause&quot; choice) conjunctions. &lt;br&gt;&quot;Any&quot; &quot;All&quot; and &quot;None&quot; field types can accept a mix of simple words, and phrases enclosed in double quotes.&lt;br&gt;Fields with no data are ignored.</source>
-        <translation type="unfinished"></translation>
+        <translation>Все непустые поля справа будут объединены логическим И (&quot;все слова&quot;) или ИЛИ (&quot;любое слово&quot;). &lt;br&gt;Поля типа &quot;любые&quot;, &quot;все&quot; или &quot;без этих&quot; принимают набор простых слов и фразы, заключённые в двойные кавычки.&lt;br&gt;Пустые поля игнорируются.</translation>
     </message>
 </context>
 <context>
@@ -333,11 +334,11 @@ Click Cancel if you want to edit the configuration file before indexation starts
     <name>PreviewTextEdit</name>
     <message>
         <source>Show fields</source>
-        <translation type="unfinished"></translation>
+        <translation>Показать поля</translation>
     </message>
     <message>
         <source>Show main text</source>
-        <translation type="unfinished"></translation>
+        <translation>Показать основной текст</translation>
     </message>
 </context>
 <context>
@@ -562,77 +563,79 @@ Do you want to start the  preferences dialog ?</source>
     </message>
     <message>
         <source>Update &amp;Index</source>
-        <translation type="unfinished"></translation>
+        <translation>Обновить &amp;индекс</translation>
     </message>
     <message>
         <source>Indexing interrupted</source>
-        <translation type="unfinished"></translation>
+        <translation>Индексирование прервано</translation>
     </message>
     <message>
         <source>Stop &amp;Indexing</source>
-        <translation type="unfinished"></translation>
+        <translation>П&amp;рервать индексирование</translation>
     </message>
     <message>
         <source>Can&apos;t start query: </source>
-        <translation type="unfinished"></translation>
+        <translation>Ошибка старта запроса:</translation>
     </message>
     <message>
         <source>All</source>
-        <translation type="unfinished"></translation>
+        <translation>все</translation>
     </message>
     <message>
         <source>media</source>
-        <translation type="unfinished">мультимедиа</translation>
+        <translation>медиа</translation>
     </message>
     <message>
         <source>message</source>
-        <translation type="unfinished"></translation>
+        <translation>сообщения</translation>
     </message>
     <message>
         <source>other</source>
-        <translation type="unfinished">иное</translation>
+        <translation>иное</translation>
     </message>
     <message>
         <source>presentation</source>
-        <translation type="unfinished"></translation>
+        <translation>презентации</translation>
     </message>
     <message>
         <source>spreadsheet</source>
-        <translation type="unfinished"></translation>
+        <translation>таблицы</translation>
     </message>
     <message>
         <source>text</source>
-        <translation type="unfinished"></translation>
+        <translation>текст</translation>
     </message>
     <message>
         <source>sorted</source>
-        <translation type="unfinished"></translation>
+        <translation>сортированное</translation>
     </message>
     <message>
         <source>filtered</source>
-        <translation type="unfinished"></translation>
+        <translation>фильтрованное</translation>
     </message>
     <message>
         <source>External applications/commands needed and not found for indexing your file types:
 
 </source>
-        <translation type="unfinished"></translation>
+        <translation>Отсутствующие внешние приложения/команды, требуемые для индексирования ваших файлов:
+
+</translation>
     </message>
     <message>
         <source>No helpers found missing</source>
-        <translation type="unfinished"></translation>
+        <translation>Все вспомогательные программы доступны</translation>
     </message>
     <message>
         <source>Missing helper programs</source>
-        <translation type="unfinished"></translation>
+        <translation>Недостающие вспомогательные программы</translation>
     </message>
     <message>
         <source>Save file dialog</source>
-        <translation type="unfinished"></translation>
+        <translation>Сохранить файл</translation>
     </message>
     <message>
         <source>Choose a file name to save under</source>
-        <translation type="unfinished"></translation>
+        <translation>Выберите имя файла для сохранения</translation>
     </message>
 </context>
 <context>
@@ -787,11 +790,11 @@ Do you want to start the  preferences dialog ?</source>
     </message>
     <message>
         <source>All</source>
-        <translation type="unfinished"></translation>
+        <translation>все</translation>
     </message>
     <message>
         <source>&amp;Show missing helpers</source>
-        <translation type="unfinished"></translation>
+        <translation>Недостающие внешние программы</translation>
     </message>
 </context>
 <context>
@@ -984,7 +987,7 @@ Do you want to start the  preferences dialog ?</source>
     </message>
     <message>
         <source>Unavailable document</source>
-        <translation type="unfinished">Документ недоступен</translation>
+        <translation>Документ недоступен</translation>
     </message>
     <message>
         <source>Show query details</source>
@@ -998,15 +1001,15 @@ Do you want to start the  preferences dialog ?</source>
     </message>
     <message>
         <source>Previous</source>
-        <translation type="unfinished">Предыдущая</translation>
+        <translation>Предыдущая</translation>
     </message>
     <message>
         <source>Next</source>
-        <translation type="unfinished">Следующая</translation>
+        <translation>Следующая</translation>
     </message>
     <message>
         <source>&lt;p&gt;&lt;b&gt;No results found&lt;/b&gt;&lt;br&gt;</source>
-        <translation type="unfinished">&lt;p&gt;&lt;b&gt;Не найдено&lt;/b&gt;&lt;br&gt;</translation>
+        <translation>&lt;p&gt;&lt;b&gt;Не найдено&lt;/b&gt;&lt;br&gt;</translation>
     </message>
     <message>
         <source>&amp;Preview</source>
@@ -1054,39 +1057,39 @@ Do you want to start the  preferences dialog ?</source>
     </message>
     <message>
         <source>Copy &amp;URL</source>
-        <translation type="unfinished"></translation>
+        <translation>Копировать &amp;URL</translation>
     </message>
     <message>
         <source>filtered</source>
-        <translation type="unfinished"></translation>
+        <translation>фильтрованное</translation>
     </message>
     <message>
         <source>sorted</source>
-        <translation type="unfinished"></translation>
+        <translation>сортированное</translation>
     </message>
     <message>
         <source>Document history</source>
-        <translation type="unfinished">История документов</translation>
+        <translation>История документов</translation>
     </message>
     <message>
         <source>Save to File</source>
-        <translation type="unfinished"></translation>
+        <translation>Сохранить в файл</translation>
     </message>
     <message>
         <source>Documents &lt;b&gt;%d-%d&lt;/b&gt; out of at least &lt;b&gt;%d&lt;/b&gt; for </source>
-        <translation type="unfinished"></translation>
+        <translation>Документы &lt;b&gt;%d-%d&lt;/b&gt; из минимум &lt;b&gt;%d&lt;/b&gt; для</translation>
     </message>
     <message>
         <source>Documents &lt;b&gt;%d-%d&lt;/b&gt; for </source>
-        <translation type="unfinished"></translation>
+        <translation>Документы &lt;b&gt;%d-%d&lt;/b&gt; для</translation>
     </message>
     <message>
         <source>Preview</source>
-        <translation type="unfinished">Предв. просмотр</translation>
+        <translation>Предпросмотр</translation>
     </message>
     <message>
         <source>Open</source>
-        <translation type="unfinished"></translation>
+        <translation>Открыть</translation>
     </message>
 </context>
 <context>
@@ -1225,7 +1228,7 @@ Do you want to start the  preferences dialog ?</source>
     </message>
     <message>
         <source>Choose search type.</source>
-        <translation type="unfinished"></translation>
+        <translation>Выберите тип поиска</translation>
     </message>
 </context>
 <context>
@@ -1812,27 +1815,27 @@ This should give higher precedence to the results where the search terms appear 
     </message>
     <message>
         <source>Highlight color for query terms</source>
-        <translation type="unfinished"></translation>
+        <translation>Цвет выделения ключевых слов</translation>
     </message>
     <message>
         <source>Deactivate All</source>
-        <translation type="unfinished"></translation>
+        <translation>Выключить все</translation>
     </message>
     <message>
         <source>Prefer Html to plain text for preview.</source>
-        <translation type="unfinished"></translation>
+        <translation>Предпочитать HTML тексту для предпросмотра</translation>
     </message>
     <message>
         <source>If checked, results with the same content under different names will only be shown once.</source>
-        <translation type="unfinished"></translation>
+        <translation>Показывать результаты с тем же содержанием под разными именами не более одного раза</translation>
     </message>
     <message>
         <source>Hide duplicate results.</source>
-        <translation type="unfinished"></translation>
+        <translation>Прятать дубликаты</translation>
     </message>
     <message>
         <source>Choose editor applications</source>
-        <translation type="unfinished"></translation>
+        <translation>Выбор редакторов</translation>
     </message>
 </context>
 <context>
@@ -1870,7 +1873,7 @@ This should give higher precedence to the results where the search terms appear 
     </message>
     <message>
         <source>Select one or several mime types then click &quot;Change Action&quot;</source>
-        <translation type="unfinished"></translation>
+        <translation>Выберите один или несколько MIME-типов и нажмите &quot;Сменить действие&quot;</translation>
     </message>
 </context>
 <context>
@@ -1993,11 +1996,11 @@ This should give higher precedence to the results where the search terms appear 
     </message>
     <message>
         <source>Max. compressed file size (KB)</source>
-        <translation type="unfinished"></translation>
+        <translation>Предел размера сжатого файла (KB)</translation>
     </message>
     <message>
         <source>This value sets a threshold beyond which compressedfiles will not be processed. Set to -1 for no limit, to 0 for no decompression ever.</source>
-        <translation type="unfinished"></translation>
+        <translation>Это значение устанавливает порог размера сжатых файлов, которые будут обрабатываться. -1 отключает порог, 0 отключает декомпрессию.</translation>
     </message>
 </context>
 <context>
@@ -2092,15 +2095,15 @@ This should give higher precedence to the results where the search terms appear 
     </message>
     <message>
         <source>These are names of directories which indexing will not enter.&lt;br&gt; May contain wildcards. Must match the paths seen by the indexer (ie: if topdirs includes &apos;/home/me&apos; and &apos;/home&apos; is actually a link to &apos;/usr/home&apos;, a correct skippedPath entry would be &apos;/home/me/tmp*&apos;, not &apos;/usr/home/me/tmp*&apos;)</source>
-        <translation type="unfinished"></translation>
+        <translation>Имена каталогов, которые индексирование обойдёт.&lt;br&gt;Может содержать шаблоны.  Обязано подходить к путям, которые видит индексатор (например, если topdirs включает &apos;/home/me&apos; и &apos;/home&apos; является ссылкой на &apos;/usr/home&apos;, то правильная запись должна быть &apos;/home/me/tmp*&apos;, а не &apos;/usr/home/me/tmp*&apos;)</translation>
     </message>
     <message>
         <source>This value adjust the amount of data which is indexed between flushes to disk.&lt;br&gt;This helps control the indexer memory usage. Default 10MB </source>
-        <translation type="unfinished"></translation>
+        <translation>Это значение определяет количество проиндексированных данных между сбросами на диск.&lt;br&gt;Помогает контролировать использование памяти при индексации.  Обычно 10Mb </translation>
     </message>
     <message>
         <source>Disables use of aspell to generate spelling approximation in the term explorer tool.&lt;br&gt; Useful if aspell is absent or does not work. </source>
-        <translation type="unfinished"></translation>
+        <translation>Отключает использование aspell для генерации приближений написания в навигаторе терминов.&lt;br&gt; Полезно, если aspell отсутствует или сломан. </translation>
     </message>
 </context>
 </TS>

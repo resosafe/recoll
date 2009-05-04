@@ -20,6 +20,7 @@
 
 #include <qvariant.h>
 #include <qwidget.h>
+#include <stdio.h>
 
 #include "rcldb.h"
 #include "refcntr.h"

@@ -20,6 +20,7 @@ static char rcsid[] = "@(#$Id: guiutils.cpp,v 1.40 2008-11-24 15:23:12 dockes Ex
 #include <unistd.h>
 
 #include <algorithm>
+#include <cstdio>
 
 #include "recoll.h"
 #include "debuglog.h"

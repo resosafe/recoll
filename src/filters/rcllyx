@@ -26,8 +26,8 @@
 # to use a temporary directory and link the input file in there.
 
 # set variables
-LANG=C ; export LANG
-LC_ALL=C ; export LC_ALL
+#LANG=C ; export LANG
+#LC_ALL=C ; export LC_ALL
 progname="rcllyx"
 filetype=lyx
 
@@ -139,20 +139,20 @@ textfile=$workdir/`basename $binfile .lyx`.txt
 #echo binfile: $binfile;echo lyxfile: $lyxfile ; ls -l $lyxfile; echo textfile: $textfile
 
 # Run lyx --export
-lyx --export text $lyxfile
+lyx --export text "$lyxfile"
 
 # Charset and language
-formatline=`egrep '^\\\lyxformat ' $lyxfile`
+formatline=`egrep '^\\\lyxformat ' "$lyxfile"`
 if test -n "$formatline" ; then 
    set $formatline
    format=$2
 fi
-charsetline=`egrep '^\\\inputencoding ' $lyxfile`
+charsetline=`egrep '^\\\inputencoding ' "$lyxfile"`
 if test -n "$charsetline" ; then 
    set $charsetline
    charset=$2
 fi
-langline=`egrep '^\\\language ' $lyxfile`
+langline=`egrep '^\\\language ' "$lyxfile"`
 if test -n "$langline" ; then 
    set $langline
    lang=$2

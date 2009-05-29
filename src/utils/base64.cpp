@@ -40,7 +40,7 @@ static const char Pad64 = '=';
 bool base64_decode(const string& in, string& out)
 {
     int io = 0, state = 0, ch = 0;
-    char *pos;
+    const char *pos;
     unsigned int ii = 0;
     out.erase();
     out.reserve(in.length());

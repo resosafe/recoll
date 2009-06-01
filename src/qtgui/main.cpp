@@ -240,7 +240,7 @@ int main(int argc, char **argv)
     if (op_flags & OPT_q)
 	while (argc--) {
 	    question += " ";
-	    question += *argv--;
+	    question += *argv++;
 	}
 
     // Translation file for Qt

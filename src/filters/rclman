@@ -89,27 +89,10 @@ umask 77
 # !! Leave the following line unmodified !
 #ENDRECFILTCOMMONCODE
 
-checkcmds groff sed awk iconv
+checkcmds groff
 
-# The strange 'BEGIN' setup is to prevent 'file' from thinking this file
-# is an awk program
-groff -man -Tutf8 < "$infile" | sed -e 's/.//g' -e 's/.//g' |\
-awk 'BEGIN'\
-' {
-  print "<html><head><title></title>"
-  print "<meta http-equiv=\"Content-Type\" content=\"text/html;charset=UTF-8\">"
-  print "</head>\n<body>\n<p>"
-}
-{
-  gsub(/&/, "\\&amp;", $0)
-  gsub(/</, "\\&lt;", $0)
-  gsub(/>/, "\\&gt;", $0)
-
-  print $0 "<br>"
-}
-END {
-    print "</p></body></html>"
-}' | iconv -f UTF-8 -t UTF-8 -c -s 
+# Note: the qt preview really likes to find an <html> tag at the top
+echo '<html>' && groff -man -Thtml < "$infile"
 
 # exit normally
 exit 0

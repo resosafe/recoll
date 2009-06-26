@@ -136,3 +136,5 @@ recoll_noindex = .tar.gz .tgz .tar.bz2 .tbz .log.gz .md5 .map \
 .6 = text/x-man
 .7 = text/x-man
 .8 = text/x-man
+.n = text/x-man
+.3pm = text/x-man

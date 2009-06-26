@@ -92,7 +92,19 @@ umask 77
 checkcmds groff
 
 # Note: the qt preview really likes to find an <html> tag at the top
-echo '<html>' && groff -man -Thtml < "$infile"
+echo '<html>'
 
-# exit normally
+# Filter out some unwanted data when indexing
+if test X$RECOLL_FILTER_FORPREVIEW = Xyes ; then
+    groff -man -Thtml < "$infile"
+else
+   # When indexing we try to avoid adding terms for the section headers, which
+   # are unfortunately somewhat ill defined. We eliminate rather loosely 
+   # lines containing likely section header words preceded by a tag.
+   groff -man -Thtml < "$infile" | \
+        egrep -v \
+       '>NAME|>SYNOPSIS|>DESCRIPTION|>OPTIONS|>DIAGNOSTICS|>SUPPORTED HARDWARE|>CONFIGURATION DETAILS|>AUTHOR|>BUGS|>REPORTING BUGS|>KNOWN BUGS|>COPYRIGHT|>SEE ALSO|>HISTORY|>ENVIRONMENT|>FILES'
+fi
+
+
 exit 0

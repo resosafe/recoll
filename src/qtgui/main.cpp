@@ -174,7 +174,7 @@ static const char usage [] =
 "     -f : the query will be interpreted as a filename search\n"
 "     -l : the query will be interpreted as a query language string (default)\n"
 "     -t : terminal display: no gui. Results go to stdout. MUST be given\n"
-"          explicitely as -t (not ie, -at), and -q <query> MUST\n"
+"          explicitly as -t (not ie, -at), and -q <query> MUST\n"
 "          be last on the command line if this is used.\n"
 ;
 static void

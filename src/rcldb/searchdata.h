@@ -64,7 +64,7 @@ class SearchDataClause;
 
   This is why the clauses also have an AND/OR/... type. 
 
-  A phrase clause could be added either explicitely or using double quotes:
+  A phrase clause could be added either explicitly or using double quotes:
   {SCLT_PHRASE, [this is a phrase]} or as {SCLT_XXX, ["this is a phrase"]}
 
  */

@@ -54,7 +54,7 @@ using namespace std;
 //    headertype: value [; paramname=paramvalue] ...
 //
 // Value and paramvalues can be quoted strings, and there can be
-// comments too. Note that RFC2047 is explicitely forbidden for
+// comments too. Note that RFC2047 is explicitly forbidden for
 // parameter values (RFC2231 must be used), but I have seen it used
 // anyway (ie: thunderbird 1.0)
 //

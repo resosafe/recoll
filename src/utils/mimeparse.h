@@ -84,7 +84,7 @@ extern bool qp_decode(const string& in, string &out, char esc = '=');
  *
  * Example input:  Some words =?iso-8859-1?Q?RE=A0=3A_Smoke_Tests?= more input
  * 
- * Note that MIME parameter values are explicitely NOT to be encoded with
+ * Note that MIME parameter values are explicitly NOT to be encoded with
  * this encoding which is only for headers like Subject:, To:. But it
  * is sometimes used anyway...
  * 

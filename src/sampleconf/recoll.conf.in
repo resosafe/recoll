@@ -91,6 +91,13 @@ usesystemfilecommand = 1
 # know? (we can otherwise just ignore them)
 indexallfilenames = 1
 
+# A restrictive list of indexed mime types. Normally not set. If it is set,
+# only the types from the list will have their contents indexed (the names
+# will be indexed anyway if indexallfilenames is set as by default). Mime
+# type names should be taken from the mimemap file.
+#
+# indexedmimetypes = text/html application/pdf
+
 # Size limit for compressed files. We need to decompress these in a
 # temporary directory for identification, which can be wasteful in some
 # cases. Limit the waste. Negative means no limit. 0 results in no

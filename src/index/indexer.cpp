@@ -52,6 +52,14 @@ static char rcsid[] = "@(#$Id: indexer.cpp,v 1.71 2008-12-17 08:01:40 dockes Exp
 #include "rclaspell.h"
 #endif
 
+// When using extended attributes, we have to use the ctime. 
+// This is quite an expensive price to pay...
+#ifdef RCL_USE_XATTR
+#define RCL_STTIME st_ctime
+#else
+#define RCL_STTIME st_mtime
+#endif // RCL_USE_XATTR
+
 #ifndef NO_NAMESPACES
 using namespace std;
 #endif /* NO_NAMESPACES */
@@ -391,11 +399,11 @@ DbIndexer::processone(const std::string &fn, const struct stat *stp,
     // without mime type will not be purged from the db, resulting
     // in possible 'cannot intern file' messages at query time...
     char cbuf[100]; 
-    // Document signature. This is based on mtime and size and used
+    // Document signature. This is based on m/ctime and size and used
     // for the uptodate check (the value computed here is checked
     // against the stored one). Changing the computation forces a full
     // reindex of course.
-    sprintf(cbuf, "%ld%ld", (long)stp->st_size, (long)stp->st_mtime);
+    sprintf(cbuf, "%ld%ld", (long)stp->st_size, (long)stp->RCL_STTIME);
     string sig = cbuf;
     string udi;
     make_udi(fn, "", udi);
@@ -485,7 +493,7 @@ DbIndexer::processone(const std::string &fn, const struct stat *stp,
 	// Document signature for up to date checks: concatenate mtime and 
 	// size. Note: looking for changes only, no need to parseback so no
 	// need for reversible formatting
-	sprintf(cbuf, "%ld%ld", (long)stp->st_size, (long)stp->st_mtime);
+	sprintf(cbuf, "%ld%ld", (long)stp->st_size, (long)stp->RCL_STTIME);
 	doc.sig = cbuf;
 	// If there was an error, ensure indexing will be
 	// retried. This is for the once missing, later installed
@@ -531,7 +539,7 @@ DbIndexer::processone(const std::string &fn, const struct stat *stp,
 	sprintf(cbuf, "%ld", (long)stp->st_size);
 	fileDoc.fbytes = cbuf;
 	// Document signature for up to date checks.
-	sprintf(cbuf, "%ld%ld", (long)stp->st_size, (long)stp->st_mtime);
+	sprintf(cbuf, "%ld%ld", (long)stp->st_size, (long)stp->RCL_STTIME);
 	fileDoc.sig = cbuf;
 	if (!m_db.addOrUpdate(parent_udi, "", fileDoc)) 
 	    return FsTreeWalker::FtwError;

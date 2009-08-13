@@ -29,6 +29,9 @@ using std::set;
 
 #include "pathut.h"
 #include "Filter.h"
+// Beware: the class changes according to RCL_USE_XATTR, so any file
+// including this needs autoconfig.h
+#include "autoconfig.h"
 
 class RclConfig;
 namespace Rcl {
@@ -134,6 +137,14 @@ class FileInterner {
     // m_tdir and m_tfile are used only for decompressing input file if needed
     const string&          m_tdir; 
     string                 m_tfile;
+#ifdef RCL_USE_XATTR
+    // Fields found in file extended attributes. This is kept here,
+    // not in the file-level handler because we are only interested in
+    // the top-level file, not any temp file necessitated by
+    // processing the internal doc hierarchy.
+    map<string, string> m_XAttrsFields;
+#endif // RCL_USE_XATTR
+
     // Filter stack, path to the current document from which we're
     // fetching subdocs
     vector<Dijon::Filter*> m_handlers;
@@ -154,6 +165,9 @@ class FileInterner {
     int addHandler();
     void checkExternalMissing(const string& msg, const string& mt);
     void processNextDocError(Rcl::Doc &doc, string& ipath);
+#ifdef RCL_USE_XATTR
+    void reapXAttrs(const string& fn);
+#endif
 };
 
  

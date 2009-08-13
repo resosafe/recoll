@@ -29,9 +29,6 @@ using namespace std;
 #include "debuglog.h"
 #include "rclconfig.h"
 #include "smallut.h"
-#ifdef RCL_USE_XATTR
-#include "pxattr.h"
-#endif // RCL_USE_XATTR
 
 #include "mh_exec.h"
 #include "mh_html.h"
@@ -39,40 +36,6 @@ using namespace std;
 #include "mh_mbox.h"
 #include "mh_text.h"
 #include "mh_unknown.h"
-
-// Common code for all docs that are a file (not subdocs). If extended
-// attributes support is enabled, fetch the data.
-bool RecollFilter::set_document_file(const string& path)
-{
-#ifdef RCL_USE_XATTR
-    RclConfig* rclconfig = RclConfig::getMainConfig();
-    if (rclconfig == 0) {
-	LOGERR(("RecollFilter::set_document_file: no config\n"));
-	return false;
-    }
-    vector<string> xnames;
-    if (!pxattr::list(path, &xnames)) {
-	LOGERR(("xattrToMeta: pxattr::list failed, errno %d\n", errno));
-	return false;
-    }
-    const map<string, string>& xtof = rclconfig->getXattrToField();
-    for (vector<string>::const_iterator it = xnames.begin();
-	 it != xnames.end(); it++) {
-	map<string, string>::const_iterator mit;
-	if ((mit = xtof.find(*it)) != xtof.end()) {
-	    string value;
-	    if (!pxattr::get(path, *it, &value, pxattr::PXATTR_NOFOLLOW)) {
-		LOGERR(("xattrToMeta: pxattr::get failed for %s, errno %d\n", 
-			(*it).c_str(), errno));
-		continue;
-	    }
-	    // Encode should we ?
-	    m_fieldsFromAttrs[mit->second] = value;
-	}
-    }
-#endif // RCL_USE_XATTR
-    return true;
-}
 
 // Pool of already known and created handlers. There can be several instance
 // for a given mime type (think email attachment in email message)

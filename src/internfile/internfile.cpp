@@ -44,6 +44,9 @@ using namespace std;
 #include "wipedir.h"
 #include "rclconfig.h"
 #include "mh_html.h"
+#ifdef RCL_USE_XATTR
+#include "pxattr.h"
+#endif // RCL_USE_XATTR
 
 // The internal path element separator. This can't be the same as the rcldb 
 // file to ipath separator : "|"
@@ -52,6 +55,32 @@ static const string stxtplain("text/plain");
 
 set<string> FileInterner::o_missingExternal;
 map<string, set<string> >  FileInterner::o_typesForMissing;
+
+#ifdef RCL_USE_XATTR
+void FileInterner::reapXAttrs(const string& path)
+{
+    vector<string> xnames;
+    if (!pxattr::list(path, &xnames)) {
+	LOGERR(("FileInterner::reapXattrs: pxattr::list: errno %d\n", errno));
+	return;
+    }
+    const map<string, string>& xtof = m_cfg->getXattrToField();
+    for (vector<string>::const_iterator it = xnames.begin();
+	 it != xnames.end(); it++) {
+	map<string, string>::const_iterator mit;
+	if ((mit = xtof.find(*it)) != xtof.end()) {
+	    string value;
+	    if (!pxattr::get(path, *it, &value, pxattr::PXATTR_NOFOLLOW)) {
+		LOGERR(("FileInterner::reapXattrs: pxattr::get failed"
+			"for %s, errno %d\n", (*it).c_str(), errno));
+		continue;
+	    }
+	    // Encode should we ?
+	    m_XAttrsFields[mit->second] = value;
+	}
+    }
+}
+#endif // RCL_USE_XATTR
 
 // This is used when the user wants to retrieve a search result doc's parent
 // (ie message having a given attachment)
@@ -193,7 +222,8 @@ FileInterner::FileInterner(const string &f, const struct stat *stp,
     if (!df) {
 	// No handler for this type, for now :( if indexallfilenames
 	// is set in the config, this normally wont happen (we get mh_unknown)
-	LOGERR(("FileInterner:: ignored: [%s] mime [%s]\n", f.c_str(), l_mime.c_str()));
+	LOGERR(("FileInterner:: ignored: [%s] mime [%s]\n", 
+		f.c_str(), l_mime.c_str()));
 	return;
     }
     df->set_property(Dijon::Filter::OPERATING_MODE, 
@@ -201,6 +231,14 @@ FileInterner::FileInterner(const string &f, const struct stat *stp,
 
     string charset = m_cfg->getDefCharset();
     df->set_property(Dijon::Filter::DEFAULT_CHARSET, charset);
+
+#ifdef RCL_USE_XATTR
+    // Get fields computed from extended attributes. We use the
+    // original file, not the m_fn which may be the uncompressed temp
+    // file
+    reapXAttrs(f);
+#endif //RCL_USE_XATTR
+
     if (!df->set_document_file(m_fn)) {
 	LOGERR(("FileInterner:: error parsing %s\n", m_fn.c_str()));
 	return;
@@ -363,18 +401,6 @@ bool FileInterner::dijontorcl(Rcl::Doc& doc)
 	doc.meta[Rcl::Doc::keyabs] = doc.meta[keyds];
 	doc.meta.erase(keyds);
     }
-#ifdef RCL_USE_XATTR
-    // Finally set any data possibly coming out of the extended file attributes
-    // these override any values from inside the file.
-    RecollFilter *rf = dynamic_cast<RecollFilter*>(df);
-    if (rf != 0) {
-	const map<string, string>& ffa = rf->getFieldsFromAttrs();
-	for (map<string,string>::const_iterator it = ffa.begin(); 
-	     it != ffa.end(); it++) {
-	    doc.meta[it->first] = it->second;
-	}
-    }
-#endif //RCL_USE_XATTR
     return true;
 }
 
@@ -387,6 +413,15 @@ bool FileInterner::dijontorcl(Rcl::Doc& doc)
 void FileInterner::collectIpathAndMT(Rcl::Doc& doc, string& ipath) const
 {
     bool hasipath = false;
+
+#ifdef RCL_USE_XATTR
+    // Set fields from extended file attributes.
+    // These can be overriden by values from inside the file
+    for (map<string,string>::const_iterator it = m_XAttrsFields.begin(); 
+	 it != m_XAttrsFields.end(); it++) {
+	doc.meta[it->first] = it->second;
+    }
+#endif //RCL_USE_XATTR
 
     // If there is no ipath stack, the mimetype is the one from the file
     doc.mimetype = m_mimetype;
@@ -610,18 +645,17 @@ FileInterner::Status FileInterner::internfile(Rcl::Doc& doc, string& ipath)
 	}
     }
  breakloop:
-
     if (m_handlers.empty()) {
 	LOGDEB(("FileInterner::internfile: conversion ended with no doc\n"));
 	return FIError;
     }
 
-    // If indexing compute ipath and significant mimetype.
-    // ipath is returned through the parameter not doc.ipath We also
-    // retrieve some metadata fields from the ancesters (like date or
+    // If indexing compute ipath and significant mimetype.  ipath is
+    // returned through the parameter not doc.ipath We also retrieve
+    // some metadata fields from the ancesters (like date or
     // author). This is useful for email attachments. The values will
-    // be replaced by those found by dijontorcl if any, so the order
-    // of calls is important.
+    // be replaced by those internal to the document (by dijontorcl())
+    // if any, so the order of calls is important.
     if (!m_forPreview)
 	collectIpathAndMT(doc, ipath);
     else

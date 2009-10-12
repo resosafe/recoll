@@ -29,7 +29,8 @@ static char rcsid[] = "@(#$Id: rclinit.cpp,v 1.11 2007-12-13 06:58:21 dockes Exp
 #include "rclinit.h"
 #include "pathut.h"
 
-static const int catchedSigs[] = {SIGHUP, SIGINT, SIGQUIT, SIGTERM};
+static const int catchedSigs[] = {SIGHUP, SIGINT, SIGQUIT, SIGTERM, 
+     SIGUSR1, SIGUSR2};
 
 RclConfig *recollinit(RclInitFlags flags, 
 		      void (*cleanup)(void), void (*sigcleanup)(int), 

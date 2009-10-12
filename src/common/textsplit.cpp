@@ -678,6 +678,7 @@ bool TextSplit::stringToStrings(const string &s, list<string> &tokens)
 #include "textsplit.h"
 #include "readfile.h"
 #include "debuglog.h"
+#include "transcode.h"
 
 using namespace std;
 
@@ -711,6 +712,7 @@ static string teststring =
 	    "Debut-\ncontinue\n" 
 	    "[olala][ululu]  (valeur) (23)\n"
 	    "utf-8 ucs-4© \\nodef\n"
+            "A b C 2 . +"
 	    "','this\n"
 	    " ,able,test-domain "
 	    " -wl,--export-dynamic "
@@ -727,6 +729,7 @@ static string usage =
     "   -w:  only words\n"
     "   -k:  preserve wildcards (?*)\n"
     "   -c: just count words\n"
+    "   -C [charset] : input charset\n"
     " if filename is 'stdin', will read stdin for data (end with ^D)\n"
     "  \n\n"
     ;
@@ -748,6 +751,7 @@ static int        op_flags;
 
 int main(int argc, char **argv)
 {
+    string charset;
     thisprog = argv[0];
     argc--; argv++;
 
@@ -759,14 +763,16 @@ int main(int argc, char **argv)
 	while (**argv)
 	    switch (*(*argv)++) {
 	    case 'c':	op_flags |= OPT_c; break;
-	    case 'C':	op_flags |= OPT_C; break;
+            case 'C':	op_flags |= OPT_C; if (argc < 2)  Usage();
+                charset = *(++argv); argc--; 
+                goto b1;
 	    case 'k':	op_flags |= OPT_k; break;
 	    case 's':	op_flags |= OPT_s; break;
 	    case 'S':	op_flags |= OPT_S; break;
 	    case 'w':	op_flags |= OPT_w; break;
 	    default: Usage();	break;
 	    }
-	argc--; argv++;
+    b1: argc--; argv++;
     }
     DebugLog::getdbl()->setloglevel(DEBDEB1);
     DebugLog::setfilename("stderr");
@@ -784,21 +790,35 @@ int main(int argc, char **argv)
     if (op_flags & OPT_k) 
 	flags = (TextSplit::Flags)(flags | TextSplit::TXTS_KEEPWILD); 
 
-    string data;
+    string odata, reason;
     if (argc == 1) {
 	const char *filename = *argv++;	argc--;
 	if (!strcmp(filename, "stdin")) {
 	    char buf[1024];
 	    int nread;
 	    while ((nread = read(0, buf, 1024)) > 0) {
-		data.append(buf, nread);
+		odata.append(buf, nread);
 	    }
-	} else if (!file_to_string(filename, data)) 
+	} else if (!file_to_string(filename, odata, &reason)) {
+            cerr << "Failed: file_to_string(" << filename << ") failed: " 
+                 << reason << endl;
 	    exit(1);
+        }
     } else {
 	cout << endl << teststring << endl << endl;  
-	data = teststring;
+	odata = teststring;
     }
+    string& data = odata;
+    string ndata;
+    if ((op_flags & OPT_C)) {
+        if (!transcode(odata, ndata, charset, "UTF-8")) {
+            cerr << "Failed: transcode error" << endl;
+            exit(1);
+        } else {
+            data = ndata;
+        }
+    }
+
     if (op_flags & OPT_c) {
 	int n = TextSplit::countWords(data, flags);
 	cout << n << " words" << endl;

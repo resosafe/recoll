@@ -40,6 +40,7 @@ using namespace std;
 #include "rclmon.h"
 #include "x11mon.h"
 #include "rclversion.h"
+#include "cancelcheck.h"
 
 // Globals for exit cleanup
 ConfIndexer *confindexer;
@@ -63,6 +64,7 @@ static void sigcleanup(int sig)
 {
     fprintf(stderr, "sigcleanup\n");
     LOGDEB(("sigcleanup\n"));
+    CancelCheck::instance().setCancel();
     stopindexing = 1;
 }
 

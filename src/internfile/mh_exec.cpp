@@ -36,7 +36,10 @@ using namespace std;
 
 class MEAdv : public ExecCmdAdvise {
 public:
-    void newData(int) {
+    void newData(int n) {
+        LOGDEB1(("MHExec: new data, count %d\n", n));
+        // If a cancel request was set by the signal handler, this will raise 
+        // an exception. Another approach would be to call ExeCmd::setCancel().
 	CancelCheck::instance().checkCancel();
     }
 };
@@ -77,7 +80,14 @@ bool MimeHandlerExec::next_document()
     mexec.setAdvise(&adv);
     mexec.putenv(m_forPreview ? "RECOLL_FILTER_FORPREVIEW=yes" :
 		"RECOLL_FILTER_FORPREVIEW=no");
-    int status = mexec.doexec(cmd, myparams, 0, &output);
+
+    int status;
+    try {
+        status = mexec.doexec(cmd, myparams, 0, &output);
+    } catch (CancelExcept) {
+	LOGERR(("MimeHandlerExec: cancelled\n"));
+        status = 0x110f;
+    }
 
     if (status) {
 	LOGERR(("MimeHandlerExec: command status 0x%x for %s\n", 

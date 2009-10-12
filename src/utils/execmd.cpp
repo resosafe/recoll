@@ -129,7 +129,9 @@ public:
 	int status;
 	if (pid > 0) {
 	    LOGDEB(("ExecCmd: killing cmd\n"));
-	    if (kill(pid, SIGTERM) == 0) {
+            pid_t grp = getpgid(pid);
+            int ret = killpg(grp, SIGTERM);
+	    if (ret == 0) {
 		for (int i = 0; i < 3; i++) {
 		    (void)waitpid(pid, &status, WNOHANG);
 		    if (kill(pid, 0) != 0)
@@ -137,10 +139,13 @@ public:
 		    sleep(1);
 		    if (i == 2) {
 			LOGDEB(("ExecCmd: killing (KILL) cmd\n"));
-			kill(pid, SIGKILL);
+			killpg(grp, SIGKILL);
 		    }
 		}
-	    }
+	    } else {
+                LOGERR(("ExecCmd: error killing process group %d: %d\n",
+                        grp, errno));
+            }
 	}
 	if (pipein[0] >= 0)
 	    close(pipein[0]);
@@ -189,6 +194,11 @@ int ExecCmd::doexec(const string &cmd, const list<string>& args,
     }
 
     if (e.pid) {
+        // Set the process group for the child. This is also done in the
+        // child process see wikipedia(Process_group)
+        if (setpgid(e.pid, e.pid)) {
+            LOGERR(("ExecCmd: father failed setting pgid of son process\n"));
+        }
 	// Father process
 	sigset_t blkcld;
 	sigemptyset(&blkcld);
@@ -229,10 +239,14 @@ int ExecCmd::doexec(const string &cmd, const list<string>& args,
 		//e.pipeout[0] << " nfds " << nfds << endl;
 		int ss;
 		if ((ss = select(nfds, &readfds, &writefds, 0, &tv)) <= 0) {
+                    // Call m_advise even on error (if this was due to
+                    // a signal, we may not want to wait for the son
+                    // process), m_advise can call setCancel() or
+                    // raise an exception.
+                    if (m_advise)
+                        m_advise->newData(0);
 		    if (ss == 0) {
 			// Timeout, is ok.
-			if (m_advise)
-			    m_advise->newData(0);
 			continue;
 		    }
 		    LOGERR(("ExecCmd::doexec: select(2) failed. errno %d\n", 
@@ -343,6 +357,9 @@ int ExecCmd::doexec(const string &cmd, const list<string>& args,
 	    }
 	}
 	e.reset();
+
+        // Start our own process group
+        setpgid(0, getpid());
 
 	// Allocate arg vector (2 more for arg0 + final 0)
 	typedef const char *Ccharp;

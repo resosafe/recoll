@@ -13,7 +13,7 @@ topdirs = ~
 # ".*" in there (as was the case with an older sample config)
 # These are simple names, not paths (must contain no / )
 skippedNames = #* bin CVS  Cache cache* caughtspam  tmp .thumbnails .svn \
-	     *~ recollrc .beagle .git .hg .bzr
+	     *~ recollrc .beagle .git .hg .bzr loop.ps
 
 # Wildcard expressions for paths we shouldn't go into. The database and
 # configuration directories will be added in there, else the default value

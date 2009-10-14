@@ -43,7 +43,8 @@ public:
     MEAdv(int maxsecs) : m_filtermaxseconds(maxsecs) {m_start = time(0L);}
     void newData(int n) {
         LOGDEB1(("MHExec: new data, count %d\n", n));
-        if (time(0L) - m_start > m_filtermaxseconds) {
+        if (m_filtermaxseconds > 0 && 
+            time(0L) - m_start > m_filtermaxseconds) {
             LOGERR(("MimeHandlerExec: filter timeout (%d S)\n",
                     m_filtermaxseconds));
             CancelCheck::instance().setCancel();

@@ -104,6 +104,10 @@ indexallfilenames = 1
 # processing of any compressed file
 # compressedfilemaxkbs = -1
 
+# Maximum external filter execution time. Default 20mn. This is mainly
+# to avoid infinite loops in postscript files (loop.ps)
+filtermaxseconds = 1200
+
 # Length of abstracts we store while indexing. Longer will make for a
 # bigger db
 # idxabsmlen = 250

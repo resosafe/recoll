@@ -47,7 +47,7 @@ trfileudi.o : fileudi.cpp fileudi.h
 
 EXECMD_OBJS= trexecmd.o $(BIGLIB)
 trexecmd : $(EXECMD_OBJS)
-	$(CXX) $(ALL_CXXFLAGS) -o trexecmd $(EXECMD_OBJS) $(LIBICONV)
+	$(CXX) $(ALL_CXXFLAGS) -o trexecmd $(EXECMD_OBJS) $(LIBICONV) $(LIBSYS)
 trexecmd.o : execmd.cpp execmd.h
 	$(CXX) -o trexecmd.o -c $(ALL_CXXFLAGS) -DTEST_EXECMD execmd.cpp
 

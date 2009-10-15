@@ -549,10 +549,11 @@ int ConfTree::get(const std::string &name, string &value, const string &sk)
 #else // TEST_CONFTREE
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <errno.h>
-
+#include <string.h>
 #include <sstream>
 #include <iostream>
 #include <list>

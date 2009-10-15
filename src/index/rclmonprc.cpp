@@ -176,16 +176,12 @@ bool RclMonEventQueue::ok()
 	LOGDEB(("RclMonEventQueue: not ok: bad state\n"));
 	return false;
     }
-    if (!(m_data->m_opts & RCLMON_NOX11) && !x11IsAlive()) {
-	LOGDEB(("RclMonEventQueue: not ok: x11\n"));
-	return false;
-    }
     if (stopindexing) {
 	LOGDEB(("RclMonEventQueue: not ok: stop request\n"));
 	return false;
     }
     if (!m_data->m_ok) {
-	LOGDEB(("RclMonEventQueue: not ok: end from rcv\n"));
+	LOGDEB(("RclMonEventQueue: not ok: queue terminated\n"));
 	return false;
     }
     return true;
@@ -306,7 +302,12 @@ bool startMonitor(RclConfig *conf, int opts)
     while (rclEQ.wait(2, &timedout)) {
 	// Queue is locked.
 
-	if (!rclEQ.ok()) {
+	// x11IsAlive() can't be called from ok() because both threads call it
+	// and Xlib is not multithreaded.
+        bool x11dead = !(opts & RCLMON_NOX11) && !x11IsAlive();
+        if (x11dead)
+            LOGDEB(("RclMonprc: x11 is dead\n"));
+	if (!rclEQ.ok() || x11dead) {
 	    rclEQ.unlock();
 	    break;
 	}
@@ -362,6 +363,7 @@ bool startMonitor(RclConfig *conf, int opts)
 	// Lock queue before waiting again
 	rclEQ.lock();
     }
+    LOGDEB(("Rclmonprc: calling queue setTerminate\n"));
     rclEQ.setTerminate();
     // Wait for receiver thread before returning
     pthread_join(rcv_thrid, 0);

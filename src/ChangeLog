@@ -1,3 +1,69 @@
+2009-10-12 17:41  dockes
+
+	* internfile/mh_exec.cpp: configurable timeout on script execution
+
+2009-10-12 16:52  dockes
+
+	* index/recollindex.cpp, internfile/mh_exec.cpp, utils/execmd.cpp:
+	  Handle the case of runaway filter processes (ie: loop.ps):
+	  - Modify ExecCmd to use a different process group for the son
+	  process
+	  and use killpg for termination (ensure that all children get
+	  killed,
+	  not just the top one)
+	  - Modify ExecCmd to test for term request on a select() error
+	  (avoid calling
+	  waitpid() without prior killing in this case).
+	  - Modify mh_exec to checkCancel() in the heartbeat/data arrival
+	  routine
+	  - Modify recollindex to call setCancel when catching a signal
+
+2009-10-12 16:26  dockes
+
+	* common/rclinit.cpp: also block USR1 USR2
+
+2009-10-12 16:26  dockes
+
+	* VERSION:
+
+2009-10-12 11:29  dockes
+
+	* common/textsplit.cpp: merged test driver from 1.13 (no change to
+	  main code
+
+2009-08-13 06:36  dockes
+
+	* index/indexer.cpp, internfile/internfile.cpp,
+	  internfile/internfile.h, internfile/mimehandler.cpp,
+	  internfile/mimehandler.h: xattrs: make them work with non-text
+	  files. Use ctime for up to date checks
+
+2009-08-13 06:21  dockes
+
+	* qtgui/rclmain_w.cpp: Make sure db is open at all times (caused
+	  problems when sorting query started from the command line)
+
+2009-08-13 06:19  dockes
+
+	* sampleconf/recoll.conf.in: add indexedmimetypes to sample file
+
+2009-07-02 06:18  dockes
+
+	* qtgui/main.cpp, rcldb/searchdata.h, utils/mimeparse.cpp,
+	  utils/mimeparse.h: explicitely->explicitly
+
+2009-06-26 09:25  dockes
+
+	* filters/rclman, sampleconf/mimemap: improve man page handling
+
+2009-06-23 06:00  dockes
+
+	* README:
+
+2009-06-23 05:52  dockes
+
+	* ChangeLog, VERSION: version 1.12.1
+
 2009-06-22 08:59  dockes
 
 	* filters/rclman: use groff html output!

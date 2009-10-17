@@ -243,6 +243,10 @@ private:
     Db& operator=(const Db &) {return *this;};
 };
 
+// This has to go somewhere, and as it needs the Xapian version, this is
+// the most reasonable place.
+string version_string();
+
 #ifndef NO_NAMESPACES
 }
 #endif // NO_NAMESPACES

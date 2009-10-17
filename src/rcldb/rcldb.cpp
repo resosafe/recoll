@@ -33,6 +33,8 @@ static char rcsid[] = "@(#$Id: rcldb.cpp,v 1.154 2008-12-17 16:19:58 dockes Exp 
 using namespace std;
 #endif /* NO_NAMESPACES */
 
+#include "xapian/version.h"
+
 #include "rclconfig.h"
 #include "rcldb.h"
 #include "rcldb_p.h"
@@ -49,6 +51,7 @@ using namespace std;
 #include "rclquery.h"
 #include "rclquery_p.h"
 #include "md5.h"
+#include "rclversion.h"
 
 #ifndef MAX
 #define MAX(A,B) (A>B?A:B)
@@ -69,6 +72,11 @@ static const unsigned int baseTextPosition = 100000;
 #ifndef NO_NAMESPACES
 namespace Rcl {
 #endif
+
+string version_string(){
+    return string("Recoll ") + string(rclversionstr) + string(" + Xapian ") +
+        string(Xapian::version_string());
+}
 
 // Synthetic abstract marker (to discriminate from abstract actually
 // found in document)

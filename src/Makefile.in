@@ -21,9 +21,7 @@ mk/sysconf:
 
 versfile=common/rclversion.h
 ${versfile} : VERSION
-	echo '#include <xapian/version.h>' > ${versfile}
-	echo 'static const char *rclversion = "'`cat VERSION`'"' >> ${versfile}
-	echo '" + Xapian " XAPIAN_VERSION;' 	   >> ${versfile}
+	echo 'static const char *rclversionstr = "'`cat VERSION`'";'>> ${versfile}
 
 static: mk/sysconf common/rclversion.h
 	cd lib; ${MAKE}

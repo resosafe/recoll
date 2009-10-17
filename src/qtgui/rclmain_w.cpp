@@ -68,7 +68,6 @@ using std::pair;
 #include "pathut.h"
 #include "smallut.h"
 #include "advsearch_w.h"
-#include "rclversion.h"
 #include "sortseq.h"
 #include "uiprefs_w.h"
 #include "guiutils.h"
@@ -592,8 +591,9 @@ void RclMain::showExtIdxDialog()
 
 void RclMain::showAboutDialog()
 {
-    string vstring = string("Recoll ") + rclversion + 
-	"<br>" + "http://www.recoll.org";
+    string vstring = Rcl::version_string() +
+        string("<br> http://www.recoll.org") +
+	string("<br> http://www.xapian.org");
     QMessageBox::information(this, tr("About Recoll"), vstring.c_str());
 }
 void RclMain::showMissingHelpers()

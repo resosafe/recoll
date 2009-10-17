@@ -39,8 +39,8 @@ using namespace std;
 #include "pathut.h"
 #include "rclmon.h"
 #include "x11mon.h"
-#include "rclversion.h"
 #include "cancelcheck.h"
+#include "rcldb.h"
 
 // Globals for exit cleanup
 ConfIndexer *confindexer;
@@ -256,7 +256,7 @@ Usage(FILE *where = stderr)
 {
     FILE *fp = (op_flags & OPT_h) ? stdout : stderr;
     fprintf(fp, "%s: Usage: %s", thisprog, usage);
-    fprintf(fp, "Recoll version: %s\n", rclversion);
+    fprintf(fp, "Recoll version: %s\n", Rcl::version_string().c_str());
     exit((op_flags & OPT_h)==0);
 }
 

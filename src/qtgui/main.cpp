@@ -51,7 +51,6 @@ static char rcsid[] = "@(#$Id: main.cpp,v 1.73 2008-12-17 08:01:40 dockes Exp $ 
 #include "rclinit.h"
 #include "debuglog.h"
 #ifdef WITH_KDE
-#include "rclversion.h"
 #endif
 #include "rclmain_w.h"
 #include "ssearch_w.h"
@@ -194,7 +193,8 @@ int main(int argc, char **argv)
     }
 
 #ifdef WITH_KDE
-    KAboutData about("recoll", I18N_NOOP("Recoll"), rclversion, description,
+    KAboutData about("recoll", I18N_NOOP("Recoll"), Rcl::version_string(), 
+                     description,
                      KAboutData::License_GPL, "(C) 2006 Jean-Francois Dockes", 0, 0, "jean-francois.dockes@wanadoo.fr");
     about.addAuthor( "Jean-Francois Dockes", 0, 
 		     "jean-francois.dockes@wanadoo.fr" );

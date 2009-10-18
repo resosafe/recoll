@@ -538,8 +538,23 @@ void ResList::linkWasClicked(const QString &s, int clkmod)
 
 RCLPOPUP *ResList::createPopupMenu(const QPoint& pos)
 {
+    LOGDEB2(("ResList::createPopupMenu(%d, %d)\n", pos.x(), pos.y()));
     int para = paragraphAt(pos);
-    clicked(para, 0);
+    LOGDEB2(("ResList::createPopupMenu(): para %d\n", para));
+    if (para == 0) {
+        // There is a bug in qt3 paragraphAt() when the click is inside
+        // a table.  paragraphAt() calls textcursor::place() which
+        // fails because of a positioning problem inside the paragraph
+        // (the paragraph is found but place() returns an error
+        // anyway). Try to find the paragraph myself:
+        for (;para < paragraphs(); para++) {
+            QRect rect = paragraphRect(para);
+            if (pos.y() >= rect.y() && pos.y() < rect.y() + rect.height())
+                break;
+        }
+        if (para == paragraphs())
+            para = 0;
+    }
     m_popDoc = docnumfromparnum(para);
     if (m_popDoc < 0) 
 	return 0;

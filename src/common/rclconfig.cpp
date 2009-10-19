@@ -95,7 +95,7 @@ RclConfig::RclConfig(const string *argcnf)
 	// creating indexes all over the place
 	string conffile = path_cat(m_confdir, "recoll.conf");
 	if (access(conffile.c_str(), 0) < 0) {
-	    m_reason = "Explicitely specified configuration must exist"
+	    m_reason = "Explicitly specified configuration must exist"
 		" (won't be automatically created)";
 	    return;
 	}

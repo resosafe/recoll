@@ -96,7 +96,7 @@ if test X$encoding = X ; then encoding=UTF-8;fi
 #
 # The whole thing wholly ignore issues like '<' inside quoted strings.
 #
-# We could/should add code to explicitely separate title and other
+# We could/should add code to explicitly separate title and other
 # metadata elements.
 
 # Insert new line before each tag

@@ -348,7 +348,7 @@ recoll
 	<literal>Flint</literal> format. If you have an older index
 	and want to take advantage of the new format (which can be
 	done without setting the environment variable as of &RCL;
-	1.8.2 and &XAP; 1.0.0), you will have to explicitely delete
+	1.8.2 and &XAP; 1.0.0), you will have to explicitly delete
 	the old index, then run a normal indexing process.</para>
 
 	<para>Unfortunately, using the <literal>-z</literal> option to
@@ -545,7 +545,7 @@ fvwm
       for which the session waits.</para> <para>By default the
       indexing daemon will monitor the state of the X11 session, and
       exit when it finishes, it is not necessary to kill it
-      explicitely. (The X11 server monitoring can be disabled with option
+      explicitly. (The X11 server monitoring can be disabled with option
       <literal>-x</literal> to <command>recollindex</command>).
       </para>
 
@@ -1730,7 +1730,7 @@ fvwm
       they become their own search interface inside
       <command>konqueror</command>.</para>
 
-      <para>This can be done by either explicitely inserting
+      <para>This can be done by either explicitly inserting
       <literal>&lt;a&nbsp;href="recoll:/..."&gt;</literal> links 
       around some document areas, or automatically by adding a
       very small <application>javascript</application> program to the

@@ -368,7 +368,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    Xapian will not convert automatically an existing index from the Quartz to
    the Flint format. If you have an older index and want to take advantage of
    the new format (which can be done without setting the environment variable
-   as of Recoll 1.8.2 and Xapian 1.0.0), you will have to explicitely delete
+   as of Recoll 1.8.2 and Xapian 1.0.0), you will have to explicitly delete
    the old index, then run a normal indexing process.
 
    Unfortunately, using the -z option to recollindex is not sufficient to
@@ -515,7 +515,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    session waits.
 
    By default the indexing daemon will monitor the state of the X11 session,
-   and exit when it finishes, it is not necessary to kill it explicitely.
+   and exit when it finishes, it is not necessary to kill it explicitly.
    (The X11 server monitoring can be disabled with option -x to recollindex).
 
    Under KDE, you can place a small script to start recollindex -m under
@@ -1355,7 +1355,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    of HTML documents (for example a manual) so that they become their own
    search interface inside konqueror.
 
-   This can be done by either explicitely inserting <a href="recoll:/...">
+   This can be done by either explicitly inserting <a href="recoll:/...">
    links around some document areas, or automatically by adding a very small
    javascript program to the documents, like the following example, which
    would initiate a search by double-clicking any term:

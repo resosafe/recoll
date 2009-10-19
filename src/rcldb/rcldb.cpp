@@ -1126,7 +1126,8 @@ bool Db::needUpdate(const string &udi, const string& sig)
     // the actual document file, or, for a multi-document file, the
     // pseudo-doc we create to stand for the file itself.
 
-    // We try twice in case database needs to be reopened.
+    // We try twice in case database needs to be reopened. (Ulterior
+    // note: this does not make sense as we are the sole writer!)
     for (int tries = 0; tries < 2; tries++) {
 	try {
 	    // Get the doc or pseudo-doc
@@ -1579,8 +1580,24 @@ bool Db::makeDocAbstract(Doc &doc, Query *query, string& abstract)
 	LOGERR(("Db::makeDocAbstract: no db\n"));
 	return false;
     }
-    abstract = m_ndb->makeAbstract(doc.xdocid, query);
-    return true;
+    m_reason.erase();
+    for (int i = 0; i < 2; i++) {
+        try {
+            abstract = m_ndb->makeAbstract(doc.xdocid, query);
+            m_reason.erase();
+            break;
+        } catch (const Xapian::DatabaseModifiedError &error) {
+            LOGDEB(("Db:makeDocAbstract: caught DatabaseModified\n"));
+            m_reason = error.get_msg();
+            reOpen();
+        } catch (const Xapian::Error & error) {
+            LOGERR(("Db::makeDocAbstract: exception: %s\n", 
+                    error.get_msg().c_str()));
+            m_reason = error.get_msg();
+            break;
+        }
+    }
+    return m_reason.empty() ? true : false;
 }
 
 // Retrieve document defined by file name and internal path. 

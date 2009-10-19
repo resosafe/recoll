@@ -310,7 +310,8 @@ bool Query::getDoc(int exti, Doc &doc)
 		} catch (const Xapian::Error & error) {
 		  LOGERR(("enquire->get_mset: exception: %s\n", 
 			  error.get_msg().c_str()));
-		  abort();
+                  m_reason = error.get_msg();
+                  return false;
 		}
 
 		if (m_nq->mset.empty()) {
@@ -350,7 +351,8 @@ bool Query::getDoc(int exti, Doc &doc)
 	} catch (const Xapian::Error & error) {
 	  LOGERR(("enquire->get_mset: exception: %s\n", 
 		  error.get_msg().c_str()));
-	  abort();
+          m_reason = error.get_msg();
+          return false;
 	}
 	if (m_nq->mset.empty())
 	    return false;
@@ -363,13 +365,32 @@ bool Query::getDoc(int exti, Doc &doc)
 	     first, last,
 	     m_nq->mset.get_matches_lower_bound()));
 
-    Xapian::Document xdoc = m_nq->mset[xapi-first].get_document();
-    Xapian::docid docid = *(m_nq->mset[xapi-first]);
-    int pc = m_nq->mset.convert_to_percent(m_nq->mset[xapi-first]);
+    Xapian::Document xdoc;
+    Xapian::docid docid = 0;
+    int pc = 0;
+    string data;
+    m_reason.erase();
+    for (int xaptries=0; xaptries < 2; xaptries++) {
+        try {
+            xdoc = m_nq->mset[xapi-first].get_document();
+            docid = *(m_nq->mset[xapi-first]);
+            pc = m_nq->mset.convert_to_percent(m_nq->mset[xapi-first]);
+            data = xdoc.get_data();
+            m_reason.erase();
+            break;
+        } catch (Xapian::DatabaseModifiedError &error) {
+            // retry or end of loop
+            LOGDEB(("getDoc: caught DatabaseModified\n"));
+            m_reason = error.get_msg();
+            continue;
+        }
+        XCATCHERROR(m_reason);
+        break;
+    }
 
     // Parse xapian document's data and populate doc fields
-    string data = xdoc.get_data();
-    return m_db->m_ndb->dbDataToRclDoc(docid, data, doc, pc);
+    return m_reason.empty() ? 
+        m_db->m_ndb->dbDataToRclDoc(docid, data, doc, pc) : false;
 }
 
 list<string> Query::expand(const Doc &doc)

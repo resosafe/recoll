@@ -515,8 +515,8 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    session waits.
 
    By default the indexing daemon will monitor the state of the X11 session,
-   and exit when it finishes, it is not necessary to kill it explicitly.
-   (The X11 server monitoring can be disabled with option -x to recollindex).
+   and exit when it finishes, it is not necessary to kill it explicitly. (The
+   X11 server monitoring can be disabled with option -x to recollindex).
 
    Under KDE, you can place a small script to start recollindex -m under
    $HOME/.kde/Autostart. This will be executed when the session begins.

@@ -286,6 +286,17 @@
                                     </widget>
                                     <widget class="QCheckBox">
                                         <property name="name">
+                                            <cstring>useDesktopOpenCB</cstring>
+                                        </property>
+                                        <property name="text">
+                                            <string>Use desktop preferences to choose document editor.</string>
+                                        </property>
+                                        <property name="checked">
+                                            <bool>false</bool>
+                                        </property>
+                                    </widget>
+                                    <widget class="QCheckBox">
+                                        <property name="name">
                                             <cstring>autoSearchCB</cstring>
                                         </property>
                                         <property name="text">
@@ -312,17 +323,6 @@
                                         </property>
                                         <property name="text">
                                             <string>Start with sort dialog open.</string>
-                                        </property>
-                                        <property name="checked">
-                                            <bool>false</bool>
-                                        </property>
-                                    </widget>
-                                    <widget class="QCheckBox">
-                                        <property name="name">
-                                            <cstring>useDesktopOpenCB</cstring>
-                                        </property>
-                                        <property name="text">
-                                            <string>Use desktop preferences to choose document editor.</string>
                                         </property>
                                         <property name="checked">
                                             <bool>false</bool>

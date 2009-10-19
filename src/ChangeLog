@@ -1,3 +1,34 @@
+2009-10-17 06:35  dockes
+
+	* Makefile.in, index/recollindex.cpp, qtgui/main.cpp,
+	  qtgui/rclmain_w.cpp, rcldb/rcldb.cpp, rcldb/rcldb.h: rclversion.h
+	  must not include xapian.h. Replace with Rcl::version_string()
+
+2009-10-17 06:34  dockes
+
+	* ChangeLog:
+
+2009-10-15 12:28  dockes
+
+	* index/rclmonprc.cpp, utils/Makefile, utils/conftree.cpp,
+	  utils/execmd.cpp: only call x11IsAlive() from main thread
+
+2009-10-14 14:41  dockes
+
+	* sampleconf/recoll.conf.in:
+
+2009-10-14 14:41  dockes
+
+	* internfile/mh_exec.cpp: no timeout if filtermaxseconds<0
+
+2009-10-13 12:17  dockes
+
+	* internfile/mh_exec.cpp: typo in exec timeout
+
+2009-10-13 11:52  dockes
+
+	* sampleconf/recoll.conf.in: add loop.ps to skippedNames
+
 2009-10-12 17:41  dockes
 
 	* internfile/mh_exec.cpp: configurable timeout on script execution

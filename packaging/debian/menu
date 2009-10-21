@@ -1,2 +1,2 @@
-?package(recoll):needs="X11" section="Apps/Databases"\
+?package(recoll):needs="X11" section="Applications/Data Management" \
   title="Personal Search Tool" command="/usr/bin/recoll"

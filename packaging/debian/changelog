@@ -1,6 +1,6 @@
-recoll (1.12.0-0ubuntu1) dapper; urgency=low
-  * Updated package to recoll version 1.12.0
- -- Jean-Francois Dockes <jean-francois.dockes@wanadoo.fr>  Thu, 29 Jan 2009 11:46:43 +0200
+recoll (1.12.2-0~ppa3~jaunty1) jaunty; urgency=low
+  * Updated package to recoll version 1.12.2
+ -- Jean-Francois Dockes <jf@dockes.org>  Mon, 19 Oct 2009 16:17:46 +0200
 
 recoll (1.11.0-0ubuntu1) dapper; urgency=low
   * Updated package to recoll version 1.11.0

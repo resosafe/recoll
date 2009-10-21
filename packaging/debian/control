@@ -1,8 +1,8 @@
 Source: recoll
 Section: x11
 Priority: optional
-Maintainer: Jean-Francois Dockes <jean-francois.dockes@wanadoo.fr>
-Build-Depends: debhelper (>= 5), libqt3-headers, libqt3-mt-dev, qt3-dev-tools
+Maintainer: Jean-Francois Dockes <jf@dockes.org>
+Build-Depends: debhelper (>= 5), libqt3-headers, libqt3-mt-dev, qt3-dev-tools, libxapian-dev 
 Standards-Version: 3.7.2
 
 Package: recoll

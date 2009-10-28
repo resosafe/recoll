@@ -141,7 +141,7 @@ void ResList::setDocSource()
     resultPageNext();
 }
 
-void ResList::setSortParams(const DocSeqSortSpec& spec)
+void ResList::setSortParams(DocSeqSortSpec spec)
 {
     LOGDEB(("ResList::setSortParams\n"));
     m_sortspecs = spec;

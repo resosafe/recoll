@@ -101,7 +101,7 @@ class ResList : public QTEXTBROWSER
     // Only used for qt ver >=4 but seems we cant undef it
     virtual void selecChanged();
     virtual void setDocSource();
-    virtual void setSortParams(const DocSeqSortSpec &spec);
+    virtual void setSortParams(DocSeqSortSpec spec);
     virtual void setFilterParams(const DocSeqFiltSpec &spec);
 
  signals:

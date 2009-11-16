@@ -230,76 +230,97 @@ XAPIANCXXFLAGS=`$XAPIAN_CONFIG --cxxflags`
 # will have failed, and we tell the user to check his environment.
 #
 
-if test X$QTDIR != X ; then
-   PATH=$QTDIR/bin:$PATH
-   export PATH
-fi
+AC_ARG_WITH(gui, 
+    AC_HELP_STRING([--without-gui],
+   [Disable the QT user interface and auxiliary x11 uses.]),
+        withQT=$withval, withQT="yes")
 
-if test X$QMAKE = X ; then
-   QMAKE=qmake
-fi
-
-AC_PATH_PROG([QMAKEPATH], $QMAKE, NOTFOUND)
-if test X$QMAKEPATH = XNOTFOUND ; then 
-   AC_MSG_ERROR([Cannot find the qmake program. Maybe you need to install
-qt development files and tools and/or set the QTDIR environment variable?])
-fi
-QMAKE=$QMAKEPATH
-
-# MAC OS X: we don't support this (the native search tool is more than
-# good enough), but we make things work just enough so that the program can
-# be compiled and roughly installed (not as a .app, but to /usr/local),
-# basically to enable using a Macbook for development
-if test X$sys = XDarwin ; then
-   # The default is xcode
-   QMAKE="${QMAKE} -spec macx-g++"
-fi
-
-# Discriminate qt3/4. Qt3 qmake prints its version on stderr but we don't
-# depend on this. We try to detect the qt 4 version string instead.
-qmakevers="`${QMAKE} --version 2>&1`"
-#echo "qmake version: $qmakevers"
-v4=`expr "$qmakevers" : '.*Qt[ ][ ]*version[ ][ ]*4.*'`
-if test X$v4 = X0 ; then 
-   AC_MSG_NOTICE([using qt version 3 user interface])
-   QTGUI=qtgui
+if test "$withQT" != "yes" ; then
+   AC_DEFINE(WIHOUT_X11)
+   NOQTMAKE="#"
+   NOCMDLINE=""
 else
-  AC_MSG_NOTICE([using qt version 4 user interface])
-  QTGUI=qt4gui
-  AC_PATH_PROG([UIC3], [uic3], NOTFOUND)
-  if test X$UIC3 = XNOTFOUND ; then 
-    AC_MSG_ERROR([Cannot find the uic3 program. Maybe you need to add
-    the qt3 compatibility libraries and tools to your qt4 installation ?])
+   NOQTMAKE=""
+   NOCMDLINE="#"
+  if test X$QTDIR != X ; then
+     PATH=$QTDIR/bin:$PATH
+     export PATH
   fi
-fi
+  
+  if test X$QMAKE = X ; then
+     QMAKE=qmake
+  fi
+  
+  AC_PATH_PROG([QMAKEPATH], $QMAKE, NOTFOUND)
+  if test X$QMAKEPATH = XNOTFOUND ; then 
+     AC_MSG_ERROR([Cannot find the qmake program. Maybe you need to install
+  qt development files and tools and/or set the QTDIR environment variable?])
+  fi
+  QMAKE=$QMAKEPATH
+  
+  # MAC OS X: we don't support this (the native search tool is more than
+  # good enough), but we make things work just enough so that the program can
+  # be compiled and roughly installed (not as a .app, but to /usr/local),
+  # basically to enable using a Macbook for development
+  if test X$sys = XDarwin ; then
+     # The default is xcode
+     QMAKE="${QMAKE} -spec macx-g++"
+  fi
+  
+  # Discriminate qt3/4. Qt3 qmake prints its version on stderr but we don't
+  # depend on this. We try to detect the qt 4 version string instead.
+  qmakevers="`${QMAKE} --version 2>&1`"
+  #echo "qmake version: $qmakevers"
+  v4=`expr "$qmakevers" : '.*Qt[ ][ ]*version[ ][ ]*4.*'`
+  if test X$v4 = X0 ; then 
+     AC_MSG_NOTICE([using qt version 3 user interface])
+     QTGUI=qtgui
+  else
+    AC_MSG_NOTICE([using qt version 4 user interface])
+    QTGUI=qt4gui
+    AC_PATH_PROG([UIC3], [uic3], NOTFOUND)
+    if test X$UIC3 = XNOTFOUND ; then 
+      AC_MSG_ERROR([Cannot find the uic3 program. Maybe you need to add
+      the qt3 compatibility libraries and tools to your qt4 installation ?])
+    fi
+  fi
+  
+  cd $QTGUI
+  # We just want a .pro file: no problem with unsubstituted variables at 
+  # this point.
+  test -f uifrom3 && make -f uifrom3
+  test -f recoll.pro && chmod +w recoll.pro
+  cp recoll.pro.in recoll.pro
+  #echo QMAKE ${QMAKE}
+  ${QMAKE} recoll.pro
+  if test $? != 0 ; then
+     AC_MSG_ERROR([Cannot use qmake to generate a Makefile. Maybe you need to
+  check the QTDIR and QMAKESPEC environment variables?])
+  fi
+  # is QTDIR set and do we actually need it ?
+  if test X$QTDIR = X ; then
+     QTDIRNEEDED=`grep INCPATH Makefile | grep = | grep QTDIR`
+     if test "X$QTDIRNEEDED" != "X" ; then
+         AC_MSG_ERROR([You need to set the QTDIR variable to point to the QT
+  installation. If there is no default mkspecs, you should also set QMAKESPEC])
+     fi
+  fi
+  cd ..
 
-cd $QTGUI
-# We just want a .pro file: no problem with unsubstituted variables at 
-# this point.
-test -f uifrom3 && make -f uifrom3
-test -f recoll.pro && chmod +w recoll.pro
-cp recoll.pro.in recoll.pro
-#echo QMAKE ${QMAKE}
-${QMAKE} recoll.pro
-if test $? != 0 ; then
-   AC_MSG_ERROR([Cannot use qmake to generate a Makefile. Maybe you need to
-check the QTDIR and QMAKESPEC environment variables?])
+  AC_CONFIG_FILES($QTGUI/recoll.pro)
+  ##################### End QT detection
 fi
-# is QTDIR set and do we actually need it ?
-if test X$QTDIR = X ; then
-   QTDIRNEEDED=`grep INCPATH Makefile | grep = | grep QTDIR`
-   if test "X$QTDIRNEEDED" != "X" ; then
-       AC_MSG_ERROR([You need to set the QTDIR variable to point to the QT
-installation. If there is no default mkspecs, you should also set QMAKESPEC])
-   fi
-fi
-cd ..
-
-##################### End QT detection
 
 ### X11: this is needed for the session monitoring code (in recollindex -m)
-AC_PATH_XTRA
-#echo X_CFLAGS "'$X_CFLAGS'" X_PRE_LIBS "'$X_PRE_LIBS'" X_LIBS "'$X_LIBS'" X_EXTRA_LIBS "'$X_EXTRA_LIBS'"
+# We disable it if without-gui has been specified, but it could be separated
+if test "$withQT" = "yes" ; then
+  AC_PATH_XTRA
+  X_LIBX11=-lX11
+else
+  X_LIBX11=""
+fi
+#echo X_CFLAGS "'$X_CFLAGS'" X_PRE_LIBS "'$X_PRE_LIBS'" X_LIBS \
+#      "'$X_LIBS'" X_LIBX11 "'$X_LIBX11'" X_EXTRA_LIBS "'$X_EXTRA_LIBS'"
 
 # We have to expand prefix in here, couldn't find a way to do it inside 
 # the qt gui .pro file or Makefile. This just means that you can't change
@@ -313,6 +334,7 @@ QTRECOLL_DATADIR=${m_datadir}/recoll
 AC_SUBST(X_CFLAGS)
 AC_SUBST(X_PRE_LIBS)
 AC_SUBST(X_LIBS)
+AC_SUBST(X_LIBX11)
 AC_SUBST(X_EXTRA_LIBS)
 AC_SUBST(INCICONV)
 AC_SUBST(LIBICONV)
@@ -323,11 +345,13 @@ AC_SUBST(QTGUI)
 AC_SUBST(QTRECOLL_DATADIR)
 AC_SUBST(XAPIANCXXFLAGS)
 AC_SUBST(HAVE_MKDTEMP)
+AC_SUBST(NOQTMAKE)
+AC_SUBST(NOCMDLINE)
+
 AC_CONFIG_FILES(mk/localdefs)
 AC_CONFIG_FILES(recollinstall)
 AC_CONFIG_FILES(Makefile)
 AC_CONFIG_FILES(sampleconf/recoll.conf)
-AC_CONFIG_FILES($QTGUI/recoll.pro)
 
 for d in bincimapmime index lib query
 do 

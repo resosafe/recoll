@@ -11,7 +11,7 @@ recollindex : $(RECOLLINDEX_OBJS)
 	$(CXX) $(ALL_CXXFLAGS) -o recollindex $(RECOLLINDEX_OBJS) \
 	       $(BSTATIC) $(LIBXAPIAN) $(LIBICONV) $(BDYNAMIC) \
 	       $(LIBFAM) \
-	       $(X_LIBS) $(X_PRE_LIBS) -lX11 $(X_EXTRA_LIBS) \
+	       $(X_LIBS) $(X_PRE_LIBS) $(X_LIBX11) $(X_EXTRA_LIBS) \
 	       $(LIBSYS)
 recollindex.o : recollindex.cpp
 	$(CXX) $(ALL_CXXFLAGS) -c -o recollindex.o $<

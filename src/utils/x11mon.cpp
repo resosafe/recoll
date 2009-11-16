@@ -3,7 +3,8 @@
 static char rcsid[] = "@(#$Id: x11mon.cpp,v 1.1 2006-12-23 12:23:15 dockes Exp $ (C) 2006 J.F.Dockes";
 #endif
 // Poll state of X11 connectibility (to detect end of user session).
-
+#include "autoconfig.h"
+#ifndef WITHOUT_X11
 #include <stdio.h>
 #include <X11/Xlib.h>
 #include <signal.h>
@@ -58,7 +59,12 @@ bool x11IsAlive()
     XSynchronize(m_display, sync);
     return m_ok;
 }
-
+#else
+bool x11IsAlive() 
+{
+    return true;
+}
+#endif /* WITHOUT_X11 */
 
 #else
 

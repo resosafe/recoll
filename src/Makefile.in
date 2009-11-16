@@ -14,7 +14,8 @@ QTGUI = @QTGUI@
 all: mk/sysconf common/rclversion.h
 	cd lib; ${MAKE}
 	cd index; ${MAKE} recollindex
-	cd $(QTGUI); ${QMAKE} recoll.pro; ${MAKE} depth=.. 
+	@NOQTMAKE@cd $(QTGUI); ${QMAKE} recoll.pro; ${MAKE} depth=.. 
+	@NOCMDLINE@ cd query; ${MAKE} recollq
 
 mk/sysconf:
 	@echo "You need to run configure first" ; exit 1
@@ -27,9 +28,9 @@ static: mk/sysconf common/rclversion.h
 	cd lib; ${MAKE}
 	cd index; rm -f recollindex; \
 	   ${MAKE} BSTATIC=-Wl,-Bstatic BDYNAMIC=-Wl,-Bdynamic recollindex
-	cd $(QTGUI); $(QMAKE) recoll.pro; \
-	   rm -f recoll; \
-	   ${MAKE} BSTATIC=-Wl,-Bstatic BDYNAMIC=-Wl,-Bdynamic depth=.. 
+	@NOQTMAKE@cd $(QTGUI); $(QMAKE) recoll.pro; \
+	@NOQTMAKE@ rm -f recoll; \
+	@NOQTMAKE@ ${MAKE} BSTATIC=-Wl,-Bstatic BDYNAMIC=-Wl,-Bdynamic depth=.. 
 
 clean:
 	-cd common; ${MAKE} clean
@@ -39,8 +40,9 @@ clean:
 	-cd query; ${MAKE} clean
 	-cd utils; ${MAKE} clean
         #cd doc/user; ${MAKE} clean
-	@-cd qtgui; ${MAKE} clean
-	@-cd qt4gui; ${MAKE} clean
+	@NOQTMAKE@@-cd qtgui; ${MAKE} clean
+	@NOQTMAKE@@-cd qt4gui; ${MAKE} clean
+	@NOCMDLINE@ cd query; ${MAKE} clean
 	rm -f qtgui/Makefile qtgui/confgui/Makefile qtgui/recoll
 	rm -f qt4gui/Makefile qt4gui/preview/Makefile qt4gui/recoll
 	rm -f common/rclversion.h
@@ -58,7 +60,7 @@ distclean: clean
 	   wasabi/Makefile wasabi/client/Makefile wasabi/server/Makefile
 	rm -f index/alldeps lib/alldeps query/alldeps
 	rm -rf autom4te.cache
-	(cd qt4gui; make -f uifrom3 distclean)
+	@NOQTMAKE@(cd qt4gui; make -f uifrom3 distclean)
 
 maintainer-clean: distclean
 	rm -f doc/user/*.html* doc/user/*.txt doc/user/HTML.manifest

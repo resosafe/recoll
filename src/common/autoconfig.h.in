@@ -37,3 +37,6 @@
 
 /* Use file extended attributes */
 #undef RCL_USE_XATTR
+
+/* No X11 */
+#undef WITHOUT_X11

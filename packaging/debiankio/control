@@ -1,0 +1,25 @@
+Source: kio-recoll
+Section: kde
+Priority: extra
+Maintainer: Jean-Francois Dockes <jfd@recoll.org>
+Build-Depends: cdbs, cmake, debhelper (>= 7), kdelibs5-dev (>= 4:4.2.2), pkg-kde-tools (>= 0.4.0), libxapian-dev
+Standards-Version: 3.8.1
+Homepage: http://www.recoll.org/
+
+Package: kio-recoll
+Architecture: any
+Depends: ${misc:Depends}, ${shlibs:Depends}
+Description: an Recoll KIO slave for KDE 4
+ A Recoll KIO slave for KDE 4, allows performing a Recoll search by
+ entering an appropriate URL in a KDE open dialog, or with an HTML-based
+ interface displayed in Konqueror.  
+ The HTML-based interface is similar to the Recoll GUI QT-based interface,
+ slightly less powerful. It allows performing a search while staying fully
+ within the KDE framework: drag and drop from the result list works
+ normally and you have your normal choice of applications for opening files. 
+ An alternative interface uses a directory view of search results. Due to
+ limitations in the current KIO slave interface, it is currently not
+ obviously useful.
+ The interface is described in more detail inside a help file which you can
+ access by entering recoll:/ inside the konqueror URL line (this works only
+ if the recoll KIO slave has been previously installed). 

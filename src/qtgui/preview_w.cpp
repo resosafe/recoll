@@ -124,6 +124,111 @@ void PreviewTextEdit::moveToAnchor(const QString& name)
     }
 }
 
+
+#if (QT_VERSION >= 0x040000)
+
+// Had to reimplement Qtextdocument::find() by duplicating the qt3
+// version.  The version in qt4 qt3support was modified for some
+// unknown reason and exhibits quadratic behaviour, and is totally
+// unusable on big documents
+static bool QTextDocument_find(Q3TextDocument *doc, Q3TextCursor& cursor, 
+                               const QString &expr, bool cs, bool wo, 
+                               bool forward)
+{
+    Qt::CaseSensitivity caseSensitive = cs ? Qt::CaseSensitive : 
+        Qt::CaseInsensitive;
+
+    doc->removeSelection(Q3TextDocument::Standard);
+    Q3TextParagraph *p = 0;
+    if ( expr.isEmpty() )
+	return FALSE;
+    for (;;) {
+	if ( p != cursor.paragraph() ) {
+	    p = cursor.paragraph();
+	    QString s = cursor.paragraph()->string()->toString();
+	    int start = cursor.index();
+	    for ( ;; ) {
+		int res = forward ? s.indexOf(expr, start, caseSensitive ) : 
+                    s.lastIndexOf(expr, start, caseSensitive);
+		int end = res + expr.length();
+		if ( res == -1 || ( !forward && start <= res ) )
+		    break;
+		if (!wo || ((res == 0||s[res - 1].isSpace() || 
+                             s[res - 1].isPunct()) &&
+                            (end == (int)s.length() || s[end].isSpace() || 
+                             s[end].isPunct()))) {
+		    doc->removeSelection(Q3TextDocument::Standard);
+		    cursor.setIndex( forward ? end : res );
+		    doc->setSelectionStart(Q3TextDocument::Standard, cursor);
+		    cursor.setIndex( forward ? res : end );
+		    doc->setSelectionEnd(Q3TextDocument::Standard, cursor);
+		    if ( !forward )
+			cursor.setIndex( res );
+		    return TRUE;
+		}
+		start = res + (forward ? 1 : -1);
+	    }
+	}
+	if ( forward ) {
+	    if ( cursor.paragraph() == doc->lastParagraph() && 
+                 cursor.atParagEnd() )
+		 break;
+	    cursor.gotoNextLetter();
+	} else {
+	    if ( cursor.paragraph() == doc->firstParagraph() && 
+                 cursor.atParagStart() )
+		 break;
+	    cursor.gotoPreviousLetter();
+	}
+    }
+    return FALSE;
+
+}
+
+bool PreviewTextEdit::find(const QString &expr, bool cs, bool wo,
+                           bool forward, int *para, int *index)
+{
+    drawCursor(false);
+#ifndef QT_NO_CURSOR
+    viewport()->setCursor(isReadOnly() ? Qt::ArrowCursor : Qt::IBeamCursor);
+#endif
+    Q3TextCursor findcur = *textCursor();
+    if (para && index) {
+        if (document()->paragAt(*para))
+            findcur.gotoPosition(document()->paragAt(*para), *index);
+        else
+            findcur.gotoEnd();
+    } else if (document()->hasSelection(Q3TextDocument::Standard)){
+        // maks sure we do not find the same selection again
+        if (forward)
+            findcur.gotoNextLetter();
+        else
+            findcur.gotoPreviousLetter();
+    } else if (!forward && findcur.index() == 0 && findcur.paragraph() == findcur.topParagraph()) {
+        findcur.gotoEnd();
+    }
+    removeSelection(Q3TextDocument::Standard);
+    bool found = QTextDocument_find(document(), findcur, expr, cs, wo, forward);
+    if (found) {
+        if (para)
+            *para = findcur.paragraph()->paragId();
+        if (index)
+            *index = findcur.index();
+        *textCursor() = findcur;
+        repaintChanged();
+        ensureCursorVisible();
+    }
+    drawCursor(true);
+    if (found) {
+        emit cursorPositionChanged(textCursor());
+        emit cursorPositionChanged(textCursor()->paragraph()->paragId(), 
+                                   textCursor()->index());
+    }
+    return found;
+}
+
+#endif
+
 void Preview::init()
 {
     setName("Preview");

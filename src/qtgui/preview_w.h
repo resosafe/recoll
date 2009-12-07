@@ -55,6 +55,10 @@ public:
 	: QTEXTEDIT(parent, name), m_preview(pv)
     {}
     void moveToAnchor(const QString& name);
+#if (QT_VERSION >= 0x040000)
+    virtual bool find(const QString &expr, bool cs, bool wo,bool forward = true,
+                      int *para = 0, int *index = 0);
+#endif
 public slots:
     virtual void menuToggleFields();
 private:

@@ -34,7 +34,7 @@
 #if QT_VERSION < 0x040000
 #include "rclmain.h"
 #else
-#if QT_VERSION == 0x040601
+#if QT_VERSION >= 0x040601
 // 4.6.1 uic is broken
 #include "ui_rclmain.h-4.5"
 #else

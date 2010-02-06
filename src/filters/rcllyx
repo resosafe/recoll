@@ -132,10 +132,10 @@ case "$infile" in
  *) infile=`pwd`/$infile;;
 esac
 
-binfile=`basename $infile`
+binfile=`basename "$infile"`
 ln -s "$infile" "$workdir/$binfile" || exit 1
-lyxfile=$workdir/$binfile
-textfile=$workdir/`basename $binfile .lyx`.txt
+lyxfile=$workdir/"$binfile"
+textfile=$workdir/`basename "$binfile" .lyx`.txt
 
 #echo binfile: $binfile;echo lyxfile: $lyxfile ; ls -l $lyxfile; echo textfile: $textfile
 
@@ -215,7 +215,7 @@ cat <<EOF
 <pre>
 EOF
 
-$inputcmd < $textfile
+$inputcmd < "$textfile"
 
 cat <<EOF
 </pre>

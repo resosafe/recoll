@@ -37,7 +37,7 @@ AC_DEFINE_UNQUOTED(FILE_PROG, "$fileProg", [Path to the file program])
 
 # Can't use Solaris standard 'file' command, it doesn't support -i
 if test X$sys != XSunOS -o X$fileProg != X/usr/bin/file; then
-   AC_DEFINE(USE_SYSTEM_FILE_COMMAND)
+   AC_DEFINE(USE_SYSTEM_FILE_COMMAND, 1, [Enable using the system's 'file' command to id mime if we fail internally])
 fi
 
 

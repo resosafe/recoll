@@ -1,12 +1,12 @@
 Name:           recoll
-Version:        1.13.01
-Release:        3%{?dist}
+Version:        1.13.02
+Release:        1%{?dist}
 Summary:        Desktop full text search tool with a qt gui
 
 Group:          Applications/Databases
 License:        GPL
 URL:            http://www.recoll.org/
-Source0:        http://www.recoll.org/recoll-1.13.01.tar.gz 
+Source0:        http://www.recoll.org/recoll-1.13.02.tar.gz 
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 # Not sure how easy it is to find a xapian-core rpm. Will be easier to
@@ -56,6 +56,8 @@ rm -rf %{buildroot}
 
 
 %changelog
+* Fri Feb 12 2010 Terry Duell 1.13.02
+- updated to release 1.13.02
 * Mon Jan 12 2010 Terry Duell 1.13.01-3
 - rpm spec file updated to fix Fedora desktop-file-install and install icon
 * Sun Jan 10 2010 Jean-Francois Dockes <jfd@recoll.org> 1.13.01-2

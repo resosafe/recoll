@@ -3,17 +3,18 @@ AC_CONFIG_HEADERS([common/autoconfig.h])
 AC_PREREQ(2.53)
 AC_CONFIG_SRCDIR(index/recollindex.cpp)
 
-sys=`uname`
-if test -f mk/$sys ; then
-    (cd mk; rm -f sysconf; ln -s $sys sysconf)
-else
-   cat <<EOF
-    No system configuration file found in mk/ for '$sys'. Maybe you
-    could try to write one, starting from one of the existing files, they
-    are really simple.
-EOF
-   exit 1
+sys=`uname | tr / _`
+
+if test ! -f mk/$sys ; then
+   AC_MSG_NOTICE([
+    No system configuration file found in mk/ for uname = '$sys'. 
+    Trying with Default file. 
+    If the build fails, you'll need to write a configuration file, starting 
+    from one of the existing ones.])
+
+    sys=Default   
 fi
+(cd mk; rm -f sysconf; ln -s $sys sysconf)
 
 AC_CHECK_HEADERS(sys/mount.h sys/statfs.h sys/statvfs.h sys/vfs.h)
 

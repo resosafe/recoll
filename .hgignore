@@ -71,6 +71,8 @@ src/qt4gui/uiprefs.ui
 src/qt4gui/viewaction.ui
 src/qtgui/i18n/*.qm
 src/query/alldeps
+src/query/recollq
+src/query/xadump
 src/recollinstall
 src/sampleconf/recoll.conf
 website/usermanual/*

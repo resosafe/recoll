@@ -75,6 +75,30 @@ p_notlowerascii(unsigned int c)
     return false;
 }
 
+static bool addAssoc(Xapian::WritableDatabase &sdb, const string& stem,
+                     const list<string>& derivs)
+{
+    Xapian::Document newdocument;
+    newdocument.add_term(stem);
+    // The doc data is just parents=blank-separated-list
+    string record = "parents=";
+    for (list<string>::const_iterator it = derivs.begin(); 
+         it != derivs.end(); it++) {
+        record += *it + " ";
+    }
+    record += "\n";
+    LOGDEB2(("createStemDb: stmdoc data: [%s]\n", record.c_str()));
+    newdocument.set_data(record);
+    try {
+        sdb.replace_document(stem, newdocument);
+    } catch (...) {
+        LOGERR(("Db::createstemdb(addAssoc): replace failed\n"));
+        return false;
+    }
+    return true;
+}
+
+
 /**
  * Create database of stem to parents associations for a given language.
  * We walk the list of all terms, stem them, and create another Xapian db
@@ -100,41 +124,41 @@ bool createDb(Xapian::Database& xdb, const string& dbdir, const string& lang)
     int stemdiff=0;  // Count of all different stems
     int stemmultiple = 0; // Count of stems with multiple derivatives
     try {
-	Xapian::Stem stemmer(lang);
-	Xapian::TermIterator it;
-	for (it = xdb.allterms_begin(); 
-	     it != xdb.allterms_end(); it++) {
-	    // Deciding if we try to stem the term. If it has any
-	    // non-lowercase 7bit char (that is, numbers, capitals and
-	    // punctuation) dont. We're still sending all multibyte
-	    // utf-8 chars to the stemmer, which is not too well
-	    // defined for xapian < 1.0, but seems to work anyway. We don't
-	    // try to look for multibyte non alphabetic data.
-	    string::iterator sit = (*it).begin(), eit = sit + (*it).length();
-	    if ((sit = find_if(sit, eit, p_notlowerascii)) != eit) {
-		++nostem;
-		// LOGDEB(("stemskipped: [%s], because of 0x%x\n", 
-		// (*it).c_str(), *sit));
-		continue;
-	    }
-	    string stem = stemmer(*it);
-	    //cerr << "word " << *it << " stem " << stem << endl;
-	    if (stem == *it) {
-		++stemconst;
-		continue;
-	    }
-	    assocs.insert(pair<string,string>(stem, *it));
-	}
+        Xapian::Stem stemmer(lang);
+        Xapian::TermIterator it;
+        for (it = xdb.allterms_begin(); it != xdb.allterms_end(); it++) {
+            // Deciding if we try to stem the term. If it has any
+            // non-lowercase 7bit char (that is, numbers, capitals and
+            // punctuation) dont. We're still sending all multibyte
+            // utf-8 chars to the stemmer, which is not too well
+            // defined for xapian < 1.0, but seems to work anyway. We don't
+            // try to look for multibyte non alphabetic data.
+            string::iterator sit = (*it).begin(), eit = sit + (*it).length();
+            if ((sit = find_if(sit, eit, p_notlowerascii)) != eit) {
+                ++nostem;
+                LOGDEB1(("stemskipped: [%s], because of 0x%x\n", 
+                         (*it).c_str(), *sit));
+                continue;
+            }
+            string stem = stemmer(*it);
+            LOGDEB2(("Db::createStemDb: word [%s], stem [%s]\n", (*it).c_str(),
+                     stem.c_str()));
+            if (stem == *it) {
+                ++stemconst;
+                continue;
+            }
+            assocs.insert(pair<string,string>(stem, *it));
+        }
     } catch (const Xapian::Error &e) {
-	LOGERR(("Db::createStemDb: build failed: %s\n", e.get_msg().c_str()));
-	return false;
+        LOGERR(("Db::createStemDb: build failed: %s\n", e.get_msg().c_str()));
+        return false;
     } catch (...) {
-	LOGERR(("Db::createStemDb: build failed: no stemmer for %s ? \n", 
-		lang.c_str()));
-	return false;
+        LOGERR(("Db::createStemDb: build failed: no stemmer for %s ? \n", 
+                lang.c_str()));
+        return false;
     }
     LOGDEB1(("StemDb::createDb(%s): in memory map built: %.2f S\n", 
-	    lang.c_str(), cron.secs()));
+             lang.c_str(), cron.secs()));
 
     // Create xapian database for stem relations
     string stemdbdir = stemdbname(dbdir, lang);
@@ -144,69 +168,66 @@ bool createDb(Xapian::Database& xdb, const string& dbdir, const string& lang)
     string ermsg;
     Xapian::WritableDatabase sdb;
     try {
-	sdb = Xapian::WritableDatabase(stemdbdir, 
-				       Xapian::DB_CREATE_OR_OVERWRITE);
+        sdb = Xapian::WritableDatabase(stemdbdir, 
+                                       Xapian::DB_CREATE_OR_OVERWRITE);
     } catch (const Xapian::Error &e) {
-	ermsg = e.get_msg();
+        ermsg = e.get_msg();
     } catch (const string &s) {
-	ermsg = s;
+        ermsg = s;
     } catch (const char *s) {
-	ermsg = s;
+        ermsg = s;
     } catch (...) {
-	ermsg = "Caught unknown exception";
+        ermsg = "Caught unknown exception";
     }
     if (!ermsg.empty()) {
-	LOGERR(("Db::createstemdb: exception while opening [%s]: %s\n", 
-		stemdbdir.c_str(), ermsg.c_str()));
-	return false;
+        LOGERR(("Db::createstemdb: exception while opening [%s]: %s\n", 
+                stemdbdir.c_str(), ermsg.c_str()));
+        return false;
     }
 
-    // Enter pseud-docs in db. Walk the multimap, only enter
-    // associations where there are several parent terms
+    // Enter pseud-docs in db by walking the multimap.
     string stem;
     list<string> derivs;
     for (multimap<string,string>::const_iterator it = assocs.begin();
-	 it != assocs.end(); it++) {
-	if (stem == it->first) {
-	    // Staying with same stem
-	    derivs.push_back(it->second);
-	    // cerr << " " << it->second << endl;
-	} else {
-	    // Changing stems 
-	    ++stemdiff;
-	    // We need an entry even if there is only one derivative
-	    // so that it is possible to search by entering the stem
-	    // even if it doesnt exist as a term
-	    if (derivs.size() >= 1) {
-		// Previous stem has multiple derivatives. Enter in db
-		++stemmultiple;
-		Xapian::Document newdocument;
-		newdocument.add_term(stem);
-		// The doc data is just parents=blank-separated-list
-		string record = "parents=";
-		for (list<string>::const_iterator it = derivs.begin(); 
-		     it != derivs.end(); it++) {
-		    record += *it + " ";
-		}
-		record += "\n";
-		LOGDEB1(("stemdocument data: %s\n", record.c_str()));
-		newdocument.set_data(record);
-		try {
-		    sdb.replace_document(stem, newdocument);
-		    //sdb.add_document(newdocument);
-		} catch (...) {
-		    LOGERR(("Db::createstemdb: replace failed\n"));
-		    return false;
-		}
-	    }
-	    derivs.clear();
-	    stem = it->first;
-	    derivs.push_back(it->second);
-	    //	    cerr << "\n" << stem << " " << it->second;
-	}
+         it != assocs.end(); it++) {
+        if (stem == it->first) {
+            // Staying with same stem
+            derivs.push_back(it->second);
+            // cerr << " " << it->second << endl;
+        } else {
+            // Changing stems 
+            ++stemdiff;
+            LOGDEB2(("createStemDb: stem [%s]\n", stem.c_str()));
+
+            // We need an entry even if there is only one derivative
+            // so that it is possible to search by entering the stem
+            // even if it doesnt exist as a term
+            if (!derivs.empty()) {
+
+                if (derivs.size() > 1)
+                    ++stemmultiple;
+                    
+                if (!addAssoc(sdb, stem, derivs)) {
+                    return false;
+                }
+                derivs.clear();
+            }
+            stem = it->first;
+            derivs.push_back(it->second);
+            //	    cerr << "\n" << stem << " " << it->second;
+        }
     }
+    if (!derivs.empty()) {
+        if (derivs.size() > 1)
+            ++stemmultiple;
+                    
+        if (!addAssoc(sdb, stem, derivs)) {
+            return false;
+        }
+    }
+
     LOGDEB1(("StemDb::createDb(%s): done: %.2f S\n", 
-	    lang.c_str(), cron.secs()));
+             lang.c_str(), cron.secs()));
     LOGDEB(("Stem map size: %d stems %d mult %d no %d const %d\n", 
 	    assocs.size(), stemdiff, stemmultiple, nostem, stemconst));
     wiper.do_it = false;

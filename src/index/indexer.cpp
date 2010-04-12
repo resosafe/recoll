@@ -195,6 +195,10 @@ bool ConfIndexer::createStemmingDatabases()
 {
     string slangs;
     if (m_config->getConfParam("indexstemminglanguages", slangs)) {
+        if (!m_db.open(Rcl::Db::DbRO)) {
+            LOGERR(("ConfIndexer::createStemmingDb: could not open db\n"))
+            return false;
+        }
 	list<string> langs;
 	stringToStrings(slangs, langs);
 
@@ -215,6 +219,7 @@ bool ConfIndexer::createStemmingDatabases()
 	    m_db.createStemDb(*it);
 	}
     }
+    m_db.close();
     return true;
 }
 
@@ -245,6 +250,7 @@ bool ConfIndexer::createAspellDict()
 	return true;
 
     if (!m_db.open(Rcl::Db::DbRO)) {
+        LOGERR(("ConfIndexer::createAspellDict: could not open db\n"));
 	return false;
     }
 

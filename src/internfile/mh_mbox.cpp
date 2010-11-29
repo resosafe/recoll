@@ -471,6 +471,7 @@ bool MimeHandlerMbox::next_document()
 			// Rewind to start of "From " line
 			fseek(fp, end, SEEK_SET);
 			m_lineno--;
+                        hademptyline = true;
 			break;
 		    }
 		}

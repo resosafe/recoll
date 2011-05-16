@@ -266,12 +266,8 @@ void RclMain::init()
 	    this, SLOT(startNativeViewer(Rcl::Doc)));
     connect(restable, SIGNAL(docPreviewClicked(int, Rcl::Doc, int)), 
 	    this, SLOT(startPreview(int, Rcl::Doc, int)));
-    connect(restable, SIGNAL(docEditClicked(Rcl::Doc)), 
-	    this, SLOT(startNativeViewer(Rcl::Doc)));
     connect(restable, SIGNAL(docExpand(Rcl::Doc)), 
 	    this, SLOT(docExpand(Rcl::Doc)));
-    connect(restable, SIGNAL(docEditClicked(Rcl::Doc)), 
-	    this, SLOT(startNativeViewer(Rcl::Doc)));
     connect(restable, SIGNAL(previewRequested(Rcl::Doc)), 
 	    this, SLOT(startPreview(Rcl::Doc)));
     connect(restable, SIGNAL(editRequested(Rcl::Doc)), 

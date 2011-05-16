@@ -1104,12 +1104,12 @@ bool CirCache::getCurrent(string& udi, string& dic, string& data)
     return true;
 }
 
-void *
-allocmem(void 	*cp,	/* The array to grow. may be NULL */
-	 int	 sz,	/* Unit size in bytes */
-	 int 	*np,    /* Pointer to current allocation number */
-	 int	 min,   /* Number to allocate the first time */
-	 int	 maxinc) /* Maximum increment */
+static void *allocmem(
+    void *cp,	/* The array to grow. may be NULL */
+    int	 sz,	/* Unit size in bytes */
+    int  *np,    /* Pointer to current allocation number */
+    int	 min,   /* Number to allocate the first time */
+    int	 maxinc) /* Maximum increment */
 {
     if (cp == 0) {
         cp = malloc(min * sz);

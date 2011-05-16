@@ -95,6 +95,10 @@ sub imgTagsToHtml {
     return $output;
 }
 
+
+####################################################################
+# Code for the rclexecm filter<->indexer protocol from here
+
 # Get one line from stdin (from recollindex), exit on eof
 sub readlineorexit {
     my $s = <STDIN>;

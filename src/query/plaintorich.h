@@ -86,7 +86,7 @@ public:
     virtual string startChunk() {return snull;}
 
 protected:
-    static const string snull;
+    const string snull;
     bool m_inputhtml;
     // Use <br> to break plain text lines (else caller has used a <pre> tag)
     bool m_eolbr; 

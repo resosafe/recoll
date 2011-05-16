@@ -34,10 +34,6 @@
  * 
  * It is assumed that the dictionary are small (they are routinely read/parsed)
  *
- * A problem with this approach is that repetitively storing the same
- * object will evict all others. This could be somewhat optimized by reusing 
- * the last entry if it has the same udi as the one written, but not done 
- * currently.
  */
 
 #include <sys/types.h>

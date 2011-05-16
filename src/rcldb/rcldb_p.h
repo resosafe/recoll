@@ -114,20 +114,5 @@ class Db::Native {
 
 };
 
-// Field names inside the index data record may differ from the rcldoc ones
-// (esp.: caption / title)
-inline const string& docfToDatf(const string& df)
-{
-    static const string keycap("caption");
-    static const string keydmtime("dmtime");
-    if (!df.compare(Doc::keytt)) {
-	return keycap;
-    } else if (!df.compare(Doc::keymt)) {
-	return keydmtime;
-    } else {
-	return df;
-    }
-}
-
 }
 #endif /* _rcldb_p_h_included_ */

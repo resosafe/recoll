@@ -39,6 +39,21 @@
 namespace Rcl {
 #endif
 
+// Field names inside the index data record may differ from the rcldoc ones
+// (esp.: caption / title)
+static const string& docfToDatf(const string& df)
+{
+    static const string keycap("caption");
+    static const string keydmtime("dmtime");
+    if (!df.compare(Doc::keytt)) {
+	return keycap;
+    } else if (!df.compare(Doc::keymt)) {
+	return keydmtime;
+    } else {
+	return df;
+    }
+}
+
 // Sort helper class
 class QSorter : public Xapian::Sorter {
 public:

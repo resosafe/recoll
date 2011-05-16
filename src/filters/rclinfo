@@ -12,6 +12,10 @@ import subprocess
 # Prototype for the html document we're returning. Info files are
 # normally ascii. Set no charset, and let it be provided by the
 # environment if necessary
+#
+# Some info source docs contain charset info like:
+# @documentencoding ISO-2022-JP
+# But this seems to be absent from outputs.
 htmltemplate = '''
 <html>
   <head>

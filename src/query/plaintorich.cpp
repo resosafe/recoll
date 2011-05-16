@@ -41,8 +41,6 @@ using std::set;
 #include "cancelcheck.h"
 #include "unacpp.h"
 
-const string PlainToRich::snull = "";
-
 // For debug printing
 static string vecStringToString(const vector<string>& t)
 {

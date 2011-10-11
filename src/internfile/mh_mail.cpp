@@ -25,7 +25,6 @@
 #include <map>
 #include <sstream>
 
-#include "cstr.h"
 #include "mimehandler.h"
 #include "readfile.h"
 #include "transcode.h"
@@ -44,11 +43,16 @@
 using namespace std;
 
 static const int maxdepth = 20;
+static const string cstr_mimetype = "mimetype";
+static const string cstr_content = "content";
+static const string cstr_author = "author";
 static const string cstr_recipient = "recipient";
 static const string cstr_modificationdate = "modificationdate";
 static const string cstr_title = "title";
 static const string cstr_msgid = "msgid";
 static const string cstr_abstract = "abstract";
+
+static const string cstr_newline = "\n";
 
 MimeHandlerMail::MimeHandlerMail(RclConfig *cnf, const string &mt) 
     : RecollFilter(cnf, mt), m_bincdoc(0), m_fd(-1), m_stream(0), m_idx(-1)
@@ -172,7 +176,7 @@ bool MimeHandlerMail::next_document()
     bool res = false;
 
     if (m_idx == -1) {
-	m_metaData[cstr_mimetype] = cstr_textplain;
+	m_metaData[cstr_mimetype] = "text/plain";
 	res = processMsg(m_bincdoc, 0);
 	LOGDEB1(("MimeHandlerMail::next_document: mimetype %s\n",
 		m_metaData[cstr_mimetype].c_str()));
@@ -181,7 +185,7 @@ bool MimeHandlerMail::next_document()
             m_metaData[cstr_abstract] = 
                 truncate_to_word(txt.substr(m_startoftext), 250);
     } else {
-        m_metaData[cstr_abstract].clear();
+        m_metaData[cstr_abstract] = "";
 	res = processAttach();
     }
     m_idx++;
@@ -236,7 +240,7 @@ bool MimeHandlerMail::processAttach()
     MHMailAttach *att = m_attachments[m_idx];
 
     m_metaData[cstr_mimetype] = att->m_contentType;
-    m_metaData[cstr_charset] = att->m_charset;
+    m_metaData["charset"] = att->m_charset;
     m_metaData["filename"] = att->m_filename;
     // Change the title to something helpul
     m_metaData[cstr_title] = att->m_filename + "  (" + m_subject + ")";
@@ -259,12 +263,12 @@ bool MimeHandlerMail::processAttach()
     // Special case for text/plain content. Internfile should deal
     // with this but it expects text/plain to be utf-8 already, so we
     // handle the transcoding if needed
-    if (m_metaData[cstr_mimetype] == cstr_textplain && 
-	stringicmp(m_metaData[cstr_charset], "UTF-8")) {
+    if (m_metaData[cstr_mimetype] == "text/plain" && 
+	stringicmp(m_metaData["charset"], "UTF-8")) {
 	string utf8;
-	if (!transcode(body, utf8, m_metaData[cstr_charset], "UTF-8")) {
+	if (!transcode(body, utf8, m_metaData["charset"], "UTF-8")) {
 	    LOGERR(("  processAttach: transcode to utf-8 failed "
-		    "for charset [%s]\n", m_metaData[cstr_charset].c_str()));
+		    "for charset [%s]\n", m_metaData["charset"].c_str()));
 	    // Just let it through and hope for the best...
 	} else {
 	    body = utf8;
@@ -284,7 +288,7 @@ bool MimeHandlerMail::processAttach()
     // Ipath
     char nbuf[20];
     sprintf(nbuf, "%d", m_idx);
-    m_metaData[cstr_ipath] = nbuf;
+    m_metaData["ipath"] = nbuf;
 
     return true;
 }
@@ -448,7 +452,7 @@ void MimeHandlerMail::walkmime(Binc::MimePart* doc, int depth)
 		MimeHeaderValue content_type;
 		parseMimeHeaderValue(hi.getValue(), content_type);
 		LOGDEB2(("walkmime: C-type: %s\n",content_type.value.c_str()));
-		if (!stringlowercmp(cstr_textplain, content_type.value))
+		if (!stringlowercmp("text/plain", content_type.value))
 		    ittxt = it;
 		else if (!stringlowercmp("text/html", content_type.value)) 
 		    ithtml = it;
@@ -469,7 +473,7 @@ void MimeHandlerMail::walkmime(Binc::MimePart* doc, int depth)
 
     // Get and parse content-type header.
     Binc::HeaderItem hi;
-    string ctt = cstr_textplain;
+    string ctt = "text/plain";
     if (doc->h.getFirstHeader("Content-Type", hi)) {
 	ctt = hi.getValue();
     }
@@ -527,7 +531,7 @@ void MimeHandlerMail::walkmime(Binc::MimePart* doc, int depth)
     // to iso-8859 only if the transfer-encoding is 8 bit, or test for
     // actual 8 bit chars, but what the heck, le'ts use 8859-1 as default
     string charset;
-    it = content_type.params.find(string(cstr_charset));
+    it = content_type.params.find(string("charset"));
     if (it != content_type.params.end())
 	charset = it->second;
     if (charset.empty() || 
@@ -551,7 +555,7 @@ void MimeHandlerMail::walkmime(Binc::MimePart* doc, int depth)
     // attachment, as per rfc2183. 
     // If it is inline but not text or html, same thing.
     if (stringlowercmp("inline", content_disposition.value) ||
-	(stringlowercmp(cstr_textplain, content_type.value) && 
+	(stringlowercmp("text/plain", content_type.value) && 
 	 stringlowercmp("text/html", content_type.value)) ) {
 	if (!filename.empty()) {
 	    out += "\n";

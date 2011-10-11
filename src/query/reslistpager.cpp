@@ -27,7 +27,6 @@
 using std::ostringstream;
 using std::endl;
 
-#include "cstr.h"
 #include "reslistpager.h"
 #include "debuglog.h"
 #include "rclconfig.h"
@@ -385,7 +384,7 @@ string ResListPager::iconPath(RclConfig *config, const string& mtype)
 {
     string iconpath;
     config->getMimeIconName(mtype, &iconpath);
-    iconpath = cstr_fileu + iconpath;
+    iconpath = string("file://") + iconpath;
     return iconpath;
 }
 

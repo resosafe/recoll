@@ -24,7 +24,6 @@
 
 #include "xapian.h"
 
-#include "cstr.h"
 #include "rcldb.h"
 #include "rcldb_p.h"
 #include "rclquery.h"
@@ -40,15 +39,17 @@
 namespace Rcl {
 #endif
 
+static const string cstr_keycap("caption");
+static const string cstr_keydmtime("dmtime");
 
 // Field names inside the index data record may differ from the rcldoc ones
 // (esp.: caption / title)
 static const string& docfToDatf(const string& df)
 {
     if (!df.compare(Doc::keytt)) {
-	return cstr_caption;
+	return cstr_keycap;
     } else if (!df.compare(Doc::keymt)) {
-	return cstr_dmtime;
+	return cstr_keydmtime;
     } else {
 	return df;
     }

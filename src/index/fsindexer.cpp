@@ -30,7 +30,6 @@
 #include <map>
 #include <algorithm>
 
-#include "cstr.h"
 #include "pathut.h"
 #include "conftree.h"
 #include "rclconfig.h"
@@ -242,7 +241,7 @@ bool FsIndexer::purgeFiles(list<string>& files)
 	return false;
     for (list<string>::iterator it = files.begin(); it != files.end(); ) {
 	string udi;
-	make_udi(*it, cstr_null, udi);
+	make_udi(*it, "", udi);
         // rcldb::purgefile returns true if the udi was either not
         // found or deleted, false only in case of actual error
         bool existed;
@@ -343,7 +342,7 @@ FsIndexer::processone(const std::string &fn, const struct stat *stp,
     string sig;
     makesig(stp, sig);
     string udi;
-    make_udi(fn, cstr_null, udi);
+    make_udi(fn, "", udi);
     if (!m_db->needUpdate(udi, sig)) {
 	LOGDEB0(("processone: up to date: %s\n", fn.c_str()));
 	if (m_updater) {
@@ -385,8 +384,9 @@ FsIndexer::processone(const std::string &fn, const struct stat *stp,
 	     "UTF-8"));
 
     string parent_udi;
-    make_udi(fn, cstr_null, parent_udi);
+    make_udi(fn, "", parent_udi);
     Rcl::Doc doc;
+    const string plus("+");
     char ascdate[30];
     sprintf(ascdate, "%ld", long(stp->st_mtime));
 
@@ -413,7 +413,7 @@ FsIndexer::processone(const std::string &fn, const struct stat *stp,
 	if (doc.fmtime.empty())
 	    doc.fmtime = ascdate;
         if (doc.url.empty())
-            doc.url = cstr_fileu + fn;
+            doc.url = string("file://") + fn;
 	if (doc.utf8fn.empty())
 	    doc.utf8fn = utf8fn;
 
@@ -432,7 +432,7 @@ FsIndexer::processone(const std::string &fn, const struct stat *stp,
 	// myriads of such files, the ext script is executed for them
 	// and fails every time)
 	if (fis == FileInterner::FIError) {
-	    doc.sig += cstr_plus;
+	    doc.sig += plus;
 	}
 
         // Possibly add fields from local config
@@ -442,7 +442,7 @@ FsIndexer::processone(const std::string &fn, const struct stat *stp,
 	// of the file document.
 	string udi;
 	make_udi(fn, doc.ipath, udi);
-	if (!m_db->addOrUpdate(udi, doc.ipath.empty() ? cstr_null : parent_udi, doc)) 
+	if (!m_db->addOrUpdate(udi, doc.ipath.empty() ? "" : parent_udi, doc)) 
 	    return FsTreeWalker::FtwError;
 
 	// Tell what we are doing and check for interrupt request
@@ -468,14 +468,14 @@ FsIndexer::processone(const std::string &fn, const struct stat *stp,
 	fileDoc.fmtime = ascdate;
 	fileDoc.utf8fn = utf8fn;
 	fileDoc.mimetype = interner.getMimetype();
-	fileDoc.url = cstr_fileu + fn;
+	fileDoc.url = string("file://") + fn;
 
 	char cbuf[100]; 
 	sprintf(cbuf, OFFTPC, stp->st_size);
 	fileDoc.fbytes = cbuf;
 	// Document signature for up to date checks.
 	makesig(stp, fileDoc.sig);
-	if (!m_db->addOrUpdate(parent_udi, cstr_null, fileDoc)) 
+	if (!m_db->addOrUpdate(parent_udi, "", fileDoc)) 
 	    return FsTreeWalker::FtwError;
     }
 

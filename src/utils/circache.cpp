@@ -34,7 +34,6 @@
 #include <iostream>
 #include <map>
 
-#include "cstr.h"
 #include "circache.h"
 #include "conftree.h"
 #include "debuglog.h"
@@ -357,27 +356,27 @@ public:
         string s(bf, CIRCACHE_FIRSTBLOCK_SIZE);
         ConfSimple conf(s, 1);
         string value;
-        if (!conf.get("maxsize", value, cstr_null)) {
+        if (!conf.get("maxsize", value, "")) {
             m_reason << "readfirstblock: conf get maxsize failed";
             return false;
         }
         m_maxsize = atol(value.c_str());
-        if (!conf.get("oheadoffs", value, cstr_null)) {
+        if (!conf.get("oheadoffs", value, "")) {
             m_reason << "readfirstblock: conf get oheadoffs failed";
             return false;
         }
         m_oheadoffs = atol(value.c_str());
-        if (!conf.get("nheadoffs", value, cstr_null)) {
+        if (!conf.get("nheadoffs", value, "")) {
             m_reason << "readfirstblock: conf get nheadoffs failed";
             return false;
         }
         m_nheadoffs = atol(value.c_str());
-        if (!conf.get("npadsize", value, cstr_null)) {
+        if (!conf.get("npadsize", value, "")) {
             m_reason << "readfirstblock: conf get npadsize failed";
             return false;
         }
         m_npadsize = atol(value.c_str());
-        if (!conf.get("unient", value, cstr_null)) {
+        if (!conf.get("unient", value, "")) {
             m_uniquentries = false;
         } else {
             m_uniquentries = stringToBool(value);
@@ -479,7 +478,7 @@ public:
                 string b(bf, d.dicsize);
                 ConfSimple conf(b, 1);
             
-                if (!conf.get("udi", udi, cstr_null)) {
+                if (!conf.get("udi", udi, "")) {
                     m_reason << "scan: no udi in dic";
                     return CCScanHook::Error;
                 }
@@ -1101,7 +1100,7 @@ bool CirCache::getCurrent(string& udi, string& dic, string& data)
         return false;
 
     ConfSimple conf(dic, 1);
-    conf.get("udi", udi, cstr_null);
+    conf.get("udi", udi, "");
     return true;
 }
 
@@ -1301,7 +1300,7 @@ int main(int argc, char **argv)
               exit(1);
           }
           string udi;
-          make_udi(fn, cstr_null, udi);
+          make_udi(fn, "", udi);
           sprintf(dic, "#whatever...\nmimetype = text/plain\nudi=%s\n", 
                   udi.c_str());
           string sdic;

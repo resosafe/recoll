@@ -15,7 +15,7 @@
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-#include "cstr.h"
+
 #include "mimehandler.h"
 #include "debuglog.h"
 #include "csguess.h"
@@ -74,7 +74,7 @@ bool MimeHandlerHtml::next_document()
     LOGDEB(("MHHtml::next_doc.: default supposed input charset: [%s]\n", 
 	    charset.c_str()));
     // Override default input charset if someone took care to set one:
-    map<string,string>::const_iterator it = m_metaData.find(cstr_charset);
+    map<string,string>::const_iterator it = m_metaData.find("charset");
     if (it != m_metaData.end() && !it->second.empty()) {
 	charset = it->second;
 	LOGDEB(("MHHtml: next_doc.: input charset from metadata: [%s]\n", 
@@ -102,7 +102,7 @@ bool MimeHandlerHtml::next_document()
 	    transcoded = m_html;
 	    // We don't know the charset, at all
 	    p.reset_charsets();
-	    charset.clear();
+	    charset = "";
 	} else {
 	    if (ecnt) {
 		if (pass == 0) {
@@ -163,13 +163,13 @@ bool MimeHandlerHtml::next_document()
     }
 
     m_metaData["origcharset"] = result.get_charset();
-    m_metaData[cstr_content] = result.dump;
-    m_metaData[cstr_charset] = "utf-8";
+    m_metaData["content"] = result.dump;
+    m_metaData["charset"] = "utf-8";
     // Avoid setting empty values which would crush ones possibly inherited
     // from parent (if we're an attachment)
     if (!result.dmtime.empty())
 	m_metaData["modificationdate"] = result.dmtime;
-    m_metaData[cstr_mimetype] = cstr_textplain;
+    m_metaData["mimetype"] = "text/plain";
 
     for (map<string,string>::const_iterator it = result.meta.begin(); 
 	 it != result.meta.end(); it++) {

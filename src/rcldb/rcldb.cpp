@@ -94,6 +94,7 @@ static const string cstr_syntAbs("?!#@");
 // Only ONE field name inside the index data record differs from the
 // Rcl::Doc ones: caption<->title, for a remnant of compatibility with
 // omega
+static const string cstr_keycap("caption");
 
 // Static/Default table for field->prefix/weight translation. 
 // This is logically const after initialization. Can't use a
@@ -124,7 +125,7 @@ static void initFldToTraits()
     fldToTraits["ext"] = FieldTraits("XE");
     fldToTraits[Doc::keyfn] = FieldTraits("XSFN");
 
-    fldToTraits[cstr_caption] = FieldTraits("S");
+    fldToTraits[cstr_keycap] = FieldTraits("S");
     fldToTraits[Doc::keytt] = FieldTraits("S");
     fldToTraits["subject"] = FieldTraits("S");
 
@@ -197,7 +198,7 @@ bool Db::Native::dbDataToRclDoc(Xapian::docid docid, std::string &data,
     parms.get(Doc::keyfmt, doc.fmtime);
     parms.get(Doc::keydmt, doc.dmtime);
     parms.get(Doc::keyoc, doc.origcharset);
-    parms.get(cstr_caption, doc.meta[Doc::keytt]);
+    parms.get(cstr_keycap, doc.meta[Doc::keytt]);
     parms.get(Doc::keykw, doc.meta[Doc::keykw]);
     parms.get(Doc::keyabs, doc.meta[Doc::keyabs]);
     // Possibly remove synthetic abstract indicator (if it's there, we
@@ -1211,7 +1212,7 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi,
     doc.meta[Doc::keytt] = 
 	neutchars(truncate_to_word(doc.meta[Doc::keytt], 150), cstr_nc);
     if (!doc.meta[Doc::keytt].empty())
-	RECORD_APPEND(record, cstr_caption, doc.meta[Doc::keytt]);
+	RECORD_APPEND(record, cstr_keycap, doc.meta[Doc::keytt]);
 
     trimstring(doc.meta[Doc::keykw], " \t\r\n");
     doc.meta[Doc::keykw] = 
@@ -1558,7 +1559,7 @@ bool Db::filenameWildExp(const string& fnexp, list<string>& names)
     // each end: match any substring
     if (pattern[0] == '"' && pattern[pattern.size()-1] == '"') {
 	pattern = pattern.substr(1, pattern.size() -2);
-    } else if (pattern.find_first_of(cstr_minwilds) == string::npos && 
+    } else if (pattern.find_first_of("*?[") == string::npos && 
 	       !unaciscapital(pattern)) {
 	pattern = "*" + pattern + "*";
     } // else let it be

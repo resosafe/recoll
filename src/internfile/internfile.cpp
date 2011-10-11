@@ -32,7 +32,6 @@
 using namespace std;
 #endif /* NO_NAMESPACES */
 
-#include "cstr.h"
 #include "internfile.h"
 #include "rcldoc.h"
 #include "mimetype.h"
@@ -52,6 +51,7 @@ using namespace std;
 #include "pxattr.h"
 #endif // RCL_USE_XATTR
 
+static const string cstr_stxtplain("text/plain");
 
 // The internal path element separator. This can't be the same as the rcldb 
 // file to ipath separator : "|"
@@ -206,7 +206,7 @@ void FileInterner::init(const string &f, const struct stat *stp, RclConfig *cnf,
     // Indexing by udi makes things easier (because they sometimes get a temp 
     // as input
     string udi;
-    make_udi(f, cstr_null, udi);
+    make_udi(f, "", udi);
 
     cnf->setKeyDir(path_getfather(m_fn));
 
@@ -366,7 +366,7 @@ void FileInterner::initcommon(RclConfig *cnf, int flags)
     m_handlers.reserve(MAXHANDLERS);
     for (unsigned int i = 0; i < MAXHANDLERS; i++)
 	m_tmpflgs[i] = false;
-    m_targetMType = cstr_textplain;
+    m_targetMType = cstr_stxtplain;
 }
 
 // We used a single beagle cache object to access beagle data. We protect it 
@@ -398,7 +398,7 @@ FileInterner::FileInterner(const Rcl::Doc& idoc, RclConfig *cnf,
     if (backend.empty() || !backend.compare("FS")) {
         // Filesystem document. Intern from file.
         // The url has to be like file://
-        if (idoc.url.find(cstr_fileu) != 0) {
+        if (idoc.url.find("file://") != 0) {
             LOGERR(("FileInterner: FS backend and non fs url: [%s]\n",
                     idoc.url.c_str()));
             return;
@@ -565,9 +565,13 @@ static inline bool getKeyValue(const map<string, string>& docdata,
 // These defs are for the Dijon meta array. Rcl::Doc predefined field
 // names are used where appropriate. In some cases, Rcl::Doc names are
 // used inside the Dijon metadata (ex: origcharset)
+static const string cstr_keyau("author");
+static const string cstr_keycs("charset");
+static const string cstr_keyct("content");
 static const string cstr_keyds("description");
 static const string cstr_keyfn("filename");
 static const string cstr_keymd("modificationdate");
+static const string cstr_keymt("mimetype");
 static const string cstr_keytt("title");
 
 bool FileInterner::dijontorcl(Rcl::Doc& doc)
@@ -582,13 +586,13 @@ bool FileInterner::dijontorcl(Rcl::Doc& doc)
 
     for (map<string,string>::const_iterator it = docdata.begin(); 
 	 it != docdata.end(); it++) {
-	if (it->first == cstr_content) {
+	if (it->first == cstr_keyct) {
 	    doc.text = it->second;
 	} else if (it->first == cstr_keymd) {
 	    doc.dmtime = it->second;
 	} else if (it->first == Rcl::Doc::keyoc) {
 	    doc.origcharset = it->second;
-	} else if (it->first == cstr_mimetype || it->first == cstr_charset) {
+	} else if (it->first == cstr_keymt || it->first == cstr_keycs) {
 	    // don't need/want these.
 	} else {
 	    doc.meta[it->first] = it->second;
@@ -628,18 +632,18 @@ void FileInterner::collectIpathAndMT(Rcl::Doc& doc) const
     for (vector<Dijon::Filter*>::const_iterator hit = m_handlers.begin();
 	 hit != m_handlers.end(); hit++) {
 	const map<string, string>& docdata = (*hit)->get_meta_data();
-	if (getKeyValue(docdata, cstr_ipath, ipathel)) {
+	if (getKeyValue(docdata, "ipath", ipathel)) {
 	    if (!ipathel.empty()) {
 		// We have a non-empty ipath
 		hasipath = true;
-		getKeyValue(docdata, cstr_mimetype, doc.mimetype);
+		getKeyValue(docdata, cstr_keymt, doc.mimetype);
 		getKeyValue(docdata, cstr_keyfn, doc.utf8fn);
 	    }
 	    doc.ipath += colon_hide(ipathel) + cstr_isep;
 	} else {
 	    doc.ipath += cstr_isep;
 	}
-	getKeyValue(docdata, cstr_author, doc.meta[Rcl::Doc::keyau]);
+	getKeyValue(docdata, cstr_keyau, doc.meta[Rcl::Doc::keyau]);
 	getKeyValue(docdata, cstr_keymd, doc.dmtime);
     }
 
@@ -678,8 +682,8 @@ int FileInterner::addHandler()
 {
     const map<string, string>& docdata = m_handlers.back()->get_meta_data();
     string charset, mimetype;
-    getKeyValue(docdata, cstr_charset, charset);
-    getKeyValue(docdata, cstr_mimetype, mimetype);
+    getKeyValue(docdata, cstr_keycs, charset);
+    getKeyValue(docdata, cstr_keymt, mimetype);
 
     LOGDEB(("FileInterner::addHandler: next_doc is %s\n", mimetype.c_str()));
 
@@ -687,7 +691,7 @@ int FileInterner::addHandler()
     // general), we're done decoding. If we hit text/plain, we're done
     // in any case
     if (!stringicmp(mimetype, m_targetMType) || 
-	!stringicmp(mimetype, cstr_textplain)) {
+	!stringicmp(mimetype, cstr_stxtplain)) {
 	m_reachedMType = mimetype;
 	LOGDEB1(("FileInterner::addHandler: target reached\n"));
 	return ADD_BREAK;
@@ -720,7 +724,7 @@ int FileInterner::addHandler()
     const string *txt = &ns;
     {
 	map<string,string>::const_iterator it;
-	it = docdata.find(cstr_content);
+	it = docdata.find(cstr_keyct);
 	if (it != docdata.end())
 	    txt = &it->second;
     }

@@ -291,14 +291,13 @@ static bool stemExpandOne(const std::string& dbdir,
 		// Build expansion list from database data No need for
 		// a conftree, but we need to massage the data a
 		// little
-		string::size_type pos = data.find('=');
-		string::size_type pos1 = data.rfind('\n');
+		string::size_type pos = data.find_first_of("=");
+		++pos;
+		string::size_type pos1 = data.find_last_of("\n");
 		if (pos == string::npos || pos1 == string::npos || 
-		    pos1 <= pos+1) {
-		    LOGERR(("stemExpand: bad data in db: [%s]\n", 
-			    data.c_str()));
+		    pos1 <= pos) {
+		    // ??
 		} else {
-		    ++pos;
 		    stringToStrings(data.substr(pos, pos1-pos), result);
 		}
 	    }

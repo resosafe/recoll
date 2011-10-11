@@ -14,7 +14,7 @@
  *   Free Software Foundation, Inc.,
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-#include "cstr.h"
+
 #include "execmd.h"
 #include "mh_exec.h"
 #include "mh_html.h"
@@ -95,7 +95,7 @@ bool MimeHandlerExec::next_document()
 	myparams.push_back(m_ipath);
 
     // Execute command, store the output
-    string& output = m_metaData[cstr_content];
+    string& output = m_metaData["content"];
     output.erase();
     ExecCmd mexec;
     MEAdv adv(filtermaxseconds);
@@ -146,7 +146,7 @@ bool MimeHandlerExec::next_document()
 
 void MimeHandlerExec::finaldetails()
 {
-    string& output = m_metaData[cstr_content];
+    string& output = m_metaData["content"];
 
     // If output is text/plain (not text/html), we may have to convert
     // it to utf-8, because this is the last point where it can be done.
@@ -158,7 +158,7 @@ void MimeHandlerExec::finaldetails()
     }
     string mt = cfgFilterOutputMtype.empty() ? "text/html" : 
 	cfgFilterOutputMtype;
-    if (!mt.compare(cstr_textplain) && stringlowercmp("utf-8", charset)) {
+    if (!mt.compare("text/plain") && stringlowercmp("utf-8", charset)) {
 	string transcoded;
 	int ecnt;
 	if (!transcode(output, transcoded, charset, "UTF-8", &ecnt)) {
@@ -183,8 +183,8 @@ void MimeHandlerExec::finaldetails()
     // Supposed contents charset encoding. This could still be
     // overridden by the content-type meta tag for html, but this is
     // wasteful so we hope it's correct
-    m_metaData[cstr_charset] = charset;
-    m_metaData[cstr_mimetype] = mt;
+    m_metaData["charset"] = charset;
+    m_metaData["mimetype"] = mt;
 
     string md5, xmd5, reason;
     if (MD5File(m_fn, md5, &reason)) {

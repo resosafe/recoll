@@ -31,7 +31,6 @@
 #include <list>
 #include <set>
 
-#include "cstr.h"
 #include "debuglog.h"
 #include "pathut.h"
 #include "fstreewalk.h"
@@ -223,7 +222,7 @@ FsTreeWalker::Status FsTreeWalker::walk(const string& _top,
             // back
             dir = data->dirs.front();
             data->dirs.pop_front();
-            if (dir.empty()) {
+            if (dir == "") {
                 // Father change marker. 
                 if (data->dirs.empty())
                     break;
@@ -245,7 +244,7 @@ FsTreeWalker::Status FsTreeWalker::walk(const string& _top,
             // Depth first, pop and process latest dir
             dir = data->dirs.back();
             data->dirs.pop_back();
-            if (dir.empty()) {
+            if (dir == "") {
                 // Father change marker. 
                 if (data->dirs.empty())
                     break;
@@ -375,9 +374,8 @@ FsTreeWalker::Status FsTreeWalker::iwalk(const string &top,
                     // from entries for other dir. This is to help
                     // with generating DirReturn callbacks
                     if (!nullpush) {
-                        if (!data->dirs.empty() && 
-			    !data->dirs.back().empty())
-                            data->dirs.push_back(cstr_null);
+                        if (!data->dirs.empty() && data->dirs.back() != "")
+                            data->dirs.push_back("");
                         nullpush = true;
                     }
                     data->dirs.push_back(fn);

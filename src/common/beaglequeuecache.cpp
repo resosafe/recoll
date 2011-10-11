@@ -1,23 +1,5 @@
-/* Copyright (C) 2011 J.F.Dockes
- *   This program is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation; either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program; if not, write to the
- *   Free Software Foundation, Inc.,
- *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- */
-
 #include "autoconfig.h"
 
-#include "cstr.h"
 #include "beaglequeuecache.h"
 #include "circache.h"
 #include "debuglog.h"
@@ -60,18 +42,18 @@ bool BeagleQueueCache::getFromCache(const string& udi, Rcl::Doc &dotdoc,
     ConfSimple cf(dict, 1);
     
     if (htt)
-        cf.get(Rcl::Doc::keybght, *htt, cstr_null);
+        cf.get(Rcl::Doc::keybght, *htt, "");
 
     // Build a doc from saved metadata 
-    cf.get(cstr_url, dotdoc.url, cstr_null);
-    cf.get(cstr_mimetype, dotdoc.mimetype, cstr_null);
-    cf.get(cstr_fmtime, dotdoc.fmtime, cstr_null);
-    cf.get(cstr_fbytes, dotdoc.fbytes, cstr_null);
-    dotdoc.sig.clear();
-    list<string> names = cf.getNames(cstr_null);
+    cf.get("url", dotdoc.url, "");
+    cf.get("mimetype", dotdoc.mimetype, "");
+    cf.get("fmtime", dotdoc.fmtime, "");
+    cf.get("fbytes", dotdoc.fbytes, "");
+    dotdoc.sig = "";
+    list<string> names = cf.getNames("");
     for (list<string>::const_iterator it = names.begin();
          it != names.end(); it++) {
-        cf.get(*it, dotdoc.meta[*it], cstr_null);
+        cf.get(*it, dotdoc.meta[*it], "");
     }
     dotdoc.meta[Rcl::Doc::keyudi] = udi;
     return true;

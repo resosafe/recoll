@@ -20,7 +20,7 @@
 #include <sys/types.h>
 #include <string.h>
 
-#include "cstr.h"
+#include "autoconfig.h"
 #include "pathut.h"
 #include "debuglog.h"
 #include "fstreewalk.h"
@@ -127,11 +127,11 @@ public:
             confstr += line + "\n";
         }
         ConfSimple fields(confstr, 1);
-        list<string> names = fields.getNames(cstr_null);
+        list<string> names = fields.getNames("");
         for (list<string>::iterator it = names.begin();
              it != names.end(); it++) {
             string value;
-            fields.get(*it, value, cstr_null);
+            fields.get(*it, value, "");
             if (!value.compare("undefined") || !value.compare("null"))
                 continue;
 
@@ -158,10 +158,10 @@ public:
         // something homogenous and easy to save.
         for (map<string,string>::const_iterator it = doc.meta.begin();
              it != doc.meta.end(); it++) {
-            m_fields.set((*it).first, (*it).second, cstr_null);
+            m_fields.set((*it).first, (*it).second, "");
         }
-        m_fields.set(cstr_url, doc.url, cstr_null);
-        m_fields.set(cstr_mimetype, doc.mimetype, cstr_null);
+        m_fields.set("url", doc.url, "");
+        m_fields.set("mimetype", doc.mimetype, "");
 
         return true;
     }    
@@ -215,10 +215,10 @@ bool BeagleQueueIndexer::indexFromCache(const string& udi)
     if (!stringlowercmp("bookmark", hittype)) {
         // Just index the dotdoc
         dotdoc.meta[Rcl::Doc::keybcknd] = "BGL";
-        return m_db->addOrUpdate(udi, cstr_null, dotdoc);
+        return m_db->addOrUpdate(udi, "", dotdoc);
     } else if (stringlowercmp("webhistory", dotdoc.meta[Rcl::Doc::keybght]) ||
                (dotdoc.mimetype.compare("text/html") &&
-                dotdoc.mimetype.compare(cstr_textplain))) {
+                dotdoc.mimetype.compare("text/plain"))) {
         LOGDEB(("BeagleQueueIndexer: skipping: hittype %s mimetype %s\n",
                 dotdoc.meta[Rcl::Doc::keybght].c_str(), dotdoc.mimetype.c_str()));
         return true;
@@ -243,9 +243,9 @@ bool BeagleQueueIndexer::indexFromCache(const string& udi)
         doc.fmtime = dotdoc.fmtime;
         doc.url = dotdoc.url;
         doc.fbytes = dotdoc.fbytes;
-        doc.sig.clear();
+        doc.sig = "";
         doc.meta[Rcl::Doc::keybcknd] = "BGL";
-        return m_db->addOrUpdate(udi, cstr_null, doc);
+        return m_db->addOrUpdate(udi, "", doc);
     }
 }
 
@@ -289,7 +289,7 @@ bool BeagleQueueIndexer::index()
             }
             if (udi.empty())
                 continue;
-            if (m_db->needUpdate(udi, cstr_null)) {
+            if (m_db->needUpdate(udi, "")) {
                 try {
                     // indexFromCache does a CirCache::get(). We could
                     // arrange to use a getCurrent() instead, would be more 
@@ -390,7 +390,7 @@ BeagleQueueIndexer::processone(const string &path,
     // Have to use the hit type for the udi, because the same url can exist
     // as a bookmark or a page.
     udipath = path_cat(dotdoc.meta[Rcl::Doc::keybght], url_gpath(dotdoc.url));
-    make_udi(udipath, cstr_null, udi);
+    make_udi(udipath, "", udi);
 
     LOGDEB(("BeagleQueueIndexer: prc1: udi [%s]\n", udi.c_str()));
     char ascdate[30];
@@ -408,15 +408,15 @@ BeagleQueueIndexer::processone(const string &path,
         dotdoc.fbytes = cbuf;
 
         // Document signature for up to date checks: none. 
-        dotdoc.sig.clear();
+        dotdoc.sig = "";
         
         dotdoc.meta[Rcl::Doc::keybcknd] = "BGL";
-        if (!m_db->addOrUpdate(udi, cstr_null, dotdoc)) 
+        if (!m_db->addOrUpdate(udi, "", dotdoc)) 
             return FsTreeWalker::FtwError;
 
     } else if (stringlowercmp("webhistory", dotdoc.meta[Rcl::Doc::keybght]) ||
                (dotdoc.mimetype.compare("text/html") &&
-                dotdoc.mimetype.compare(cstr_textplain))) {
+                dotdoc.mimetype.compare("text/plain"))) {
         LOGDEB(("BeagleQueueIndexer: skipping: hittype %s mimetype %s\n",
                 dotdoc.meta[Rcl::Doc::keybght].c_str(), dotdoc.mimetype.c_str()));
         // Unlink them anyway
@@ -454,20 +454,20 @@ BeagleQueueIndexer::processone(const string &path,
         sprintf(cbuf, OFFTPC, stp->st_size);
         doc.fbytes = cbuf;
         // Document signature for up to date checks: none. 
-        doc.sig.clear();
+        doc.sig = "";
         doc.url = dotdoc.url;
 
         doc.meta[Rcl::Doc::keybcknd] = "BGL";
-        if (!m_db->addOrUpdate(udi, cstr_null, doc)) 
+        if (!m_db->addOrUpdate(udi, "", doc)) 
             return FsTreeWalker::FtwError;
     }
 
     // Copy to cache
     {
         // doc fields not in meta, needing saving to the cache
-        dotfile.m_fields.set("fmtime", dotdoc.fmtime, cstr_null);
-        dotfile.m_fields.set("fbytes", dotdoc.fbytes, cstr_null);
-        dotfile.m_fields.set("udi", udi, cstr_null);
+        dotfile.m_fields.set("fmtime", dotdoc.fmtime, "");
+        dotfile.m_fields.set("fbytes", dotdoc.fbytes, "");
+        dotfile.m_fields.set("udi", udi, "");
         string fdata;
         file_to_string(path, fdata);
         if (!m_cache || !m_cache->cc()) {

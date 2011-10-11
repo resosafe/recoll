@@ -21,7 +21,6 @@
 #include <list>
 #include <vector>
 
-#include "cstr.h"
 #include "refcntr.h"
 #include "rcldoc.h"
 #include "stoplist.h"
@@ -188,7 +187,7 @@ class Db {
     enum MatchType {ET_WILD, ET_REGEXP, ET_STEM};
     bool termMatch(MatchType typ, const string &lang, const string &s, 
 		   TermMatchResult& result, int max = -1, 
-		   const string& field = cstr_null,
+		   const string& field = "",
                    string *prefix = 0
         );
     /** Return min and max years for doc mod times in db */

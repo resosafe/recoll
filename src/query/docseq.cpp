@@ -81,7 +81,7 @@ bool DocSource::buildStack()
 string DocSource::title()
 {
     if (m_seq.isNull())
-	return string();
+	return "";
     string qual;
     if (m_fspec.isNotNull() && !m_sspec.isNotNull())
 	qual = string(" (") + o_filt_trans + string(")");

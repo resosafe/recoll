@@ -27,7 +27,6 @@
 #include <algorithm>
 #include <cstring>
 
-#include "cstr.h"
 #include "myhtmlparse.h"
 #include "indextext.h" // for lowercase_term()
 #include "mimeparse.h"
@@ -353,7 +352,7 @@ MyHtmlParser::opening_tag(const string &tag)
 	case 'm':
 	    if (tag == "meta") {
 		string content;
-		if (get_parameter(cstr_content, content)) {
+		if (get_parameter("content", content)) {
 		    string name;
 		    if (get_parameter("name", name)) {
 			lowercase_term(name);
@@ -387,7 +386,7 @@ MyHtmlParser::opening_tag(const string &tag)
 			    MimeHeaderValue p;
 			    parseMimeHeaderValue(content, p);
 			    map<string, string>::const_iterator k;
-			    if ((k = p.params.find(cstr_charset)) != 
+			    if ((k = p.params.find("charset")) != 
 				p.params.end()) {
 				charset = k->second;
 				if (!samecharset(charset, fromcharset)) {
@@ -518,7 +517,7 @@ MyHtmlParser::closing_tag(const string &tag)
 	    if (tag == "title") {
 		if (meta.find("title") == meta.end()|| meta["title"].empty()) {
 		    meta["title"] = dump;
-		    dump.clear();
+		    dump = "";
 		}
 		break;
 	    }

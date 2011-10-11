@@ -35,7 +35,6 @@
 #include <cstdlib>
 #include <cstring>
 
-#include "cstr.h"
 #include "pathut.h"
 #include "rclconfig.h"
 #include "conftree.h"
@@ -177,7 +176,7 @@ RclConfig::RclConfig(const string *argcnf)
 	return;
 
     m_ok = true;
-    setKeyDir(cstr_null);
+    setKeyDir("");
 
     m_stpsuffstate.init(this, mimemap, "recoll_noindex");
     m_skpnstate.init(this, m_conf, "skippedNames");
@@ -200,7 +199,7 @@ bool RclConfig::updateMainConfig()
         m_rmtstate.init(this, 0, "indexedmimetypes");
 	return false;
     }
-    setKeyDir(cstr_null);
+    setKeyDir("");
     bool nocjk = false;
     if (getConfParam("nocjk", &nocjk) && nocjk == true) {
 	TextSplit::cjkProcessing(false);
@@ -349,7 +348,7 @@ const string& RclConfig::getDefCharset(bool filename)
 	} else {
 	    // Note: it seems that all versions of iconv will take
 	    // iso-8859. Some won't take iso8859
-	    localecharset = string(cstr_iso_8859_1);
+	    localecharset = string("ISO-8859-1");
 	}
 	LOGDEB1(("RclConfig::getDefCharset: localecharset [%s]\n",
 		localecharset.c_str()));
@@ -378,7 +377,7 @@ bool RclConfig::addLocalFields(map<string, string> *tgt)
             sfields[i] = '\n';
     // Parse the result with a confsimple and add the results to the metadata
     ConfSimple conf(sfields, 1, true);
-    list<string> nmlst = conf.getNames(cstr_null);
+    list<string> nmlst = conf.getNames("");
     for (list<string>::const_iterator it = nmlst.begin();
          it != nmlst.end(); it++) {
         conf.get(*it, (*tgt)[*it]);
@@ -489,15 +488,15 @@ string RclConfig::getMimeTypeFromSuffix(const string& suff)
 string RclConfig::getSuffixFromMimeType(const string &mt)
 {
     string suffix;
-    list<string>sfs = mimemap->getNames(cstr_null);
+    list<string>sfs = mimemap->getNames("");
     string mt1;
     for (list<string>::const_iterator it = sfs.begin(); 
 	 it != sfs.end(); it++) {
-	if (mimemap->get(*it, mt1, cstr_null))
+	if (mimemap->get(*it, mt1, ""))
 	    if (!stringicmp(mt, mt1))
 		return *it;
     }
-    return cstr_null;
+    return "";
 }
 
 /** Get list of file categories from mimeconf */
@@ -956,7 +955,7 @@ bool RclConfig::getUncompressor(const string &mtype, list<string>& cmd)
 {
     string hs;
 
-    mimeconf->get(mtype, hs, cstr_null);
+    mimeconf->get(mtype, hs, "");
     if (hs.empty())
 	return false;
     list<string> tokens;
@@ -1206,7 +1205,7 @@ int main(int argc, char **argv)
             }
         }
     } else {
-        config->setKeyDir(cstr_null);
+        config->setKeyDir("");
 	list<string> names = config->getConfNames();
 	names.sort();
 	names.unique();

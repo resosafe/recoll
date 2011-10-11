@@ -168,8 +168,6 @@ bool SearchData::expandFileTypes(RclConfig *cfg, vector<string>& tps)
 
 bool SearchData::toNativeQuery(Rcl::Db &db, void *d)
 {
-    LOGDEB2(("SearchData::toNativeQuery: stemlang [%s]\n", 
-	    m_stemlang.c_str()));
     Xapian::Query xq;
     m_reason.erase();
 
@@ -311,11 +309,8 @@ bool SearchData::toNativeQuery(Rcl::Db &db, void *d)
     return true;
 }
 
-// This is called by the GUI simple search if the option is set: add
-// (OR) phrase to a query (if it is simple enough) so that results
-// where the search terms are close and in order will come up on top.
-// We remove very common terms from the query to avoid performance issues.
-bool SearchData::maybeAddAutoPhrase(Rcl::Db& db, double freqThreshold)
+
+bool SearchData::maybeAddAutoPhrase()
 {
     LOGDEB0(("SearchData::maybeAddAutoPhrase()\n"));
     if (!m_query.size()) {
@@ -324,13 +319,13 @@ bool SearchData::maybeAddAutoPhrase(Rcl::Db& db, double freqThreshold)
     }
 
     string field;
-    list<string> words;
+    string words;
     // Walk the clause list. If we find any non simple clause or different
     // field names, bail out.
     for (qlist_it_t it = m_query.begin(); it != m_query.end(); it++) {
 	SClType tp = (*it)->m_tp;
 	if (tp != SCLT_AND && tp != SCLT_OR) {
-	    LOGDEB2(("SearchData::maybeAddAutoPhrase: rejected clause\n"));
+	    LOGDEB2(("SearchData::maybeAddAutoPhrase: complex clause\n"));
 	    return false;
 	}
 	SearchDataClauseSimple *clp = 
@@ -343,57 +338,25 @@ bool SearchData::maybeAddAutoPhrase(Rcl::Db& db, double freqThreshold)
 	    field = clp->getfield();
 	} else {
 	    if (clp->getfield().compare(field)) {
-		LOGDEB2(("SearchData::maybeAddAutoPhrase: diff. fields\n"));
+		LOGDEB2(("SearchData::maybeAddAutoPhrase: different fields\n"));
 		return false;
 	    }
 	}
-
-	// If there are wildcards or quotes in there, bail out
-	if (clp->gettext().find_first_of("\"*[?") != string::npos) { 
-	    LOGDEB2(("SearchData::maybeAddAutoPhrase: wildcards\n"));
-	    return false;
-	}
-        // Do a simple word-split here, don't bother with the full-blown
-	// textsplit. The autophrase thing is just "best effort", it's
-	// normal that it won't work in strange cases.
-	vector<string> wl;
-	stringToStrings(clp->gettext(), wl);
-	words.insert(words.end(), wl.begin(), wl.end());
+	if (!words.empty())
+	    words += " ";
+	words +=  clp->gettext();
     }
 
-
-    // Trim the word list by eliminating very frequent terms
-    // (increasing the slack as we do it):
-    int slack = 0;
-    int doccnt = db.docCnt();
-    if (!doccnt)
-	doccnt = 1;
-    string swords;
-    for (list<string>::iterator it = words.begin(); 
-	 it != words.end(); it++) {
-	double freq = double(db.termDocCnt(*it)) / doccnt;
-	if (freq < freqThreshold) {
-	    if (!swords.empty())
-		swords.append(1, ' ');
-	    swords += *it;
-	} else {
-	    LOGDEB0(("Autophrase: [%s] too frequent (%.2f %%)\n", 
-		    it->c_str(), 100 * freq));
-	    slack++;
-	}
-    }
-    
-    // We can't make a phrase with a single word :)
-    if (TextSplit::countWords(swords) <= 1) {
-	LOGDEB2(("SearchData::maybeAddAutoPhrase: ended with 1 word\n"));
+    // If there are wildcards or quotes in there, or this is a single word,
+    // bail out
+    if (words.find_first_of("\"*[?") != string::npos &&
+	TextSplit::countWords(words) <= 1) { 
+	LOGDEB2(("SearchData::maybeAddAutoPhrase: wildcards or single word\n"));
 	return false;
     }
-	
-    SearchDataClauseDist *nclp = 
-	new SearchDataClauseDist(SCLT_PHRASE, swords, slack, field);
 
-    // If the toplevel conjunction is an OR, just OR the phrase, else 
-    // deepen the tree.
+    SearchDataClauseDist *nclp = 
+	new SearchDataClauseDist(SCLT_PHRASE, words, 0, field);
     if (m_tp == SCLT_OR) {
 	addClause(nclp);
     } else {
@@ -402,7 +365,6 @@ bool SearchData::maybeAddAutoPhrase(Rcl::Db& db, double freqThreshold)
 	// phrase.
 	SearchData *sd = new SearchData(m_tp);
 	sd->m_query = m_query;
-	sd->m_stemlang = m_stemlang;
 	m_tp = SCLT_OR;
 	m_query.clear();
 	SearchDataClauseSub *oq = 
@@ -594,8 +556,8 @@ void StringToXapianQ::expandTerm(bool nostemexp,
                                  list<string>& exp,
                                  string &sterm, const string& prefix)
 {
-    LOGDEB2(("expandTerm: field [%s] term [%s] stemlang [%s] nostemexp %d\n",
-	     m_field.c_str(), term.c_str(), m_stemlang.c_str(), nostemexp));
+    LOGDEB2(("expandTerm: field [%s] term [%s] stemlang [%s] nostemexp %d\n", 
+             m_field.c_str(), term.c_str(), m_stemlang.c_str(), nostemexp));
     sterm.erase();
     exp.clear();
     if (term.empty()) {
@@ -605,10 +567,8 @@ void StringToXapianQ::expandTerm(bool nostemexp,
     bool haswild = term.find_first_of(cstr_minwilds) != string::npos;
 
     // No stemming if there are wildcards or prevented globally.
-    if (haswild || m_stemlang.empty()) {
-	LOGDEB2(("expandTerm: found wildcards or stemlang empty: no exp\n"));
+    if (haswild || m_stemlang.empty())
 	nostemexp = true;
-    }
 
     if (nostemexp && !haswild) {
 	sterm = term;
@@ -671,8 +631,6 @@ void multiply_groups(vector<vector<string> >::const_iterator vvit,
 void StringToXapianQ::processSimpleSpan(const string& span, bool nostemexp,
 					list<Xapian::Query> &pqueries)
 {
-    LOGDEB2(("StringToXapianQ::processSimpleSpan: [%s] nostemexp %d\n",
-	     span.c_str(), int(nostemexp)));
     list<string> exp;  
     string sterm; // dumb version of user term
 
@@ -908,8 +866,6 @@ bool SearchDataClauseSimple::toNativeQuery(Rcl::Db &db, void *p,
 {
     const string& l_stemlang = (m_modifiers&SDCM_NOSTEMMING)? cstr_null:
 	stemlang;
-    LOGDEB2(("SearchDataClauseSimple::toNativeQuery: stemlang [%s]\n",
-	     stemlang.c_str()));
 
     m_terms.clear();
     m_groups.clear();

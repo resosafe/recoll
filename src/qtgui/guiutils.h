@@ -85,7 +85,6 @@ class PrefsPack {
     QStringList ssearchHistory;
     // Make phrase out of search terms and add to search in simple search
     bool ssearchAutoPhrase;
-    double ssearchAutoPhraseThreshPC;
     // Ignored file types in adv search (startup default)
     QStringList asearchIgnFilTyps;
     bool        fileTypesByCats;

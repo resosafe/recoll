@@ -98,13 +98,11 @@ public:
     bool addClause(SearchDataClause *cl);
 
     /** If this is a simple query (one field only, no distance clauses),
-     * add phrase made of query terms to query, so that docs containing the
-     * user terms in order will have higher relevance. This must be called 
-     * before toNativeQuery().
-     * @param threshold: don't use terms more frequent than the value 
-     *     (proportion of docs where they occur) 	
-     */
-    bool maybeAddAutoPhrase(Rcl::Db &db, double threshold);
+	add phrase made of query terms to query, so that docs containing the
+	user terms in order will have higher relevance. This must be called 
+	before toNativeQuery().
+    */
+    bool maybeAddAutoPhrase();
 
     /** Set/get top subdirectory for filtering results */
     void setTopdir(const string& t, bool excl = false, float w = 1.0) 

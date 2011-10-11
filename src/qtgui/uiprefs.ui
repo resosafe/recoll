@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>530</width>
+    <width>527</width>
     <height>559</height>
    </rect>
   </property>
@@ -21,9 +21,6 @@
     <layout class="QVBoxLayout">
      <item>
       <widget class="QTabWidget" name="tabWidget">
-       <property name="currentIndex">
-        <number>1</number>
-       </property>
        <widget class="QWidget" name="tab">
         <attribute name="title">
          <string>User interface</string>
@@ -303,12 +300,12 @@
            </item>
            <item>
             <widget class="QCheckBox" name="previewPlainPreCB">
-             <property name="toolTip">
-              <string>Lines in PRE text are not folded. Using BR loses indentation.</string>
-             </property>
              <property name="text">
               <string>Use &lt;PRE&gt; tags instead of &lt;BR&gt;to display plain text as html.</string>
              </property>
+               <property name="toolTip">
+                <string>Lines in PRE text are not folded. Using BR loses indentation.</string>
+               </property>
              <property name="checked">
               <bool>false</bool>
              </property>
@@ -352,42 +349,6 @@ This should give higher precedence to the results where the search terms appear 
               <string>Automatically add phrase to simple searches</string>
              </property>
             </widget>
-           </item>
-           <item>
-            <layout class="QHBoxLayout">
-             <item>
-              <widget class="QLabel" name="textLabel33">
-               <property name="sizePolicy">
-                <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                 <horstretch>1</horstretch>
-                 <verstretch>0</verstretch>
-                </sizepolicy>
-               </property>
-               <property name="toolTip">
-                <string>Frequency percentage threshold over which we do not use terms inside autophrase. 
-Frequent terms are a major performance issue with phrases. 
-Skipped terms augment the phrase slack, and reduce the autophrase efficiency.
-The default value is 2 (percent). </string>
-               </property>
-               <property name="text">
-                <string>Autophrase term frequency threshold percentage</string>
-               </property>
-               <property name="wordWrap">
-                <bool>false</bool>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QDoubleSpinBox" name="autoPThreshSB">
-               <property name="singleStep">
-                <double>0.200000000000000</double>
-               </property>
-               <property name="value">
-                <double>2.000000000000000</double>
-               </property>
-              </widget>
-             </item>
-            </layout>
            </item>
            <item>
             <widget class="Line" name="line2">

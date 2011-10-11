@@ -132,8 +132,7 @@ void SSearch::startSimpleSearch()
     if (tp == SST_LANG) {
 	string reason;
         if (prefs.autoSuffsEnable)
-            sdata = wasaStringToRcl(theconfig, u8, reason, 
-				    (const char *)prefs.autoSuffs.toUtf8());
+            sdata = wasaStringToRcl(theconfig, u8, reason, (const char *)prefs.autoSuffs.toUtf8());
         else
             sdata = wasaStringToRcl(theconfig, u8, reason);
 	if (sdata == 0) {
@@ -141,38 +140,49 @@ void SSearch::startSimpleSearch()
 				 QString::fromAscii(reason.c_str()));
 	    return;
 	}
+	if (prefs.ssearchAutoPhrase) {
+	    sdata->maybeAddAutoPhrase();
+	}
     } else {
 	sdata = new Rcl::SearchData(Rcl::SCLT_OR);
 	if (sdata == 0) {
 	    QMessageBox::warning(0, "Recoll", tr("Out of memory"));
 	    return;
 	}
+
+	// If there is no white space inside the query, then the user
+	// certainly means it as a phrase.
+	bool isreallyaphrase = false;
+	if (!TextSplit::hasVisibleWhite(u8))
+	    isreallyaphrase = true;
+
+	// Maybe add automatic phrase ? For ALL and ANY, and not if
+	// there is already a phrase or wildcard terms.
+	if (!isreallyaphrase && 
+	    prefs.ssearchAutoPhrase && (tp == SST_ANY || tp == SST_ALL) &&
+	    u8.find_first_of("\"*[]?") == string::npos && 
+	    TextSplit::countWords(u8) > 1) {
+	    sdata->addClause(new Rcl::SearchDataClauseDist(Rcl::SCLT_PHRASE, 
+							   u8, 0));
+	}
 	Rcl::SearchDataClause *clp = 0;
-	if (tp == SST_FNM) {
+	switch (tp) {
+	case SST_ANY:
+	default:
+	    clp = isreallyaphrase ? 
+		new Rcl::SearchDataClauseDist(Rcl::SCLT_PHRASE, u8, 0) :
+		new Rcl::SearchDataClauseSimple(Rcl::SCLT_OR, u8);
+	    break;
+	case SST_ALL:
+	    clp = isreallyaphrase ? 
+		new Rcl::SearchDataClauseDist(Rcl::SCLT_PHRASE, u8, 0) :
+		new Rcl::SearchDataClauseSimple(Rcl::SCLT_AND, u8);
+	    break;
+	case SST_FNM:
 	    clp = new Rcl::SearchDataClauseFilename(u8);
-	} else if (!TextSplit::hasVisibleWhite(u8)) {
-	    // If there is no white space inside the query, then the user
-	    // certainly means it as a phrase.
-	    clp = new Rcl::SearchDataClauseDist(Rcl::SCLT_PHRASE, u8, 0);
-	} else {
-	    // ANY or ALL, several words.
-	    if (tp == SST_ANY) {
-		clp = new Rcl::SearchDataClauseSimple(Rcl::SCLT_OR, u8);
-	    } else {
-		clp = new Rcl::SearchDataClauseSimple(Rcl::SCLT_AND, u8);
-	    }
+	    break;
 	}
 	sdata->addClause(clp);
-    }
-
-    if (prefs.ssearchAutoPhrase && rcldb) {
-	string stemLang = (const char *)prefs.queryStemLang.toAscii();
-	if (stemLang == "ALL") {
-	    theconfig->getConfParam("indexstemminglanguages", stemLang);
-	}
-	sdata->setStemlang(stemLang);
-	sdata->maybeAddAutoPhrase(*rcldb, 
-				  prefs.ssearchAutoPhraseThreshPC / 100.0);
     }
 
     // Search terms history

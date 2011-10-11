@@ -41,9 +41,9 @@ public:
     virtual ~RclMonitor() {}
     virtual bool addWatch(const string& path, bool isDir) = 0;
     virtual bool getEvent(RclMonEvent& ev, int secs = -1) = 0;
-    virtual bool ok() const = 0;
+    virtual bool ok() = 0;
     // Does this monitor generate 'exist' events at startup?
-    virtual bool generatesExist() const = 0; 
+    virtual bool generatesExist() = 0; 
 };
 
 // Monitor factory. We only have one compiled-in kind at a time, no
@@ -96,16 +96,6 @@ public:
 		   flg == FsTreeWalker::FtwRegular) {
 	    // Have to synthetize events for regular files existence
 	    // at startup because the monitor does not do it
-	    // Note 2011-09-29: no sure this is actually needed. We just ran
-	    //  an incremental indexing pass (before starting the
-	    //  monitor). Why go over the files once more ? The only
-	    //  reason I can see would be to catch modifications that
-	    //  happen between the incremental and the start of
-	    //  monitoring ? There should be another way: maybe start
-	    //  monitoring without actually handling events (just
-	    //  queue), then run incremental then start handling
-	    //  events ? But we also have to do it on a directory
-	    //  move! So keep it
 	    RclMonEvent ev;
 	    ev.m_path = fn;
 	    ev.m_etyp = RclMonEvent::RCLEVT_MODIFY;
@@ -190,21 +180,13 @@ void *rclMonRcvRun(void *q)
 	// timeout so that an intr will be detected
 	if (mon->getEvent(ev, 2)) {
 	    if (ev.m_etyp == RclMonEvent::RCLEVT_DIRCREATE) {
-		// Recursive addwatch: there may already be stuff
-		// inside this directory. Ie: files were quickly
-		// created, or this is actually the target of a
-		// directory move. This is necessary for inotify, but
-		// it seems that fam/gamin is doing the job for us so
-		// that we are generating double events here (no big
-		// deal as prc will sort/merge).
-		if (!walker.inSkippedNames(path_getsimple(ev.m_path)) && 
-		    !walker.inSkippedPaths(ev.m_path)) {
-		    LOGDEB(("rclMonRcvRun: walking new dir %s\n", 
-			    ev.m_path.c_str()));
-		    walker.walk(ev.m_path, walkcb);
-		}
+		// Add watch after checking that this doesn't match
+		// ignored files or paths
+		string name = path_getsimple(ev.m_path);
+		if (!walker.inSkippedNames(name) && 
+		    !walker.inSkippedPaths(ev.m_path))
+		    mon->addWatch(ev.m_path, true);
 	    }
-
 	    if (ev.m_etyp !=  RclMonEvent::RCLEVT_NONE)
 		queue->pushEvent(ev);
 	}
@@ -213,24 +195,6 @@ void *rclMonRcvRun(void *q)
     queue->setTerminate();
     LOGINFO(("rclMonRcvRun: monrcv thread routine returning\n"));
     return 0;
-}
-
-// Utility routine used by both the fam/gamin and inotify versions to get 
-// rid of the id-path translation for a moved dir
-bool eraseWatchSubTree(map<int, string>& idtopath, const string& top)
-{
-    bool found = false;
-    LOGDEB0(("Clearing map for [%s]\n", top.c_str()));
-    map<int,string>::iterator it = idtopath.begin();
-    while (it != idtopath.end()) {
-	if (it->second.find(top) == 0) {
-	    found = true;
-	    idtopath.erase(it++);
-	} else {
-	    it++;
-	}
-    }
-    return found;
 }
 
 // We dont compile both the inotify and the fam interface and inotify
@@ -251,8 +215,8 @@ public:
     virtual ~RclFAM();
     virtual bool addWatch(const string& path, bool isdir);
     virtual bool getEvent(RclMonEvent& ev, int secs = -1);
-    bool ok() const {return m_ok;}
-    virtual bool generatesExist() const {return true;}
+    bool ok() {return m_ok;}
+    virtual bool generatesExist() {return true;}
 
 private:
     bool m_ok;
@@ -261,7 +225,7 @@ private:
 	FAMClose(&m_conn);
 	m_ok = false;
     }
-    map<int,string> m_idtopath;
+    map<int,string> m_reqtopath;
     const char *event_name(int code);
 };
 
@@ -322,7 +286,7 @@ bool RclFAM::addWatch(const string& path, bool isdir)
 	    return false;
 	}
     }
-    m_idtopath[req.reqnum] = path;
+    m_reqtopath[req.reqnum] = path;
     return true;
 }
 
@@ -382,7 +346,7 @@ bool RclFAM::getEvent(RclMonEvent& ev, int secs)
     
     map<int,string>::const_iterator it;
     if ((fe.filename[0] != '/') && 
-	(it = m_idtopath.find(fe.fr.reqnum)) != m_idtopath.end()) {
+	(it = m_reqtopath.find(fe.fr.reqnum)) != m_reqtopath.end()) {
 	ev.m_path = path_cat(it->second, fe.filename);
     } else {
 	ev.m_path = fe.filename;
@@ -404,15 +368,13 @@ bool RclFAM::getEvent(RclMonEvent& ev, int secs)
 	ev.m_etyp = RclMonEvent::RCLEVT_MODIFY;
 	break;
 
-    case FAMMoved: 
     case FAMDeleted:
 	ev.m_etyp = RclMonEvent::RCLEVT_DELETE;
-	// We would like to signal a directory here to enable cleaning
-	// the subtree (on a dir move), but can't test the actual file
-	// which is gone. Let's rely on the fact that a directory
-	// should be watched
-	if (eraseWatchSubTree(m_idtopath, ev.m_path)) 
-	    ev.m_etyp |= RclMonEvent::RCLEVT_ISDIR;
+	break;
+
+    case FAMMoved: /* Never generated it seems */
+	LOGINFO(("RclFAM::getEvent: got move event !\n"));
+	ev.m_etyp = RclMonEvent::RCLEVT_MODIFY;
 	break;
 
     case FAMStartExecuting:
@@ -440,29 +402,17 @@ bool RclFAM::getEvent(RclMonEvent& ev, int secs)
 
 class RclIntf : public RclMonitor {
 public:
-    RclIntf()
-	: m_ok(false), m_fd(-1), m_evp(0), m_ep(0)
-    {
-	if ((m_fd = inotify_init()) < 0) {
-	    LOGERR(("RclIntf:: inotify_init failed, errno %d\n", errno));
-	    return;
-	}
-	m_ok = true;
-    }
-    virtual ~RclIntf()
-    {
-	close();
-    }
-
+    RclIntf();
+    virtual ~RclIntf();
     virtual bool addWatch(const string& path, bool isdir);
     virtual bool getEvent(RclMonEvent& ev, int secs = -1);
-    bool ok() const {return m_ok;}
-    virtual bool generatesExist() const {return false;}
+    bool ok() {return m_ok;}
+    virtual bool generatesExist() {return false;}
 
 private:
     bool m_ok;
     int m_fd;
-    map<int,string> m_idtopath; // Watch descriptor to name
+    map<int,string> m_wdtopath; // Watch descriptor to name
 #define EVBUFSIZE (32*1024)
     char m_evbuf[EVBUFSIZE]; // Event buffer
     char *m_evp; // Pointer to next event or 0
@@ -506,27 +456,40 @@ const char *RclIntf::event_name(int code)
     };
 }
 
+RclIntf::RclIntf()
+    : m_ok(false), m_fd(-1), m_evp(0), m_ep(0)
+{
+    if ((m_fd = inotify_init()) < 0) {
+	LOGERR(("RclIntf::RclIntf: inotify_init failed, errno %d\n", errno));
+	return;
+    }
+    m_ok = true;
+}
+
+RclIntf::~RclIntf()
+{
+    close();
+}
+
 bool RclIntf::addWatch(const string& path, bool)
 {
    if (!ok())
-       return false;
+        return false;
    MONDEB(("RclIntf::addWatch: adding %s\n", path.c_str()));
     // CLOSE_WRITE is covered through MODIFY. CREATE is needed for mkdirs
     uint32_t mask = IN_MODIFY | IN_CREATE
-        | IN_MOVED_FROM | IN_MOVED_TO | IN_DELETE
+        | IN_MOVED_FROM | IN_MOVED_TO
+	| IN_DELETE
 #ifdef IN_DONT_FOLLOW
 	| IN_DONT_FOLLOW
 #endif
-#ifdef IN_EXCL_UNLINK
-	| IN_EXCL_UNLINK
-#endif
-	;
+;
     int wd;
     if ((wd = inotify_add_watch(m_fd, path.c_str(), mask)) < 0) {
         LOGERR(("RclIntf::addWatch: inotify_add_watch failed\n"));
 	return false;
     }
-    m_idtopath[wd] = path;
+    m_wdtopath[wd] = path;
     return true;
 }
 
@@ -582,8 +545,8 @@ bool RclIntf::getEvent(RclMonEvent& ev, int secs)
 	m_evp = m_ep = 0;
     
     map<int,string>::const_iterator it;
-    if ((it = m_idtopath.find(evp->wd)) == m_idtopath.end()) {
-	LOGERR(("RclIntf::getEvent: unknown wd %d\n", evp->wd));
+    if ((it = m_wdtopath.find(evp->wd)) == m_wdtopath.end()) {
+	LOGERR(("RclIntf::getEvent: unknown wd\n"));
 	return true;
     }
     ev.m_path = it->second;
@@ -595,35 +558,16 @@ bool RclIntf::getEvent(RclMonEvent& ev, int secs)
     MONDEB(("RclIntf::getEvent: %-12s %s\n", 
 	    event_name(evp->mask), ev.m_path.c_str()));
 
-    if ((evp->mask & IN_MOVED_FROM) && (evp->mask & IN_ISDIR)) {
-	// We get this when a directory is renamed. Erase the subtree
-	// entries in the map. The subsequent MOVED_TO will recreate
-	// them. This is probably not needed because the watches
-	// actually still exist in the kernel, so that the wds
-	// returned by future addwatches will be the old ones, and the
-	// map will be updated in place. But still, this feels safer
-	eraseWatchSubTree(m_idtopath, ev.m_path);
-    }
-
-
-    if (evp->mask & (IN_MODIFY)) {
+    if (evp->mask & (IN_MODIFY | IN_MOVED_TO)) {
 	ev.m_etyp = RclMonEvent::RCLEVT_MODIFY;
     } else if (evp->mask & (IN_DELETE | IN_MOVED_FROM)) {
 	ev.m_etyp = RclMonEvent::RCLEVT_DELETE;
-	if (evp->mask & IN_ISDIR)
-	    ev.m_etyp |= RclMonEvent::RCLEVT_ISDIR;
-    } else if (evp->mask & (IN_CREATE | IN_MOVED_TO)) {
-	if (evp->mask & IN_ISDIR) {
+    } else if (evp->mask & (IN_CREATE)) {
+	if (path_isdir(ev.m_path)) {
 	    ev.m_etyp = RclMonEvent::RCLEVT_DIRCREATE;
 	} else {
 	    // Return null event. Will get modify event later
 	    return true;
-	}
-    } else if (evp->mask & (IN_IGNORED)) {
-	if (!m_idtopath.erase(evp->wd)) {
-	    LOGDEB0(("Got IGNORE event for unknown watch\n"));
-	} else {
-	    eraseWatchSubTree(m_idtopath, ev.m_path);
 	}
     } else {
 	LOGDEB(("RclIntf::getEvent: unhandled event %s 0x%x %s\n", 

@@ -16,7 +16,6 @@ ${depth}/index/csguess.cpp \
 ${depth}/index/fsindexer.cpp \
 ${depth}/index/indexer.cpp \
 ${depth}/index/mimetype.cpp \
-${depth}/index/subtreelist.cpp \
 ${depth}/internfile/htmlparse.cpp \
 ${depth}/internfile/myhtmlparse.cpp \
 ${depth}/internfile/mimehandler.cpp \

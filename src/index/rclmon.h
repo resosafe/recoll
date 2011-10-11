@@ -45,11 +45,10 @@ using std::multimap;
  */
 class RclMonEvent {
  public: 
-    enum EvType {RCLEVT_NONE= 0, RCLEVT_MODIFY=1, RCLEVT_DELETE=2, 
-		 RCLEVT_DIRCREATE=3, RCLEVT_ISDIR=0x10};
+    enum EvType {RCLEVT_NONE, RCLEVT_MODIFY, RCLEVT_DELETE, 
+		 RCLEVT_DIRCREATE};
     string m_path;
-    // Type and flags
-    int  m_etyp;
+    EvType m_etyp;
 
     ///// For fast changing files: minimum time interval before reindex
     // Minimum interval (from config)
@@ -59,10 +58,8 @@ class RclMonEvent {
     // Changed since put in purgatory after reindex
     bool   m_needidx;
 
-    RclMonEvent() : m_etyp(RCLEVT_NONE),
+    RclMonEvent() : m_etyp(RCLEVT_NONE), 
 		    m_itvsecs(0), m_minclock(0), m_needidx(false) {}
-    EvType evtype() {return EvType(m_etyp & 0xf);}
-    int evflags() {return m_etyp & 0xf0;}
 };
 
 enum RclMonitorOption {RCLMON_NONE=0, RCLMON_NOFORK=1, RCLMON_NOX11=2};

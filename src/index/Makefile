@@ -21,13 +21,6 @@ rclmonrcv.o : rclmonrcv.cpp
 rclmonprc.o : rclmonprc.cpp 
 	$(CXX) $(ALL_CXXFLAGS) -c -o rclmonprc.o $<
 
-SUBTREELIST_OBJS= subtreelist.o  $(BIGLIB) 
-subtreelist : $(SUBTREELIST_OBJS)
-	$(CXX) $(ALL_CXXFLAGS) -o subtreelist $(SUBTREELIST_OBJS) \
-	       $(LIBICONV) $(LIBXAPIAN) $(LIBSYS)
-subtreelist.o : subtreelist.cpp 
-	$(CXX) $(ALL_CXXFLAGS) -DTEST_SUBTREELIST -c subtreelist.cpp
-
 CSGUESS_OBJS= trcsguess.o  $(BIGLIB) 
 csguess : $(CSGUESS_OBJS)
 	$(CXX) $(ALL_CXXFLAGS) -o csguess $(CSGUESS_OBJS) \

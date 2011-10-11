@@ -42,7 +42,7 @@
 #include "recollindex.h"
 #include "pathut.h"
 #include "x11mon.h"
-#include "subtreelist.h"
+#include "rclionice.h"
 
 typedef unsigned long mttcast;
 
@@ -482,30 +482,14 @@ bool startMonitor(RclConfig *conf, int opts)
 	    RclMonEvent ev = rclEQ.pop();
 	    if (ev.m_path.empty())
 		break;
-	    switch (ev.evtype()) {
+	    switch (ev.m_etyp) {
 	    case RclMonEvent::RCLEVT_MODIFY:
-	    case RclMonEvent::RCLEVT_DIRCREATE:
 		LOGDEB(("Monitor: Modify/Check on %s\n", ev.m_path.c_str()));
 		modified.push_back(ev.m_path);
 		break;
 	    case RclMonEvent::RCLEVT_DELETE:
 		LOGDEB(("Monitor: Delete on %s\n", ev.m_path.c_str()));
-		// If this is for a directory (which the caller should
-		// tell us because he knows), we should purge the db
-		// of all the subtree, because on a directory rename,
-		// inotify will only generate one event for the
-		// renamed top, not the subentries. This is relatively
-		// complicated to do though, and we currently do not
-		// do it, and just wait for a restart to do a full run and
-		// purge.
 		deleted.push_back(ev.m_path);
-		if (ev.evflags() & RclMonEvent::RCLEVT_ISDIR) {
-		    list<string> paths;
-		    if (subtreelist(conf, ev.m_path, paths)) {
-			deleted.insert(deleted.end(),
-				       paths.begin(), paths.end());
-		    }
-		}
 		break;
 	    default:
 		LOGDEB(("Monitor: got Other on [%s]\n", ev.m_path.c_str()));

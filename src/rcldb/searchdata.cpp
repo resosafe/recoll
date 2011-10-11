@@ -35,7 +35,6 @@
 #include "utf8iter.h"
 #include "stoplist.h"
 #include "rclconfig.h"
-#include "termproc.h"
 
 #ifndef NO_NAMESPACES
 using namespace std;
@@ -475,23 +474,36 @@ void SearchData::getUTerms(vector<string>& terms) const
 // phrases. This is for parts of the user entry which would appear as
 // a single word because there is no white space inside, but are
 // actually multiple terms to rcldb (ie term1,term2)
-class TextSplitQ : public TextSplitP {
+class TextSplitQ : public TextSplit {
  public:
-    TextSplitQ(Flags flags, const StopList &_stops, TermProc *prc)
-	: TextSplitP(prc, flags), stops(_stops), alltermcount(0), lastpos(0)
+    TextSplitQ(Flags flags, const StopList &_stops) 
+	: TextSplit(flags), stops(_stops), alltermcount(0), lastpos(0)
     {}
+    bool takeword(const std::string &interm, int pos, int, int) {
+	alltermcount++;
+        lastpos = pos
+	LOGDEB1(("TextSplitQ::takeword: %s\n", interm.c_str()));
 
-    bool takeword(const std::string &term, int pos, int bs, int be) 
-    {
 	// Check if the first letter is a majuscule in which
-	// case we do not want to do stem expansion. Need to do this
-	// before unac of course...
-	curnostemexp = unaciscapital(term);
+	// case we do not want to do stem expansion. 
+	bool nostemexp = unaciscapital(interm);
+	string noaclowterm;
+	if (!unacmaybefold(interm, noaclowterm, "UTF-8", true)) {
+	    LOGINFO(("SearchData::splitter::takeword: unac failed for [%s]\n", 
+                     interm.c_str()));
+	    return true;
+	}
 
-	return TextSplitP::takeword(term, pos, bs, be);
+	if (stops.isStop(noaclowterm)) {
+	    LOGDEB1(("TextSplitQ::takeword [%s] in stop list\n", 
+                     noaclowterm.c_str()));
+	    return true;
+	}
+	terms.push_back(noaclowterm);
+	nostemexps.push_back(nostemexp);
+	return true;
     }
 
-    bool           curnostemexp;
     vector<string> terms;
     vector<bool>   nostemexps;
     const StopList &stops;
@@ -499,26 +511,6 @@ class TextSplitQ : public TextSplitP {
     // phrase/near slack
     int alltermcount; 
     int lastpos;
-};
-
-class TermProcQ : public TermProc {
-public:
-    TermProcQ() : TermProc(0), m_ts(0) {}
-    void setTSQ(TextSplitQ *ts) {m_ts = ts;}
-    
-    bool takeword(const std::string &term, int pos, int bs, int be) 
-    {
-	m_ts->alltermcount++;
-        m_ts->lastpos = pos;
-	bool noexpand = be ? m_ts->curnostemexp : true;
-	LOGDEB(("TermProcQ::takeword: pushing [%s] noexp %d\n", 
-		term.c_str(), noexpand));
-	m_ts->terms.push_back(term);
-	m_ts->nostemexps.push_back(noexpand);
-	return true;
-    }
-private:
-    TextSplitQ *m_ts;
 };
 
 // A class used to translate a user compound string (*not* a query
@@ -574,19 +566,11 @@ private:
     vector<vector<string> > m_groups; 
 };
 
-#if 1
+#if 0
 static void listVector(const string& what, const vector<string>&l)
 {
     string a;
     for (vector<string>::const_iterator it = l.begin(); it != l.end(); it++) {
-        a = a + *it + " ";
-    }
-    LOGDEB(("%s: %s\n", what.c_str(), a.c_str()));
-}
-static void listList(const string& what, const list<string>& l)
-{
-    string a;
-    for (list<string>::const_iterator it = l.begin(); it != l.end(); it++) {
         a = a + *it + " ";
     }
     LOGDEB(("%s: %s\n", what.c_str(), a.c_str()));
@@ -750,17 +734,15 @@ void StringToXapianQ::processPhraseOrNear(TextSplitQ *splitData,
     vector<bool>::iterator nxit = splitData->nostemexps.begin();
     for (vector<string>::iterator it = splitData->terms.begin();
 	 it != splitData->terms.end(); it++, nxit++) {
-	LOGDEB0(("ProcessPhrase: processing [%s]\n", it->c_str()));
 	// Adjust when we do stem expansion. Not inside phrases, and
 	// some versions of xapian will accept only one OR clause
 	// inside NEAR, all others must be leafs.
 	bool nostemexp = *nxit || (op == Xapian::Query::OP_PHRASE) || hadmultiple;
 
 	string sterm;
-	list<string> exp;
+	list<string>exp;
 	expandTerm(nostemexp, *it, exp, sterm, prefix);
-	LOGDEB0(("ProcessPhrase: exp size %d\n", exp.size()));
-	listList("", exp);
+
 	// groups is used for highlighting, we don't want prefixes in there.
 	vector<string> noprefs;
 	for (list<string>::const_iterator it = exp.begin(); 
@@ -877,32 +859,21 @@ bool StringToXapianQ::processUserString(const string &iq,
 	    // We now adjust the phrase/near slack by the term count
 	    // difference (this is mainly better for cjk where this is a very
 	    // common occurrence because of the ngrams thing.
-
-	    TermProcQ tpq;
-            //    TermProcStop tpstop(&tpidx, stops);
-	    TermProcCommongrams tpstop(&tpq, stops);
-	    tpstop.onlygrams(true);
-	    TermProcPrep tpprep(&tpstop);
-
 	    TextSplitQ splitterS(TextSplit::Flags(TextSplit::TXTS_ONLYSPANS | 
-						  TextSplit::TXTS_KEEPWILD), 
-                                 stops, &tpprep);
-	    tpq.setTSQ(&splitterS);
+                                                  TextSplit::TXTS_KEEPWILD), 
+                                 stops);
 	    splitterS.text_to_words(*it);
-	    LOGDEB(("SplitterS has %d terms\n", splitterS.terms.size()));
 	    TextSplitQ splitterW(TextSplit::Flags(TextSplit::TXTS_NOSPANS | 
                                                   TextSplit::TXTS_KEEPWILD),
-                                 stops, &tpprep);
-	    tpq.setTSQ(&splitterW);
-	    tpstop.onlygrams(false);
+                                 stops);
 	    splitterW.text_to_words(*it);
-
+	    TextSplitQ *splitter = &splitterS;
 	    if (splitterS.terms.size() > 1 && 
 		splitterS.terms.size() != splitterW.terms.size()) {
 		slack += splitterW.terms.size() - splitterS.terms.size();
+		// used to: splitData = &splitDataW;
 	    }
 
-	    TextSplitQ *splitter = &splitterS;
 	    LOGDEB0(("strToXapianQ: termcount: %d\n", splitter->terms.size()));
 	    switch (splitter->terms.size() + terminc) {
 	    case 0: 

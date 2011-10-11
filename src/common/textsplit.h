@@ -19,13 +19,13 @@
 
 #include <string>
 #include <list>
-
 #ifndef NO_NAMESPACES
 using std::string;
 using std::list;
 #endif
 
 class Utf8Iter;
+
 
 /** 
  * Split text into words. 

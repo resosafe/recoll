@@ -52,7 +52,6 @@ using namespace std;
 #include "rclversion.h"
 #include "cancelcheck.h"
 #include "ptmutex.h"
-#include "termproc.h"
 
 #ifndef MAX
 #define MAX(A,B) (A>B?A:B)
@@ -859,7 +858,7 @@ bool Db::fieldToTraits(const string& fld, const FieldTraits **ftpp)
 // The splitter breaks text into words and adds postings to the Xapian
 // document. We use a single object to split all of the document
 // fields and position jumps to separate fields
-class TextSplitDb : public TextSplitP {
+class TextSplitDb : public TextSplit {
  public:
     Xapian::WritableDatabase db;
     Xapian::Document &doc;   // Xapian document 
@@ -874,17 +873,16 @@ class TextSplitDb : public TextSplitP {
     // to compute the first position of the next section.
     Xapian::termpos curpos;
 
+    StopList &stops;
     TextSplitDb(Xapian::WritableDatabase idb, 
-		Xapian::Document &d, TermProc *prc)
-	: TextSplitP(prc), 
-	  db(idb), doc(d), basepos(1), curpos(0), wdfinc(1)
+		Xapian::Document &d, StopList &_stops) 
+	: db(idb), doc(d), basepos(1), curpos(0), stops(_stops), wdfinc(1)
     {}
     // Reimplement text_to_words to add start and end special terms
     virtual bool text_to_words(const string &in);
+    bool takeword(const std::string &term, int pos, int, int);
     void setprefix(const string& pref) {prefix = pref;}
     void setwdfinc(int i) {wdfinc = i;}
-
-    friend class TermProcIdx;
 
 private:
     // If prefix is set, we also add a posting for the prefixed terms
@@ -894,7 +892,7 @@ private:
     int wdfinc;
 };
 
-// Reimplement text_to_words to insert the begin and end anchor terms.
+
 bool TextSplitDb::text_to_words(const string &in) 
 {
     LOGDEB2(("TextSplitDb::text_to_words\n"));
@@ -910,7 +908,7 @@ bool TextSplitDb::text_to_words(const string &in)
 	return false;
     }
 
-    if (!TextSplitP::text_to_words(in)) {
+    if (!TextSplit::text_to_words(in)) {
 	LOGDEB(("TextSplitDb: TextSplit::text_to_words failed\n"));
 	basepos += curpos + 100;
 	return false;
@@ -926,45 +924,51 @@ bool TextSplitDb::text_to_words(const string &in)
 	basepos += curpos + 100;
 	return false;
     }
-
     basepos += curpos + 100;
     return true;
 }
 
-class TermProcIdx : public TermProc {
-public:
-    TermProcIdx() : TermProc(0), m_ts(0) {}
-    void setTSD(TextSplitDb *ts) {m_ts = ts;}
+// Get one term from the doc, remove accents and lowercase, then add posting
+bool TextSplitDb::takeword(const std::string &_term, int pos, int, int)
+{
+    LOGDEB2(("TextSplitDb::takeword: [%s]\n", _term.c_str()));
 
-    bool takeword(const std::string &term, int pos, int, int)
-    {
-	// Compute absolute position (pos is relative to current segment),
-	// and remember relative.
-	m_ts->curpos = pos;
-	pos += m_ts->basepos;
-	string ermsg;
-	try {
-	    // Index without prefix, using the field-specific weighting
-	    LOGDEB1(("Emitting term at %d : [%s]\n", pos, term.c_str()));
-	    m_ts->doc.add_posting(term, pos, m_ts->wdfinc);
-#ifdef TESTING_XAPIAN_SPELL
-	    if (Db::isSpellingCandidate(term)) {
-		m_ts->db.add_spelling(term);
-	    }
-#endif
-	    // Index the prefixed term.
-	    if (!m_ts->prefix.empty()) {
-		m_ts->doc.add_posting(m_ts->prefix + term, pos, m_ts->wdfinc);
-	    }
-	    return true;
-	} XCATCHERROR(ermsg);
-	LOGERR(("Db: xapian add_posting error %s\n", ermsg.c_str()));
-	return false;
+    string term;
+    if (!unacmaybefold(_term, term, "UTF-8", true)) {
+	LOGINFO(("Db::splitter::takeword: unac failed for [%s]\n", 
+                 _term.c_str()));
+	term.clear();
+	// We don't generate a fatal error because of a bad term
+	return true;
     }
-private:
-    TextSplitDb *m_ts;
-};
 
+    if (stops.isStop(term)) {
+	LOGDEB1(("Db: takeword [%s] in stop list\n", term.c_str()));
+	return true;
+    }
+
+    // Compute absolute position (pos is relative to current segment),
+    // and remember relative.
+    curpos = pos;
+    pos += basepos;
+    string ermsg;
+    try {
+	// Index without prefix, using the field-specific weighting
+	doc.add_posting(term, pos, wdfinc);
+#ifdef TESTING_XAPIAN_SPELL
+	if (Db::isSpellingCandidate(term)) {
+	    db.add_spelling(term);
+	}
+#endif
+	// Index the prefixed term.
+	if (!prefix.empty()) {
+	    doc.add_posting(prefix + term, pos, wdfinc);
+	}
+	return true;
+    } XCATCHERROR(ermsg);
+    LOGERR(("Db: xapian add_posting error %s\n", ermsg.c_str()));
+    return false;
+}
 
 #ifdef TESTING_XAPIAN_SPELL
 string Db::getSpellingSuggestion(const string& word)
@@ -1028,12 +1032,8 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi,
     Doc doc = idoc;
 
     Xapian::Document newdocument;
-    TermProcIdx tpidx;
-//    TermProcStop tpstop(&tpidx, m_stops);
-    TermProcCommongrams tpstop(&tpidx, m_stops);
-    TermProcPrep tpprep(&tpstop);
-    TextSplitDb splitter(m_ndb->xwdb, newdocument, &tpprep);
-    tpidx.setTSD(&splitter);
+    TextSplitDb splitter(m_ndb->xwdb, newdocument, m_stops);
+
     // Split and index file name as document term(s)
     LOGDEB2(("Db::add: split file name [%s]\n", fn.c_str()));
     if (!splitter.text_to_words(doc.utf8fn))

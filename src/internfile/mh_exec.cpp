@@ -153,17 +153,24 @@ void MimeHandlerExec::finaldetails()
     // cfgFilterOutputCharset comes from the mimeconf filter definition line
     string charset = cfgFilterOutputCharset.empty() ? "utf-8" : 
 	cfgFilterOutputCharset;
+    bool trustcharset = true;
     if (!stringlowercmp("default", charset)) {
 	charset = m_dfltInputCharset;
+	trustcharset = false;
     }
     string mt = cfgFilterOutputMtype.empty() ? "text/html" : 
 	cfgFilterOutputMtype;
-    if (!mt.compare("text/plain") && stringlowercmp("utf-8", charset)) {
+
+    // If this is text/plain and not utf-8 or untrusted, transcode to utf-8.
+    if (!mt.compare("text/plain") && 
+	(!trustcharset || stringlowercmp("utf-8", charset))) {
 	string transcoded;
 	int ecnt;
 	if (!transcode(output, transcoded, charset, "UTF-8", &ecnt)) {
 	    LOGERR(("mh_exec: transcode failed from [%s] to UTF-8\n",
 		    charset.c_str()));
+	    // Erase text in this case: it's garbage
+	    output.clear();
 	} else {
 	    if (ecnt) {
 		LOGDEB(("mh_exec: %d transcoding errors  from [%s] to UTF-8\n",

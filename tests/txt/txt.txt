@@ -1,3 +1,4 @@
-2 results
+3 results
 text/plain	[file:///home/dockes/projets/fulltext/testrecoll/txt/liste.txt]	[liste.txt]	1182	bytes	
 text/plain	[file:///home/dockes/projets/fulltext/testrecoll/txt/liste1.txt]	[liste1.txt]	893	bytes	
+text/plain	[file:///home/dockes/projets/fulltext/testrecoll/zip/misc.zip]	[misc.zip]	168155	bytes	

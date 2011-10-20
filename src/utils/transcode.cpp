@@ -116,7 +116,13 @@ bool transcode(const string &in, string &out, const string &icode,
 		ip++;isiz--;
 		continue;
 	    }
-	    goto error;
+	    // Normally only EINVAL is possible here: incomplete
+	    // multibyte sequence at the end. This is not fatal. Any
+	    // other is supposedly impossible, we return an error
+	    if (errno == EINVAL)
+		goto out;
+	    else
+		goto error;
 	}
 
 	out.append(obuf, OBSIZ - osiz);
@@ -131,9 +137,11 @@ bool transcode(const string &in, string &out, const string &icode,
     }
 #endif
 
+out:
     ret = true;
 
- error:
+error:
+
     if (icopen) {
 #ifndef ICONV_CACHE_OPEN
 	iconv_close(ic);

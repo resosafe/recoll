@@ -263,13 +263,13 @@ bool MimeHandlerMail::processAttach()
     // Special case for text/plain content. Internfile should deal
     // with this but it expects text/plain to be utf-8 already, so we
     // handle the transcoding if needed
-    if (m_metaData[cstr_mimetype] == "text/plain" && 
-	stringicmp(m_metaData["charset"], "UTF-8")) {
+    if (m_metaData[cstr_mimetype] == "text/plain") {
 	string utf8;
 	if (!transcode(body, utf8, m_metaData["charset"], "UTF-8")) {
 	    LOGERR(("  processAttach: transcode to utf-8 failed "
 		    "for charset [%s]\n", m_metaData["charset"].c_str()));
-	    // Just let it through and hope for the best...
+	    // can't transcode at all -> data is garbage just erase it
+	    body.clear();
 	} else {
 	    body = utf8;
 	}

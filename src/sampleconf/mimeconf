@@ -78,7 +78,7 @@ application/x-kword = exec rclkwd
 application/x-lyx = exec rcllyx
 application/x-mimehtml = internal message/rfc822
 application/x-perl = internal text/plain
-application/x-rar = execm rclrar
+application/x-rar = execm rclrar;charset=default
 application/x-scribus = exec rclscribus
 application/x-shellscript = internal text/plain
 application/x-tex = exec rcltex

@@ -447,6 +447,8 @@ utils/ptmutex.cpp
 utils/ptmutex.h
 utils/pxattr.cpp
 utils/pxattr.h
+utils/rclionice.cpp
+utils/rclionice.h
 utils/readfile.cpp
 utils/readfile.h
 utils/refcntr.h

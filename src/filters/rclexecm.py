@@ -112,6 +112,7 @@ class RclExecM:
 
         # If we have an ipath, that's what we look for, else ask for next entry
         ipath = ""
+        eof = True
         self.mimetype = ""
         try:
             if params.has_key("ipath:") and len(params["ipath:"]):

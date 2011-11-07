@@ -611,6 +611,7 @@ class LoadThread : public QThread {
  public: 
     string missing;
     TempFile imgtmp;
+    string tdirreason;
 
     LoadThread(int *stp, Rcl::Doc& odoc, const Rcl::Doc& idc) 
 	: statusp(stp), out(odoc), idoc(idc)
@@ -621,11 +622,9 @@ class LoadThread : public QThread {
     }
     virtual void run() {
 	DebugLog::getdbl()->setloglevel(loglevel);
-	string reason;
 	if (!tmpdir.ok()) {
-	    QMessageBox::critical(0, "Recoll",
-				  Preview::tr("Cannot create temporary directory"));
-	    LOGERR(("Preview: %s\n", tmpdir.getreason().c_str()));
+	    tdirreason = tmpdir.getreason();
+	    LOGERR(("Preview: %s\n", tdirreason.c_str()));
 	    *statusp = -1;
 	    return;
 	}
@@ -753,15 +752,23 @@ bool Preview::loadDocInCurrentTab(const Rcl::Doc &idoc, int docnum)
 	return false;
     if (status != 0) {
         QString explain;
-        if (!lthr.missing.empty()) {
+	if (!lthr.tdirreason.empty()) {
+            explain = tr("Cannot create temporary directory: ") +
+                QString::fromLocal8Bit(lthr.tdirreason.c_str());
+	    QMessageBox::critical(0, "Recoll", explain);
+	} else if (!lthr.missing.empty()) {
             explain = QString::fromAscii("<br>") +
                 tr("Missing helper program: ") +
                 QString::fromLocal8Bit(lthr.missing.c_str());
-        }
-        QMessageBox::warning(0, "Recoll",
-                             tr("Can't turn doc into internal "
-                                "representation for ") +
-                             fdoc.mimetype.c_str() + explain);
+	    QMessageBox::warning(0, "Recoll",
+				 tr("Can't turn doc into internal "
+				    "representation for ") +
+				 fdoc.mimetype.c_str() + explain);
+        } else {
+	    QMessageBox::warning(0, "Recoll", 
+				  tr("Error while loading file"));
+	}
+
 	return false;
     }
     // Reset config just in case.

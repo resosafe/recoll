@@ -124,7 +124,8 @@ bool maketmpdir(string& tdir, string& reason)
 #endif // HAVE_MKDTEMP
 	) {
 	free(cp);
-	reason = "maketmpdir: mktemp failed\n";
+	reason = "maketmpdir: mktemp failed for [" + tdir + "] : " +
+	    strerror(errno);
 	tdir.erase();
 	return false;
     }	

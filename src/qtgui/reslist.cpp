@@ -589,8 +589,8 @@ void ResList::mouseDoubleClickEvent(QMouseEvent *event)
 
 void ResList::linkWasClicked(const QUrl &url)
 {
-    QString s = url.toString();
-    const char *ascurl = s.toAscii();
+    QByteArray s = url.toString().toAscii();
+    const char *ascurl = (const char *)s;
     LOGDEB(("ResList::linkWasClicked: [%s]\n", ascurl));
 
     int i = atoi(ascurl+1) - 1;

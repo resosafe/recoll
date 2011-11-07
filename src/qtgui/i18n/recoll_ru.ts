@@ -124,7 +124,7 @@
     </message>
     <message>
         <source>Invert</source>
-        <translation type="unfinished"></translation>
+        <translation>Обратить</translation>
     </message>
 </context>
 <context>
@@ -149,7 +149,7 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
     </message>
     <message>
         <source>&quot;history&quot; file is damaged or un(read)writeable, please check or remove it: </source>
-        <translation type="unfinished"></translation>
+        <translation>Файл истории (&quot;history&quot;) повреждён или не читается/не записывается, проверьте или удалите его:</translation>
     </message>
 </context>
 <context>
@@ -223,19 +223,19 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
     </message>
     <message>
         <source>Show image</source>
-        <translation type="unfinished"></translation>
+        <translation>Показать изображение</translation>
     </message>
     <message>
         <source>Select All</source>
-        <translation type="unfinished"></translation>
+        <translation>Выделить всё</translation>
     </message>
     <message>
         <source>Copy</source>
-        <translation type="unfinished"></translation>
+        <translation>Копировать</translation>
     </message>
     <message>
         <source>Save document to file</source>
-        <translation type="unfinished"></translation>
+        <translation>Сохранить документ в файл</translation>
     </message>
 </context>
 <context>
@@ -493,11 +493,11 @@ Do you want to start the  preferences dialog ?</source>
     </message>
     <message>
         <source>Could not open external index. Db not open. Check external indexes list.</source>
-        <translation type="unfinished"></translation>
+        <translation>Не удалось открыть внешний индекс. БД не открыта. Проверьте список внешних индексов.</translation>
     </message>
     <message>
         <source>No results found</source>
-        <translation type="unfinished"></translation>
+        <translation>Поиск не дал результатов</translation>
     </message>
 </context>
 <context>
@@ -817,82 +817,82 @@ Do you want to start the  preferences dialog ?</source>
     </message>
     <message>
         <source>Save table to CSV file</source>
-        <translation type="unfinished"></translation>
+        <translation>Сохранить таблицу в CSV-файл</translation>
     </message>
     <message>
         <source>Can&apos;t open/create file: </source>
-        <translation type="unfinished"></translation>
+        <translation>Не удалось открыть/создать файл:</translation>
     </message>
     <message>
         <source>&amp;Preview</source>
-        <translation type="unfinished">&amp;Просмотр</translation>
+        <translation>&amp;Просмотр</translation>
     </message>
     <message>
         <source>&amp;Open</source>
-        <translation type="unfinished">О&amp;ткрыть</translation>
+        <translation>О&amp;ткрыть</translation>
     </message>
     <message>
         <source>Copy &amp;File Name</source>
-        <translation type="unfinished">Скопировать &amp;имя файла</translation>
+        <translation>Скопировать &amp;имя файла</translation>
     </message>
     <message>
         <source>Copy &amp;URL</source>
-        <translation type="unfinished">Копировать &amp;URL</translation>
+        <translation>Копировать &amp;URL</translation>
     </message>
     <message>
         <source>&amp;Write to File</source>
-        <translation type="unfinished">&amp;Сохранить в файл</translation>
+        <translation>&amp;Сохранить в файл</translation>
     </message>
     <message>
         <source>Find &amp;similar documents</source>
-        <translation type="unfinished">Найти &amp;подобные документы</translation>
+        <translation>Найти &amp;подобные документы</translation>
     </message>
     <message>
         <source>Preview P&amp;arent document/folder</source>
-        <translation type="unfinished">&amp;Предпросмотр родительского документа/каталога</translation>
+        <translation>&amp;Предпросмотр родительского документа/каталога</translation>
     </message>
     <message>
         <source>&amp;Open Parent document/folder</source>
-        <translation type="unfinished">&amp;Открыть родительский документ/каталог</translation>
+        <translation>&amp;Открыть родительский документ/каталог</translation>
     </message>
     <message>
         <source>&amp;Save as CSV</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Сохранить как CSV</translation>
     </message>
 </context>
 <context>
     <name>ResTableDetailArea</name>
     <message>
         <source>&amp;Preview</source>
-        <translation type="unfinished">&amp;Просмотр</translation>
+        <translation>&amp;Просмотр</translation>
     </message>
     <message>
         <source>&amp;Open</source>
-        <translation type="unfinished">О&amp;ткрыть</translation>
+        <translation>О&amp;ткрыть</translation>
     </message>
     <message>
         <source>Copy &amp;File Name</source>
-        <translation type="unfinished">Скопировать &amp;имя файла</translation>
+        <translation>Скопировать &amp;имя файла</translation>
     </message>
     <message>
         <source>Copy &amp;URL</source>
-        <translation type="unfinished">Копировать &amp;URL</translation>
+        <translation>Копировать &amp;URL</translation>
     </message>
     <message>
         <source>&amp;Write to File</source>
-        <translation type="unfinished">&amp;Сохранить в файл</translation>
+        <translation>&amp;Сохранить в файл</translation>
     </message>
     <message>
         <source>Find &amp;similar documents</source>
-        <translation type="unfinished">Найти &amp;подобные документы</translation>
+        <translation>Найти &amp;подобные документы</translation>
     </message>
     <message>
         <source>Preview P&amp;arent document/folder</source>
-        <translation type="unfinished">&amp;Предпросмотр родительского документа/каталога</translation>
+        <translation>&amp;Предпросмотр родительского документа/каталога</translation>
     </message>
     <message>
         <source>&amp;Open Parent document/folder</source>
-        <translation type="unfinished">&amp;Открыть родительский документ/каталог</translation>
+        <translation>&amp;Открыть родительский документ/каталог</translation>
     </message>
 </context>
 <context>
@@ -947,7 +947,19 @@ Do you want to start the  preferences dialog ?</source>
 &lt;i&gt;&quot;term1 term2&quot;p&lt;/i&gt; : unordered proximity search with default distance.&lt;br&gt;
 Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual (&amp;lt;F1&gt;) for more detail.
 </source>
-        <translation type="unfinished"></translation>
+        <translation>Введите выражение на языке запросов. Шпаргалка:&lt;br&gt;
+&lt;i&gt;слово1 слово2&lt;/i&gt; : &apos;слово1&apos; и &apos;слово2&apos; в любом поле.&lt;br&gt;
+&lt;i&gt;поле:слово1&lt;/i&gt; : &apos;слово1&apos; в поле &apos;поле&apos;.&lt;br&gt;
+Стандартные поля/синонимы:&lt;br&gt;
+  title/subject/caption, author/from, recipient/to, filename, ext.&lt;br&gt;
+ Псевдо-поля: dir, mime/format, type/rclcat, date.&lt;br&gt;
+ Примеры интервалов между двумя датами: 2009-03-01/2009-05-20  2009-03-01/P2M.&lt;br&gt;
+&lt;i&gt;слово1 слово2 OR слово3&lt;/i&gt; : слово1 И (слово2 ИЛИ слово3).&lt;br&gt;
+  В действительности, скобки не разрешены.&lt;br&gt;
+&lt;i&gt;&quot;слово1 слово2&quot;&lt;/i&gt; : фраза (должна встречаться именно в таком виде). Модификаторы:&lt;br&gt;
+&lt;i&gt;&quot;слово1 слово2&quot;p&lt;/i&gt; : неупорядоченный поиск с расстоянием (&lt;i&gt;&lt;b&gt;p&lt;/b&gt;roximity&lt;/i&gt;) по умолчанию.&lt;br&gt;
+Используйте ссылку &lt;b&gt;показать запрос&lt;/b&gt;, когда сомневаетесь в результате, и смотрите подробности в руководстве (&amp;lt;F1&gt;).
+</translation>
     </message>
     <message>
         <source>Enter file name wildcard expression.</source>
@@ -1029,7 +1041,7 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>No field</source>
-        <translation type="unfinished"></translation>
+        <translation>Не исп. поля</translation>
     </message>
 </context>
 <context>
@@ -1440,15 +1452,15 @@ This should give higher precedence to the results where the search terms appear 
     </message>
     <message>
         <source>Web page store directory name</source>
-        <translation type="unfinished"></translation>
+        <translation>Имя каталога для хранилища web-страниц</translation>
     </message>
     <message>
         <source>The name for a directory where to store the copies of visited web pages.&lt;br&gt;A non-absolute path is taken relative to the configuration directory.</source>
-        <translation type="unfinished"></translation>
+        <translation>Имя каталога для хранения копий посещённых web-страниц.&lt;br&gt;Путь, не являющийся абсолютным, берётся относительно каталога конфигурации.</translation>
     </message>
     <message>
         <source>Max. size for the web store (MB)</source>
-        <translation type="unfinished"></translation>
+        <translation>Максимальный размер web-хранилища (МБ)</translation>
     </message>
 </context>
 <context>
@@ -1811,15 +1823,15 @@ May be slow for big documents.</source>
     </message>
     <message>
         <source>Abstract snippet separator</source>
-        <translation type="unfinished"></translation>
+        <translation>Разделитель фрагментов в результатах</translation>
     </message>
     <message>
         <source>Use &lt;PRE&gt; tags instead of &lt;BR&gt;to display plain text as html.</source>
-        <translation type="unfinished"></translation>
+        <translation>Использовать тэги &lt;PRE&gt; вместо &lt;BR&gt;для отображения простого текста как html.</translation>
     </message>
     <message>
         <source>Lines in PRE text are not folded. Using BR loses indentation.</source>
-        <translation type="unfinished"></translation>
+        <translation>Строки в PRE-тексте не переносятся. При использовании BR теряются отступы.</translation>
     </message>
 </context>
 </TS>

@@ -140,4 +140,4 @@ ${INSTALL} -m 0444 ${I18N}/recoll_zh_CN.qm \
 
 
 @NOPYTHON@(cd python/recoll;python setup.py install \
-    --prefix=${REALPREFIX} ${ROOTFORPYTHON})
+@NOPYTHON@ --prefix=${REALPREFIX} ${ROOTFORPYTHON})

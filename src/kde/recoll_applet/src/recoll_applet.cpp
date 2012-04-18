@@ -160,7 +160,7 @@ void recoll_applet::performAction(QString text, int serviceType)
 
     KProcess proc;
     proc << "recoll";
-    proc << "-L";
+    proc << "-l";
     proc << "-q";
     proc << urlstr;
     proc.start(KProcess::DontCare);

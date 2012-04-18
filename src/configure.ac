@@ -500,7 +500,7 @@ test "X$m_prefix" = "XNONE" && m_prefix=/usr/local
 m_datadir=${m_prefix}/share
 QTRECOLL_DATADIR=${m_datadir}/recoll
 
-RCLVERSION='m4_esyscmd_s(cat VERSION)'
+RCLVERSION=`cat VERSION`
 
 AC_SUBST(X_CFLAGS)
 AC_SUBST(X_PRE_LIBS)

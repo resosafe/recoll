@@ -549,11 +549,26 @@ pid_t Pidfile::read_pid()
 int Pidfile::flopen()
 {
     const char *path = m_path.c_str();
-    int operation = LOCK_EX | LOCK_NB;
     if ((m_fd = ::open(path, O_RDWR|O_CREAT, 0644)) == -1) {
 	m_reason = "Open failed";
 	return -1;
     }
+
+#ifdef sun
+    struct flock lockdata;
+    lockdata.l_start = 0;
+    lockdata.l_len = 0;
+    lockdata.l_type = F_WRLCK;
+    lockdata.l_whence = SEEK_SET;
+    if (fcntl(m_fd, F_SETLK,  &lockdata) != 0) {
+	int serrno = errno;
+	(void)::close(m_fd);
+	errno = serrno;
+	m_reason = "fcntl lock failed";
+	return -1;
+    }
+#else
+    int operation = LOCK_EX | LOCK_NB;
     if (flock(m_fd, operation) == -1) {
 	int serrno = errno;
 	(void)::close(m_fd);
@@ -561,6 +576,8 @@ int Pidfile::flopen()
 	m_reason = "flock failed";
 	return -1;
     }
+#endif // ! sun
+
     if (ftruncate(m_fd, 0) != 0) {
 	/* can't happen [tm] */
 	int serrno = errno;

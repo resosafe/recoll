@@ -809,11 +809,19 @@ void ResList::createPopupMenu(const QPoint& pos)
 	return;
     QMenu *popup = new QMenu(this);
     popup->addAction(tr("&Preview"), this, SLOT(menuPreview()));
-    popup->addAction(tr("&Open"), this, SLOT(menuEdit()));
+
+    Rcl::Doc doc;
+    bool havedoc = getDoc(m_popDoc, doc);
+    string apptag;
+    if (havedoc)
+	doc.getmeta(Rcl::Doc::keyapptg, &apptag);
+
+    if (havedoc && !theconfig->getMimeViewerDef(doc.mimetype, apptag).empty()) {
+	popup->addAction(tr("&Open"), this, SLOT(menuEdit()));
+    }
     popup->addAction(tr("Copy &File Name"), this, SLOT(menuCopyFN()));
     popup->addAction(tr("Copy &URL"), this, SLOT(menuCopyURL()));
-    Rcl::Doc doc;
-    if (getDoc(m_popDoc, doc) && !doc.ipath.empty()) {
+    if (havedoc && !doc.ipath.empty()) {
 	popup->addAction(tr("&Write to File"), this, SLOT(menuSaveToFile()));
     }
 
@@ -821,7 +829,7 @@ void ResList::createPopupMenu(const QPoint& pos)
     popup->addAction(tr("Preview P&arent document/folder"), 
 		      this, SLOT(menuPreviewParent()));
     popup->addAction(tr("&Open Parent document/folder"), 
-		      this, SLOT(menuOpenParent()));
+		     this, SLOT(menuOpenParent()));
     popup->popup(mapToGlobal(pos));
 }
 

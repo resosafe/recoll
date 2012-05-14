@@ -4,6 +4,7 @@
 .txt = text/plain
 .text = text/plain
 .ini = text/x-ini
+.csv = text/plain
 
 # Source files. 
 # Defining them with specific types allows using a specific ext viewer (in 
@@ -29,6 +30,8 @@
 .shtml = text/html
 .php = text/html
 .ics = text/calendar
+
+.eml = message/rfc822
 
 .pdf = application/pdf
 

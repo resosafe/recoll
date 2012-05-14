@@ -72,9 +72,12 @@ image/bmp = gwenview %f
 image/x-ms-bmp = gwenview %f
 image/x-xpmi = gwenview %f
 
-# Or firefox -remote "openFile(%u)"
+message/rfc822 = thunderbird -file %f
+text/x-mail = thunderbird -file %f
+
 application/x-tex = emacsclient  %f
 text/x-tex = emacsclient  %f
+# Or firefox -remote "openFile(%u)"
 text/html = firefox %u
 text/html|gnuinfo = rclshowinfo %F %(title)
 text/plain = emacsclient  %f

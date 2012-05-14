@@ -231,12 +231,12 @@ string QtGuiResListPager::iconUrl(RclConfig *config, Rcl::Doc& doc)
 	ConfIndexer::docsToPaths(docs, paths);
 	if (!paths.empty()) {
 	    string path;
-	    LOGDEB2(("ResList::iconUrl: source path [%s]\n", paths[0].c_str()));
+	    LOGDEB0(("ResList::iconUrl: source path [%s]\n", paths[0].c_str()));
 	    if (thumbPathForUrl(cstr_fileu + paths[0], 128, path)) {
-		LOGDEB2(("ResList::iconUrl: icon path [%s]\n", path.c_str()));
+		LOGDEB0(("ResList::iconUrl: icon path [%s]\n", path.c_str()));
 		return cstr_fileu + path;
 	    } else {
-		LOGDEB2(("ResList::iconUrl: no icon: path [%s]\n", 
+		LOGDEB0(("ResList::iconUrl: no icon: path [%s]\n", 
 			 path.c_str()));
 	    }
 	} else {

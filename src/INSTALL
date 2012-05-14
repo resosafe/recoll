@@ -232,7 +232,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
        include files (ie: if qt.h is /usr/local/qt/include/qt.h, QTDIR should
        be /usr/local/qt).
 
-     * QMAKESPECS should be set to the name of one of the qt mkspecs
+     * QMAKESPECS should be set to the name of one of the Qt mkspecs
        sub-directories (ie: linux-g++).
 
    On many Linux systems, QTDIR is set by the login scripts, and QMAKESPECS

@@ -1145,6 +1145,17 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    with the directory filter in advanced search, but multiple indexes will
    have much better performance and may be worth the trouble.
 
+   Another environment variable, RECOLL_ACTIVE_EXTRA_DBS allows adding to the
+   active list of indexes. This variable was suggested and implemented by a
+   Recoll user. It is mostly useful if you use scripts to mount external
+   volumes with Recoll indexes. By using RECOLL_EXTRA_DBS and
+   RECOLL_ACTIVE_EXTRA_DBS, you can add and activate the index for the
+   mounted volume when starting recoll.
+
+   RECOLL_ACTIVE_EXTRA_DBS is available for Recoll versions 1.17.2 and later.
+   A change was made in the same update so that recoll will automatically
+   deactivate unreachable indexes when starting up.
+
      ----------------------------------------------------------------------
 
   3.1.8. Document history
@@ -1693,7 +1704,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    language specification.
 
    If the results of a query language search puzzle you and you doubt what
-   has been actually searched for, you can use the GUI show query link at the
+   has been actually searched for, you can use the GUI Show Query link at the
    top of the result list to check the exact query which was finally executed
    by Xapian.
 
@@ -2016,7 +2027,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    uninteresting repeated keywords (ie: Subject: for email) when indexing.
    This is not essential.
 
-   You should look to one of the simple filters, for example rclps for a
+   You should look at one of the simple filters, for example rclps for a
    starting point.
 
    Don't forget to make your filter executable before testing !
@@ -2619,7 +2630,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
        include files (ie: if qt.h is /usr/local/qt/include/qt.h, QTDIR should
        be /usr/local/qt).
 
-     * QMAKESPECS should be set to the name of one of the qt mkspecs
+     * QMAKESPECS should be set to the name of one of the Qt mkspecs
        sub-directories (ie: linux-g++).
 
    On many Linux systems, QTDIR is set by the login scripts, and QMAKESPECS

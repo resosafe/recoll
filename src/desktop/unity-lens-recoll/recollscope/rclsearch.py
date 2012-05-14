@@ -47,8 +47,12 @@ class Scope (Unity.Scope):
 
     def _connect_db(self):
         #print "Connecting to db"
-        self.db = recoll.connect()
-        self.db.setAbstractParams(maxchars=200, contextwords=4)
+        self.db = None
+        try:
+            self.db = recoll.connect()
+            self.db.setAbstractParams(maxchars=200, contextwords=4)
+        except:
+            return
 
     def get_search_string (self):
         search = self.props.active_search
@@ -149,14 +153,23 @@ class Scope (Unity.Scope):
             self._connect_db()
             self.last_connect_time = current_time
 
+        if not self.db:
+            model.append ("",
+                      "error",
+                      CATEGORY_ALL,
+                      "text/plain",
+                  "You need to use the recoll GUI to create the index first !",
+                      "",
+                      "")
+            return
         fcat = self.get_filter("rclcat")
         for option in fcat.options:
             if option.props.active:
                 search_string += " rclcat:" + option.props.id 
 
         # Do the recoll thing
-        query = self.db.query()
         try:
+            query = self.db.query()
             nres = query.execute(search_string)
         except:
             return
@@ -168,8 +181,8 @@ class Scope (Unity.Scope):
             except:
                 break
 
-            # No sense in returning unusable results (until
-            # I get an idea of what to do with them)
+            # Results with an ipath get a special mime type so that they
+            # get opened by starting a recoll instance.
             if doc.ipath != "":
                 mimetype = "application/x-recoll"
                 url = doc.url + "#" + doc.ipath
@@ -187,7 +200,10 @@ class Scope (Unity.Scope):
             if icon:
                 iconname = icon.get_names()[0]
 
-            abstract = self.db.makeDocAbstract(doc, query).encode('utf-8')
+            try:
+                abstract = self.db.makeDocAbstract(doc, query).encode('utf-8')
+            except:
+                break
 
             model.append (url,
                       iconname,

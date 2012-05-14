@@ -22,14 +22,15 @@ Install with:
 
   ./configure --prefix=/usr --sysconfdir=/etc && make && sudo make install
 
-or if you checked the code out from a bazaar branch:
-
-  ./autogen.sh --prefix=/usr --sysconfdir=/etc  && make && sudo make install
 
 RESOURCES
 ---------
-The source code and releases packages can be found on
-    http://www.recoll.org. 
+
+The source code is on bitbucket.org: http://bitbucket.org/medoc/recoll/src/
+Look inside src/desktop/unity-lens-recoll
+
+Packages on the recoll PPA:
+         https://launchpad.net/~recoll-backports/+archive/recoll-1.15-on
+
 Bugs should be reported on the bitbucket recoll issues tracker:
     https://bitbucket.org/medoc/recoll/issues
-

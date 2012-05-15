@@ -70,7 +70,8 @@ public:
           m_idAllStem(0),
 	  m_idxproc(0),
 	  m_sortspecnochange(false),
-	  m_indexerState(IXST_RUNNINGNOTMINE)
+	  m_indexerState(IXST_RUNNINGNOTMINE),
+	  m_queryActive(false)
     {
 	setupUi(this);
 	init();
@@ -174,6 +175,7 @@ private:
     DocSeqSortSpec    m_sortspec;
     RefCntr<DocSequence> m_source;
     IndexerState      m_indexerState;
+    bool              m_queryActive;
 
     // If set on init, will be displayed either through ext app, or
     // preview (if no ext app set)

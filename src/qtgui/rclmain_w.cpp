@@ -800,8 +800,9 @@ class QueryThread : public QThread {
 
 void RclMain::initiateQuery()
 {
-    if (m_source.isNull())
+    if (m_queryActive || m_source.isNull())
 	return;
+    m_queryActive = true;
 
     QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
     QueryThread qthr(m_source);
@@ -846,6 +847,7 @@ void RclMain::initiateQuery()
 
     statusBar()->showMessage(msg, 0);
     QApplication::restoreOverrideCursor();
+    m_queryActive = false;
     emit(resultsReady());
 }
 

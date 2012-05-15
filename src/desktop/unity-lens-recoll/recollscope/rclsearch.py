@@ -2,6 +2,10 @@
 import sys
 import subprocess
 import time
+import urllib
+import hashlib
+import os
+import locale
 
 from gi.repository import GLib, GObject, Gio
 from gi.repository import Dee
@@ -10,6 +14,18 @@ from gi.repository import Unity
 import recoll
 
 BUS_PATH = "/org/recoll/unitylensrecoll/scope/main"
+
+# Thumbnails standard
+# 256x256 
+THMBDIRLARGE = "~/.thumbnails/large"
+# 128x128
+THMBDIRNORMAL = "~/.thumbnails/normal"
+
+# Icon names for some recoll mime types which don't have standard icon by the
+# normal method
+SPEC_MIME_ICONS = {'application/x-fsdirectory' : 'gnome-fs-directory.svg',
+                   'message/rfc822' : 'mail-read',
+                   'application/x-recoll' : 'recoll'}
 
 # These category ids must match the order in which we add them to the lens
 CATEGORY_ALL = 0
@@ -99,17 +115,15 @@ class Scope (Unity.Scope):
     def _on_global_search_changed (self, scope, param_spec):
         search = self.get_global_search_string()
         results = scope.props.global_results_model
-        
         #print "Global search changed to: '%s'" % search
-        
         self._update_results_model (search, results)
-        
+    
     def _update_results_model (self, search_string, model):
         if search_string:
             self._do_search (search_string, model)
         else:
             self._do_browse (model)
-    
+
     def _do_browse (self, model):
         if self.timeout_id is not None:
             GObject.source_remove(self.timeout_id)
@@ -134,12 +148,37 @@ class Scope (Unity.Scope):
         if TYPING_TIMEOUT == 0:
             self._really_do_search(search_string, model)
             return True
-        
+
         if self.timeout_id is not None:
             GObject.source_remove(self.timeout_id)
         self.timeout_id = \
             GObject.timeout_add(TYPING_TIMEOUT, self._on_timeout, 
                     search_string, model)
+
+    def _get_thumbnail_path(self, url):
+        """Look for a thumbnail for the input url, according to the
+        freedesktop thumbnail storage standard. The input 'url' always
+        begins with file:// and is unencoded. We encode it properly
+        and compute the path inside the thumbnail storage
+        directory. We return the path only if the thumbnail does exist
+        (no generation performed)"""
+        path = url
+        path = path.replace("file://", "", 1)
+        try:
+            path = "file://" + urllib.quote(path)
+        except:
+            #print "_get_thumbnail_path: quote failed"
+            return None
+        #print "_get_thumbnail: encoded path: [%s]" % (path,)
+        thumbname = hashlib.md5(path).hexdigest() + ".png"
+        #print "_get_thumbnail: thumbname: [%s]" % (thumbname,)
+        tpath = os.path.join(os.path.expanduser(THMBDIRNORMAL), thumbname)
+        if os.path.exists(tpath):
+            return tpath
+        tpath = os.path.join(os.path.expanduser(THMBDIRLARGE), thumbname)
+        if os.path.exists(tpath):
+            return tpath
+        return None
 
     def _really_do_search(self, search_string, model):
         #print "really_do_search:", "[" + search_string + "]"
@@ -183,12 +222,25 @@ class Scope (Unity.Scope):
 
             # Results with an ipath get a special mime type so that they
             # get opened by starting a recoll instance.
+            thumbnail = None
             if doc.ipath != "":
                 mimetype = "application/x-recoll"
                 url = doc.url + "#" + doc.ipath
             else:
                 mimetype = doc.mimetype
                 url = doc.url
+                # doc.url is a unicode string which is badly wrong. A
+                # future version of the pyrecoll module will have a
+                # separate method to retrieve the binary
+                # version. Until this happens, try to encode
+                # back. This won't work every time (ie: if the
+                # original path could not be translated to unicode by
+                # pyrecoll, or if the unicode can't be translated back
+                # in the current locale)
+                encoding = locale.nl_langinfo(locale.CODESET)
+                thumbnail = \
+                          self._get_thumbnail_path(url.encode(encoding,
+                                                              errors='replace'))
 
             #print "Recoll Lens: Using MIMETYPE", mimetype, " URL", url
 
@@ -196,9 +248,19 @@ class Scope (Unity.Scope):
             if titleorfilename == "":
                 titleorfilename = doc.filename
 
-            icon = Gio.content_type_get_icon(doc.mimetype)
-            if icon:
-                iconname = icon.get_names()[0]
+            iconname = None
+            if thumbnail:
+                iconname = thumbnail
+            else:
+                if SPEC_MIME_ICONS.has_key(doc.mimetype):
+                    iconname = SPEC_MIME_ICONS[doc.mimetype]
+                else:
+                    icon = Gio.content_type_get_icon(doc.mimetype)
+                    if icon:
+                        iconname = icon.get_names()[0]
+
+            #print "iconname:", iconname
+
 
             try:
                 abstract = self.db.makeDocAbstract(doc, query).encode('utf-8')

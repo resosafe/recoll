@@ -130,9 +130,17 @@ bool MimeHandlerMail::set_document_string(const string &msgtxt)
     MD5String(msgtxt, md5);
     m_metaData[cstr_dj_keymd5] = MD5HexPrint(md5, xmd5);
 
-    m_stream = new stringstream(msgtxt);
+    if ((m_stream = new stringstream(msgtxt)) == 0 || !m_stream->good()) {
+	LOGERR(("MimeHandlerMail::set_document_string: stream create error."
+		"msgtxt.size() %d\n", int(msgtxt.size())));
+	return false;
+    }
     delete m_bincdoc;
-    m_bincdoc = new Binc::MimeDocument;
+    if ((m_bincdoc = new Binc::MimeDocument) == 0) {
+	LOGERR(("MimeHandlerMail::set_doc._string: new Binc:Document failed."
+		" Out of memory?"));
+	return false;
+    }
     m_bincdoc->parseFull(*m_stream);
     if (!m_bincdoc->isHeaderParsed() && !m_bincdoc->isAllParsed()) {
 	LOGERR(("MimeHandlerMail::set_document_string: mime parse error\n"));

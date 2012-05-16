@@ -105,8 +105,17 @@ filtersdir = @prefix@/share/recoll/filters
 # want to change the icons displayed in the result list
 iconsdir = @prefix@/share/recoll/images
 
-# Guessing charsets usually does not work well
-guesscharset = 0
+# A list of characters, encoded in UTF-8, which should be handled specially
+# when converting text to unaccented lowercase. For example, in Swedish,
+# the letter a with diaeresis has full alphabet citizenship and should not
+# be turned into an a.  Each element in the space-separated list has the
+# special character as first element and the translation following
+# (multiple chars allowed.  The handling of both the lowercase and
+# upper-case versions of a character should be specified, as appartenance
+# to the list will turn-off both standard accent and case
+# processing. ** Changing the list implies a full reindex **
+# Example for Swedish:
+# unac_except_trans =  åå Åå ää Ää öö Öö
 
 # Should we use the system's 'file -i' command as a final step in file type
 # identification ? This may be useful, but will usually cause the

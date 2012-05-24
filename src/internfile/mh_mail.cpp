@@ -74,12 +74,14 @@ void MimeHandlerMail::clear()
     }
     delete m_stream; m_stream = 0;
     m_idx = -1;
+    m_startoftext = 0;
     m_subject.erase();
     for (vector<MHMailAttach*>::iterator it = m_attachments.begin(); 
 	 it != m_attachments.end(); it++) {
 	delete *it;
     }
     m_attachments.clear();
+    m_addProcdHdrs.clear();
     RecollFilter::clear();
 }
 

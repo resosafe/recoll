@@ -39,6 +39,7 @@ namespace Binc {
 
   class MimeInputSource {
   public:
+    // Note that we do NOT take ownership of fd, won't close it on delete
     inline MimeInputSource(int fd, unsigned int start = 0);
     virtual inline ~MimeInputSource(void);
 
@@ -211,6 +212,5 @@ namespace Binc {
   }
 
 }
-extern Binc::MimeInputSource *mimeSource;
 
 #endif

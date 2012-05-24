@@ -47,20 +47,15 @@ using namespace ::std;
 #endif /* NO_NAMESPACES */
 
 //------------------------------------------------------------------------
-void Binc::MimeDocument::parseOnlyHeader(int fd) const
+void Binc::MimeDocument::parseOnlyHeader(int fd)
 {
   if (allIsParsed || headerIsParsed)
     return;
   
   headerIsParsed = true;
 
-  if (!mimeSource || mimeSource->getFileDescriptor() != fd) {
-    delete mimeSource;
-    mimeSource = new MimeInputSource(fd);
-  } else {
-    mimeSource->reset();
-  }
-
+  delete doc_mimeSource;
+  doc_mimeSource = new MimeInputSource(fd);
 
   headerstartoffsetcrlf = 0;
   headerlength = 0;
@@ -72,18 +67,18 @@ void Binc::MimeDocument::parseOnlyHeader(int fd) const
   nlines = 0;
   nbodylines = 0;
 
-  MimePart::parseOnlyHeader("");
+  doParseOnlyHeader(doc_mimeSource, "");
 }
 
-void Binc::MimeDocument::parseOnlyHeader(istream& s) const
+void Binc::MimeDocument::parseOnlyHeader(istream& s)
 {
   if (allIsParsed || headerIsParsed)
     return;
   
   headerIsParsed = true;
 
-  delete mimeSource;
-  mimeSource = new MimeInputSourceStream(s);
+  delete doc_mimeSource;
+  doc_mimeSource = new MimeInputSourceStream(s);
 
   headerstartoffsetcrlf = 0;
   headerlength = 0;
@@ -95,12 +90,14 @@ void Binc::MimeDocument::parseOnlyHeader(istream& s) const
   nlines = 0;
   nbodylines = 0;
 
-  MimePart::parseOnlyHeader("");
+  doParseOnlyHeader(doc_mimeSource, "");
 }
 
 //------------------------------------------------------------------------
-int Binc::MimePart::parseOnlyHeader(const string &toboundary) const
+int Binc::MimePart::doParseOnlyHeader(MimeInputSource *ms, 
+				      const string &toboundary)
 {
+  mimeSource = ms;
   string name;
   string content;
   char cqueue[4];

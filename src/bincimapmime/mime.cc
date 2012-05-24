@@ -27,49 +27,57 @@
 #include <config.h>
 #endif
 
-#include "mime.h"
-#include "convert.h"
-#include <string>
-#include <vector>
-#include <map>
-#include <exception>
-#include <iostream>
-
 #include <string.h>
 #include <ctype.h>
 #include <stdio.h>
 #include <errno.h>
 
+#include <string>
+#include <vector>
+#include <map>
+#include <exception>
+#include <iostream>
 #ifndef NO_NAMESPACES
 using namespace ::std;
 #endif /* NO_NAMESPACES */
 
+
+#include "mime.h"
+#include "convert.h"
+#include "mime-inputsource.h"
+
 //------------------------------------------------------------------------
-Binc::MimeDocument::MimeDocument(void) : MimePart()
+Binc::MimeDocument::MimeDocument(void)
 {
   allIsParsed = false;
   headerIsParsed = false;
+  doc_mimeSource = 0;
 }
 
 //------------------------------------------------------------------------
 Binc::MimeDocument::~MimeDocument(void)
 {
+  delete doc_mimeSource;
+  doc_mimeSource = 0;
 }
 
 //------------------------------------------------------------------------
-void Binc::MimeDocument::clear(void) const
+void Binc::MimeDocument::clear(void)
 {
   members.clear();
   h.clear();
   headerIsParsed = false;
   allIsParsed = false;
+  delete doc_mimeSource;
+  doc_mimeSource = 0;
 }
 
 //------------------------------------------------------------------------
-void Binc::MimePart::clear(void) const
+void Binc::MimePart::clear(void)
 {
   members.clear();
   h.clear();
+  mimeSource = 0;
 }
 
 //------------------------------------------------------------------------
@@ -81,6 +89,7 @@ Binc::MimePart::MimePart(void)
 
   nlines = 0;
   nbodylines = 0;
+  mimeSource = 0;
 }
 
 //------------------------------------------------------------------------
@@ -147,7 +156,7 @@ bool Binc::Header::getAllHeaders(const string &key, vector<HeaderItem> &dest) co
 }
 
 //------------------------------------------------------------------------
-void Binc::Header::clear(void) const
+void Binc::Header::clear(void)
 {
   content.clear();
 }

@@ -51,15 +51,10 @@ using namespace ::std;
 #endif /* NO_NAMESPACES */
 
 //------------------------------------------------------------------------
-void Binc::MimePart::printBody(int fd, IODevice &output,
+void Binc::MimePart::printBody(IODevice &output,
 			       unsigned int startoffset,
 			       unsigned int length) const
 {
-  if (!mimeSource || mimeSource->getFileDescriptor() != fd) {
-    delete mimeSource;
-    mimeSource = new MimeInputSource(fd);
-  }
-
   mimeSource->reset();
   mimeSource->seek(bodystartoffsetcrlf + startoffset);
 
@@ -73,18 +68,6 @@ void Binc::MimePart::printBody(int fd, IODevice &output,
 
     output << (char)c;
   }
-}
-
-void Binc::MimePart::getBody(int fd, string &s,
-			     unsigned int startoffset,
-			     unsigned int length) const
-{
-
-  if (!mimeSource || mimeSource->getFileDescriptor() != fd) {
-    delete mimeSource;
-    mimeSource = new MimeInputSource(fd);
-  }
-  getBody(s, startoffset, length);
 }
 
 void Binc::MimePart::getBody(string &s,

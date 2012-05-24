@@ -35,6 +35,10 @@
 #include <stdio.h>
 
 namespace Binc {
+
+  class MimeInputSource;
+
+
   //---------------------------------------------------------------------- 
   class HeaderItem {
   private:
@@ -59,7 +63,7 @@ namespace Binc {
     bool getFirstHeader(const std::string &key, HeaderItem &dest) const;
     bool getAllHeaders(const std::string &key, std::vector<HeaderItem> &dest) const;
     void add(const std::string &name, const std::string &content);
-    void clear(void) const;
+    void clear(void);
 
     //--
     Header(void);
@@ -106,40 +110,80 @@ namespace Binc {
     inline unsigned int getBodyLength(void) const { return bodylength; }
     inline unsigned int getBodyStartOffset(void) const { return bodystartoffsetcrlf; }
 
-    void printBody(int fd, Binc::IODevice &output, unsigned int startoffset, unsigned int length) const;
-      void getBody(int fd, std::string& s, unsigned int startoffset, unsigned int length) const;
+    void printBody(Binc::IODevice &output, unsigned int startoffset, unsigned int length) const;
       void getBody(std::string& s, unsigned int startoffset, unsigned int length) const;
-    void printHeader(int fd, Binc::IODevice &output, std::vector<std::string> headers, bool includeheaders, unsigned int startoffset, unsigned int length, std::string &storage) const;
-    void printDoc(int fd, Binc::IODevice &output, unsigned int startoffset, unsigned int length) const;
-    virtual void clear(void) const;
+    virtual void clear(void);
 
-    const MimePart *getPart(const std::string &findpart, std::string genpart, FetchType fetchType = FetchBody) const;
-    virtual int parseOnlyHeader(const std::string &toboundary) const;
-    virtual int parseFull(const std::string &toboundary, int &boundarysize) const;
+    virtual int doParseOnlyHeader(MimeInputSource *ms, 
+				  const std::string &toboundary);
+    virtual int doParseFull(MimeInputSource *ms, 
+			    const std::string &toboundary, int &boundarysize);
 
     MimePart(void);
     virtual ~MimePart(void);
+
+  private:
+    MimeInputSource *mimeSource;
+
+    bool parseOneHeaderLine(Binc::Header *header, unsigned int *nlines);
+
+    bool skipUntilBoundary(const std::string &delimiter,
+			   unsigned int *nlines, bool *eof);
+    inline void postBoundaryProcessing(bool *eof,
+				       unsigned int *nlines,
+				       int *boundarysize,
+				       bool *foundendofpart);
+      void parseMultipart(const std::string &boundary,
+			   const std::string &toboundary,
+			   bool *eof,
+			   unsigned int *nlines,
+			   int *boundarysize,
+			   bool *foundendofpart,
+			   unsigned int *bodylength,
+			  std::vector<Binc::MimePart> *members);
+      void parseSinglePart(const std::string &toboundary,
+			    int *boundarysize,
+			    unsigned int *nbodylines,
+			    unsigned int *nlines,
+			    bool *eof, bool *foundendofpart,
+			   unsigned int *bodylength);
+    void parseHeader(Binc::Header *header, unsigned int *nlines);
+    void analyzeHeader(Binc::Header *header, bool *multipart,
+		       bool *messagerfc822, std::string *subtype,
+		       std::string *boundary);
+    void parseMessageRFC822(std::vector<Binc::MimePart> *members,
+			    bool *foundendofpart,
+			    unsigned int *bodylength,
+			    unsigned int *nbodylines,
+			    const std::string &toboundary);
   };
 
   //----------------------------------------------------------------------
   class MimeDocument : public MimePart {
-  private:
-    mutable bool headerIsParsed;
-    mutable bool allIsParsed;
-
   public:
-    void parseOnlyHeader(int fd) const;
-    void parseFull(int fd) const;
-    void parseOnlyHeader(std::istream& s) const;
-    void parseFull(std::istream& s) const;
-    void clear(void) const;
-    
-    inline bool isHeaderParsed(void) { return headerIsParsed; }
-    inline bool isAllParsed(void) { return allIsParsed; }
-
-    //--
     MimeDocument(void);
     ~MimeDocument(void);
+
+    void parseOnlyHeader(int fd);
+    void parseFull(int fd);
+    void parseOnlyHeader(std::istream& s);
+    void parseFull(std::istream& s);
+
+    void clear(void);
+    
+    bool isHeaderParsed(void) const 
+    {
+      return headerIsParsed; 
+    }
+    bool isAllParsed(void) const 
+    { 
+      return allIsParsed; 
+    }
+
+  private:
+    bool headerIsParsed;
+    bool allIsParsed;
+    MimeInputSource *doc_mimeSource;
   };
 
 };

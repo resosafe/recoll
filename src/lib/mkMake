@@ -69,12 +69,9 @@ ${depth}/utils/x11mon.cpp \
 "
 
 SRC_CC="\
-${depth}/bincimapmime/mime-getpart.cc \
 ${depth}/bincimapmime/mime-parsefull.cc \
 ${depth}/bincimapmime/mime-parseonlyheader.cc \
 ${depth}/bincimapmime/mime-printbody.cc \
-${depth}/bincimapmime/mime-printdoc.cc \
-${depth}/bincimapmime/mime-printheader.cc \
 ${depth}/bincimapmime/mime.cc \
 ${depth}/bincimapmime/convert.cc \
 ${depth}/bincimapmime/iodevice.cc \

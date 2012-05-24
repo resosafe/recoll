@@ -8,12 +8,12 @@ PROGS = trbinc
 
 all: depend $(LIBS) 
 
-SRCS = mime-getpart.cc mime-parsefull.cc mime-parseonlyheader.cc \
-     mime-printbody.cc mime-printdoc.cc mime-printheader.cc mime.cc \
+SRCS = mime-parsefull.cc mime-parseonlyheader.cc \
+     mime-printbody.cc mime.cc \
      convert.cc iodevice.cc iofactory.cc
 
-OBJS = mime-getpart.o mime-parsefull.o mime-parseonlyheader.o \
-     mime-printbody.o mime-printdoc.o mime-printheader.o mime.o  \
+OBJS = mime-parsefull.o mime-parseonlyheader.o \
+     mime-printbody.o mime.o  \
      convert.o iodevice.o iofactory.o
 
 libmime.a : $(OBJS)

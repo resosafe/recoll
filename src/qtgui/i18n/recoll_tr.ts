@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.0">
+<TS version="2.0" language="tr">
 <context>
     <name>AdvSearch</name>
     <message>
@@ -1588,7 +1588,7 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>Choose</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Gözat</translation>
     </message>
 </context>
 <context>
@@ -1851,6 +1851,10 @@ Büyük boyutlu belgelerde yavaş olabilir.</translation>
     <message>
         <source>Browse</source>
         <translation type="obsolete">Gözat</translation>
+    </message>
+    <message>
+        <source>Choose</source>
+        <translation>Gözat</translation>
     </message>
 </context>
 <context>
@@ -2209,7 +2213,7 @@ Büyük boyutlu belgelerde yavaş olabilir.</translation>
     </message>
     <message>
         <source>Choose</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Gözat</translation>
     </message>
     <message>
         <source>Resets the style sheet to default</source>

@@ -858,7 +858,7 @@ Do you want to start the  preferences dialog ?</source>
     </message>
     <message>
         <source>Indexed Mime Types</source>
-        <translation>Индексируемые MIME-типы</translation>
+        <translation type="obsolete">Индексируемые MIME-типы</translation>
     </message>
     <message>
         <source>Content has been indexed for these mime types:</source>
@@ -871,6 +871,10 @@ Do you want to start the  preferences dialog ?</source>
     <message>
         <source>Can&apos;t update index: indexer running</source>
         <translation>Не могу обновить индекс: индексатор уже трудится</translation>
+    </message>
+    <message>
+        <source>Indexed MIME Types</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1083,7 +1087,7 @@ Do you want to start the  preferences dialog ?</source>
     </message>
     <message>
         <source>Mime type</source>
-        <translation>Тип MIME</translation>
+        <translation type="obsolete">Тип MIME</translation>
     </message>
     <message>
         <source>Date</source>
@@ -1146,6 +1150,10 @@ Do you want to start the  preferences dialog ?</source>
         <source>Ipath</source>
         <translatorcomment>FIXME</translatorcomment>
         <translation>I-путь</translation>
+    </message>
+    <message>
+        <source>MIME type</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1870,11 +1878,15 @@ This should give higher precedence to the results where the search terms appear 
     </message>
     <message>
         <source>Mime type</source>
-        <translation>Тип MIME</translation>
+        <translation type="obsolete">Тип MIME</translation>
     </message>
     <message>
         <source>Command</source>
         <translation>Команда</translation>
+    </message>
+    <message>
+        <source>MIME type</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1959,6 +1971,10 @@ This should give higher precedence to the results where the search terms appear 
     <message>
         <source>Browse</source>
         <translation type="obsolete">Просмотр</translation>
+    </message>
+    <message>
+        <source>Choose</source>
+        <translation>Просмотр</translation>
     </message>
 </context>
 <context>

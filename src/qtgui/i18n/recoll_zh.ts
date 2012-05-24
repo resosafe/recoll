@@ -1205,11 +1205,11 @@ Do you want to start the  preferences dialog ?</source>
     </message>
     <message>
         <source>Previous</source>
-        <translation>上一个</translation>
+        <translation>上一页</translation>
     </message>
     <message>
         <source>Next</source>
-        <translation>下一个</translation>
+        <translation>下一页</translation>
     </message>
     <message>
         <source>Unavailable document</source>
@@ -1679,6 +1679,13 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     <message>
         <source>Can&apos;t write configuration file</source>
         <translation>无法写入配置文件</translation>
+    </message>
+</context>
+<context>
+    <name>confgui::ConfParamFNW</name>
+    <message>
+        <source>Choose</source>
+        <translation>选择</translation>
     </message>
 </context>
 <context>

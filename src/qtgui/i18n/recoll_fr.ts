@@ -1999,6 +1999,10 @@ Ceci devrait donner une meilleure pertinence aux résultats où les termes reche
         <source>Browse</source>
         <translation type="obsolete">Parcourir</translation>
     </message>
+    <message>
+        <source>Choose</source>
+        <translation>Choisir</translation>
+    </message>
 </context>
 <context>
     <name>confgui::ConfParamSLW</name>

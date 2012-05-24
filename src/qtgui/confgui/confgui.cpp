@@ -251,6 +251,7 @@ ConfParamFNW::ConfParamFNW(QWidget *parent, ConfLink cflink,
     m_hl->addWidget(m_le);
 
     m_pb = new QPushButton(this);
+    m_pb->setText(tr("Choose"));
     setSzPol(m_pb, QSizePolicy::Fixed, QSizePolicy::Fixed, 1, 0);
     m_hl->addWidget(m_pb);
 

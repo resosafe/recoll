@@ -1835,6 +1835,13 @@ Dadurch sollten Ergebnisse, die exakte Übereinstimmungen der Suchworte enthalte
     </message>
 </context>
 <context>
+    <name>confgui::ConfParamFNW</name>
+    <message>
+        <source>Choose</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>confgui::ConfParamSLW</name>
     <message>
         <source>+</source>

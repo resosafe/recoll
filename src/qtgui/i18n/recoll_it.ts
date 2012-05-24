@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.0">
+<TS version="2.0" language="it">
 <context>
     <name>AdvSearch</name>
     <message>
@@ -1851,6 +1851,10 @@ Questo dovrebbe dare la precedenza ai risultati che contengono i termini esattam
     <message>
         <source>Browse</source>
         <translation type="obsolete">Esplora</translation>
+    </message>
+    <message>
+        <source>Choose</source>
+        <translation></translation>
     </message>
 </context>
 <context>

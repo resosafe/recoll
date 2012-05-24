@@ -1685,6 +1685,13 @@ Use el enlace &lt;b&gt;Mostrar Consulta&lt;/b&gt; en caso de duda sobre el resul
     </message>
 </context>
 <context>
+    <name>confgui::ConfParamFNW</name>
+    <message>
+        <source>Choose</source>
+        <translation>Elegir</translation>
+    </message>
+</context>
+<context>
     <name>confgui::ConfParamSLW</name>
     <message>
         <source>+</source>

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.0">
+<TS version="2.0" language="uk">
 <context>
     <name>AdvSearch</name>
     <message>
@@ -1607,7 +1607,7 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>Choose</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Перегляд</translation>
     </message>
 </context>
 <context>
@@ -1890,6 +1890,10 @@ This should give higher precedence to the results where the search terms appear 
     <message>
         <source>Browse</source>
         <translation type="obsolete">Перегляд</translation>
+    </message>
+    <message>
+        <source>Choose</source>
+        <translation>Перегляд</translation>
     </message>
 </context>
 <context>
@@ -2248,7 +2252,7 @@ May be slow for big documents.</source>
     </message>
     <message>
         <source>Choose</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Перегляд</translation>
     </message>
     <message>
         <source>Resets the style sheet to default</source>

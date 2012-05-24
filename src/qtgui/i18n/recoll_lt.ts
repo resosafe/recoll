@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.0">
+<TS version="2.0" language="lt">
 <context>
     <name>AdvSearch</name>
     <message>
@@ -1605,7 +1605,7 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>Choose</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Naršyti</translation>
     </message>
 </context>
 <context>
@@ -1903,6 +1903,10 @@ Didelės apimties dokumentams gali lėtai veikti.</translation>
     <message>
         <source>Browse</source>
         <translation type="obsolete">Naršyti</translation>
+    </message>
+    <message>
+        <source>Choose</source>
+        <translation>Naršyti</translation>
     </message>
 </context>
 <context>
@@ -2260,7 +2264,7 @@ Didelės apimties dokumentams gali lėtai veikti.</translation>
     </message>
     <message>
         <source>Choose</source>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Naršyti</translation>
     </message>
     <message>
         <source>Resets the style sheet to default</source>

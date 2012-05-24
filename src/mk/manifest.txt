@@ -15,8 +15,6 @@ bincimapmime/00README.recoll
 bincimapmime/AUTHORS
 bincimapmime/COPYING
 bincimapmime/Makefile
-bincimapmime/address.cc
-bincimapmime/address.h
 bincimapmime/config.h
 bincimapmime/convert.cc
 bincimapmime/convert.h
@@ -29,8 +27,6 @@ bincimapmime/mime-inputsource.h
 bincimapmime/mime-parsefull.cc
 bincimapmime/mime-parseonlyheader.cc
 bincimapmime/mime-printbody.cc
-bincimapmime/mime-printdoc.cc
-bincimapmime/mime-printheader.cc
 bincimapmime/mime-utils.h
 bincimapmime/mime.cc
 bincimapmime/mime.h

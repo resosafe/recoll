@@ -562,12 +562,13 @@ void ResList::resPageUpOrBack()
     if (vpos == verticalScrollBar()->value())
 	resultPageBack();
 #else
-    QWebFrame *frame = page()->mainFrame();
-    int vpos = frame->scrollBarValue(Qt::Vertical);
-    if (vpos != frame->scrollBarMinimum(Qt::Vertical))
-	frame->scroll(0, -int(0.9*geometry().height()));
-    else
+    if (scrollIsAtTop()) {
 	resultPageBack();
+    } else {
+	QWebFrame *frame = page()->mainFrame();
+	frame->scroll(0, -int(0.9*geometry().height()));
+    }
+    setupArrows();
 #endif
 }
 
@@ -581,21 +582,70 @@ void ResList::resPageDownOrNext()
     if (vpos == verticalScrollBar()->value()) 
 	resultPageNext();
 #else
-    QWebFrame *frame = page()->mainFrame();
-    int vpos = frame->scrollBarValue(Qt::Vertical);
-    if (vpos != frame->scrollBarMaximum(Qt::Vertical))
-	frame->scroll(0, int(0.9*geometry().height()));
-    else
+    if (scrollIsAtBottom()) {
 	resultPageNext();
+    } else {
+	QWebFrame *frame = page()->mainFrame();
+	frame->scroll(0, int(0.9*geometry().height()));
+    }
+    setupArrows();
 #endif
+}
+
+void ResList::setupArrows()
+{
+    emit prevPageAvailable(m_pager->hasPrev() || !scrollIsAtTop());
+    emit nextPageAvailable(m_pager->hasNext() || !scrollIsAtBottom());
+}
+
+bool ResList::scrollIsAtBottom()
+{
+#ifdef RESLIST_TEXTBROWSER
+    return false;
+#else
+    QWebFrame *frame = page()->mainFrame();
+    bool ret;
+    if (!frame || frame->scrollBarGeometry(Qt::Vertical).isEmpty()) {
+	ret = true;
+    } else {
+	int max = frame->scrollBarMaximum(Qt::Vertical);
+	int cur = frame->scrollBarValue(Qt::Vertical); 
+	ret = (max != 0) && (cur == max);
+	LOGDEB2(("Scrollatbottom: cur %d max %d\n", cur, max));
+    }
+    LOGDEB2(("scrollIsAtBottom: returning %d\n", ret));
+    return ret;
+#endif
+}
+
+bool ResList::scrollIsAtTop()
+{
+#ifdef RESLIST_TEXTBROWSER
+    return false;
+#else
+    QWebFrame *frame = page()->mainFrame();
+    bool ret;
+    if (!frame || frame->scrollBarGeometry(Qt::Vertical).isEmpty()) {
+	ret = true;
+    } else {
+	int cur = frame->scrollBarValue(Qt::Vertical);
+	int min = frame->scrollBarMinimum(Qt::Vertical);
+	LOGDEB(("Scrollattop: cur %d min %d\n", cur, min));
+	ret = (cur == min);
+    }
+#endif
+    LOGDEB2(("scrollIsAtTop: returning %d\n", ret));
+    return ret;
 }
 
 // Show previous page of results. We just set the current number back
 // 2 pages and show next page.
 void ResList::resultPageBack()
 {
-    m_pager->resultPageBack();
-    displayPage();
+    if (m_pager->hasPrev()) {
+	m_pager->resultPageBack();
+	displayPage();
+    }
 }
 
 // Go to the first page
@@ -604,6 +654,21 @@ void ResList::resultPageFirst()
     // In case the preference was changed
     m_pager->setPageSize(prefs.respagesize);
     m_pager->resultPageFirst();
+    displayPage();
+}
+
+// Fill up result list window with next screen of hits
+void ResList::resultPageNext()
+{
+    if (m_pager->hasNext()) {
+	m_pager->resultPageNext();
+	displayPage();
+    }
+}
+
+void ResList::resultPageFor(int docnum)
+{
+    m_pager->resultPageFor(docnum);
     displayPage();
 }
 
@@ -618,19 +683,6 @@ void ResList::append(const QString &text)
 #endif
 }
 
-// Fill up result list window with next screen of hits
-void ResList::resultPageNext()
-{
-    m_pager->resultPageNext();
-    displayPage();
-}
-
-void ResList::resultPageFor(int docnum)
-{
-    m_pager->resultPageFor(docnum);
-    displayPage();
-}
-
 void ResList::displayPage()
 {
     resetView();
@@ -641,10 +693,10 @@ void ResList::displayPage()
     setHtml(m_text);
 #endif
 
-    LOGDEB0(("ResList::resultPageNext: hasNext %d hasPrev %d\n",
-	    m_pager->hasPrev(), m_pager->hasNext()));
-    emit prevPageAvailable(m_pager->hasPrev());
-    emit nextPageAvailable(m_pager->hasNext());
+    LOGDEB0(("ResList::displayPg: hasNext %d atBot %d hasPrev %d at Top %d \n",
+	     m_pager->hasPrev(), scrollIsAtBottom(), 
+	     m_pager->hasNext(), scrollIsAtTop()));
+    setupArrows();
 
     // Possibly color paragraph of current preview if any
     previewExposed(m_curPvDoc);

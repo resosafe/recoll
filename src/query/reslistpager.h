@@ -44,7 +44,7 @@ public:
     {
         m_pagesize = m_newpagesize;
 	m_winfirst = winfirst;
-	m_hasNext = false;
+	m_hasNext = true;
 	m_docSource = src;
 	m_respage.clear();
     }
@@ -78,7 +78,7 @@ public:
     }
     void resultPageBack() {
 	if (m_winfirst <= 0) return;
-	m_winfirst -= 2 * m_pagesize;
+	m_winfirst -= m_resultsInCurrentPage + m_pagesize;
 	resultPageNext();
     }
     void resultPageNext();
@@ -120,6 +120,7 @@ public:
 private:
     int                  m_pagesize;
     int                  m_newpagesize;
+    int                  m_resultsInCurrentPage;
     // First docnum (from docseq) in current page
     int                  m_winfirst;
     bool                 m_hasNext;

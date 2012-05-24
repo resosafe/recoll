@@ -49,8 +49,9 @@ static PlainToRichHtReslist g_hiliter;
 ResListPager::ResListPager(int pagesize) 
     : m_pagesize(pagesize),
       m_newpagesize(pagesize),
+      m_resultsInCurrentPage(0),
       m_winfirst(-1),
-      m_hasNext(false),
+      m_hasNext(true),
       m_hiliter(&g_hiliter)
 {
 }
@@ -71,12 +72,19 @@ void ResListPager::resultPageNext()
     } else {
 	m_winfirst += m_respage.size();
     }
-    // Get the next page of results.
+    // Get the next page of results. Note that we look ahead by one to
+    // determine if there is actually a next page
     vector<ResListEntry> npage;
-    int pagelen = m_docSource->getSeqSlice(m_winfirst, m_pagesize, npage);
+    int pagelen = m_docSource->getSeqSlice(m_winfirst, m_pagesize + 1, npage);
 
     // If page was truncated, there is no next
-    m_hasNext = (pagelen == m_pagesize);
+    m_hasNext = (pagelen == m_pagesize + 1);
+
+    // Get rid of the possible excess result
+    if (pagelen == m_pagesize + 1) {
+	npage.resize(m_pagesize);
+	pagelen--;
+    }
 
     if (pagelen <= 0) {
 	// No results ? This can only happen on the first page or if the
@@ -94,6 +102,7 @@ void ResListPager::resultPageNext()
 	}
 	return;
     }
+    m_resultsInCurrentPage = pagelen;
     m_respage = npage;
 }
 

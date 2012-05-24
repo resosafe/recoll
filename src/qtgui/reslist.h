@@ -134,6 +134,9 @@ class ResList : public RESLIST_PARENTCLASS
     virtual void displayPage(); // Display current page
     static int newListId();
     void resetView();
+    bool scrollIsAtTop();
+    bool scrollIsAtBottom();
+    void setupArrows();
 };
 
 

@@ -22,7 +22,6 @@ bincimapmime/iodevice.cc
 bincimapmime/iodevice.h
 bincimapmime/iofactory.cc
 bincimapmime/iofactory.h
-bincimapmime/mime-getpart.cc
 bincimapmime/mime-inputsource.h
 bincimapmime/mime-parsefull.cc
 bincimapmime/mime-parseonlyheader.cc

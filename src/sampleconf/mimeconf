@@ -104,6 +104,7 @@ text/rtf = exec unrtf --nopict --html;mimetype=text/html
 text/x-c = internal
 text/x-c++ = internal
 text/x-c+ = internal
+text/x-csv = internal text/plain
 text/x-fictionbook = exec rclfb2
 text/x-gaim-log = exec rclgaim
 text/x-html-sidux-man = exec rclsiduxman
@@ -184,6 +185,7 @@ image/x-xpmi = image
 message/rfc822 = message
 text/html = html
 text/plain = txt
+text/x-csv = txt
 text/x-c = source
 text/x-c++ = source
 text/x-c+ = source
@@ -236,6 +238,7 @@ text = \
       text/x-c \
       text/x-c++ \
       text/x-c+ \
+      text/x-csv \
       text/x-fictionbook \
       text/x-html-aptosid-man \
       text/x-html-sidux-man \

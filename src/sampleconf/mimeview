@@ -84,6 +84,7 @@ text/plain = emacsclient  %f
 text/x-c = emacsclient  %f
 text/x-c+ = emacsclient  %f
 text/x-c++ = emacsclient  %f
+text/x-csv = libreoffice %f
 text/x-html-sidux-man = konqueror %f
 text/x-html-aptosid-man = iceweasel %f
 text/x-chm-html = openchm %f %i

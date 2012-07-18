@@ -115,6 +115,7 @@
 .mid = audio/x-karaoke
 
 .png = image/png
+.jp2 = image/jp2
 .jpg = image/jpeg
 .jpeg = image/jpeg
 .gif = image/gif

@@ -90,6 +90,7 @@ application/zip = execm rclzip;charset=default
 audio/mpeg = execm rclaudio
 audio/x-karaoke = execm rclkar
 image/gif = execm rclimg
+image/jp2 = execm rclimg
 image/jpeg = execm rclimg
 image/png = execm rclimg
 image/tiff = execm rclimg
@@ -175,6 +176,7 @@ audio/mpeg = sownd
 audio/x-karaoke = sownd
 image/bmp = image
 image/gif = image
+image/jp2 = image
 image/jpeg = image
 image/png = image
 image/tiff = image
@@ -268,6 +270,7 @@ media = \
       audio/mpeg \
       audio/x-karaoke \
       image/gif \
+      image/jp2 \
       image/jpeg \
       image/png \
       image/svg+xml \

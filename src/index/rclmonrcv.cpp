@@ -37,13 +37,15 @@
     either of fam/gamin or raw imonitor hide behind */
 class RclMonitor {
 public:
-    RclMonitor(){}
+    RclMonitor(){saved_errno = 0;}
     virtual ~RclMonitor() {}
     virtual bool addWatch(const string& path, bool isDir) = 0;
     virtual bool getEvent(RclMonEvent& ev, int msecs = -1) = 0;
     virtual bool ok() const = 0;
     // Does this monitor generate 'exist' events at startup?
     virtual bool generatesExist() const = 0; 
+    // Save significant errno after monitor calls
+    int saved_errno;
 };
 
 // Monitor factory. We only have one compiled-in kind at a time, no
@@ -94,8 +96,14 @@ public:
 		    break;
 		}
 	    }
-	    if (!m_mon || !m_mon->ok() || !m_mon->addWatch(fn, true))
+	    if (!m_mon || !m_mon->ok())
 		return FsTreeWalker::FtwError;
+	    // We do nothing special if addWatch fails for a reasonable reason
+	    if (!m_mon->addWatch(fn, true)) {
+		if (m_mon->saved_errno != EACCES && 
+		    m_mon->saved_errno != ENOENT)
+		    return FsTreeWalker::FtwError;
+	    }
 	} else if (!m_mon->generatesExist() && 
 		   flg == FsTreeWalker::FtwRegular) {
 	    // Have to synthetize events for regular files existence
@@ -198,7 +206,8 @@ void *rclMonRcvRun(void *q)
 		beaglequeuedir = path_tildexpand("~/.beagle/ToIndex/");
 	    if (!mon->addWatch(beaglequeuedir, true)) {
 		LOGERR(("rclMonRcvRun: addwatch (beaglequeuedit) failed\n"));
-		goto terminate;
+		if (mon->saved_errno != EACCES && mon->saved_errno != ENOENT)
+		    goto terminate;
 	    }
 	}
     }
@@ -593,7 +602,9 @@ bool RclIntf::addWatch(const string& path, bool)
 	;
     int wd;
     if ((wd = inotify_add_watch(m_fd, path.c_str(), mask)) < 0) {
-        LOGERR(("RclIntf::addWatch: inotify_add_watch failed\n"));
+	saved_errno = errno;
+        LOGERR(("RclIntf::addWatch: inotify_add_watch failed. errno %d\n",
+		   saved_errno));
 	return false;
     }
     m_idtopath[wd] = path;

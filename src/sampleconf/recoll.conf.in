@@ -16,7 +16,8 @@ topdirs = ~
 # ignore. If you need index mozilla/thunderbird mail folders, don't put
 # ".*" in there (as was the case with an older sample config)
 # These are simple names, not paths (must contain no / )
-skippedNames = #* bin CVS  Cache cache* caughtspam  tmp .thumbnails .svn \
+skippedNames = #* bin CVS  Cache cache* .cache caughtspam  tmp \
+     .thumbnails .svn \
      *~ .beagle .git .hg .bzr loop.ps .xsession-errors \
      .recoll* xapiandb recollrc recoll.conf
 

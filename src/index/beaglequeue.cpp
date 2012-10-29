@@ -179,10 +179,11 @@ BeagleQueueIndexer::BeagleQueueIndexer(RclConfig *cnf, Rcl::Db *db,
     : m_config(cnf), m_db(db), m_cache(0), m_updater(updfunc), 
       m_nocacheindex(false)
 {
-
     if (!m_config->getConfParam("beaglequeuedir", m_queuedir))
-        m_queuedir = path_tildexpand("~/.beagle/ToIndex/");
+        m_queuedir = "~/.beagle/ToIndex/";
+    m_queuedir = path_tildexpand(m_queuedir);
     path_catslash(m_queuedir);
+
     m_cache = new BeagleQueueCache(cnf);
 }
 

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
  <class>Snippets</class>
- <widget class="QDialog" name="Snippets">
+ <widget class="QWidget" name="Snippets">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -13,14 +13,11 @@
   <property name="windowTitle">
    <string>Snippets</string>
   </property>
-  <property name="sizeGripEnabled">
-   <bool>true</bool>
-  </property>
   <layout class="QVBoxLayout" name="verticalLayout_3">
    <item>
     <layout class="QVBoxLayout" name="verticalLayout_2">
      <item>
-      <widget class="QWebView" name="webView">
+      <widget class="QWebView" name="browser">
        <property name="url">
         <url>
          <string>about:blank</string>

@@ -16,6 +16,11 @@
  */
 #include "autoconfig.h"
 
+// Use textBrowser or webview. Tried using textbrowser to solve a
+// crash at a point, kept the code. Search did not work, but this
+// should be easy to fix by looking at the preview code.
+#define SNIPPETS_WEBKIT
+
 #include <unistd.h>
 #include <stdio.h>
 
@@ -24,8 +29,12 @@
 #include <sstream>
 using namespace std;
 
+#ifdef SNIPPETS_WEBKIT
 #include <QWebSettings>
 #include <QWebFrame>
+#else
+#include <QTextBrowser>
+#endif
 #include <QShortcut>
 
 #include "debuglog.h"
@@ -56,9 +65,6 @@ void SnippetsW::init()
 	return;
 
     searchFM->hide();
-    webView->page()->currentFrame()->setScrollBarPolicy(Qt::Horizontal,
-							Qt::ScrollBarAlwaysOff);
-
 
     new QShortcut(QKeySequence::Find, this, SLOT(slotEditFind()));
     new QShortcut(QKeySequence(Qt::Key_Slash), this, SLOT(slotEditFind()));
@@ -70,9 +76,32 @@ void SnippetsW::init()
     connect(nextPB, SIGNAL(clicked()), this, SLOT(slotEditFindNext()));
     new QShortcut(QKeySequence(Qt::Key_F3), this, SLOT(slotEditFindNext()));
     connect(prevPB, SIGNAL(clicked()), this, SLOT(slotEditFindPrevious()));
-    connect(webView, SIGNAL(linkClicked(const QUrl &)), 
+
+#ifdef SNIPPETS_WEBKIT
+    connect(browser, SIGNAL(linkClicked(const QUrl &)), 
 	    this, SLOT(linkWasClicked(const QUrl &)));
-    webView->page()->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
+    browser->page()->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
+    browser->page()->currentFrame()->setScrollBarPolicy(Qt::Horizontal,
+							Qt::ScrollBarAlwaysOff);
+    QWebSettings *ws = browser->page()->settings();
+    if (prefs.reslistfontfamily != "") {
+	ws->setFontFamily(QWebSettings::StandardFont, prefs.reslistfontfamily);
+	ws->setFontSize(QWebSettings::DefaultFontSize, prefs.reslistfontsize);
+    }
+#else
+    connect(browser, SIGNAL(anchorClicked(const QUrl &)), 
+	    this, SLOT(linkWasClicked(const QUrl &)));
+    browser->setReadOnly(TRUE);
+    browser->setUndoRedoEnabled(FALSE);
+    browser->setOpenLinks(FALSE);
+    browser->setTabChangesFocus(true);
+    if (prefs.reslistfontfamily.length()) {
+	QFont nfont(prefs.reslistfontfamily, prefs.reslistfontsize);
+	browser->setFont(nfont);
+    } else {
+	browser->setFont(QFont());
+    }
+#endif
 
     // Make title out of file name if none yet
     string titleOrFilename;
@@ -116,14 +145,11 @@ void SnippetsW::init()
 	oss << "</td><td>" << lr.front().c_str() << "</td></tr>" << endl;
     }
     oss << "</body></html>";
-
-    QWebSettings *ws = webView->page()->settings();
-    if (prefs.reslistfontfamily != "") {
-	ws->setFontFamily(QWebSettings::StandardFont, prefs.reslistfontfamily);
-	ws->setFontSize(QWebSettings::DefaultFontSize, prefs.reslistfontsize);
-    }
-
-    webView->setHtml(QString::fromUtf8(oss.str().c_str()));
+#ifdef SNIPPETS_WEBKIT
+    browser->setHtml(QString::fromUtf8(oss.str().c_str()));
+#else
+    browser->insertHtml(QString::fromUtf8(oss.str().c_str()));
+#endif
 }
 
 void SnippetsW::slotEditFind()
@@ -132,17 +158,31 @@ void SnippetsW::slotEditFind()
     searchLE->selectAll();
     searchLE->setFocus();
 }
+
 void SnippetsW::slotEditFindNext()
 {
-    webView->findText(searchLE->text());
+#ifdef SNIPPETS_WEBKIT
+    browser->findText(searchLE->text());
+#else
+    browser->find(searchLE->text(), 0);
+#endif
+
 }
 void SnippetsW::slotEditFindPrevious()
 {
-    webView->findText(searchLE->text(), QWebPage::FindBackward);
+#ifdef SNIPPETS_WEBKIT
+    browser->findText(searchLE->text(), QWebPage::FindBackward);
+#else
+    browser->find(searchLE->text(), QTextDocument::FindBackward);
+#endif
 }
 void SnippetsW::slotSearchTextChanged(const QString& txt)
 {
-    webView->findText(txt);
+#ifdef SNIPPETS_WEBKIT
+    browser->findText(txt);
+#else
+    browser->find(txt, 0);
+#endif
 }
 
 void SnippetsW::linkWasClicked(const QUrl &url)

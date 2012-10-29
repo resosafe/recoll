@@ -471,7 +471,7 @@ bool startMonitor(RclConfig *conf, int opts)
 	// and Xlib is not multithreaded.
         bool x11dead = !(opts & RCLMON_NOX11) && !x11IsAlive();
         if (x11dead)
-            LOGDEB(("RclMonprc: x11 is dead\n"));
+            LOGINFO(("RclMonprc: x11 is dead\n"));
 	if (!rclEQ.ok() || x11dead) {
 	    rclEQ.unlock();
 	    break;
@@ -526,16 +526,20 @@ bool startMonitor(RclConfig *conf, int opts)
             if (!deleted.empty()) {
                 deleted.sort();
                 deleted.unique();
-                if (!purgefiles(conf, deleted))
+                if (!purgefiles(conf, deleted)) {
+		    LOGERR(("Monitor: purging failed, exiting\n"));
                     break;
+		}
                 deleted.clear();
                 didsomething = true;
             }
             if (!modified.empty()) {
                 modified.sort();
                 modified.unique();
-                if (!indexfiles(conf, modified))
+                if (!indexfiles(conf, modified)) {
+		    LOGERR(("Monitor: indexing failed, exiting\n"));
                     break;
+		}
                 modified.clear();
                 didsomething = true;
             }

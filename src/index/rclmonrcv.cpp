@@ -96,13 +96,18 @@ public:
 		    break;
 		}
 	    }
-	    if (!m_mon || !m_mon->ok())
+	    if (!m_mon || !m_mon->ok()) {
+		LOGERR(("rclMonRcv: processone: mon not ok\n"));
 		return FsTreeWalker::FtwError;
+	    }
 	    // We do nothing special if addWatch fails for a reasonable reason
 	    if (!m_mon->addWatch(fn, true)) {
 		if (m_mon->saved_errno != EACCES && 
-		    m_mon->saved_errno != ENOENT)
+		    m_mon->saved_errno != ENOENT) {
+		    LOGERR(("rclMonRcv: addWatch failed for [%s], errno %d\n",
+			    fn.c_str(), errno));
 		    return FsTreeWalker::FtwError;
+		}
 	    }
 	} else if (!m_mon->generatesExist() && 
 		   flg == FsTreeWalker::FtwRegular) {
@@ -205,7 +210,8 @@ void *rclMonRcvRun(void *q)
 	    if (!lconfig.getConfParam("beaglequeuedir", beaglequeuedir))
 		beaglequeuedir = path_tildexpand("~/.beagle/ToIndex/");
 	    if (!mon->addWatch(beaglequeuedir, true)) {
-		LOGERR(("rclMonRcvRun: addwatch (beaglequeuedit) failed\n"));
+		LOGERR(("rclMonRcvRun: addwatch (beagle) failed, errno %d\n", 
+			errno));
 		if (mon->saved_errno != EACCES && mon->saved_errno != ENOENT)
 		    goto terminate;
 	    }

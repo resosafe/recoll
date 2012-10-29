@@ -147,7 +147,7 @@ void SnippetsW::slotSearchTextChanged(const QString& txt)
 
 void SnippetsW::linkWasClicked(const QUrl &url)
 {
-    string ascurl = (const char *)url.toString().toAscii();
+    string ascurl = (const char *)url.toString().toUtf8();
     LOGDEB(("Snippets::linkWasClicked: [%s]\n", ascurl.c_str()));
 
     if (ascurl.size() > 3) {

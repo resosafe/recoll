@@ -30,6 +30,7 @@
 #include "rclinit.h"
 #include "pathut.h"
 #include "unac.h"
+#include "smallut.h"
 
 static const int catchedSigs[] = {SIGHUP, SIGINT, SIGQUIT, SIGTERM, 
      SIGUSR1, SIGUSR2};
@@ -115,6 +116,9 @@ RclConfig *recollinit(RclInitFlags flags,
     string unacex;
     if (config->getConfParam("unac_except_trans", unacex) && !unacex.empty()) 
 	unac_set_except_translations(unacex.c_str());
+
+    // Init langtocode() static table
+    langtocode("");
 
     int flushmb;
     if (config->getConfParam("idxflushmb", &flushmb) && flushmb > 0) {

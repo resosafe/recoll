@@ -1101,6 +1101,12 @@ static const char blurb0[] =
 "# values is identical.\n"
     ;
 
+// Use uni2ascii -a K to generate these from the utf-8 strings
+// Swedish and Danish. 
+static const char swedish_ex[] = "unac_except_trans = \303\244\303\244 \303\204\303\244 \303\266\303\266 \303\226\303\266 \303\274\303\274 \303\234\303\274 \303\237ss \305\223oe \305\222oe \303\246ae \303\206ae \357\254\201fi \357\254\202fl \303\245\303\245 \303\205\303\245";
+// German:
+static const char german_ex[] = "unac_except_trans = \303\244\303\244 \303\204\303\244 \303\266\303\266 \303\226\303\266 \303\274\303\274 \303\234\303\274 \303\237ss \305\223oe \305\222oe \303\246ae \303\206ae \357\254\201fi \357\254\202fl";
+
 // Create initial user config by creating commented empty files
 static const char *configfiles[] = {"recoll.conf", "mimemap", "mimeconf", 
 				    "mimeview"};
@@ -1121,12 +1127,22 @@ bool RclConfig::initUserConfig()
 	    strerror(errno);
 	return false;
     }
+    string lang = localelang();
     for (int i = 0; i < ncffiles; i++) {
 	string dst = path_cat(m_confdir, string(configfiles[i])); 
 	if (access(dst.c_str(), 0) < 0) {
 	    FILE *fp = fopen(dst.c_str(), "w");
 	    if (fp) {
 		fprintf(fp, "%s\n", blurb);
+		if (!strcmp(configfiles[i], "recoll.conf")) {
+		    // Add improved unac_except_trans for some languages
+		    if (lang == "se" || lang == "dk" || lang == "no" || 
+			lang == "fi") {
+			fprintf(fp, "%s\n", swedish_ex);
+		    } else if (lang == "de") {
+			fprintf(fp, "%s\n", german_ex);
+		    }
+		}
 		fclose(fp);
 	    } else {
 		m_reason += string("fopen ") + dst + ": " + strerror(errno);

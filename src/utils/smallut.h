@@ -53,6 +53,11 @@ extern string stringtolower(const string& io);
 // Is one string the end part of the other ?
 extern int stringisuffcmp(const string& s1, const string& s2);
 
+// Divine language from locale
+extern std::string localelang();
+// Divine 8bit charset from language
+extern std::string langtocode(const string& lang);
+
 // Compare charset names, removing the more common spelling variations
 extern bool samecharset(const string &cs1, const string &cs2);
 

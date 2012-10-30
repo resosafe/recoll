@@ -77,22 +77,24 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
                              3.1.3. The result table
 
-                             3.1.4. The preview window
+                             3.1.4. Displaying thumbnails
 
-                             3.1.5. Complex/advanced search
+                             3.1.5. The preview window
 
-                             3.1.6. The term explorer tool
+                             3.1.6. Complex/advanced search
 
-                             3.1.7. Multiple indexes
+                             3.1.7. The term explorer tool
 
-                             3.1.8. Document history
+                             3.1.8. Multiple indexes
 
-                             3.1.9. Sorting search results and collapsing
+                             3.1.9. Document history
+
+                             3.1.10. Sorting search results and collapsing
                              duplicates
 
-                             3.1.10. Search tips, shortcuts
+                             3.1.11. Search tips, shortcuts
 
-                             3.1.11. Customizing the search interface
+                             3.1.12. Customizing the search interface
 
                 3.2. Searching with the KDE KIO slave
 
@@ -662,13 +664,18 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    This feature can be enabled in the GUI Index configuration panel, or by
    editing the configuration file (set processbeaglequeue to 1).
 
-   There are more recent instructions about how to find and install the
-   Firefox extension on the Recoll wiki.
+     Important: For the extension to work, you will need to manually create
+     the queue directory: ~/.beagle/ToIndex/.
 
-   Unfortunately, it seems that the plugin does not work anymore with recent
-   Firefox versions (tried with 10.0). This is not the trival installation
-   version check issue, explicit manual indexing requests still work, but
-   automatic indexing on page load does not.
+   Current Firefox versions need a slightly adapted extension module. This
+   can be found, along with up-to-date instructions, on the Recoll wiki.
+
+   A copy of the indexed WEB pages is retained by Recoll in a local cache
+   (from which previews can be fetched). The cache size can be adjusted from
+   the Index configuration / Beagle web history panel. Once the maximum size
+   is reached, old pages are purged - both from the cache and the index - to
+   make room for new ones, so you need to explicitly archive in some other
+   place the pages that you want to keep indefinitely.
 
      ----------------------------------------------------------------------
 
@@ -951,12 +958,26 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
    documents side by side. (You can also browse successive results in a
    single preview window by typing Shift+ArrowUp/Down in the window).
 
-   Clicking the Open link will attempt to start an external viewer. The
-   viewer for each document type can be configured through the user
-   preferences dialog, or by editing the mimeview configuration file. You can
-   also check the Use desktop preferences option in the GUI preferences
-   dialog to use the desktop defaults for all documents. This is probably the
-   best option if you are using a well configured Gnome or KDE desktop.
+   Clicking the Open link will start an external viewer for the document. By
+   default, Recoll lets the desktop choose the appropriate application for
+   most document types (there is a short list of exceptions, see further). If
+   you prefer to completely customize the choice of applications, you can
+   uncheck the Use desktop preferences option in the GUI preferences dialog,
+   and click the Choose editor applications button to adjust the predefined
+   Recoll choices. The tool accepts multiple selections of mime types (e.g.
+   to set up the editor for the dozens of office file types).
+
+   Even when Use desktop preferences is checked, there is a small list of
+   exceptions, for mime types where the Recoll choice should override the
+   desktop one. These are applications which are well integrated with Recoll,
+   especially evince for viewing PDF and Postscript files because of its
+   support for opening the document at a specific page and passing a search
+   string as an argument. Of course, you can edit the list (in the GUI
+   preferences) if you would prefer to lose the functionality and use the
+   standard desktop tool.
+
+   You may also change the choice of applications by editing the mimeview
+   configuration file if you find this more convenient.
 
    The Preview and Open edit links may not be present for all entries,
    meaning that Recoll has no configured way to preview a given file type
@@ -981,7 +1002,19 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
      ----------------------------------------------------------------------
 
-    3.1.2.1. The result list right-click menu
+    3.1.2.1. No results: the spelling suggestions
+
+   When a search yields no result, and if the aspell dictionary is
+   configured, Recoll will try to check for misspellings among the query
+   terms, and will propose lists of replacements. Clicking on one of the
+   suggestions will replace the word and restart the search. You can hold any
+   of the modifier keys (Ctrl, Shift, etc.) while clicking if you would
+   rather stay on the suggestion screen because several terms need
+   replacement.
+
+     ----------------------------------------------------------------------
+
+    3.1.2.2. The result list right-click menu
 
    Apart from the preview and edit links, you can display a pop-up menu by
    right-clicking over a paragraph in the result list. This menu has the
@@ -1067,7 +1100,27 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
      ----------------------------------------------------------------------
 
-  3.1.4. The preview window
+  3.1.4. Displaying thumbnails
+
+   The default format for the result list entries and the detail area of the
+   result table display an icon for each result document. The icon is either
+   a generic one determined from the MIME type, or a thumbnail of the
+   document appearance. Thumbnails are only displayed if found in the
+   standard freedesktop location, where they would typically have been
+   created by a file manager.
+
+   Recoll has no capability to create thumbnails. A relatively simple trick
+   is to use the Open parent document/folder entry in the result list popup
+   menu. This should open a file manager window on the containing directory,
+   which should in turn create the thumbnails (depending on your settings).
+   Restarting the search should then display the thumbnails.
+
+   There are also some pointers about thumbnail generation on the Recoll
+   wiki.
+
+     ----------------------------------------------------------------------
+
+  3.1.5. The preview window
 
    The preview window opens when you first click a Preview link inside the
    result list.
@@ -1102,7 +1155,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
      ----------------------------------------------------------------------
 
-    3.1.4.1. Searching inside the preview
+    3.1.5.1. Searching inside the preview
 
    The preview window has an internal search capability, mostly controlled by
    the panel at the bottom of the window, which works in two modes: as a
@@ -1137,7 +1190,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
      ----------------------------------------------------------------------
 
-  3.1.5. Complex/advanced search
+  3.1.6. Complex/advanced search
 
    The advanced search dialog helps you build more complex queries without
    memorizing the search language constructs. It can be opened through the
@@ -1160,7 +1213,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
      ----------------------------------------------------------------------
 
-    3.1.5.1. Avanced search: the "find" tab
+    3.1.6.1. Avanced search: the "find" tab
 
    This part of the dialog lets you constructc a query by combining multiple
    clauses of different types. Each entry field is configurable for the
@@ -1202,7 +1255,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
      ----------------------------------------------------------------------
 
-    3.1.5.2. Avanced search: the "filter" tab
+    3.1.6.2. Avanced search: the "filter" tab
 
    This part of the dialog has several sections which allow filtering the
    results of a search according to a number of criteria
@@ -1238,7 +1291,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
      ----------------------------------------------------------------------
 
-    3.1.5.3. Avanced search history
+    3.1.6.3. Avanced search history
 
    The advanced search tool memorizes the last 100 searches performed. You
    can walk the saved searches by using the up and down arrow keys while the
@@ -1249,7 +1302,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
      ----------------------------------------------------------------------
 
-  3.1.6. The term explorer tool
+  3.1.7. The term explorer tool
 
    Recoll automatically manages the expansion of search terms to their
    derivatives (ie: plural/singular, verb inflections). But there are other
@@ -1304,7 +1357,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
      ----------------------------------------------------------------------
 
-  3.1.7. Multiple indexes
+  3.1.8. Multiple indexes
 
    See the section describing the use of multiple indexes for generalities.
    Only the aspects concerning the recoll GUI are described here.
@@ -1347,7 +1400,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
      ----------------------------------------------------------------------
 
-  3.1.8. Document history
+  3.1.9. Document history
 
    Documents that you actually view (with the internal preview or an external
    tool) are entered into the document history, which is remembered.
@@ -1360,7 +1413,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
      ----------------------------------------------------------------------
 
-  3.1.9. Sorting search results and collapsing duplicates
+  3.1.10. Sorting search results and collapsing duplicates
 
    The documents in a result list are normally sorted in order of relevance.
    It is possible to specify a different sort order, either by using the
@@ -1384,9 +1437,9 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
      ----------------------------------------------------------------------
 
-  3.1.10. Search tips, shortcuts
+  3.1.11. Search tips, shortcuts
 
-    3.1.10.1. Terms and search expansion
+    3.1.11.1. Terms and search expansion
 
    Term completion. Typing Esc Space in the simple search entry field while
    entering a word will either complete the current word if its beginning
@@ -1425,7 +1478,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
      ----------------------------------------------------------------------
 
-    3.1.10.2. Working with phrases and proximity
+    3.1.11.2. Working with phrases and proximity
 
    Phrases and Proximity searches. A phrase can be looked for by enclosing it
    in double quotes. Example: "user manual" will look only for occurrences of
@@ -1457,7 +1510,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
      ----------------------------------------------------------------------
 
-    3.1.10.3. Others
+    3.1.11.3. Others
 
    Using fields. You can use the query language and field specifications to
    only search certain parts of documents. This can be especially helpful
@@ -1503,7 +1556,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
      ----------------------------------------------------------------------
 
-  3.1.11. Customizing the search interface
+  3.1.12. Customizing the search interface
 
    You can customize some aspects of the search interface by using the GUI
    configuration entry in the Preferences menu.
@@ -1664,7 +1717,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
      ----------------------------------------------------------------------
 
-    3.1.11.1. The result list format
+    3.1.12.1. The result list format
 
    The result list presentation can be exhaustively customized by adjusting
    two elements:
@@ -1690,7 +1743,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
      ----------------------------------------------------------------------
 
-      3.1.11.1.1. The paragraph format
+      3.1.12.1.1. The paragraph format
 
    This is an arbitrary HTML string where the following printf-like %
    substitutions will be performed:

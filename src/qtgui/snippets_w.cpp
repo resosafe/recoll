@@ -64,17 +64,29 @@ void SnippetsW::init()
     if (m_source.isNull())
 	return;
 
+    QPushButton *searchButton = new QPushButton(tr("Search"));
+    searchButton->setAutoDefault(false);
+    buttonBox->addButton(searchButton, QDialogButtonBox::ActionRole);
+
     searchFM->hide();
 
     new QShortcut(QKeySequence::Find, this, SLOT(slotEditFind()));
     new QShortcut(QKeySequence(Qt::Key_Slash), this, SLOT(slotEditFind()));
+    new QShortcut(QKeySequence(Qt::Key_Escape), searchFM, SLOT(hide()));
     new QShortcut(QKeySequence::FindNext, this, SLOT(slotEditFindNext()));
+    new QShortcut(QKeySequence(Qt::Key_F3), this, SLOT(slotEditFindNext()));
     new QShortcut(QKeySequence::FindPrevious, this, 
 		  SLOT(slotEditFindPrevious()));
+    new QShortcut(QKeySequence(Qt::SHIFT + Qt::Key_F3), 
+		  this, SLOT(slotEditFindPrevious()));
+
+    QPushButton *closeButton = buttonBox->button(QDialogButtonBox::Close);
+    if (closeButton)
+	connect(closeButton, SIGNAL(clicked()), this, SLOT(close()));
+    connect(searchButton, SIGNAL(clicked()), this, SLOT(slotEditFind()));
     connect(searchLE, SIGNAL(textChanged(const QString&)), 
 	    this, SLOT(slotSearchTextChanged(const QString&)));
     connect(nextPB, SIGNAL(clicked()), this, SLOT(slotEditFindNext()));
-    new QShortcut(QKeySequence(Qt::Key_F3), this, SLOT(slotEditFindNext()));
     connect(prevPB, SIGNAL(clicked()), this, SLOT(slotEditFindPrevious()));
 
 #ifdef SNIPPETS_WEBKIT

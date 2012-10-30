@@ -136,4 +136,7 @@ private:
 // returns true if the file already exists
 extern bool thumbPathForUrl(const string& url, int size, string& path);
 
+// Must be called in main thread before starting other threads
+extern void pathut_init_mt();
+
 #endif /* _PATHUT_H_INCLUDED_ */

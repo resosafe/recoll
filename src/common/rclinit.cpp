@@ -112,6 +112,9 @@ RclConfig *recollinit(RclInitFlags flags,
     // Init unac locking
     unac_init_mt();
 
+    // Init pathut static values
+    pathut_init_mt();
+
     // Init Unac translation exceptions
     string unacex;
     if (config->getConfParam("unac_except_trans", unacex) && !unacex.empty()) 

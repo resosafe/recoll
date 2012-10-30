@@ -28,6 +28,7 @@
 #include <sys/types.h>
 #include <sys/file.h>
 #include <sys/stat.h>
+#include <glob.h>
 
 // Let's include all files where statfs can be defined and hope for no
 // conflict...
@@ -359,10 +360,8 @@ extern string path_canon(const string &is)
     return ret;
 }
 
-#include <glob.h>
-#include <sys/stat.h>
-vector<string> path_dirglob(const string &dir, 
-			    const string pattern)
+
+vector<string> path_dirglob(const string &dir, const string pattern)
 {
     vector<string> res;
     glob_t mglob;
@@ -626,12 +625,36 @@ int Pidfile::remove()
     return unlink(m_path.c_str());
 }
 
-// Freedesktop standard paths for thumbnails
+
+// Freedesktop standard paths for cache directory (thumbnails are now in there)
+static const string& xdgcachedir()
+{
+    static string xdgcache;
+    if (xdgcache.empty()) {
+	const char *cp = getenv("XDG_CACHE_HOME");
+	if (cp == 0) 
+	    xdgcache = path_cat(path_home(), ".cache");
+	else
+	    xdgcache = string(cp);
+    }
+    return xdgcache;
+}
+static const string& thumbnailsdir()
+{
+    static string thumbnailsd;
+    if (thumbnailsd.empty()) {
+	thumbnailsd = path_cat(xdgcachedir(), "thumbnails");
+	if (access(thumbnailsd.c_str(), 0) != 0) {
+	    thumbnailsd = path_cat(path_home(), ".thumbnails");
+	}
+    }
+    return thumbnailsd;
+}
 
 // Place for 256x256 files
-static const string thmbdirlarge = ".thumbnails/large";
+static const string thmbdirlarge = "large";
 // 128x128
-static const string thmbdirnormal = ".thumbnails/normal";
+static const string thmbdirnormal = "normal";
 
 static void thumbname(const string& url, string& name)
 {
@@ -647,13 +670,13 @@ bool thumbPathForUrl(const string& url, int size, string& path)
     string name;
     thumbname(url, name);
     if (size <= 128) {
-	path = path_cat(path_home(), thmbdirnormal);
+	path = path_cat(thumbnailsdir(), thmbdirnormal);
 	path = path_cat(path, name);
 	if (access(path.c_str(), R_OK) == 0) {
 	    return true;
 	}
     } 
-    path = path_cat(path_home(), thmbdirlarge);
+    path = path_cat(thumbnailsdir(), thmbdirlarge);
     path = path_cat(path, name);
     if (access(path.c_str(), R_OK) == 0) {
 	return true;
@@ -667,6 +690,15 @@ bool thumbPathForUrl(const string& url, int size, string& path)
     }
     return false;
 }
+
+// Call funcs that need static init (not initially reentrant)
+void pathut_init_mt()
+{
+    path_home();
+    tmplocation();
+    thumbnailsdir();
+}
+
 
 #else // TEST_PATHUT
 #include <stdlib.h>

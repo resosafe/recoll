@@ -129,7 +129,6 @@ doc/user/rcl.search.desktop.html
 doc/user/rcl.search.html
 doc/user/rcl.search.kio.html
 doc/user/rcl.search.lang.html
-doc/user/rcl.search.multidb.html
 doc/user/usermanual-italian.html
 doc/user/usermanual.html
 doc/user/usermanual.html-text

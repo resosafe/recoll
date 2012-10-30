@@ -240,6 +240,9 @@ void SSearch::onWordReplace(const QString& o, const QString& n)
     exp.setCaseSensitivity(Qt::CaseInsensitive);
     txt.replace(exp, n);
     queryText->setEditText(txt);
+    Qt::KeyboardModifiers mods = QApplication::keyboardModifiers ();
+    if (mods == Qt::NoModifier)
+	startSimpleSearch();
 }
 
 void SSearch::setAnyTermMode()
@@ -463,8 +466,8 @@ bool SSearch::eventFilter(QObject *, QEvent *event)
 	event->type() == QEvent::Paint)
 	return false;
     LOGDEB2(("SSearch::eventFilter: target %p (%p) type %s\n", 
-	    target, queryText->lineEdit(),
-	    eventTypeToStr(event->type())));
+	     target, queryText->lineEdit(),
+	     eventTypeToStr(event->type())));
 #endif
 
     if (event->type() == QEvent::KeyPress)  {

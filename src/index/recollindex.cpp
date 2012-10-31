@@ -395,7 +395,7 @@ int main(int argc, char **argv)
 	    status = indexfiles(config, filenames);
 	else 
 	    status = purgefiles(config, filenames);
-        if (!confindexer->getReason().empty())
+        if (confindexer && !confindexer->getReason().empty())
             cerr << confindexer->getReason() << endl;
         exit(status ? 0 : 1);
     } else if (op_flags & OPT_l) {

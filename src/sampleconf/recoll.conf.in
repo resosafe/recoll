@@ -226,18 +226,17 @@ filtermaxseconds = 1200
 # ionice class param for monitor (on platforms where this is supported)
 # monioniceclassdata = 
 
-# If this is set, process the directory where Beagle Web browser plugins
-# copy visited pages for indexing. Of course, Beagle MUST NOT be running,
-# else things will behave strangely. 
-processbeaglequeue = 0
-# The path to the Beagle indexing queue. This is hard-coded in the Beagle
-# plugin as ~/.beagle/ToIndex so there should be no need to change it. 
-#beaglequeuedir = ~/.beagle/ToIndex
-# This is only used by the Beagle web browser plugin indexing code, and
+# If this is set, process the directory where the Recoll Web browser plugins
+# copy visited pages for indexing.
+processwebqueue = 0
+# The path to the Web indexing queue. This is hard-coded in the
+# plugin as ~/.recollweb/ToIndex so there should be no need to change it. 
+#webqueuedir = ~/.recollweb/ToIndex
+# This is only used by the web history indexing code, and
 # defines where the cache for visited pages will live. Default:
 # $RECOLL_CONFDIR/webcache 
 webcachedir = webcache
-# This is only used by the Beagle web browser plugin indexing code, and
+# This is only used by the web history indexing code, and
 # defines the maximum size for the web page cache. Default: 40 MB. 
 webcachemaxmbs = 40
 

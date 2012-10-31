@@ -19,6 +19,7 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include <string.h>
+#include <errno.h>
 
 #include "cstr.h"
 #include "pathut.h"
@@ -179,8 +180,8 @@ BeagleQueueIndexer::BeagleQueueIndexer(RclConfig *cnf, Rcl::Db *db,
     : m_config(cnf), m_db(db), m_cache(0), m_updater(updfunc), 
       m_nocacheindex(false)
 {
-    if (!m_config->getConfParam("beaglequeuedir", m_queuedir))
-        m_queuedir = "~/.beagle/ToIndex/";
+    if (!m_config->getConfParam("webqueuedir", m_queuedir))
+        m_queuedir = "~/.recollweb/ToIndex/";
     m_queuedir = path_tildexpand(m_queuedir);
     path_catslash(m_queuedir);
 
@@ -269,6 +270,11 @@ bool BeagleQueueIndexer::index()
         return false;
     LOGDEB(("BeagleQueueIndexer::processqueue: [%s]\n", m_queuedir.c_str()));
     m_config->setKeyDir(m_queuedir);
+    if (!makepath(m_queuedir)) {
+	LOGERR(("BeagleQueueIndexer:: can't create queuedir [%s] errno %d\n", 
+		m_queuedir.c_str(), errno));
+	return false;
+    }
     if (!m_cache || !m_cache->cc()) {
         LOGERR(("BeagleQueueIndexer: cache initialization failed\n"));
         return false;

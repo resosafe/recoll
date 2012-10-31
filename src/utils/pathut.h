@@ -55,8 +55,11 @@ extern string url_encode(const string& url,
 /// Transcode to utf-8 if possible or url encoding, for display.
 extern bool printableUrl(const string &fcharset, 
 			 const string &in, string &out);
-// Convert to file path if url is like file://
+//// Convert to file path if url is like file://. This modifies the
+//// input (and returns a copy for convenience)
 extern string fileurltolocalpath(string url);
+/// Test for file:/// url
+extern bool urlisfileurl(const string& url);
 
 /// Return the host+path part of an url. This is not a general
 /// routine, it does the right thing only in the recoll context
@@ -73,6 +76,9 @@ bool fsocc(const string &path, int *pc, // Percent occupied
 
 /// Create temporary directory
 extern bool maketmpdir(string& tdir, string& reason);
+
+/// mkdir -p
+extern bool makepath(const string& path);
 
 /// Temporary file class
 class TempFileInternal {

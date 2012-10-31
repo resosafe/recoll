@@ -1625,8 +1625,9 @@ void RclMain::startNativeViewer(Rcl::Doc doc, int pagenum, QString term)
 
     // wantsfile: do we actually need a local file ? The only other
     // case here is an url %u (ie: for web history).
-    bool wantsfile = cmd.find("%f") != string::npos;
-    bool wantsparentfile = cmd.find("%F") != string::npos;
+    bool wantsfile = cmd.find("%f") != string::npos && urlisfileurl(doc.url);
+    bool wantsparentfile = cmd.find("%F") != string::npos && 
+	urlisfileurl(doc.url);
 
     if (wantsfile && wantsparentfile) {
 	QMessageBox::warning(0, "Recoll", 

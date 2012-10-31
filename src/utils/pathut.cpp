@@ -360,6 +360,26 @@ extern string path_canon(const string &is)
     return ret;
 }
 
+bool makepath(const string& ipath)
+{
+    string path = path_canon(ipath);
+    vector<string> elems;
+    stringToTokens(path, elems, "/");
+    path = "/";
+    for (vector<string>::const_iterator it = elems.begin(); 
+	 it != elems.end(); it++){
+	path += *it;
+	// Not using path_isdir() here, because this cant grok symlinks
+	// If we hit an existing file, no worry, mkdir will just fail.
+	if (access(path.c_str(), 0) != 0) {
+	    if (mkdir(path.c_str(), 0700) != 0)  {
+		return false;
+	    }
+	}
+	path += "/";
+    }
+    return true;
+}
 
 vector<string> path_dirglob(const string &dir, const string pattern)
 {
@@ -501,6 +521,10 @@ string fileurltolocalpath(string url)
         url.erase(pos);
     }
     return url;
+}
+bool urlisfileurl(const string& url)
+{
+    return url.find("file://") == 0;
 }
 
 // Printable url: this is used to transcode from the system charset

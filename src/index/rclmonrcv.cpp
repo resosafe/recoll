@@ -206,14 +206,14 @@ void *rclMonRcvRun(void *q)
     }
 
     {
-	bool dobeagle = false;
-	lconfig.getConfParam("processbeaglequeue", &dobeagle);
-	if (dobeagle) {
-	    string beaglequeuedir;
-	    if (!lconfig.getConfParam("beaglequeuedir", beaglequeuedir))
-		beaglequeuedir = path_tildexpand("~/.beagle/ToIndex/");
-	    if (!mon->addWatch(beaglequeuedir, true)) {
-		LOGERR(("rclMonRcvRun: addwatch (beaglequeuedit) failed\n"));
+	bool doweb = false;
+	lconfig.getConfParam("processwebqueue", &doweb);
+	if (doweb) {
+	    string webqueuedir;
+	    if (!lconfig.getConfParam("webqueuedir", webqueuedir))
+		webqueuedir = path_tildexpand("~/.recollweb/ToIndex/");
+	    if (!mon->addWatch(webqueuedir, true)) {
+		LOGERR(("rclMonRcvRun: addwatch (webqueuedir) failed\n"));
 		if (mon->saved_errno != EACCES && mon->saved_errno != ENOENT)
 		    goto terminate;
 	    }

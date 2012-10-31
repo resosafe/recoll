@@ -655,7 +655,7 @@ recoll
 	</menuchoice>
 	menu entry. It is divided in four tabs,
         <guilabel>Global parameters</guilabel>, <guilabel>Local
-        parameters</guilabel>, <guilabel>Beagle web history</guilabel>
+        parameters</guilabel>, <guilabel>Web history</guilabel>
         (which is explained in the next section) and <guilabel>Search
         parameters</guilabel>.</para>
 
@@ -689,47 +689,33 @@ recoll
 
     </sect1>
 
-    <sect1 id="rcl.indexing.beaglequeue">
-      <title>Using Beagle WEB browser plugins</title>
+    <sect1 id="rcl.indexing.webqueue">
+      <title>Index WEB visited page history</title>
 
-      <para><application>Beagle</application> is (was?) a concurrent desktop
-	indexer, built on <application>Lucene</application> and 
-	the <application>Mono</application> project 
-	(<application>C#</application>), for which a
-	number of add-on browser plugins were written. These work by
-	copying visited web pages to an indexing queue directory, which the
-	indexer then processes. Especially, there is a
-	<application>Firefox</application> extension.</para>
+      <para>With the help of a <application>Firefox</application>
+      extension, &RCL; can index the Internet pages that you visit. The
+      extension was initially designed for the
+      <application>Beagle</application> indexer, but it has recently be
+      renamed and better adapted to &RCL;.</para>
 
-      <para>If, for any reason, you so happen to prefer &RCL; to
-	<application>Beagle</application>, you can still use the
-	<application>Firefox</application> plugin, which is written in
-	<application>Javascript</application> and completely independant of 
-	<application>C#</application>, <application>Beagle</application>, 
-	<application>Lucene</application>..., and
-	set &RCL; to process the <application>Beagle</application> queue
-	directory. This supposes that <application>Beagle</application> is
-	not running, else both programs will fight for the same
-	files.</para>
+      <para>The extension works by copying visited WEB pages to an indexing
+         queue directory, which &RCL; then processes, indexing the data,
+         storing it into a local cache, then removing the file from the
+         queue.</para>
 
       <para>This feature can be enabled in the GUI 
         <guilabel>Index configuration</guilabel>
 	panel, or by editing the configuration file (set
-	<varname>processbeaglequeue</varname> to 1).</para>
+	<varname>processwebqueue</varname> to 1).</para>
 
-      <important><para>For the extension to work, you will need to manually
-      create the  queue directory:
-      <filename>~/.beagle/ToIndex/</filename>.</para></important>
-
-      <para>Current Firefox versions need a slightly adapted extension
-      module. This can be found, along with up-to-date instructions, on the
-        <ulink url="&WIKI;IndexBeagleWeb">Recoll wiki</ulink>.</para>
-
+      <para>A current pointer to the extension can be found, along with
+        up-to-date instructions, on the
+        <ulink url="&WIKI;IndexWebHistory">Recoll wiki</ulink>.</para>
 
       <para>A copy of the indexed WEB pages is retained by Recoll in a
       local cache (from which previews can be fetched). The cache size can
       be adjusted from the <guilabel>Index configuration</guilabel> /
-      <guilabel>Beagle web history</guilabel> panel. Once the maximum size
+      <guilabel>Web history</guilabel> panel. Once the maximum size
       is reached, old pages are purged - both from the cache and the index
       - to make room for new ones, so you need to explicitly archive in
         some other place the pages that you want to keep
@@ -4398,18 +4384,16 @@ skippedPaths = ~/somedir/&lowast;.txt
             </listitem> 
 	  </varlistentry>
 
-          <varlistentry><term><varname>processbeaglequeue</varname></term>
+          <varlistentry><term><varname>processwebqueue</varname></term>
             <listitem><para>If this is set, process the directory where
-            Beagle Web browser plugins copy visited pages for indexing. Of
-            course, Beagle MUST NOT be running, else things will behave
-            strangely.</para>
+            Web browser plugins copy visited pages for indexing.</para>
             </listitem>
            </varlistentry>
 
-          <varlistentry><term><varname>beaglequeuedir</varname></term>
-            <listitem><para>The path to the Beagle indexing queue. This is
-            hard-coded in the Beagle plugin as
-            <filename>~/.beagle/ToIndex</filename> so there should be no
+          <varlistentry><term><varname>webqueuedir</varname></term>
+            <listitem><para>The path to the web indexing queue. This is
+            hard-coded in the Firefox plugin as
+            <filename>~/.recollweb/ToIndex</filename> so there should be no
             need to change it.</para> 
             </listitem>
            </varlistentry>
@@ -4618,7 +4602,7 @@ unac_except_trans =  åå Åå ää Ää öö Öö
 	   </varlistentry>
 
           <varlistentry><term><varname>webcachedir</varname></term>
-            <listitem><para>This is only used by the Beagle web browser
+            <listitem><para>This is only used by the web browser
             plugin indexing code, and defines where the cache for visited
             pages will live. Default:
             <filename>$RECOLL_CONFDIR/webcache</filename></para> 
@@ -4626,7 +4610,7 @@ unac_except_trans =  åå Åå ää Ää öö Öö
 
            </varlistentry>
           <varlistentry><term><varname>webcachemaxmbs</varname></term>
-            <listitem><para>This is only used by the Beagle web browser
+            <listitem><para>This is only used by the web browser
             plugin indexing code, and defines the maximum size for the web
             page cache. Default: 40 MB.</para> 
             </listitem>

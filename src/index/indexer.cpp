@@ -41,7 +41,7 @@ ConfIndexer::ConfIndexer(RclConfig *cnf, DbIxStatusUpdater *updfunc)
       m_dobeagle(false), m_beagler(0),
       m_updater(updfunc)
 {
-    m_config->getConfParam("processbeaglequeue", &m_dobeagle);
+    m_config->getConfParam("processwebqueue", &m_dobeagle);
 }
 
 ConfIndexer::~ConfIndexer()

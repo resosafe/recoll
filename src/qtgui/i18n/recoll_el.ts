@@ -1,6 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS>
-<TS version="2.0">
+<!DOCTYPE TS><TS>
 <context>
     <name>AdvSearch</name>
     <message>
@@ -21,7 +19,7 @@
     </message>
     <message>
         <source>presentations</source>
-        <translation>παρουσιάσεις</translation>
+        <translation type="obsolete">παρουσιάσεις</translation>
     </message>
     <message>
         <source>media</source>
@@ -29,7 +27,7 @@
     </message>
     <message>
         <source>messages</source>
-        <translation>μηνύματα</translation>
+        <translation type="obsolete">μηνύματα</translation>
     </message>
     <message>
         <source>other</source>
@@ -491,7 +489,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>Beagle web history</source>
-        <translation>Ιστορικό ιστού Beagle</translation>
+        <translation type="obsolete">Ιστορικό ιστού Beagle</translation>
     </message>
     <message>
         <source>&lt;b&gt;Customised subtrees</source>
@@ -540,6 +538,10 @@ p, li { white-space: pre-wrap; }
     <message>
         <source>Search parameters</source>
         <translation type="unfinished">Ρυθμίσεις αναζήτησης</translation>
+    </message>
+    <message>
+        <source>Web history</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -820,7 +822,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <source>Bad viewer command line for %1: [%2]
 Please check the mimeconf file</source>
-        <translation>Κακοδιατυπωμένη εντολή για %1: [%2]
+        <translation type="obsolete">Κακοδιατυπωμένη εντολή για %1: [%2]
 Παρακαλώ ελέγξτε το αρχείο mimeconf</translation>
     </message>
     <message>
@@ -1011,7 +1013,7 @@ Please check the mimeview file</source>
     </message>
     <message>
         <source>&amp;Indexing configuration</source>
-        <translation>&amp;Διαμόρφωση της ευρετηρίασης</translation>
+        <translation type="obsolete">&amp;Διαμόρφωση της ευρετηρίασης</translation>
     </message>
     <message>
         <source>&amp;Indexing schedule</source>
@@ -1019,7 +1021,7 @@ Please check the mimeview file</source>
     </message>
     <message>
         <source>&amp;Query configuration</source>
-        <translation>Δια&amp;μόρφωση της αναζήτησης</translation>
+        <translation type="obsolete">Δια&amp;μόρφωση της αναζήτησης</translation>
     </message>
     <message>
         <source>E&amp;xternal index dialog</source>
@@ -1505,6 +1507,17 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
         <source>Prev</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>X</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>SnippetsW</name>
+    <message>
+        <source>Search</source>
+        <translation type="unfinished">Αναζήτηση</translation>
+    </message>
 </context>
 <context>
     <name>SpellBase</name>
@@ -1565,7 +1578,7 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>Index: %1 documents, average length %2 terms</source>
-        <translation>Ευρετήριο: %1 έγγραφα, μέσο μήκος %2 όροι</translation>
+        <translation type="obsolete">Ευρετήριο: %1 έγγραφα, μέσο μήκος %2 όροι</translation>
     </message>
     <message>
         <source>Aspell init failed. Aspell not installed?</source>
@@ -1673,11 +1686,11 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     <name>confgui::ConfBeaglePanelW</name>
     <message>
         <source>Steal Beagle indexing queue</source>
-        <translation>Κλέψιμο της ουράς ευρετηρίασης του Beagle</translation>
+        <translation type="obsolete">Κλέψιμο της ουράς ευρετηρίασης του Beagle</translation>
     </message>
     <message>
         <source>Beagle MUST NOT be running. Enables processing the beagle queue to index Firefox web history.&lt;br&gt;(you should also install the Firefox Beagle plugin)</source>
-        <translation>Το Beagle ΔΕΝ ΠΡΕΠΕΙ να εκτελείται. Επιτρέπει την επεξεργασία της ουράς του Beagle για ευρετηρίαση του ιστορικού των ιστοσελίδων του Firefox.&lt;br&gt;(θα πρέπει επίσης να εγκαταστήσετε το πρόσθετο του Beagle για το Firefox)</translation>
+        <translation type="obsolete">Το Beagle ΔΕΝ ΠΡΕΠΕΙ να εκτελείται. Επιτρέπει την επεξεργασία της ουράς του Beagle για ευρετηρίαση του ιστορικού των ιστοσελίδων του Firefox.&lt;br&gt;(θα πρέπει επίσης να εγκαταστήσετε το πρόσθετο του Beagle για το Firefox)</translation>
     </message>
     <message>
         <source>Web page store directory name</source>
@@ -1694,6 +1707,14 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     <message>
         <source>Entries will be recycled once the size is reached</source>
         <translation>Θα γίνεται αντικατάσταση των καταχωρήσεων όταν επιτευχθεί το καθορισμένο μέγεθος</translation>
+    </message>
+    <message>
+        <source>Process the WEB history queue</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enables indexing Firefox visited pages.&lt;br&gt;(you need also install the Firefox Recoll plugin)</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1793,7 +1814,7 @@ This will help searching very big text  files (ie: log files).</source>
     <message>
         <source>External filters working longer than this will be aborted. This is for the rare case (ie: postscript) where a document could cause a filter to loopSet to -1 for no limit.
 </source>
-        <translation>Τα εξωτερικά φίλτρα σε λειτουργία μεγαλύτερη από αυτό θα διακόπτονται. Χρήσιμο για τη σπάνια περίπτωση (π.χ. postscript) όπου ένα έγγραφο μπορεί να προκαλέσει ένα βρόγχο στο φίλτρο. ορίστε το σε -1 για να αφαιρέσετε το όριο.</translation>
+        <translation type="obsolete">Τα εξωτερικά φίλτρα σε λειτουργία μεγαλύτερη από αυτό θα διακόπτονται. Χρήσιμο για τη σπάνια περίπτωση (π.χ. postscript) όπου ένα έγγραφο μπορεί να προκαλέσει ένα βρόγχο στο φίλτρο. ορίστε το σε -1 για να αφαιρέσετε το όριο.</translation>
     </message>
     <message>
         <source>Global</source>
@@ -1885,7 +1906,7 @@ This will help searching very big text  files (ie: log files).</source>
     </message>
     <message>
         <source>The language for the aspell dictionary. This should look like &apos;en&apos; or &apos;fr&apos; ...&lt;br&gt;If this value is not set, the NLS environment will be used to compute it, which usually works.To get an idea of what is installed on your system, type &apos;aspell config&apos; and look for .dat files inside the &apos;data-dir&apos; directory. </source>
-        <translation>Η γλώσσα του λεξικού του aspell. Μια σωστή τιμή μοιάζει με &apos;en&apos; ή &apos;el&apos;...&lt;br&gt;Αν αυτή η τιμή δεν έχει οριστεί, θα χρησιμοποιηθεί το περιβάλλον για τον υπολογισμό της, κάτι που συνήθως δουλεύει καλά. Για να πάρετε μια ιδέα για το τι είναι εγκατεστημένο στο σύστημά σας, πληκτρολογήστε &apos;aspell config&apos; και αναζητήστε τα αρχεία .dat μέσα στον κατάλογο &apos;data-dir&apos;.</translation>
+        <translation type="obsolete">Η γλώσσα του λεξικού του aspell. Μια σωστή τιμή μοιάζει με &apos;en&apos; ή &apos;el&apos;...&lt;br&gt;Αν αυτή η τιμή δεν έχει οριστεί, θα χρησιμοποιηθεί το περιβάλλον για τον υπολογισμό της, κάτι που συνήθως δουλεύει καλά. Για να πάρετε μια ιδέα για το τι είναι εγκατεστημένο στο σύστημά σας, πληκτρολογήστε &apos;aspell config&apos; και αναζητήστε τα αρχεία .dat μέσα στον κατάλογο &apos;data-dir&apos;.</translation>
     </message>
     <message>
         <source>Database directory name</source>
@@ -1893,7 +1914,7 @@ This will help searching very big text  files (ie: log files).</source>
     </message>
     <message>
         <source>The name for a directory where to store the index&lt;br&gt;A non-absolute path is taken relative to the  configuration directory. The default is &apos;xapiandb&apos;.</source>
-        <translation>Το όνομα του καταλόγου αποθήκευσης του ευρετηρίου.&lt;br&gt;Μια σχετική διαδρομή αναφερόμενη στη διαδρομή διαμόρφωσης. Η προεπιλογή είναι &apos;xapiandb&apos;.</translation>
+        <translation type="obsolete">Το όνομα του καταλόγου αποθήκευσης του ευρετηρίου.&lt;br&gt;Μια σχετική διαδρομή αναφερόμενη στη διαδρομή διαμόρφωσης. Η προεπιλογή είναι &apos;xapiandb&apos;.</translation>
     </message>
     <message>
         <source>The language for the aspell dictionary. This should look like &apos;en&apos; or &apos;fr&apos; ...&lt;br&gt;If this value is not set, the NLS environment will be used to compute it, which usually works. To get an idea of what is installed on your system, type &apos;aspell config&apos; and look for .dat files inside the &apos;data-dir&apos; directory. </source>
@@ -1960,11 +1981,11 @@ This will help searching very big text  files (ie: log files).</source>
     </message>
     <message>
         <source>Lines in PRE text are not folded. Using BR loses some indentation.</source>
-        <translation>Οι γραμμές στις ενότητες PRE δεν δικαιολογούνται. Χρησιμοποιώντας BR χάνονται μερικές εσοχές.</translation>
+        <translation type="obsolete">Οι γραμμές στις ενότητες PRE δεν δικαιολογούνται. Χρησιμοποιώντας BR χάνονται μερικές εσοχές.</translation>
     </message>
     <message>
         <source>Use &lt;PRE&gt; tags instead of &lt;BR&gt;to display plain text as html in preview.</source>
-        <translation>Χρήση &lt;PRE&gt; αντί &lt;BR&gt; για απλό κείμενο αντί html στην προεπισκόπηση.</translation>
+        <translation type="obsolete">Χρήση &lt;PRE&gt; αντί &lt;BR&gt; για απλό κείμενο αντί html στην προεπισκόπηση.</translation>
     </message>
     <message>
         <source>Use desktop preferences to choose document editor.</source>

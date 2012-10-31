@@ -41,7 +41,6 @@ bool BGLDocFetcher::fetch(RclConfig* cnf, const Rcl::Doc& idoc, RawDoc& out)
 	LOGERR(("BGLDocFetcher:: no udi in idoc\n"));
 	return false;
     }
-    string data;
     Rcl::Doc dotdoc;
     {
 	PTMutexLocker locker(o_beagler_mutex);
@@ -49,7 +48,7 @@ bool BGLDocFetcher::fetch(RclConfig* cnf, const Rcl::Doc& idoc, RawDoc& out)
 	// object is created at the first call of this routine and
 	// deleted when the program exits.
 	static BeagleQueueCache o_beagler(cnf);
-	if (!o_beagler.getFromCache(udi, dotdoc, data)) {
+	if (!o_beagler.getFromCache(udi, dotdoc, out.data)) {
 	    LOGINFO(("BGLDocFetcher::fetch: failed for [%s]\n", udi.c_str()));
 	    return false;
 	}
@@ -58,6 +57,7 @@ bool BGLDocFetcher::fetch(RclConfig* cnf, const Rcl::Doc& idoc, RawDoc& out)
 	LOGINFO(("BGLDocFetcher:: udi [%s], mimetp mismatch: in: [%s], bgl "
 		 "[%s]\n", idoc.mimetype.c_str(), dotdoc.mimetype.c_str()));
     }
+    out.kind = RawDoc::RDK_DATA;
     return true;
 }
     

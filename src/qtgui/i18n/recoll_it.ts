@@ -1,6 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS>
-<TS version="2.0">
+<!DOCTYPE TS><TS>
 <context>
     <name>AdvSearch</name>
     <message>
@@ -21,7 +19,7 @@
     </message>
     <message>
         <source>presentations</source>
-        <translation>presentazioni</translation>
+        <translation type="obsolete">presentazioni</translation>
     </message>
     <message>
         <source>media</source>
@@ -29,7 +27,7 @@
     </message>
     <message>
         <source>messages</source>
-        <translation>messaggi</translation>
+        <translation type="obsolete">messaggi</translation>
     </message>
     <message>
         <source>other</source>
@@ -350,16 +348,16 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>Could not open database in </source>
-        <translation>Impossibile aprire il database in </translation>
+        <translation type="obsolete">Impossibile aprire il database in </translation>
     </message>
     <message>
         <source>.
 Click Cancel if you want to edit the configuration file before indexing starts, or Ok to let it proceed.</source>
-        <translation>Clicca &apos;Annulla&apos; se vuoi editare il file di configurazione prima di iniziare l&apos;indicizzazione, oppure &apos;OK&apos; se vuoi procedere.</translation>
+        <translation type="obsolete">Clicca &apos;Annulla&apos; se vuoi editare il file di configurazione prima di iniziare l&apos;indicizzazione, oppure &apos;OK&apos; se vuoi procedere.</translation>
     </message>
     <message>
         <source>Configuration problem (dynconf</source>
-        <translation>Problema di configurazione (dynconf</translation>
+        <translation type="obsolete">Problema di configurazione (dynconf</translation>
     </message>
     <message>
         <source>&quot;history&quot; file is damaged or un(read)writeable, please check or remove it: </source>
@@ -398,7 +396,7 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
     </message>
     <message>
         <source>Cannot create temporary directory</source>
-        <translation>Impossibile creare directory temporanea</translation>
+        <translation type="obsolete">Impossibile creare directory temporanea</translation>
     </message>
     <message>
         <source>Cancel</source>
@@ -523,12 +521,12 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
         <translation>Indicizza il nome di quei files il cui contenuto non può essere identificato o processato (tipo mime non supportato). Di default è impostato a vero</translation>
     </message>
     <message>
-        <source>Beagle web history</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Search parameters</source>
         <translation type="unfinished">Parametri per la ricerca</translation>
+    </message>
+    <message>
+        <source>Web history</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -631,7 +629,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>Files</source>
-        <translation>Files</translation>
+        <translation type="obsolete">Files</translation>
     </message>
     <message>
         <source>Purge</source>
@@ -655,12 +653,12 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>Can&apos;t start query: </source>
-        <translation>Non posso iniziare la ricerca: </translation>
+        <translation type="obsolete">Non posso iniziare la ricerca: </translation>
     </message>
     <message>
         <source>Bad viewer command line for %1: [%2]
 Please check the mimeconf file</source>
-        <translation>Errata linea di comando per %1: [%2]
+        <translation type="obsolete">Errata linea di comando per %1: [%2]
 Verifica il file mimeconf</translation>
     </message>
     <message>
@@ -932,7 +930,7 @@ Please check the mimeview file</source>
     </message>
     <message>
         <source>&amp;Query configuration</source>
-        <translation>&amp;Configurazione ricerca</translation>
+        <translation type="obsolete">&amp;Configurazione ricerca</translation>
     </message>
     <message>
         <source>&amp;User manual</source>
@@ -976,7 +974,7 @@ Please check the mimeview file</source>
     </message>
     <message>
         <source>&amp;Indexing configuration</source>
-        <translation>Conf&amp;igurazione indicizzazione</translation>
+        <translation type="obsolete">Conf&amp;igurazione indicizzazione</translation>
     </message>
     <message>
         <source>All</source>
@@ -1071,7 +1069,7 @@ Please check the mimeview file</source>
     </message>
     <message>
         <source>Mime type</source>
-        <translation>Tipo MIME</translation>
+        <translation type="obsolete">Tipo MIME</translation>
     </message>
     <message>
         <source>Date</source>
@@ -1174,7 +1172,7 @@ Please check the mimeview file</source>
     </message>
     <message>
         <source>Query details</source>
-        <translation>Dettagli ricerca</translation>
+        <translation type="obsolete">Dettagli ricerca</translation>
     </message>
     <message>
         <source>(show query)</source>
@@ -1433,31 +1431,31 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     <name>SearchClauseW</name>
     <message>
         <source>SearchClauseW</source>
-        <translation>SearchClauseW</translation>
+        <translation type="obsolete">SearchClauseW</translation>
     </message>
     <message>
         <source>Any of these</source>
-        <translation>Qualsiasi parola</translation>
+        <translation type="obsolete">Qualsiasi parola</translation>
     </message>
     <message>
         <source>All of these</source>
-        <translation>Tutte le parole</translation>
+        <translation type="obsolete">Tutte le parole</translation>
     </message>
     <message>
         <source>None of these</source>
-        <translation>Nessuna di queste</translation>
+        <translation type="obsolete">Nessuna di queste</translation>
     </message>
     <message>
         <source>This phrase</source>
-        <translation>Questa frase</translation>
+        <translation type="obsolete">Questa frase</translation>
     </message>
     <message>
         <source>Terms in proximity</source>
-        <translation>Parole in prossimita&apos;</translation>
+        <translation type="obsolete">Parole in prossimita&apos;</translation>
     </message>
     <message>
         <source>File name matching</source>
-        <translation>Nome del file</translation>
+        <translation type="obsolete">Nome del file</translation>
     </message>
     <message>
         <source>Select the type of query that will be performed with the words</source>
@@ -1518,43 +1516,54 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
         <source>Prev</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>X</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>SnippetsW</name>
+    <message>
+        <source>Search</source>
+        <translation type="unfinished">Cerca</translation>
+    </message>
 </context>
 <context>
     <name>SortForm</name>
     <message>
         <source>Date</source>
-        <translation>Data</translation>
+        <translation type="obsolete">Data</translation>
     </message>
     <message>
         <source>Mime type</source>
-        <translation>Tipo MIME</translation>
+        <translation type="obsolete">Tipo MIME</translation>
     </message>
 </context>
 <context>
     <name>SortFormBase</name>
     <message>
         <source>Sort Criteria</source>
-        <translation>Criterio di ordinamento</translation>
+        <translation type="obsolete">Criterio di ordinamento</translation>
     </message>
     <message>
         <source>Sort the</source>
-        <translation>Ordina i</translation>
+        <translation type="obsolete">Ordina i</translation>
     </message>
     <message>
         <source>most relevant results by:</source>
-        <translation>risultati piu&apos; rilevanti per: </translation>
+        <translation type="obsolete">risultati piu&apos; rilevanti per: </translation>
     </message>
     <message>
         <source>Descending</source>
-        <translation>Discendente</translation>
+        <translation type="obsolete">Discendente</translation>
     </message>
     <message>
         <source>Close</source>
-        <translation>Chiudi</translation>
+        <translation type="obsolete">Chiudi</translation>
     </message>
     <message>
         <source>Apply</source>
-        <translation>Applica</translation>
+        <translation type="obsolete">Applica</translation>
     </message>
 </context>
 <context>
@@ -1581,7 +1590,7 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>Term</source>
-        <translation>Termine</translation>
+        <translation type="obsolete">Termine</translation>
     </message>
     <message>
         <source>No db info.</source>
@@ -1687,171 +1696,171 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     <name>UIPrefsDialogBase</name>
     <message>
         <source>User interface</source>
-        <translation>Interfaccia utente</translation>
+        <translation type="obsolete">Interfaccia utente</translation>
     </message>
     <message>
         <source>Number of entries in a result page</source>
-        <translation>Numero di risultati per pagina</translation>
+        <translation type="obsolete">Numero di risultati per pagina</translation>
     </message>
     <message>
         <source>Result list font</source>
-        <translation>Fonts per la lista dei risultati</translation>
+        <translation type="obsolete">Fonts per la lista dei risultati</translation>
     </message>
     <message>
         <source>Helvetica-10</source>
-        <translation>Helvetica-10</translation>
+        <translation type="obsolete">Helvetica-10</translation>
     </message>
     <message>
         <source>Opens a dialog to select the result list font</source>
-        <translation>Apre una finestra di dialogo per selezionare i fonts della lista dei risultati</translation>
+        <translation type="obsolete">Apre una finestra di dialogo per selezionare i fonts della lista dei risultati</translation>
     </message>
     <message>
         <source>Reset</source>
-        <translation>Ripristina</translation>
+        <translation type="obsolete">Ripristina</translation>
     </message>
     <message>
         <source>Resets the result list font to the system default</source>
-        <translation>Ripristina i font della lista dei risultati</translation>
+        <translation type="obsolete">Ripristina i font della lista dei risultati</translation>
     </message>
     <message>
         <source>Auto-start simple search on whitespace entry.</source>
-        <translation>Inizia automaticamente una ricerca semplice digitando uno spazio.</translation>
+        <translation type="obsolete">Inizia automaticamente una ricerca semplice digitando uno spazio.</translation>
     </message>
     <message>
         <source>Start with advanced search dialog open.</source>
-        <translation>Inizia aprendo la finestra di ricerca avanzata.</translation>
+        <translation type="obsolete">Inizia aprendo la finestra di ricerca avanzata.</translation>
     </message>
     <message>
         <source>Start with sort dialog open.</source>
-        <translation>Inizia con la finestra di ordinamento aperta.</translation>
+        <translation type="obsolete">Inizia con la finestra di ordinamento aperta.</translation>
     </message>
     <message>
         <source>Search parameters</source>
-        <translation>Parametri per la ricerca</translation>
+        <translation type="obsolete">Parametri per la ricerca</translation>
     </message>
     <message>
         <source>Stemming language</source>
-        <translation>Linguaggio per l&apos;espansione</translation>
+        <translation type="obsolete">Linguaggio per l&apos;espansione</translation>
     </message>
     <message>
         <source>Dynamically build abstracts</source>
-        <translation>Costruisci dinamicamente i riassunti</translation>
+        <translation type="obsolete">Costruisci dinamicamente i riassunti</translation>
     </message>
     <message>
         <source>Do we try to build abstracts for result list entries by using the context of query terms ? 
 May be slow for big documents.</source>
-        <translation>Devo cercare di costruire i riassunti per le voci nell&apos;elenco dei risultati usando il contesto dei termini di ricerca?
+        <translation type="obsolete">Devo cercare di costruire i riassunti per le voci nell&apos;elenco dei risultati usando il contesto dei termini di ricerca?
 Puo&apos; essere lento per grossi documenti..</translation>
     </message>
     <message>
         <source>Replace abstracts from documents</source>
-        <translation>Sostituisci i riassunti dei documenti</translation>
+        <translation type="obsolete">Sostituisci i riassunti dei documenti</translation>
     </message>
     <message>
         <source>Do we synthetize an abstract even if the document seemed to have one?</source>
-        <translation>Devo sintetizzare un riassunto anche se il documento sembra ne abbia uno?</translation>
+        <translation type="obsolete">Devo sintetizzare un riassunto anche se il documento sembra ne abbia uno?</translation>
     </message>
     <message>
         <source>Synthetic abstract size (characters)</source>
-        <translation>Numero caratteri per il riassunto</translation>
+        <translation type="obsolete">Numero caratteri per il riassunto</translation>
     </message>
     <message>
         <source>Synthetic abstract context words</source>
-        <translation>Numero di parole di contesto per il riassunto</translation>
+        <translation type="obsolete">Numero di parole di contesto per il riassunto</translation>
     </message>
     <message>
         <source>External Indexes</source>
-        <translation>Indici esterni</translation>
+        <translation type="obsolete">Indici esterni</translation>
     </message>
     <message>
         <source>Add index</source>
-        <translation>Aggiungi indice</translation>
+        <translation type="obsolete">Aggiungi indice</translation>
     </message>
     <message>
         <source>Select the xapiandb directory for the index you want to add, then click Add Index</source>
-        <translation>Seleziona nella directory Xapiandb l&apos;indice che vuoi aggiungere e clicca su &apos;Aggiungi indice&apos;</translation>
+        <translation type="obsolete">Seleziona nella directory Xapiandb l&apos;indice che vuoi aggiungere e clicca su &apos;Aggiungi indice&apos;</translation>
     </message>
     <message>
         <source>Browse</source>
-        <translation>Esplora</translation>
+        <translation type="obsolete">Esplora</translation>
     </message>
     <message>
         <source>&amp;OK</source>
-        <translation>&amp;OK</translation>
+        <translation type="obsolete">&amp;OK</translation>
     </message>
     <message>
         <source>Apply changes</source>
-        <translation>Applica modifiche</translation>
+        <translation type="obsolete">Applica modifiche</translation>
     </message>
     <message>
         <source>&amp;Cancel</source>
-        <translation>&amp;Annulla</translation>
+        <translation type="obsolete">&amp;Annulla</translation>
     </message>
     <message>
         <source>Discard changes</source>
-        <translation>Annulla modifiche</translation>
+        <translation type="obsolete">Annulla modifiche</translation>
     </message>
     <message>
         <source>Result paragraph&lt;br&gt;format string</source>
-        <translation>Stringa di formattazione&lt;br&gt;dei risultati</translation>
+        <translation type="obsolete">Stringa di formattazione&lt;br&gt;dei risultati</translation>
     </message>
     <message>
         <source>Automatically add phrase to simple searches</source>
-        <translation>Aggiungi automaticamente frase alle ricerche semplici</translation>
+        <translation type="obsolete">Aggiungi automaticamente frase alle ricerche semplici</translation>
     </message>
     <message>
         <source>A search for [rolling stones] (2 terms) will be changed to [rolling or stones or (rolling phrase 2 stones)]. 
 This should give higher precedence to the results where the search terms appear exactly as entered.</source>
-        <translation>Una ricerca per [vino rosso] (2 parole) sara&apos; completata come [vino O rosso O (vino FRASE 2 rosso)]. 
+        <translation type="obsolete">Una ricerca per [vino rosso] (2 parole) sara&apos; completata come [vino O rosso O (vino FRASE 2 rosso)]. 
 Questo dovrebbe dare la precedenza ai risultati che contengono i termini esattamente come sono stati scritti.</translation>
     </message>
     <message>
         <source>User preferences</source>
-        <translation>Preferenze utente</translation>
+        <translation type="obsolete">Preferenze utente</translation>
     </message>
     <message>
         <source>Use desktop preferences to choose document editor.</source>
-        <translation>Usa le preferenze del desktop per scegliere l&apos;editor dei documenti.</translation>
+        <translation type="obsolete">Usa le preferenze del desktop per scegliere l&apos;editor dei documenti.</translation>
     </message>
     <message>
         <source>External indexes</source>
-        <translation>Indici esterni</translation>
+        <translation type="obsolete">Indici esterni</translation>
     </message>
     <message>
         <source>Toggle selected</source>
-        <translation>Commuta selezionati</translation>
+        <translation type="obsolete">Commuta selezionati</translation>
     </message>
     <message>
         <source>Activate All</source>
-        <translation>Seleziona tutti</translation>
+        <translation type="obsolete">Seleziona tutti</translation>
     </message>
     <message>
         <source>Deactivate All</source>
-        <translation>Deseleziona tutti</translation>
+        <translation type="obsolete">Deseleziona tutti</translation>
     </message>
     <message>
         <source>Remove selected</source>
-        <translation>Rimuovi selezionati</translation>
+        <translation type="obsolete">Rimuovi selezionati</translation>
     </message>
     <message>
         <source>Remove from list. This has no effect on the disk index.</source>
-        <translation>Rimuovi dalla lista. Non ha effetto sull&apos;indice del disco.</translation>
+        <translation type="obsolete">Rimuovi dalla lista. Non ha effetto sull&apos;indice del disco.</translation>
     </message>
     <message>
         <source>Defines the format for each result list paragraph. Use qt html format and printf-like replacements:&lt;br&gt;%A Abstract&lt;br&gt; %D Date&lt;br&gt; %I Icon image name&lt;br&gt; %K Keywords (if any)&lt;br&gt; %L Preview and Edit links&lt;br&gt; %M Mime type&lt;br&gt; %N Result number&lt;br&gt; %R Relevance percentage&lt;br&gt; %S Size information&lt;br&gt; %T Title&lt;br&gt; %U Url&lt;br&gt;</source>
-        <translation>Definisce il formato per ogni paragrafo dell&apos;elenco dei risultati. Usare il formato qt html e le sostituzioni tipo printf:&lt;br&gt;%A Riassunto&lt;br&gt; %D Data&lt;br&gt; %I Icona&lt;br&gt; %K Parole chiave (se esistono)&lt;br&gt; %L Link per anteprima e modifica&lt;br&gt; %M Tipo MIME&lt;br&gt; %N Numero del risultato&lt;br&gt; %R Percentuale di rilevanza&lt;br&gt; %S Informazioni sulla dimensione&lt;br&gt; %T Titolo&lt;br&gt; %U Url&lt;br&gt;</translation>
+        <translation type="obsolete">Definisce il formato per ogni paragrafo dell&apos;elenco dei risultati. Usare il formato qt html e le sostituzioni tipo printf:&lt;br&gt;%A Riassunto&lt;br&gt; %D Data&lt;br&gt; %I Icona&lt;br&gt; %K Parole chiave (se esistono)&lt;br&gt; %L Link per anteprima e modifica&lt;br&gt; %M Tipo MIME&lt;br&gt; %N Numero del risultato&lt;br&gt; %R Percentuale di rilevanza&lt;br&gt; %S Informazioni sulla dimensione&lt;br&gt; %T Titolo&lt;br&gt; %U Url&lt;br&gt;</translation>
     </message>
     <message>
         <source>Remember sort activation state.</source>
-        <translation>Ricorda lo stato dell&apos;impostazione di ordinamento.</translation>
+        <translation type="obsolete">Ricorda lo stato dell&apos;impostazione di ordinamento.</translation>
     </message>
     <message>
         <source>Maximum text size highlighted for preview (megabytes)</source>
-        <translation>Dimensione massima del testo da evidenziare nell&apos;anteprima (megabytes)</translation>
+        <translation type="obsolete">Dimensione massima del testo da evidenziare nell&apos;anteprima (megabytes)</translation>
     </message>
     <message>
         <source>Texts over this size will not be highlighted in preview (too slow).</source>
-        <translation>Testi di lunghezza superiore a questa non vengono evidenziati nella preview (troppo lento).</translation>
+        <translation type="obsolete">Testi di lunghezza superiore a questa non vengono evidenziati nella preview (troppo lento).</translation>
     </message>
 </context>
 <context>
@@ -1862,7 +1871,7 @@ Questo dovrebbe dare la precedenza ai risultati che contengono i termini esattam
     </message>
     <message>
         <source>Mime type</source>
-        <translation>Tipo MIME</translation>
+        <translation type="obsolete">Tipo MIME</translation>
     </message>
     <message>
         <source>Command</source>
@@ -1877,11 +1886,11 @@ Questo dovrebbe dare la precedenza ai risultati che contengono i termini esattam
     <name>ViewActionBase</name>
     <message>
         <source>File type</source>
-        <translation>Tipo di file</translation>
+        <translation type="obsolete">Tipo di file</translation>
     </message>
     <message>
         <source>Action</source>
-        <translation>Azione</translation>
+        <translation type="obsolete">Azione</translation>
     </message>
     <message>
         <source>Select one or several file types, then click Change Action to modify the program used to open them</source>
@@ -1907,14 +1916,6 @@ Questo dovrebbe dare la precedenza ai risultati che contengono i termini esattam
 <context>
     <name>confgui::ConfBeaglePanelW</name>
     <message>
-        <source>Steal Beagle indexing queue</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Beagle MUST NOT be running. Enables processing the beagle queue to index Firefox web history.&lt;br&gt;(you should also install the Firefox Beagle plugin)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Entries will be recycled once the size is reached</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1930,6 +1931,14 @@ Questo dovrebbe dare la precedenza ai risultati che contengono i termini esattam
         <source>Max. size for the web store (MB)</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Process the WEB history queue</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enables indexing Firefox visited pages.&lt;br&gt;(you need also install the Firefox Recoll plugin)</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>confgui::ConfIndexW</name>
@@ -1942,7 +1951,7 @@ Questo dovrebbe dare la precedenza ai risultati che contengono i termini esattam
     <name>confgui::ConfParamFNW</name>
     <message>
         <source>Browse</source>
-        <translation>Esplora</translation>
+        <translation type="obsolete">Esplora</translation>
     </message>
     <message>
         <source>Choose</source>
@@ -2105,7 +2114,7 @@ This will help searching very big text  files (ie: log files).</source>
     </message>
     <message>
         <source>The language for the aspell dictionary. This should look like &apos;en&apos; or &apos;fr&apos; ...&lt;br&gt;If this value is not set, the NLS environment will be used to compute it, which usually works.To get an idea of what is installed on your system, type &apos;aspell config&apos; and look for .dat files inside the &apos;data-dir&apos; directory. </source>
-        <translation>Lingua per il dizionario aspell. Dovrebbe essere simile a &apos;en&apos; o &apos;it&apos; ...&lt;br&gt;Se questo valore non è impostato verrà usato l&apos;ambiente NLS per calcolarlo, cosa che generalmente funziona. Per avere un&apos;idea di cosa sia installato sul tuo sistema, dai il comando &apos;aspell config&apos; e guarda il nome dei files .dat nella cartella &apos;data-dir&apos;.</translation>
+        <translation type="obsolete">Lingua per il dizionario aspell. Dovrebbe essere simile a &apos;en&apos; o &apos;it&apos; ...&lt;br&gt;Se questo valore non è impostato verrà usato l&apos;ambiente NLS per calcolarlo, cosa che generalmente funziona. Per avere un&apos;idea di cosa sia installato sul tuo sistema, dai il comando &apos;aspell config&apos; e guarda il nome dei files .dat nella cartella &apos;data-dir&apos;.</translation>
     </message>
     <message>
         <source>Database directory name</source>
@@ -2113,7 +2122,7 @@ This will help searching very big text  files (ie: log files).</source>
     </message>
     <message>
         <source>The name for a directory where to store the index&lt;br&gt;A non-absolute path is taken relative to the  configuration directory. The default is &apos;xapiandb&apos;.</source>
-        <translation>Nome della cartella in cui salvare l&apos;indice&lt;br&gt;Un indirizzo non assoluto viene interpretato come relativo alla cartella di congigurazione. Di default è &apos;xapiandb&apos;.</translation>
+        <translation type="obsolete">Nome della cartella in cui salvare l&apos;indice&lt;br&gt;Un indirizzo non assoluto viene interpretato come relativo alla cartella di congigurazione. Di default è &apos;xapiandb&apos;.</translation>
     </message>
     <message>
         <source>Use system&apos;s &apos;file&apos; command</source>
@@ -2192,11 +2201,11 @@ This will help searching very big text  files (ie: log files).</source>
     </message>
     <message>
         <source>Defines the format for each result list paragraph. Use qt html format and printf-like replacements:&lt;br&gt;%A Abstract&lt;br&gt; %D Date&lt;br&gt; %I Icon image name&lt;br&gt; %K Keywords (if any)&lt;br&gt; %L Preview and Edit links&lt;br&gt; %M Mime type&lt;br&gt; %N Result number&lt;br&gt; %R Relevance percentage&lt;br&gt; %S Size information&lt;br&gt; %T Title&lt;br&gt; %U Url&lt;br&gt;</source>
-        <translation>Definisce il formato per ogni paragrafo dell&apos;elenco dei risultati. Usare il formato qt html e le sostituzioni tipo printf:&lt;br&gt;%A Riassunto&lt;br&gt; %D Data&lt;br&gt; %I Icona&lt;br&gt; %K Parole chiave (se esistono)&lt;br&gt; %L Link per anteprima e modifica&lt;br&gt; %M Tipo MIME&lt;br&gt; %N Numero del risultato&lt;br&gt; %R Percentuale di rilevanza&lt;br&gt; %S Informazioni sulla dimensione&lt;br&gt; %T Titolo&lt;br&gt; %U Url&lt;br&gt;</translation>
+        <translation type="obsolete">Definisce il formato per ogni paragrafo dell&apos;elenco dei risultati. Usare il formato qt html e le sostituzioni tipo printf:&lt;br&gt;%A Riassunto&lt;br&gt; %D Data&lt;br&gt; %I Icona&lt;br&gt; %K Parole chiave (se esistono)&lt;br&gt; %L Link per anteprima e modifica&lt;br&gt; %M Tipo MIME&lt;br&gt; %N Numero del risultato&lt;br&gt; %R Percentuale di rilevanza&lt;br&gt; %S Informazioni sulla dimensione&lt;br&gt; %T Titolo&lt;br&gt; %U Url&lt;br&gt;</translation>
     </message>
     <message>
         <source>Result paragraph&lt;br&gt;format string</source>
-        <translation>Stringa di formattazione&lt;br&gt;dei risultati</translation>
+        <translation type="obsolete">Stringa di formattazione&lt;br&gt;dei risultati</translation>
     </message>
     <message>
         <source>Texts over this size will not be highlighted in preview (too slow).</source>
@@ -2228,7 +2237,7 @@ This will help searching very big text  files (ie: log files).</source>
     </message>
     <message>
         <source>Start with sort dialog open.</source>
-        <translation>Inizia con la finestra di ordinamento aperta.</translation>
+        <translation type="obsolete">Inizia con la finestra di ordinamento aperta.</translation>
     </message>
     <message>
         <source>Remember sort activation state.</source>

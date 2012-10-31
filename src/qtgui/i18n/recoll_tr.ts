@@ -1,6 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS>
-<TS version="2.0">
+<!DOCTYPE TS><TS>
 <context>
     <name>AdvSearch</name>
     <message>
@@ -21,7 +19,7 @@
     </message>
     <message>
         <source>presentations</source>
-        <translation>sunumlar</translation>
+        <translation type="obsolete">sunumlar</translation>
     </message>
     <message>
         <source>media</source>
@@ -29,7 +27,7 @@
     </message>
     <message>
         <source>messages</source>
-        <translation>iletiler</translation>
+        <translation type="obsolete">iletiler</translation>
     </message>
     <message>
         <source>other</source>
@@ -346,7 +344,7 @@ p, li { white-space: pre-wrap; }
     <name>Main</name>
     <message>
         <source>Configuration problem (dynconf</source>
-        <translation>Yapılandırma sorunu</translation>
+        <translation type="obsolete">Yapılandırma sorunu</translation>
     </message>
     <message>
         <source>No db directory in configuration</source>
@@ -354,12 +352,12 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>Could not open database in </source>
-        <translation>Veritabanı açılamadı</translation>
+        <translation type="obsolete">Veritabanı açılamadı</translation>
     </message>
     <message>
         <source>.
 Click Cancel if you want to edit the configuration file before indexing starts, or Ok to let it proceed.</source>
-        <translation>.
+        <translation type="obsolete">.
 İndekseleme başlamadan yapılandırmayı düzenlemek için İptal düğmesine basın ya da Tamam düğmesine basarak işleme izin verin.</translation>
     </message>
     <message>
@@ -375,7 +373,7 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
     </message>
     <message>
         <source>Cannot create temporary directory</source>
-        <translation>Geçici dizin oluşturulamadı</translation>
+        <translation type="obsolete">Geçici dizin oluşturulamadı</translation>
     </message>
     <message>
         <source>Cancel</source>
@@ -524,12 +522,12 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
         <translation>İçeriği tanınmayan ya da işlenemeyen (ya da desteklenmeyen mime tipi) dosyaları indeksle. Öntanımlı evet</translation>
     </message>
     <message>
-        <source>Beagle web history</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Search parameters</source>
         <translation type="unfinished">Arama parametreleri</translation>
+    </message>
+    <message>
+        <source>Web history</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -612,7 +610,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>Files</source>
-        <translation>Dosyalar</translation>
+        <translation type="obsolete">Dosyalar</translation>
     </message>
     <message>
         <source>Purge</source>
@@ -632,7 +630,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>Can&apos;t start query: </source>
-        <translation>Sorgu başlatılamadı: </translation>
+        <translation type="obsolete">Sorgu başlatılamadı: </translation>
     </message>
     <message>
         <source>Query results</source>
@@ -657,7 +655,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <source>Bad viewer command line for %1: [%2]
 Please check the mimeconf file</source>
-        <translation>%1 için uygun olmayan komut: [%2]
+        <translation type="obsolete">%1 için uygun olmayan komut: [%2]
 Lütfen mimeconf dosyasını kontrol edin</translation>
     </message>
     <message>
@@ -969,7 +967,7 @@ Please check the mimeview file</source>
     </message>
     <message>
         <source>&amp;Query configuration</source>
-        <translation>&amp;Sorgu yapılandırması</translation>
+        <translation type="obsolete">&amp;Sorgu yapılandırması</translation>
     </message>
     <message>
         <source>External index dialog</source>
@@ -977,7 +975,7 @@ Please check the mimeview file</source>
     </message>
     <message>
         <source>&amp;Indexing configuration</source>
-        <translation>İ&amp;ndeksleme yapılandırması </translation>
+        <translation type="obsolete">İ&amp;ndeksleme yapılandırması </translation>
     </message>
     <message>
         <source>All</source>
@@ -1072,7 +1070,7 @@ Please check the mimeview file</source>
     </message>
     <message>
         <source>Mime type</source>
-        <translation>Mime Tipi</translation>
+        <translation type="obsolete">Mime Tipi</translation>
     </message>
     <message>
         <source>Date</source>
@@ -1183,7 +1181,7 @@ Please check the mimeview file</source>
     </message>
     <message>
         <source>Query details</source>
-        <translation>Sorgu detayları</translation>
+        <translation type="obsolete">Sorgu detayları</translation>
     </message>
     <message>
         <source>Document history</source>
@@ -1434,31 +1432,31 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     <name>SearchClauseW</name>
     <message>
         <source>SearchClauseW</source>
-        <translation>SearchClauseW</translation>
+        <translation type="obsolete">SearchClauseW</translation>
     </message>
     <message>
         <source>Any of these</source>
-        <translation>Bunların herhangi biri</translation>
+        <translation type="obsolete">Bunların herhangi biri</translation>
     </message>
     <message>
         <source>All of these</source>
-        <translation>Bunların tümü</translation>
+        <translation type="obsolete">Bunların tümü</translation>
     </message>
     <message>
         <source>None of these</source>
-        <translation>Bunların hiçbiri</translation>
+        <translation type="obsolete">Bunların hiçbiri</translation>
     </message>
     <message>
         <source>This phrase</source>
-        <translation>Tam olarak bu ifade</translation>
+        <translation type="obsolete">Tam olarak bu ifade</translation>
     </message>
     <message>
         <source>Terms in proximity</source>
-        <translation>Yakın ifadeler</translation>
+        <translation type="obsolete">Yakın ifadeler</translation>
     </message>
     <message>
         <source>File name matching</source>
-        <translation>Dosya adı eşleşen</translation>
+        <translation type="obsolete">Dosya adı eşleşen</translation>
     </message>
     <message>
         <source>Select the type of query that will be performed with the words</source>
@@ -1519,43 +1517,54 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
         <source>Prev</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>X</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>SnippetsW</name>
+    <message>
+        <source>Search</source>
+        <translation type="unfinished">Ara</translation>
+    </message>
 </context>
 <context>
     <name>SortForm</name>
     <message>
         <source>Date</source>
-        <translation>Tarih</translation>
+        <translation type="obsolete">Tarih</translation>
     </message>
     <message>
         <source>Mime type</source>
-        <translation>Mime Tipi</translation>
+        <translation type="obsolete">Mime Tipi</translation>
     </message>
 </context>
 <context>
     <name>SortFormBase</name>
     <message>
         <source>Sort Criteria</source>
-        <translation>Sıralama Ölçütü</translation>
+        <translation type="obsolete">Sıralama Ölçütü</translation>
     </message>
     <message>
         <source>Sort the</source>
-        <translation>Sırala</translation>
+        <translation type="obsolete">Sırala</translation>
     </message>
     <message>
         <source>most relevant results by:</source>
-        <translation>en uygun sonuç veren:</translation>
+        <translation type="obsolete">en uygun sonuç veren:</translation>
     </message>
     <message>
         <source>Descending</source>
-        <translation>Azalan</translation>
+        <translation type="obsolete">Azalan</translation>
     </message>
     <message>
         <source>Apply</source>
-        <translation>Uygula</translation>
+        <translation type="obsolete">Uygula</translation>
     </message>
     <message>
         <source>Close</source>
-        <translation>Kapat</translation>
+        <translation type="obsolete">Kapat</translation>
     </message>
 </context>
 <context>
@@ -1582,7 +1591,7 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>Term</source>
-        <translation>İfade</translation>
+        <translation type="obsolete">İfade</translation>
     </message>
     <message>
         <source>No db info.</source>
@@ -1687,171 +1696,171 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     <name>UIPrefsDialogBase</name>
     <message>
         <source>User preferences</source>
-        <translation>Kullanıcı tercihleri</translation>
+        <translation type="obsolete">Kullanıcı tercihleri</translation>
     </message>
     <message>
         <source>User interface</source>
-        <translation>Kullanıcı arayüzü</translation>
+        <translation type="obsolete">Kullanıcı arayüzü</translation>
     </message>
     <message>
         <source>Number of entries in a result page</source>
-        <translation>Bir sonuç sayfasındaki sonuç sayısı</translation>
+        <translation type="obsolete">Bir sonuç sayfasındaki sonuç sayısı</translation>
     </message>
     <message>
         <source>Result list font</source>
-        <translation>Sonuç listesi yazıtipi</translation>
+        <translation type="obsolete">Sonuç listesi yazıtipi</translation>
     </message>
     <message>
         <source>Helvetica-10</source>
-        <translation>Helvetica-10</translation>
+        <translation type="obsolete">Helvetica-10</translation>
     </message>
     <message>
         <source>Opens a dialog to select the result list font</source>
-        <translation>Sonuç listesi yazıtipini seçmek için bir pencere açar</translation>
+        <translation type="obsolete">Sonuç listesi yazıtipini seçmek için bir pencere açar</translation>
     </message>
     <message>
         <source>Reset</source>
-        <translation>Sıfırla</translation>
+        <translation type="obsolete">Sıfırla</translation>
     </message>
     <message>
         <source>Resets the result list font to the system default</source>
-        <translation>Sonuç listesi yazıtipini sistem ayarlarına döndür</translation>
+        <translation type="obsolete">Sonuç listesi yazıtipini sistem ayarlarına döndür</translation>
     </message>
     <message>
         <source>Result paragraph&lt;br&gt;format string</source>
-        <translation>Sonuç paragrafı&lt;br&gt;biçimlendirme ifadesi</translation>
+        <translation type="obsolete">Sonuç paragrafı&lt;br&gt;biçimlendirme ifadesi</translation>
     </message>
     <message>
         <source>Defines the format for each result list paragraph. Use qt html format and printf-like replacements:&lt;br&gt;%A Abstract&lt;br&gt; %D Date&lt;br&gt; %I Icon image name&lt;br&gt; %K Keywords (if any)&lt;br&gt; %L Preview and Edit links&lt;br&gt; %M Mime type&lt;br&gt; %N Result number&lt;br&gt; %R Relevance percentage&lt;br&gt; %S Size information&lt;br&gt; %T Title&lt;br&gt; %U Url&lt;br&gt;</source>
-        <translation>Tüm sonuç listesi paragraflarını tanımlar. Qt html biçimini ve printf benzeri yer değiştiricileri kullanın:&lt;br&gt;%A Özet&lt;br&gt; %D Tarih&lt;br&gt; %I Simge resminin adı&lt;br&gt; %K Anahtar sözcükler (eğer varsa)&lt;br&gt; %L Önizle ve Düzenle bağlantıları&lt;br&gt; %M Mime tipi&lt;br&gt; %N Sonuç sayısı&lt;br&gt; %R Uyum yüzdesi&lt;br&gt; %S Boyut bilgileri&lt;br&gt; %T Başlık&lt;br&gt; %U Url&lt;br&gt;</translation>
+        <translation type="obsolete">Tüm sonuç listesi paragraflarını tanımlar. Qt html biçimini ve printf benzeri yer değiştiricileri kullanın:&lt;br&gt;%A Özet&lt;br&gt; %D Tarih&lt;br&gt; %I Simge resminin adı&lt;br&gt; %K Anahtar sözcükler (eğer varsa)&lt;br&gt; %L Önizle ve Düzenle bağlantıları&lt;br&gt; %M Mime tipi&lt;br&gt; %N Sonuç sayısı&lt;br&gt; %R Uyum yüzdesi&lt;br&gt; %S Boyut bilgileri&lt;br&gt; %T Başlık&lt;br&gt; %U Url&lt;br&gt;</translation>
     </message>
     <message>
         <source>Texts over this size will not be highlighted in preview (too slow).</source>
-        <translation>Bu boyuttan büyük metinler önizlemede vurgulanmayacak (çok yavaş).</translation>
+        <translation type="obsolete">Bu boyuttan büyük metinler önizlemede vurgulanmayacak (çok yavaş).</translation>
     </message>
     <message>
         <source>Maximum text size highlighted for preview (megabytes)</source>
-        <translation>Önizlemede vurgulanacak en fazla metin boyutu (MB)</translation>
+        <translation type="obsolete">Önizlemede vurgulanacak en fazla metin boyutu (MB)</translation>
     </message>
     <message>
         <source>Auto-start simple search on whitespace entry.</source>
-        <translation>Beyaz alan girdisi olduğunda basit aramayı otomatik olarak başlat.</translation>
+        <translation type="obsolete">Beyaz alan girdisi olduğunda basit aramayı otomatik olarak başlat.</translation>
     </message>
     <message>
         <source>Start with advanced search dialog open.</source>
-        <translation>Gelişmiş arama penceresi ile başla.</translation>
+        <translation type="obsolete">Gelişmiş arama penceresi ile başla.</translation>
     </message>
     <message>
         <source>Start with sort dialog open.</source>
-        <translation>Sıralama penceresi ile başla.</translation>
+        <translation type="obsolete">Sıralama penceresi ile başla.</translation>
     </message>
     <message>
         <source>Use desktop preferences to choose document editor.</source>
-        <translation>Belge düzenleyiciyi seçmek için masaüstü tercihlerini kullan.</translation>
+        <translation type="obsolete">Belge düzenleyiciyi seçmek için masaüstü tercihlerini kullan.</translation>
     </message>
     <message>
         <source>Remember sort activation state.</source>
-        <translation>Sıralama kurallarını hatırla.</translation>
+        <translation type="obsolete">Sıralama kurallarını hatırla.</translation>
     </message>
     <message>
         <source>Search parameters</source>
-        <translation>Arama parametreleri</translation>
+        <translation type="obsolete">Arama parametreleri</translation>
     </message>
     <message>
         <source>Stemming language</source>
-        <translation>Kök ayrıştırma dili</translation>
+        <translation type="obsolete">Kök ayrıştırma dili</translation>
     </message>
     <message>
         <source>Automatically add phrase to simple searches</source>
-        <translation>Basit aramalara ifadeyi otomatik olarak ekle</translation>
+        <translation type="obsolete">Basit aramalara ifadeyi otomatik olarak ekle</translation>
     </message>
     <message>
         <source>A search for [rolling stones] (2 terms) will be changed to [rolling or stones or (rolling phrase 2 stones)]. 
 This should give higher precedence to the results where the search terms appear exactly as entered.</source>
-        <translation>[linux kernel] (2 sözcük) araması [linux veya kernel veya (linux ifadesi 2 tane kernel)] olarak değiştirilecektir.  
+        <translation type="obsolete">[linux kernel] (2 sözcük) araması [linux veya kernel veya (linux ifadesi 2 tane kernel)] olarak değiştirilecektir.  
 Bu, aranacak sözcüklerin tam olarak girildiği gibi görüntülendiği sonuçlara yüksek öncelik verilmesini sağlayacaktır.</translation>
     </message>
     <message>
         <source>Dynamically build abstracts</source>
-        <translation>Özetleri dinamik olarak oluştur</translation>
+        <translation type="obsolete">Özetleri dinamik olarak oluştur</translation>
     </message>
     <message>
         <source>Do we try to build abstracts for result list entries by using the context of query terms ? 
 May be slow for big documents.</source>
-        <translation>Sorgu sözcükleri kullanılarak sonuç listesi girdileri için özet oluşturulsun mu ? 
+        <translation type="obsolete">Sorgu sözcükleri kullanılarak sonuç listesi girdileri için özet oluşturulsun mu ? 
 Büyük boyutlu belgelerde yavaş olabilir.</translation>
     </message>
     <message>
         <source>Replace abstracts from documents</source>
-        <translation>Belgelerden özetleri kaldır</translation>
+        <translation type="obsolete">Belgelerden özetleri kaldır</translation>
     </message>
     <message>
         <source>Do we synthetize an abstract even if the document seemed to have one?</source>
-        <translation>Belgenin bir özeti varsa bile bir yapay özet oluşturulsun mu?</translation>
+        <translation type="obsolete">Belgenin bir özeti varsa bile bir yapay özet oluşturulsun mu?</translation>
     </message>
     <message>
         <source>Synthetic abstract size (characters)</source>
-        <translation>Yapay özet boyutu (karakter sayısı)</translation>
+        <translation type="obsolete">Yapay özet boyutu (karakter sayısı)</translation>
     </message>
     <message>
         <source>Synthetic abstract context words</source>
-        <translation>Yapay özet sözcükleri</translation>
+        <translation type="obsolete">Yapay özet sözcükleri</translation>
     </message>
     <message>
         <source>External Indexes</source>
-        <translation>Dış indeksler</translation>
+        <translation type="obsolete">Dış indeksler</translation>
     </message>
     <message>
         <source>External indexes</source>
-        <translation>Dış indeksler</translation>
+        <translation type="obsolete">Dış indeksler</translation>
     </message>
     <message>
         <source>Toggle selected</source>
-        <translation>Seç /Bırak</translation>
+        <translation type="obsolete">Seç /Bırak</translation>
     </message>
     <message>
         <source>Activate All</source>
-        <translation>Tümünü Etkinleştir</translation>
+        <translation type="obsolete">Tümünü Etkinleştir</translation>
     </message>
     <message>
         <source>Deactivate All</source>
-        <translation>Tümünü Pasifleştir</translation>
+        <translation type="obsolete">Tümünü Pasifleştir</translation>
     </message>
     <message>
         <source>Remove selected</source>
-        <translation>Seçileni sil</translation>
+        <translation type="obsolete">Seçileni sil</translation>
     </message>
     <message>
         <source>Remove from list. This has no effect on the disk index.</source>
-        <translation>Listeden sil. Bu diskteki indeksi etkilemez.</translation>
+        <translation type="obsolete">Listeden sil. Bu diskteki indeksi etkilemez.</translation>
     </message>
     <message>
         <source>Add index</source>
-        <translation>İndeks ekle</translation>
+        <translation type="obsolete">İndeks ekle</translation>
     </message>
     <message>
         <source>Select the xapiandb directory for the index you want to add, then click Add Index</source>
-        <translation>İstediğiniz indeksi eklemek için xapiandb (veritabanı) dizinini seçin ve İndeks Ekle düğmesine tıklayın</translation>
+        <translation type="obsolete">İstediğiniz indeksi eklemek için xapiandb (veritabanı) dizinini seçin ve İndeks Ekle düğmesine tıklayın</translation>
     </message>
     <message>
         <source>Browse</source>
-        <translation>Gözat</translation>
+        <translation type="obsolete">Gözat</translation>
     </message>
     <message>
         <source>&amp;OK</source>
-        <translation>&amp;TAMAM</translation>
+        <translation type="obsolete">&amp;TAMAM</translation>
     </message>
     <message>
         <source>Apply changes</source>
-        <translation>Değişiklikleri uygula</translation>
+        <translation type="obsolete">Değişiklikleri uygula</translation>
     </message>
     <message>
         <source>&amp;Cancel</source>
-        <translation>&amp;İptal</translation>
+        <translation type="obsolete">&amp;İptal</translation>
     </message>
     <message>
         <source>Discard changes</source>
-        <translation>Değişiklikleri sil</translation>
+        <translation type="obsolete">Değişiklikleri sil</translation>
     </message>
 </context>
 <context>
@@ -1862,7 +1871,7 @@ Büyük boyutlu belgelerde yavaş olabilir.</translation>
     </message>
     <message>
         <source>Mime type</source>
-        <translation>Mime Tipi</translation>
+        <translation type="obsolete">Mime Tipi</translation>
     </message>
     <message>
         <source>Command</source>
@@ -1885,11 +1894,11 @@ Büyük boyutlu belgelerde yavaş olabilir.</translation>
     </message>
     <message>
         <source>File type</source>
-        <translation>Dosya tipi</translation>
+        <translation type="obsolete">Dosya tipi</translation>
     </message>
     <message>
         <source>Action</source>
-        <translation>Davranış</translation>
+        <translation type="obsolete">Davranış</translation>
     </message>
     <message>
         <source>Change Action</source>
@@ -1907,14 +1916,6 @@ Büyük boyutlu belgelerde yavaş olabilir.</translation>
 <context>
     <name>confgui::ConfBeaglePanelW</name>
     <message>
-        <source>Steal Beagle indexing queue</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Beagle MUST NOT be running. Enables processing the beagle queue to index Firefox web history.&lt;br&gt;(you should also install the Firefox Beagle plugin)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Entries will be recycled once the size is reached</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1930,6 +1931,14 @@ Büyük boyutlu belgelerde yavaş olabilir.</translation>
         <source>Max. size for the web store (MB)</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Process the WEB history queue</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enables indexing Firefox visited pages.&lt;br&gt;(you need also install the Firefox Recoll plugin)</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>confgui::ConfIndexW</name>
@@ -1942,7 +1951,7 @@ Büyük boyutlu belgelerde yavaş olabilir.</translation>
     <name>confgui::ConfParamFNW</name>
     <message>
         <source>Browse</source>
-        <translation>Gözat</translation>
+        <translation type="obsolete">Gözat</translation>
     </message>
     <message>
         <source>Choose</source>
@@ -2105,7 +2114,7 @@ This will help searching very big text  files (ie: log files).</source>
     </message>
     <message>
         <source>The language for the aspell dictionary. This should look like &apos;en&apos; or &apos;fr&apos; ...&lt;br&gt;If this value is not set, the NLS environment will be used to compute it, which usually works.To get an idea of what is installed on your system, type &apos;aspell config&apos; and look for .dat files inside the &apos;data-dir&apos; directory. </source>
-        <translation>Aspell sözlükleri için dil. Bu &apos;en&apos; ya da &apos;fr&apos; gibi olmalıdır ...&lt;br&gt;Eğer bu değer ayarlanmazsa şimdi kullandığnız NLS çevresel değişkeni kullanılacaktır. Sisteminizde neyin yüklü olduğu hakkında bilgi almak için &apos;aspell config&apos; yazıp &apos;data-dir&apos; içerisindeki .dat dosyalarına bakın. </translation>
+        <translation type="obsolete">Aspell sözlükleri için dil. Bu &apos;en&apos; ya da &apos;fr&apos; gibi olmalıdır ...&lt;br&gt;Eğer bu değer ayarlanmazsa şimdi kullandığnız NLS çevresel değişkeni kullanılacaktır. Sisteminizde neyin yüklü olduğu hakkında bilgi almak için &apos;aspell config&apos; yazıp &apos;data-dir&apos; içerisindeki .dat dosyalarına bakın. </translation>
     </message>
     <message>
         <source>Database directory name</source>
@@ -2113,7 +2122,7 @@ This will help searching very big text  files (ie: log files).</source>
     </message>
     <message>
         <source>The name for a directory where to store the index&lt;br&gt;A non-absolute path is taken relative to the  configuration directory. The default is &apos;xapiandb&apos;.</source>
-        <translation>İndeksin duracağı dizinin adı&lt;br&gt;Eğer tam yol verilmezse yol yapılandırma  dizinine göre belirlenecek. Öntanımlı dizin adı &apos;xapiandb&apos;.</translation>
+        <translation type="obsolete">İndeksin duracağı dizinin adı&lt;br&gt;Eğer tam yol verilmezse yol yapılandırma  dizinine göre belirlenecek. Öntanımlı dizin adı &apos;xapiandb&apos;.</translation>
     </message>
     <message>
         <source>Use system&apos;s &apos;file&apos; command</source>
@@ -2192,11 +2201,11 @@ This will help searching very big text  files (ie: log files).</source>
     </message>
     <message>
         <source>Defines the format for each result list paragraph. Use qt html format and printf-like replacements:&lt;br&gt;%A Abstract&lt;br&gt; %D Date&lt;br&gt; %I Icon image name&lt;br&gt; %K Keywords (if any)&lt;br&gt; %L Preview and Edit links&lt;br&gt; %M Mime type&lt;br&gt; %N Result number&lt;br&gt; %R Relevance percentage&lt;br&gt; %S Size information&lt;br&gt; %T Title&lt;br&gt; %U Url&lt;br&gt;</source>
-        <translation>Tüm sonuç listesi paragraflarını tanımlar. Qt html biçimini ve printf benzeri yer değiştiricileri kullanın:&lt;br&gt;%A Özet&lt;br&gt; %D Tarih&lt;br&gt; %I Simge resminin adı&lt;br&gt; %K Anahtar sözcükler (eğer varsa)&lt;br&gt; %L Önizle ve Düzenle bağlantıları&lt;br&gt; %M Mime tipi&lt;br&gt; %N Sonuç sayısı&lt;br&gt; %R Uyum yüzdesi&lt;br&gt; %S Boyut bilgileri&lt;br&gt; %T Başlık&lt;br&gt; %U Url&lt;br&gt;</translation>
+        <translation type="obsolete">Tüm sonuç listesi paragraflarını tanımlar. Qt html biçimini ve printf benzeri yer değiştiricileri kullanın:&lt;br&gt;%A Özet&lt;br&gt; %D Tarih&lt;br&gt; %I Simge resminin adı&lt;br&gt; %K Anahtar sözcükler (eğer varsa)&lt;br&gt; %L Önizle ve Düzenle bağlantıları&lt;br&gt; %M Mime tipi&lt;br&gt; %N Sonuç sayısı&lt;br&gt; %R Uyum yüzdesi&lt;br&gt; %S Boyut bilgileri&lt;br&gt; %T Başlık&lt;br&gt; %U Url&lt;br&gt;</translation>
     </message>
     <message>
         <source>Result paragraph&lt;br&gt;format string</source>
-        <translation>Sonuç paragrafı&lt;br&gt;biçimlendirme ifadesi</translation>
+        <translation type="obsolete">Sonuç paragrafı&lt;br&gt;biçimlendirme ifadesi</translation>
     </message>
     <message>
         <source>Texts over this size will not be highlighted in preview (too slow).</source>
@@ -2228,7 +2237,7 @@ This will help searching very big text  files (ie: log files).</source>
     </message>
     <message>
         <source>Start with sort dialog open.</source>
-        <translation>Sıralama penceresi ile başla.</translation>
+        <translation type="obsolete">Sıralama penceresi ile başla.</translation>
     </message>
     <message>
         <source>Remember sort activation state.</source>

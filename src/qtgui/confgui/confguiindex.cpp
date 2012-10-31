@@ -114,7 +114,7 @@ void ConfIndexW::reloadPanels()
 
     w = new ConfBeaglePanelW(this, m_conf);
     m_widgets.push_back(w);
-    tabWidget->addTab(w, QObject::tr("Beagle web history"));
+    tabWidget->addTab(w, QObject::tr("Web history"));
 
     w = new ConfSearchPanelW(this, m_conf);
     m_widgets.push_back(w);
@@ -128,12 +128,11 @@ ConfBeaglePanelW::ConfBeaglePanelW(QWidget *parent, ConfNull *config)
     vboxLayout->setSpacing(spacing);
     vboxLayout->setMargin(margin);
 
-    ConfLink lnk1(new ConfLinkRclRep(config, "processbeaglequeue"));
+    ConfLink lnk1(new ConfLinkRclRep(config, "processwebqueue"));
     ConfParamBoolW* cp1 = 
-        new ConfParamBoolW(this, lnk1, tr("Steal Beagle indexing queue"),
-                           tr("Beagle MUST NOT be running. Enables processing "
-                          "the beagle queue to index Firefox web history.<br>"
-                          "(you should also install the Firefox Beagle plugin)"
+        new ConfParamBoolW(this, lnk1, tr("Process the WEB history queue"),
+                           tr("Enables indexing Firefox visited pages.<br>"
+			     "(you need also install the Firefox Recoll plugin)"
 			  ));
     vboxLayout->addWidget(cp1);
 

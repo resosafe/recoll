@@ -1,6 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE TS>
-<TS version="2.0">
+<!DOCTYPE TS><TS>
 <context>
     <name>AdvSearch</name>
     <message>
@@ -37,6 +35,14 @@
     </message>
     <message>
         <source>message</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>texts</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>spreadsheets</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -490,11 +496,11 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Beagle web history</source>
+        <source>Search parameters</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Search parameters</source>
+        <source>Web history</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1427,6 +1433,17 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
         <source>Prev</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>X</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>SnippetsW</name>
+    <message>
+        <source>Search</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>SpellBase</name>
@@ -1590,14 +1607,6 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
 <context>
     <name>confgui::ConfBeaglePanelW</name>
     <message>
-        <source>Steal Beagle indexing queue</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Beagle MUST NOT be running. Enables processing the beagle queue to index Firefox web history.&lt;br&gt;(you should also install the Firefox Beagle plugin)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Entries will be recycled once the size is reached</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1611,6 +1620,14 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>Max. size for the web store (MB)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Process the WEB history queue</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Enables indexing Firefox visited pages.&lt;br&gt;(you need also install the Firefox Recoll plugin)</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

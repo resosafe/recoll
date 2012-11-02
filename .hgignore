@@ -26,6 +26,7 @@ src/doc/user/rcl.indexing.html
 src/doc/user/rcl.indexing.monitor.html
 src/doc/user/rcl.indexing.periodic.html
 src/doc/user/rcl.indexing.storage.html
+src/doc/user/rcl.indexing.webqueue.html
 src/doc/user/rcl.install.building.html
 src/doc/user/rcl.install.config.html
 src/doc/user/rcl.install.external.html

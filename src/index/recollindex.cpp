@@ -366,6 +366,10 @@ int main(int argc, char **argv)
     Pidfile pidfile(config->getPidfile());
     updater = new MyUpdater(config);
 
+    // Log something at LOGINFO to reset the trace file. Else at level
+    // 3 it's not even truncated if all docs are up to date.
+    LOGINFO(("recollindex: starting up\n"));
+
     if (setpriority(PRIO_PROCESS, 0, 20) != 0) {
         LOGINFO(("recollindex: can't setpriority(), errno %d\n", errno));
     }

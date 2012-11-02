@@ -83,6 +83,7 @@ void returnMimeHandler(Dijon::Filter *handler)
 	if (o_handlers.size() >= max_handlers_cache_size) {
 	    map<string, Dijon::Filter *>::iterator it = 
 		o_handlers.find(handler->get_mime_type());
+	    delete it->second;
 	    if (it != o_handlers.end()) 
 		o_handlers.erase(it);
 	    else
@@ -279,7 +280,8 @@ Dijon::Filter *getMimeHandler(const string &mtype, RclConfig *cfg,
     {bool indexunknown = false;
 	cfg->getConfParam("indexallfilenames", &indexunknown);
 	if (indexunknown) {
-	    h = new MimeHandlerUnknown(cfg, "application/octet-stream");
+	    if ((h = getMimeHandlerFromCache("application/octet-stream")) == 0)
+		h = new MimeHandlerUnknown(cfg, "application/octet-stream");
 	    goto out;
 	} else {
 	    goto out;

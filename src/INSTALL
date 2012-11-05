@@ -548,17 +548,16 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
            useful for files with suffix-less names, but it will also cause
            the indexing of many bogus "text" files.
 
-   processbeaglequeue
+   processwebqueue
 
-           If this is set, process the directory where Beagle Web browser
-           plugins copy visited pages for indexing. Of course, Beagle MUST
-           NOT be running, else things will behave strangely.
+           If this is set, process the directory where Web browser plugins
+           copy visited pages for indexing.
 
-   beaglequeuedir
+   webqueuedir
 
-           The path to the Beagle indexing queue. This is hard-coded in the
-           Beagle plugin as ~/.beagle/ToIndex so there should be no need to
-           change it.
+           The path to the web indexing queue. This is hard-coded in the
+           Firefox plugin as ~/.recollweb/ToIndex so there should be no need
+           to change it.
 
   5.4.1.2. Parameters affecting how we generate terms:
 
@@ -713,15 +712,14 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
    webcachedir
 
-           This is only used by the Beagle web browser plugin indexing code,
-           and defines where the cache for visited pages will live. Default:
+           This is only used by the web browser plugin indexing code, and
+           defines where the cache for visited pages will live. Default:
            $RECOLL_CONFDIR/webcache
 
    webcachemaxmbs
 
-           This is only used by the Beagle web browser plugin indexing code,
-           and defines the maximum size for the web page cache. Default: 40
-           MB.
+           This is only used by the web browser plugin indexing code, and
+           defines the maximum size for the web page cache. Default: 40 MB.
 
    idxflushmb
 
@@ -730,7 +728,10 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
            of 0 means no explicit flushing, letting Xapian use its own
            default, which is flushing every 10000 (or XAPIAN_FLUSH_THRESHOLD)
            documents, which gives little memory usage control, as memory
-           usage depends on average document size. The default value is 10.
+           usage also depends on average document size. The default value is
+           10, and it is probably a bit low. If your system usually has free
+           memory, you can try higher values between 20 and 80. In my
+           experience, values beyond 100 are always counterproductive.
 
   5.4.1.4. Miscellaneous parameters:
 

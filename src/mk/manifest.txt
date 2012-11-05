@@ -106,12 +106,12 @@ doc/user/bldloop
 doc/user/docbook-xsl.css
 doc/user/docbook.css
 doc/user/index.html
-doc/user/rcl.indexing.beaglequeue.html
 doc/user/rcl.indexing.config.html
 doc/user/rcl.indexing.html
 doc/user/rcl.indexing.monitor.html
 doc/user/rcl.indexing.periodic.html
 doc/user/rcl.indexing.storage.html
+doc/user/rcl.indexing.webqueue.html
 doc/user/rcl.install.building.html
 doc/user/rcl.install.config.html
 doc/user/rcl.install.external.html

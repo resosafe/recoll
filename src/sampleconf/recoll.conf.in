@@ -1,12 +1,12 @@
-# @(#$Id: recoll.conf.in,v 1.22 2008-10-15 08:30:18 dockes Exp $  (C) 2004 J.F.Dockes
+# (C) 2004 J.F.Dockes. License: GPL
 #
 # Recoll default configuration file. This typically lives in
 # @prefix@/share/recoll/examples and provides default values. You can
 # override selected parameters by adding assigments to
 # ~/.recoll/recoll.conf (or $RECOLL_CONFDIR/recoll.conf)
 #
-# Almost all values in this file can be set from the GUI configuration menus,
-# which maybe an easier approach than direct editing
+# Almost all values in this file can be set from the GUI configuration
+# menus, which may be an easier approach than direct editing.
 #
 
 # Space-separated list of directories to index. Next line indexes $HOME
@@ -22,9 +22,9 @@ skippedNames = #* bin CVS  Cache cache* .cache caughtspam tmp \
      .recoll* xapiandb recollrc recoll.conf
 
 # Wildcard expressions for paths we shouldn't go into. The database and
-# configuration directories will be added in there, else the default value
-# is empty
-# skippedPaths = 
+# configuration directories will automatically be added in there, else the
+# default value is empty
+#skippedPaths = 
 # Same for real time indexing. The idea here is that there is stuff that
 # you might want to initially index but not monitor. If daemSkippedPaths is
 # not set, the daemon uses skippedPaths.
@@ -34,12 +34,12 @@ skippedNames = #* bin CVS  Cache cache* .cache caughtspam tmp \
 # means that /dir1/dir2/dir3 is not matched by */dir3. Can't change the
 # default now, but you can set the following variable to 0 to disable the
 # use of FNM_PATHNAME (see fnmatch(3) man page)
-# skippedPathsFnmPathname = 1
+#skippedPathsFnmPathname = 1
 
 # Option to follow symbolic links. We normally don't, to avoid duplicated
 # indexing (in any case, no effort is made to identify or avoid multiple
 # indexing of linked files)
-# followLinks = 0
+#followLinks = 0
 
 # Debug messages. 2 is errors/warnings only. 3 information like doc
 # updates, 4 is quite verbose and 6 very verbose
@@ -135,11 +135,16 @@ maxfsoccuppc = 0
 # own thing, meaning flushing every XAPIAN_FLUSH_THRESHOLD documents
 # created, modified or deleted. XAPIAN_FLUSH_THRESHOLD is an environment
 # variable. As memory usage depends on average document size, not only
-# document count, this is not very useful.
+# document count, this is not very useful. 
+#
+# The default value of 10 MB may be a bit low. If you are looking for
+# maximum speed, you may want to experiment with values between 20 and
+# 80. In my experience, values beyond 100 are always counterproductive. If
+# you find otherwise, please drop me a note.
 idxflushmb = 10
 
 # Place to search for executable filters. If RECOLL_FILTERSDIR is set in
-# the environement, we use it instead
+# the environment, we use it instead
 filtersdir = @prefix@/share/recoll/filters
 
 # Place to search for icons. The only reason to change this would be if you

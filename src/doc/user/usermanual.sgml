@@ -4623,8 +4623,11 @@ unac_except_trans =  åå Åå ää Ää öö Öö
             memory usage. A value of 0 means no explicit flushing, letting
             Xapian use its own default, which is flushing every 10000 (or
             XAPIAN_FLUSH_THRESHOLD) documents, which gives little memory
-            usage control, as memory usage depends on average document
-            size. The default value is 10.</para> 
+            usage control, as memory usage also depends on average document
+            size. The default value is 10, and it is probably a bit low. If
+            your system usually has free memory, you can try higher values
+            between 20 and 80. In my experience, values beyond 100 are
+            always counterproductive.</para> 
             </listitem>
           </varlistentry>
 

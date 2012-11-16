@@ -305,6 +305,8 @@ qtgui/i18n/recoll_cs.qm
 qtgui/i18n/recoll_cs.ts
 qtgui/i18n/recoll_de.qm
 qtgui/i18n/recoll_de.ts
+qtgui/i18n/recoll_el.qm
+qtgui/i18n/recoll_el.ts
 qtgui/i18n/recoll_es.qm
 qtgui/i18n/recoll_es.ts
 qtgui/i18n/recoll_fr.qm

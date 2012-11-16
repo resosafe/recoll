@@ -120,7 +120,14 @@ public:
 	    }
 	    return true;
 	}
-	return TermProc::takeword(otrm, pos, bs, be);
+	// It may happen in some weird cases that the output from unac is 
+	// empty (if the word actually consisted entirely of diacritics ...)
+	// The consequence is that a phrase search won't work without addional
+	// slack. 
+	if (otrm.empty())
+	    return true;
+	else
+	    return TermProc::takeword(otrm, pos, bs, be);
     }
 
     virtual bool flush()

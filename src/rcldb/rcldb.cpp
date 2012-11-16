@@ -949,6 +949,10 @@ public:
 	// and remember relative.
 	m_ts->curpos = pos;
 	pos += m_ts->basepos;
+	// Don't try to add empty term Xapian doesnt like it... Safety check
+	// this should not happen.
+	if (term.empty())
+	    return true;
 	string ermsg;
 	try {
 	    // Index without prefix, using the field-specific weighting

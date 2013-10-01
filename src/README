@@ -174,7 +174,7 @@ More documentation can be found in the doc/ directory or at http://www.recoll.or
 
                 5.4. Configuration overview
 
-                             5.4.1. Main configuration file
+                             5.4.1. The main configuration file, recoll.conf
 
                              5.4.2. The fields file
 
@@ -626,6 +626,11 @@ Chapter 2. Indexing
    stripped one (around 10%). Also, searches will be more complex, so
    probably slightly slower, and the feature is still young, so that a
    certain amount of weirdness cannot be excluded.
+
+   One of the most adverse consequence of using a raw index is that some
+   phrase and proximity searches may become impossible: because each term
+   needs to be expanded, and all combinations searched for, the
+   multiplicative expansion may become unmanageable.
 
   2.3.3. The index configuration GUI
 
@@ -2702,14 +2707,22 @@ Chapter 4. Programming interface
     4.3.2.1. Introduction
 
    Recoll versions after 1.11 define a Python programming interface, both for
-   searching and indexing.
+   searching and indexing. The indexing portion has seen little use, but the
+   searching one is used in the Recoll Ubuntu Unity Lens and Recoll Web UI.
 
-   The API is inspired by the Python database API specification, version 1.0
-   for Recoll versions up to 1.18, version 2.0 for Recoll versions 1.19 and
-   later. The package structure changed with Recoll 1.19 too. We will mostly
-   describe the new API and package structure here. A paragraph at the end of
-   this section will explain a few differences and ways to write code
-   compatible with both versions.
+   The API is inspired by the Python database API specification. There were
+   two major changes in recent Recoll versions:
+
+     o The basis for the Recoll API changed from Python database API version
+       1.0 (Recoll versions up to 1.18.1), to version 2.0 (Recoll 1.18.2 and
+       later).
+     o The recoll module became a package (with an internal recoll module) as
+       of Recoll version 1.19, in order to add more functions. For existing
+       code, this only changes the way the interface must be imported.
+
+   We will mostly describe the new API and package structure here. A
+   paragraph at the end of this section will explain a few differences and
+   ways to write code compatible with both versions.
 
    The Python interface can be found in the source package, under
    python/recoll.
@@ -2722,6 +2735,12 @@ Chapter 4. Programming interface
              python setup.py build
              python setup.py install
           
+
+   The normal Recoll installer installs the Python API along with the main
+   code.
+
+   When installing from a repository, and depending on the distribution, the
+   Python API can sometimes be found in a separate package.
 
     4.3.2.2. Recoll package
 
@@ -2766,7 +2785,17 @@ Chapter 4. Programming interface
            These aliases return a blank Query object for this index.
 
    Db.setAbstractParams(maxchars, contextwords)
-           Set the parameters used to build snippets.
+           Set the parameters used to build snippets (sets of keywords in
+           context text fragments). maxchars defines the maximum total size
+           of the abstract. contextwords defines how many terms are shown
+           around the keyword.
+
+   Db.termMatch(match_type, expr, field='', maxlen=-1, casesens=False,
+   diacsens=False, lang='english')
+           Expand an expression against the index term list. Performs the
+           basic function from the GUI term explorer tool. match_type can be
+           either of wildcard, regexp or stem. Returns a list of terms
+           expanded from the input expression.
 
         The Query class
 
@@ -2794,7 +2823,7 @@ Chapter 4. Programming interface
            Fetches the next Doc object from the current search results.
 
    Query.close()
-           Closes the connection. The object is unusable after the call.
+           Closes the query. The object is unusable after the call.
 
    Query.scroll(value, mode='relative')
            Adjusts the position in the current result set. mode can be
@@ -2803,9 +2832,9 @@ Chapter 4. Programming interface
    Query.getgroups()
            Retrieves the expanded query terms as a list of pairs. Meaningful
            only after executexx In each pair, the first entry is a list of
-           user terms, the second a list of query terms as derived from the
-           user terms and used in the Xapian Query. The size of each list is
-           one for simple terms, or more for group and phrase clauses.
+           user terms (of size one for simple terms, or more for group and
+           phrase clauses), the second a list of query terms as derived from
+           the user terms and used in the Xapian Query.
 
    Query.getxquery()
            Return the Xapian query description as a Unicode string.
@@ -2837,8 +2866,8 @@ Chapter 4. Programming interface
 
    Query.rownumber
            Next index to be fetched from results. Normally increments after
-           each fetchone() call, but can be set/reset before the call effect
-           seeking. Starts at 0.
+           each fetchone() call, but can be set/reset before the call to
+           effect seeking (equivalent to using scroll()). Starts at 0.
 
         The Doc class
 
@@ -2887,11 +2916,13 @@ Chapter 4. Programming interface
 
     4.3.2.4. The rclextract module
 
-   Document content is not provided by an index query. To access it, the data
-   extraction part of the indexing process must be performed (subdocument
-   access and format translation). This is not trivial in general. The
-   rclextract module currently provides a single class which can be used to
-   access the data content for result documents.
+   Index queries do not provide document content (only a partial and
+   unprecise reconstruction is performed to show the snippets text). In order
+   to access the actual document data, the data extraction part of the
+   indexing process must be performed (subdocument access and format
+   translation). This is not trivial in general. The rclextract module
+   currently provides a single class which can be used to access the data
+   content for result documents.
 
       Classes
 
@@ -2906,12 +2937,21 @@ Chapter 4. Programming interface
    Extractor.textextract(ipath)
            Extract document defined by ipath and return a Doc object. The
            doc.text field has the document text as either text/plain or
-           text/html according to doc.mimetype.
+           text/html according to doc.mimetype. The typical use would be as
+           follows:
 
-   Extractor.idoctofile()
+ qdoc = query.fetchone()
+ extractor = recoll.Extractor(qdoc)
+ text = extractor.textextract(qdoc.ipath)
+
+   Extractor.idoctofile(ipath, targetmtype, outfile='')
            Extracts document into an output file, which can be given
            explicitly or will be created as a temporary file to be deleted by
-           the caller.
+           the caller. Typical use:
+
+ qdoc = query.fetchone()
+ extractor = recoll.Extractor(qdoc)
+ filename = extractor.idoctofile(qdoc.ipath, qdoc.mimetype)
 
     4.3.2.5. Example code
 
@@ -3224,6 +3264,15 @@ Chapter 5. Installation and configuration
    to manually copy and modify one of the existing files (the new file name
    should be the output of uname -s).
 
+    5.3.2.1. Building on Solaris
+
+   We did not test building the GUI on Solaris for recent versions. You will
+   need at least Qt 4.4. There are some hints on an old web site page, they
+   may still be valid.
+
+   Someone did test the 1.19 indexer and Python module build, they do work,
+   with a few minor glitches. Be sure to use GNU make and install.
+
   5.3.3. Installation
 
    Either type make install or execute recollinstall prefix, in the root of
@@ -3259,11 +3308,24 @@ Chapter 5. Installation and configuration
    by comments inside the default files, and we will just give a general
    overview here.
 
-   For each index, there are two sets of configuration files. System-wide
-   configuration files are kept in a directory named like
+   By default, for each index, there are two sets of configuration files.
+   System-wide configuration files are kept in a directory named like
    /usr/[local/]share/recoll/examples, and define default values, shared by
    all indexes. For each index, a parallel set of files defines the
    customized parameters.
+
+   In addition (as of Recoll version 1.19.7), it is possible to specify two
+   additional configuration directories which will be stacked before and
+   after the user configuration directory. These are defined by the
+   RECOLL_CONFTOP and RECOLL_CONFMID environment variables. Values from
+   configuration files inside the top directory will override user ones,
+   values from configuration files inside the middle directory will override
+   system ones and be overriden by user ones. These two variables may be of
+   use to applications which augment Recoll functionality, and need to add
+   configuration data without disturbing the user's files. Please note that
+   the two, currently single, values will probably be interpreted as
+   colon-separated lists in the future: do not use colon characters inside
+   the directory paths.
 
    The default location of the configuration is the .recoll directory in your
    home. Most people will only use this directory.
@@ -3328,7 +3390,7 @@ Chapter 5. Installation and configuration
        text files with appropriate encodings, and concatenate them to create
        the complete configuration.
 
-  5.4.1. Main configuration file
+  5.4.1. The main configuration file, recoll.conf
 
    recoll.conf is the main configuration file. It defines things like what to
    index (top directories and things to ignore), and the default character
@@ -3404,6 +3466,16 @@ Chapter 5. Installation and configuration
            This means that '/' characters must be matched explicitely. You
            can set skippedPathsFnmPathname to 0 to disable the use of
            FNM_PATHNAME (meaning that /*/dir3 will match /dir1/dir2/dir3).
+
+   zipSkippedNames
+
+           A space-separated list of patterns for names of files or
+           directories that should be ignored inside zip archives. This is
+           used directly by the zip filter, and has a function similar to
+           skippedNames, but works independantly. Can be redefined for
+           filesystem subdirectories. For versions up to 1.19, you will need
+           to update the Zip filter and install a supplementary Python
+           module. The details are described on the Recoll wiki.
 
    followLinks
 
@@ -3596,16 +3668,40 @@ Chapter 5. Installation and configuration
            = val, then select specifier viewer with mimetype|tag=... in
            mimeview.
 
+   noxattrfields
+
+           Recoll versions 1.19 and later automatically translate file
+           extended attributes into document fields (to be processed
+           according to the parameters from the fields file). Setting this
+           variable to 1 will disable the behaviour.
+
    metadatacmds
 
            This allows executing external commands for each file and storing
-           the output in a Recoll field. This could be used for example to
-           index external tag data. The value is a list of field names and
-           commands, don't forget an initial semi-colon. Example:
+           the output in Recoll document fields. This could be used for
+           example to index external tag data. The value is a list of field
+           names and commands, don't forget an initial semi-colon. Example:
 
  [/some/area/of/the/fs]
  metadatacmds = ; tags = tmsu tags %f; otherfield = somecmd -xx %f
                 
+
+           As a specially disgusting hack brought by Recoll 1.19.7, if a
+           "field name" begins with rclmulti, the data returned by the
+           command is expected to contain multiple field values, in
+           configuration file format. This allows setting several fields by
+           executing a single command. Example:
+
+ metadatacmds = ; rclmulti1 = somecmd %f
+                
+
+           If somecmd returns data in the form of:
+
+ field1 = value1
+ field2 = "value for field2"
+                
+
+           field1 and field2 will be set inside the document metadata.
 
     5.4.1.3. Parameters affecting where and how we store things:
 
@@ -3663,7 +3759,7 @@ Chapter 5. Installation and configuration
            memory, you can try higher values between 20 and 80. In my
            experience, values beyond 100 are always counterproductive.
 
-    5.4.1.4. Indexing parallelism configuration
+    5.4.1.4. Parameters affecting multithread processing
 
    The Recoll indexing process recollindex can use multiple threads to speed
    up indexing on multiprocessor systems. The work done to index files is
@@ -3691,7 +3787,7 @@ Chapter 5. Installation and configuration
            stage. In practise, deep queues have not been shown to increase
            performance. A value of 0 for the first queue tells Recoll to
            perform autoconfiguration (no need for the two other values in
-           this case)- this is the default configuration.
+           this case) - this is the default configuration.
 
    thrTCounts
 
@@ -3720,6 +3816,11 @@ Chapter 5. Installation and configuration
 
  thrQSizes = 2 -1 -1
  thrTCounts =  6 1 1
+
+   The following example would disable multithreading. Indexing will be
+   performed by a single thread.
+
+ thrQSizes = -1 -1 -1
 
     5.4.1.5. Miscellaneous parameters:
 

@@ -265,6 +265,7 @@ lib/mkMake
 makestaticdist.sh
 mk/
 mk/AIX
+mk/CYGWIN
 mk/Darwin
 mk/Default
 mk/FreeBSD
@@ -300,7 +301,6 @@ python/samples/rclmbox.py
 python/samples/recollgui/
 python/samples/recollgui/Makefile
 python/samples/recollgui/qrecoll.py
-python/samples/recollgui/rclmain.py
 python/samples/recollgui/rclmain.ui
 python/samples/recollq.py
 python/samples/recollqsd.py

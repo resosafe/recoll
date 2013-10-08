@@ -117,7 +117,8 @@ ${INSTALL} -m 0444 doc/man/recoll.conf.5  ${mandir}/man5/
 ${INSTALL} -m 0755 index/recollindex ${bindir} || exit 1
 ${STRIP} ${bindir}/recollindex
 
-${INSTALL} -m 0644 lib/librecoll.so.${RCLLIBVERSION} ${libdir}/recoll/ || exit 1
+@NODYNLIB@${INSTALL} -m 0644 lib/librecoll.so.${RCLLIBVERSION} \
+@NODYNLIB@    ${libdir}/recoll/ || exit 1
 
 ${INSTALL} -m 0755 filters/rcl* ${datadir}/recoll/filters/ || exit 1
 for f in rclexecm.py rcllatinstops.zip;do

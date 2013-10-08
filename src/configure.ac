@@ -21,6 +21,12 @@ if test ! -f mk/$sys ; then
 fi
 (cd mk; rm -f sysconf; ln -s $sys sysconf)
 
+# There a few Recoll users on Mac OS X and a few things are just not worth
+# supporting
+if test X$sys = XDarwin ; then
+   NODYNLIB=#
+fi
+
 AC_SYS_LARGEFILE
 
 # OpenBSD needs sys/param.h for mount.h to compile
@@ -219,12 +225,16 @@ fi
 #   configure --disable-python-module; make; make install;make clean
 #   configure; make; cd python/recoll; make install
 #
+if test X$sys != XDarwin ; then
 AC_ARG_ENABLE(python-module,
     AC_HELP_STRING([--disable-python-module],
    [Do not build the Python module.]),
         pythonEnabled=$enableval, pythonEnabled=yes)
 if test X$pythonEnabled = Xyes ; then
   NOPYTHON=""
+else
+  NOPYTHON="#"
+fi
 else
   NOPYTHON="#"
 fi
@@ -562,6 +572,7 @@ AC_SUBST(LIBQZEITGEIST)
 AC_SUBST(NOPIC)
 AC_SUBST(NOTHREADS)
 AC_SUBST(NOPYTHON)
+AC_SUBST(NODYNLIB)
 AC_SUBST(RCLVERSION)
 AC_SUBST(RCLLIBVERSION)
 

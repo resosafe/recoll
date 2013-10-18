@@ -19,8 +19,7 @@
 #include <math.h>
 
 #include <map>
-#include <tr1/unordered_set>
-using std::tr1::unordered_set;
+#include "unordered_defs.h"
 
 using namespace std;
 
@@ -362,7 +361,7 @@ int Query::Native::makeAbstract(Xapian::docid docid,
     map<unsigned int, string> sparseDoc;
     // Also remember apart the search term positions so that we can list
     // them with their snippets.
-    unordered_set<unsigned int> searchTermPositions;
+    STD_UNORDERED_SET<unsigned int> searchTermPositions;
 
     // Remember max position. Used to stop walking positions lists while 
     // populating the adjacent slots.

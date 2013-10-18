@@ -364,18 +364,28 @@ void stringToTokens(const string& str, vector<string>& tokens,
 {
     string::size_type startPos = 0, pos;
 
-    for (pos = 0;;) { 
-        // Skip initial delims, break if this eats all.
-        if (skipinit && 
-	    (startPos = str.find_first_not_of(delims, pos)) == string::npos)
-	    break;
+    // Skip initial delims, return empty if this eats all.
+    if (skipinit && 
+	(startPos = str.find_first_not_of(delims, 0)) == string::npos) {
+	return;
+    }
+    while (startPos < str.size()) { 
         // Find next delimiter or end of string (end of token)
         pos = str.find_first_of(delims, startPos);
-        // Add token to the vector. Note: token cant be empty here
-	if (pos == string::npos)
+
+        // Add token to the vector and adjust start
+	if (pos == string::npos) {
 	    tokens.push_back(str.substr(startPos));
-	else
+	    break;
+	} else if (pos == startPos) {
+	    // Dont' push empty tokens after first
+	    if (tokens.empty())
+		tokens.push_back(string());
+	    startPos = ++pos;
+	} else {
 	    tokens.push_back(str.substr(startPos, pos - startPos));
+	    startPos = ++pos;
+	}
     }
 }
 

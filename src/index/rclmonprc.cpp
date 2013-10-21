@@ -447,6 +447,35 @@ static bool checkfileanddelete(const string& fname)
     return ret;
 }
 
+// It's possible to override the normal indexing delay by creating a
+// file in the config directory (which we then remove). And yes there
+// is definitely a race condition (we can suppress the delay and file
+// before the target doc is queued), and we can't be sure that the
+// delay suppression will be used for the doc the user intended it
+// for. But this is used for non-critical function and the race
+// condition should happen reasonably seldom.
+// We check for the request file in all possible user config dirs
+// (usually, there is only the main one)
+static bool expeditedIndexingRequested()
+{
+    static vector<string> rqfiles;
+    if (rqfiles.empty()) {
+	rqfiles.push_back(path_cat(conf->getConfDir(), "rclmonixnow"));
+	if ((cp = getenv("RECOLL_CONFTOP"))) {
+	    rqfiles.push_back(path_cat(cp, "rclmonixnow"));
+	} 
+	if ((cp = getenv("RECOLL_CONFMID"))) {
+	    rqfiles.push_back(path_cat(cp, "rclmonixnow"));
+	} 
+    }
+    bool found  = false;
+    for (vector<string>const_iterator it = rqfiles.begin(); 
+	 it != rqfiles.end(); it++) {
+	found = found || checkfileanddelete(*it);
+    }
+    return found;
+}
+
 bool startMonitor(RclConfig *conf, int opts)
 {
     if (!conf->getConfParam("monauxinterval", &auxinterval))
@@ -454,14 +483,6 @@ bool startMonitor(RclConfig *conf, int opts)
     if (!conf->getConfParam("monixinterval", &ixinterval))
 	ixinterval = dfltixinterval;
 
-    // It's possible to override the normal indexing delay by creating
-    // a file in the config directory (which we then remove). And yes
-    // there is definitely a race condition (we can suppress the delay
-    // and file before the target doc is queued), and we can't be sure
-    // that the delay suppression will be used for the doc the user
-    // intended it for. But this is used for non-critical function and
-    // the race condition should happen reasonably seldom.
-    string ixnowfilename = path_cat(conf->getConfDir(), "rclmonixnow");
 
     rclEQ.setConfig(conf);
     rclEQ.setopts(opts);
@@ -539,7 +560,7 @@ bool startMonitor(RclConfig *conf, int opts)
 	// Process. We don't do this every time but let the lists accumulate
         // a little, this saves processing. Start at once if list is big.
         time_t now = time(0);
-        if (checkfileanddelete(ixnowfilename) ||
+        if (expeditedIndexingRequested() ||
 	    (now - lastixtime > ixinterval) || 
 	    (deleted.size() + modified.size() > 20)) {
             lastixtime = now;

@@ -749,6 +749,19 @@ void ResTable::linkWasClicked(const QUrl &url)
     int i = atoi(ascurl+1) -1;
     int what = ascurl[0];
     switch (what) {
+    // Open abstract/snippets window
+    case 'A':
+	if (m_detaildocnum >= 0)
+	    emit(showSnippets(m_detaildoc));
+	break;
+    case 'D':
+	{
+	    vector<Rcl::Doc> dups;
+	    if (m_detaildocnum >= 0 && m_rclmain && 
+		m_model->getDocSource()->docDups(m_detaildoc, dups)) {
+		m_rclmain->newDupsW(m_detaildoc, dups);
+	    }
+	}
     case 'P': 
     case 'E': 
     {

@@ -1554,6 +1554,32 @@ static bool lookForHtmlBrowser(string &exefile)
     return false;
 }
 
+void RclMain::newDupsW(const Rcl::Doc, const vector<Rcl::Doc> dups)
+{
+    ListDialog dialog;
+    dialog.setWindowTitle(tr("Duplicate documents"));
+
+    dialog.groupBox->setTitle(tr("These Urls ( | ipath) share the same"
+				 " content:"));
+    // We replace the list with an editor so that the user can copy/paste
+    delete dialog.listWidget;
+    QTextEdit *editor = new QTextEdit(dialog.groupBox);
+    editor->setReadOnly(TRUE);
+    dialog.horizontalLayout->addWidget(editor);
+
+    for (vector<Rcl::Doc>::const_iterator it = dups.begin(); 
+	 it != dups.end(); it++) {
+	if (it->ipath.empty()) 
+	    editor->append(QString::fromLocal8Bit(it->url.c_str()));
+	else 
+	    editor->append(QString::fromLocal8Bit(it->url.c_str()) + " | " +
+			   QString::fromUtf8(it->ipath.c_str()));
+    }
+    editor->moveCursor(QTextCursor::Start);
+    editor->ensureCursorVisible();
+    dialog.exec();
+}
+
 void RclMain::showSnippets(Rcl::Doc doc)
 {
     SnippetsW *sp = new SnippetsW(doc, m_source);

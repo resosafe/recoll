@@ -93,6 +93,9 @@ public:
 	return m_searchIsSimple;
     }
 
+    // Takes copies of the args instead of refs. Lazy and safe.
+    void newDupsW(const Rcl::Doc doc, const std::vector<Rcl::Doc> dups);
+
 public slots:
     virtual bool close();
     virtual void fileExit();

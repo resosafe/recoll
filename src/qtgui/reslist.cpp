@@ -823,32 +823,6 @@ void ResList::mouseDoubleClickEvent(QMouseEvent *event)
 #endif
 }
 
-void ResList::newDupsW(const Rcl::Doc&, const vector<Rcl::Doc>& dups)
-{
-    ListDialog dialog;
-    dialog.setWindowTitle(tr("Duplicate documents"));
-
-    dialog.groupBox->setTitle(tr("These Urls ( | ipath) share the same"
-				 " content:"));
-    // We replace the list with an editor so that the user can copy/paste
-    delete dialog.listWidget;
-    QTextEdit *editor = new QTextEdit(dialog.groupBox);
-    editor->setReadOnly(TRUE);
-    dialog.horizontalLayout->addWidget(editor);
-
-    for (vector<Rcl::Doc>::const_iterator it = dups.begin(); 
-	 it != dups.end(); it++) {
-	if (it->ipath.empty()) 
-	    editor->append(QString::fromLocal8Bit(it->url.c_str()));
-	else 
-	    editor->append(QString::fromLocal8Bit(it->url.c_str()) + " | " +
-			   QString::fromUtf8(it->ipath.c_str()));
-    }
-    editor->moveCursor(QTextCursor::Start);
-    editor->ensureCursorVisible();
-    dialog.exec();
-}
-
 void ResList::showQueryDetails()
 {
     if (m_source.isNull())
@@ -896,8 +870,8 @@ void ResList::linkWasClicked(const QUrl &url)
 	    return;
 	}
 	vector<Rcl::Doc> dups;
-	if (m_source->docDups(doc, dups)) {
-	    newDupsW(doc, dups);
+	if (m_source->docDups(doc, dups) && m_rclmain) {
+	    m_rclmain->newDupsW(doc, dups);
 	}
     }
     break;

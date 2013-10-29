@@ -1127,7 +1127,7 @@ public:
 	if (m_methods)
 	    res = PyObject_CallMethod(m_methods, (char *)"endMatch", 0);
 	if (res == 0)
-	    return "</span res is null>";
+	    return "</span>";
 	PyObject *res1 = res;
 	if (PyUnicode_Check(res))
 	    res1 = PyUnicode_AsUTF8String(res);

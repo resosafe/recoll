@@ -19,7 +19,7 @@ librecoll.a : $(DEPS) $(OBJS)
 # no effort whatsoever to maintain any kind of ABI compat in this lib. Only
 # programs or modules from the same Recoll release can be compatible.
 $(LIBRECOLL): $(DEPS) $(OBJS)
-	g++ -shared -Wl,--no-undefined -Wl,--warn-unresolved-symbols           -Wl,-soname=$(LIBRECOLL) -o $(LIBRECOLL) $(OBJS)            $(LIBXAPIAN) $(LIBICONV) $(X_LIBX11) $(LIBSYS)
+	$(CXX) -shared -Wl,--no-undefined -Wl,--warn-unresolved-symbols           -Wl,-soname=$(LIBRECOLL) -o $(LIBRECOLL) $(OBJS)            $(LIBXAPIAN) $(LIBICONV) $(X_LIBX11) $(LIBSYS)
 	rm -f librecoll.so
 	ln -s $(LIBRECOLL) librecoll.so
 

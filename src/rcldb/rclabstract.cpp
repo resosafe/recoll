@@ -283,7 +283,7 @@ int Query::Native::getFirstMatchPage(Xapian::docid docid, string& term)
     multimap<double, vector<string> > byQ;
     double totalweight = qualityTerms(docid, terms, byQ);
 
-    for (map<double, vector<string> >::reverse_iterator mit = byQ.rbegin(); 
+    for (multimap<double, vector<string> >::reverse_iterator mit = byQ.rbegin(); 
 	 mit != byQ.rend(); mit++) {
 	for (vector<string>::const_iterator qit = mit->second.begin();
 	     qit != mit->second.end(); qit++) {
@@ -384,7 +384,7 @@ int Query::Native::makeAbstract(Xapian::docid docid,
     int ret = ABSRES_OK;
 
     // Let's go populate
-    for (map<double, vector<string> >::reverse_iterator mit = byQ.rbegin(); 
+    for (multimap<double, vector<string> >::reverse_iterator mit = byQ.rbegin(); 
 	 mit != byQ.rend(); mit++) {
 	unsigned int maxgrpoccs;
 	float q;

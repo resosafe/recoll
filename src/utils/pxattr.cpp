@@ -326,6 +326,7 @@ list(int fd, const string& path, vector<string>* names, flags flags, nspace dom)
 	return false;
     if (!buf.alloc(ret+1)) // NEEDED on FreeBSD (no ending null)
 	return false;
+    buf.buf[ret] = 0;
     if (fd < 0) {
 	if (flags & PXATTR_NOFOLLOW) {
 	    ret = extattr_list_link(path.c_str(), EXTATTR_NAMESPACE_USER, 

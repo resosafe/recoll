@@ -456,11 +456,12 @@ static bool checkfileanddelete(const string& fname)
 // condition should happen reasonably seldom.
 // We check for the request file in all possible user config dirs
 // (usually, there is only the main one)
-static bool expeditedIndexingRequested()
+static bool expeditedIndexingRequested(RclConfig *conf)
 {
     static vector<string> rqfiles;
     if (rqfiles.empty()) {
 	rqfiles.push_back(path_cat(conf->getConfDir(), "rclmonixnow"));
+	const char *cp;
 	if ((cp = getenv("RECOLL_CONFTOP"))) {
 	    rqfiles.push_back(path_cat(cp, "rclmonixnow"));
 	} 
@@ -469,7 +470,7 @@ static bool expeditedIndexingRequested()
 	} 
     }
     bool found  = false;
-    for (vector<string>const_iterator it = rqfiles.begin(); 
+    for (vector<string>::const_iterator it = rqfiles.begin(); 
 	 it != rqfiles.end(); it++) {
 	found = found || checkfileanddelete(*it);
     }
@@ -560,7 +561,7 @@ bool startMonitor(RclConfig *conf, int opts)
 	// Process. We don't do this every time but let the lists accumulate
         // a little, this saves processing. Start at once if list is big.
         time_t now = time(0);
-        if (expeditedIndexingRequested() ||
+        if (expeditedIndexingRequested(conf) ||
 	    (now - lastixtime > ixinterval) || 
 	    (deleted.size() + modified.size() > 20)) {
             lastixtime = now;

@@ -1,3 +1,7 @@
+kio-recoll (1.19.8-0~ppaPPAVERS~SERIES1) SERIES; urgency=low
+  * Release 1.19.8: Fix processing of Hindi Devanagari characters
+ -- Jean-Francois Dockes <jf@dockes.org>  Tue, 04 Nov 2013 07:23:00 +0200
+
 kio-recoll (1.19.2-0~ppaPPAVERS~SERIES1) SERIES; urgency=low
   * Updated package to recoll version 1.19.2
  -- Jean-Francois Dockes <jf@dockes.org>  Mon, 13 May 2013 12:09:00 +0100

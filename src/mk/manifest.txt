@@ -46,6 +46,7 @@ common/textsplit.cpp
 common/textsplit.h
 common/unacpp.cpp
 common/unacpp.h
+common/unordered_defs.h
 common/uproplist.h
 configure
 configure.ac

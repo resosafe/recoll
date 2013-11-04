@@ -4,9 +4,9 @@
 # For the kio: (and kdesdk?)
 # sudo apt-get install pkg-kde-tools  cdbs
 
-RCLVERS=1.19.5
+RCLVERS=1.19.8
 LENSVERS=1.19.2.3328
-PPAVERS=3
+PPAVERS=1
 
 case $RCLVERS in
     [23]*) PPANAME=recollexp-ppa;;
@@ -21,7 +21,7 @@ read rep
 ####### QT4
 debdir=debianrclqt4
 series4="lucid oneiric precise quantal raring saucy"
-series4="quantal raring"
+series4="lucid"
 
 for series in $series4 ; do
   rm -rf recoll-${RCLVERS}/debian
@@ -44,7 +44,7 @@ done
 
 ### KIO
 seriesk="lucid oneiric precise quantal raring"
-seriesk=
+seriesk="lucid"
 
 debdir=debiankio
 topdir=kio-recoll-${RCLVERS}

@@ -12,7 +12,7 @@ mandir = @mandir@
 QMAKE = @QMAKE@
 QTGUI = @QTGUI@
 
-all: mk/sysconf 
+all: configure mk/sysconf 
 	${MAKE} -C lib
 	${MAKE} -C index depend recollindex
 	@NOQTMAKE@(cd $(QTGUI); ${QMAKE} recoll.pro)
@@ -80,5 +80,8 @@ install: all
 	DESTDIR=${DESTDIR} bindir=${bindir} datadir=${datadir} \
           libdir=${libdir} mandir=${mandir} \
 	  /bin/sh ./recollinstall ${prefix}
+
+configure: configure.ac VERSION
+	autoconf
 
 .PHONY: all static clean distclean install

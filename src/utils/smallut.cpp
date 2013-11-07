@@ -883,6 +883,7 @@ static bool addperiod(DateInterval *dp, DateInterval *pp)
 int monthdays(int mon, int year)
 {
     switch (mon) {
+    // We are returning a few two many 29 days februaries, no problem
     case 2: return (year % 4) == 0 ? 29 : 28;
     case 1:case 3:case 5:case 7: case 8:case 10:case 12: return 31;
     default: return 30;

@@ -1228,11 +1228,9 @@ Query_makedocabstract(recoll_QueryObject* self, PyObject *args,PyObject *kwargs)
     }
     string abstract;
     if (hlmethods == 0) {
-	if (!self->query->makeDocAbstract(*(pydoc->doc), abstract)) {
-	    PyErr_SetString(PyExc_EnvironmentError, 
-			    "rcl makeDocAbstract failed");
-	    return 0;
-	}
+        // makeDocAbstract() can fail if there are no query terms (e.g. for
+        // a query like [ext:odt]. This should not cause an exception
+	self->query->makeDocAbstract(*(pydoc->doc), abstract);
     } else {
 	HighlightData hldata;
 	sd->getTerms(hldata);

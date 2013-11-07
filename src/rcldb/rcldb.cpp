@@ -1136,7 +1136,7 @@ void Db::setAbstractParams(int idxtrunc, int syntlen, int syntctxlen)
 	m_synthAbsWordCtxLen = syntctxlen;
 }
 
-static const string cstr_nc("\n\r\x0c");
+static const string cstr_nc("\n\r\x0c\\");
 #define RECORD_APPEND(R, NM, VAL) {R += NM + "=" + VAL + "\n";}
 
 // Add document in internal form to the database: index the terms in

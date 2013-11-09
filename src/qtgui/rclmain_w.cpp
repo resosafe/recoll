@@ -777,6 +777,7 @@ void RclMain::startSearch(RefCntr<Rcl::SearchData> sdata, bool issimple)
 	return;
     }
     m_queryActive = true;
+    restable->setEnabled(false);
     m_source = RefCntr<DocSequence>();
 
     m_searchIsSimple = issimple;
@@ -787,6 +788,7 @@ void RclMain::startSearch(RefCntr<Rcl::SearchData> sdata, bool issimple)
     if (!maybeOpenDb(reason, m_idxproc != 0)) {
 	QMessageBox::critical(0, "Recoll", QString(reason.c_str()));
 	m_queryActive = false;
+        restable->setEnabled(true);
 	return;
     }
 
@@ -876,6 +878,7 @@ void RclMain::initiateQuery()
     statusBar()->showMessage(msg, 0);
     QApplication::restoreOverrideCursor();
     m_queryActive = false;
+    restable->setEnabled(true);
     emit(resultsReady());
 }
 

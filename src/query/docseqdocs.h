@@ -44,10 +44,6 @@ class DocSequenceDocs : public DocSequence {
 	doc = m_docs[num];
 	return true;
     }
-    virtual Rcl::Db *getDb()
-    {
-	return m_db;
-    }
     virtual int getResCnt()
     {
 	return m_docs.size();
@@ -59,6 +55,11 @@ class DocSequenceDocs : public DocSequence {
     void setDescription(const string& desc) 
     {
 	m_description = desc;
+    }
+protected:
+    virtual Rcl::Db *getDb()
+    {
+	return m_db;
     }
  private:
     Rcl::Db    *m_db;

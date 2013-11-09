@@ -24,6 +24,7 @@
 #include "rcldoc.h"
 #include "refcntr.h"
 #include "hldata.h"
+#include "ptmutex.h"
 
 // Need this for the "Snippet" class def.
 #include "rclquery.h"
@@ -160,10 +161,11 @@ class DocSequence {
 	o_filt_trans = filt;
     }
 
-    virtual Rcl::Db *getDb() = 0;
 
 protected:
-
+    friend class DocSeqModifier;
+    virtual Rcl::Db *getDb() = 0;
+    static PTMutexInit o_dblock;
     static std::string o_sort_trans;
     static std::string o_filt_trans;
     std::string          m_reason;
@@ -242,14 +244,13 @@ public:
 	return m_seq;
     }
 
+protected:
     virtual Rcl::Db *getDb()
     {
 	if (m_seq.isNull())
 	    return 0;
 	return m_seq->getDb();
     }
-
-protected:
 
     RefCntr<DocSequence>    m_seq;
 };

@@ -224,7 +224,7 @@ public:
     virtual bool toNativeQuery(Rcl::Db &db, void *) = 0;
     bool isFileName() const {return m_tp == SCLT_FILENAME ? true: false;}
     virtual std::string getReason() const {return m_reason;}
-    virtual void getTerms(HighlightData & hldata) const = 0;
+    virtual void getTerms(HighlightData&) const {}
 
     SClType getTp() const
     {
@@ -382,10 +382,6 @@ public:
     {
     }
 
-    virtual void getTerms(HighlightData&) const
-    {
-    }
-
     virtual bool toNativeQuery(Rcl::Db &, void *);
 };
 
@@ -420,10 +416,6 @@ public:
     }
 
     virtual ~SearchDataClausePath() 
-    {
-    }
-
-    virtual void getTerms(HighlightData&) const
     {
     }
 

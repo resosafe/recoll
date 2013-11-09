@@ -20,6 +20,7 @@
 #include "debuglog.h"
 #include "internfile.h"
 
+PTMutexInit DocSequence::o_dblock;
 string DocSequence::o_sort_trans;
 string DocSequence::o_filt_trans;
 
@@ -43,6 +44,7 @@ bool DocSequence::getEnclosing(Rcl::Doc& doc, Rcl::Doc& pdoc)
 	LOGERR(("DocSequence::getEnclosing: no db\n"));
 	return false;
     }
+    PTMutexLocker locker(o_dblock);
     string udi;
     if (!FileInterner::getEnclosingUDI(doc, udi))
         return false;

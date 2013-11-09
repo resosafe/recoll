@@ -27,7 +27,7 @@ class DocSequenceDb : public DocSequence {
  public:
     DocSequenceDb(RefCntr<Rcl::Query> q, const string &t, 
 		  RefCntr<Rcl::SearchData> sdata);
-    virtual ~DocSequenceDb();
+    virtual ~DocSequenceDb() {}
     virtual bool getDoc(int num, Rcl::Doc &doc, string * = 0);
     virtual int getResCnt();
     virtual void getTerms(HighlightData& hld);
@@ -38,7 +38,6 @@ class DocSequenceDb : public DocSequence {
 
     virtual bool getAbstract(Rcl::Doc &doc, vector<string>&);
     virtual int getFirstMatchPage(Rcl::Doc&, std::string& term);
-    virtual Rcl::Db *getDb();
     virtual bool docDups(const Rcl::Doc& doc, std::vector<Rcl::Doc>& dups);
     virtual string getDescription();
     virtual list<string> expand(Rcl::Doc &doc);
@@ -58,7 +57,9 @@ class DocSequenceDb : public DocSequence {
     }
     virtual string title();
 
- private:
+protected:
+    virtual Rcl::Db *getDb();
+private:
     RefCntr<Rcl::Query>      m_q;
     RefCntr<Rcl::SearchData> m_sdata;
     RefCntr<Rcl::SearchData> m_fsdata; // Filtered 

@@ -48,11 +48,12 @@ class DocSequenceHistory : public DocSequence {
     virtual ~DocSequenceHistory() {}
 
     virtual bool getDoc(int num, Rcl::Doc &doc, string *sh = 0);
-    virtual Rcl::Db *getDb();
     virtual int getResCnt();
     virtual string getDescription() {return m_description;}
     void setDescription(const string& desc) {m_description = desc;}
- private:
+protected:
+    virtual Rcl::Db *getDb();
+private:
     Rcl::Db    *m_db;
     RclDynConf *m_hist;
     int         m_prevnum;

@@ -38,10 +38,6 @@ DocSequenceDb::DocSequenceDb(RefCntr<Rcl::Query> q, const string &t,
 {
 }
 
-DocSequenceDb::~DocSequenceDb() 
-{
-}
-
 void DocSequenceDb::getTerms(HighlightData& hld)
 {
     m_fsdata->getTerms(hld);
@@ -54,6 +50,7 @@ string DocSequenceDb::getDescription()
 
 bool DocSequenceDb::getDoc(int num, Rcl::Doc &doc, string *sh)
 {
+    PTMutexLocker locker(o_dblock);
     if (!setQuery())
 	return false;
     if (sh) sh->erase();
@@ -62,6 +59,7 @@ bool DocSequenceDb::getDoc(int num, Rcl::Doc &doc, string *sh)
 
 int DocSequenceDb::getResCnt()
 {
+    PTMutexLocker locker(o_dblock);
     if (!setQuery())
 	return false;
     if (m_rescnt < 0) {
@@ -77,6 +75,7 @@ static const string cstr_mre("[...]");
 bool DocSequenceDb::getAbstract(Rcl::Doc &doc, vector<Rcl::Snippet>& vpabs)
 {
     LOGDEB(("DocSequenceDb::getAbstract/pair\n"));
+    PTMutexLocker locker(o_dblock);
     if (!setQuery())
 	return false;
 
@@ -107,6 +106,7 @@ bool DocSequenceDb::getAbstract(Rcl::Doc &doc, vector<Rcl::Snippet>& vpabs)
 
 bool DocSequenceDb::getAbstract(Rcl::Doc &doc, vector<string>& vabs)
 {
+    PTMutexLocker locker(o_dblock);
     if (!setQuery())
 	return false;
     if (m_q->whatDb() &&
@@ -120,6 +120,7 @@ bool DocSequenceDb::getAbstract(Rcl::Doc &doc, vector<string>& vabs)
 
 int DocSequenceDb::getFirstMatchPage(Rcl::Doc &doc, string& term)
 {
+    PTMutexLocker locker(o_dblock);
     if (!setQuery())
 	return false;
     if (m_q->whatDb()) {
@@ -135,6 +136,7 @@ Rcl::Db *DocSequenceDb::getDb()
 
 list<string> DocSequenceDb::expand(Rcl::Doc &doc)
 {
+    PTMutexLocker locker(o_dblock);
     if (!setQuery())
 	return list<string>();
     vector<string> v = m_q->expand(doc);
@@ -149,13 +151,15 @@ string DocSequenceDb::title()
     else if (!m_isFiltered && m_isSorted)
 	qual = string(" (") + o_sort_trans + string(")");
     else if (m_isFiltered && m_isSorted)
-	qual = string(" (") + o_sort_trans + string(",") + o_filt_trans + string(")");
+	qual = string(" (") + o_sort_trans + string(",") + o_filt_trans + 
+            string(")");
     return DocSequence::title() + qual;
 }
 
 bool DocSequenceDb::setFiltSpec(const DocSeqFiltSpec &fs) 
 {
     LOGDEB(("DocSequenceDb::setFiltSpec\n"));
+    PTMutexLocker locker(o_dblock);
     if (fs.isNotNull()) {
 	// We build a search spec by adding a filtering layer to the base one.
 	m_fsdata = RefCntr<Rcl::SearchData>(
@@ -204,6 +208,7 @@ bool DocSequenceDb::setSortSpec(const DocSeqSortSpec &spec)
 {
     LOGDEB(("DocSequenceDb::setSortSpec: fld [%s] %s\n", 
 	    spec.field.c_str(), spec.desc ? "desc" : "asc"));
+    PTMutexLocker locker(o_dblock);
     if (spec.isNotNull()) {
 	m_q->setSortBy(spec.field, !spec.desc);
 	m_isSorted = true;
@@ -234,6 +239,7 @@ bool DocSequenceDb::setQuery()
 bool DocSequenceDb::docDups(const Rcl::Doc& doc, std::vector<Rcl::Doc>& dups)
 {
     if (m_q->whatDb()) {
+        PTMutexLocker locker(o_dblock);
 	return m_q->whatDb()->docDups(doc, dups);
     } else {
 	return false;

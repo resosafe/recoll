@@ -208,6 +208,8 @@ void SearchClauseW::tpChange(int index)
 	proxSlackSB->setEnabled(true);
 	if (index == 4)
 	    proxSlackSB->setValue(10);
+        else
+            proxSlackSB->setValue(0);
 	break;
     default:
 	proxSlackSB->close();

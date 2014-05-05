@@ -51,14 +51,14 @@ public:
     // passed both just to avoid recomputing uniterm which is
     // available on the caller site.
     DbUpdTask(Op _op, const string& ud, const string& un, 
-	      const Xapian::Document &d, size_t tl)
+	      Xapian::Document *d, size_t tl)
 	: op(_op), udi(ud), uniterm(un), doc(d), txtlen(tl)
     {}
     // Udi and uniterm equivalently designate the doc
     Op op;
     string udi;
     string uniterm;
-    Xapian::Document doc;
+    Xapian::Document *doc;
     // txtlen is used to update the flush interval. It's -1 for a
     // purge because we actually don't know it, and the code fakes a
     // text length based on the term count.
@@ -101,7 +101,7 @@ class Db::Native {
 
     // Final steps of doc update, part which need to be single-threaded
     bool addOrUpdateWrite(const string& udi, const string& uniterm, 
-			  Xapian::Document& doc, size_t txtlen);
+			  Xapian::Document *doc, size_t txtlen);
 
     /** Delete all documents which are contained in the input document, 
      * which must be a file-level one.

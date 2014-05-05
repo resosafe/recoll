@@ -279,13 +279,9 @@ python/samples/
 python/samples/mutt-recoll.py
 python/samples/rcldlkp.py
 python/samples/rclmbox.py
-python/samples/recoll/
-python/samples/recoll/cur/
-python/samples/recoll/new/
 python/samples/recollgui/
 python/samples/recollgui/Makefile
 python/samples/recollgui/qrecoll.py
-python/samples/recollgui/rclmain.py
 python/samples/recollgui/rclmain.ui
 python/samples/recollq.py
 python/samples/recollqsd.py

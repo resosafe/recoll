@@ -1758,7 +1758,11 @@ bool Db::needUpdate(const string &udi, const string& sig, bool *existed)
 
 	    // Set the uptodate flag for doc / pseudo doc
 	    if (m_mode 	!= DbRO) {
-		updated[*docid] = true;
+                // *docid >= updated.size() should not be possible here,
+                // but...
+                if (*docid < updated.size()) {
+                    updated[*docid] = true;
+                }
 
 		// Set the existence flag for all the subdocs (if any)
 		vector<Xapian::docid> docids;

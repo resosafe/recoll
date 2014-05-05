@@ -199,6 +199,11 @@ inline void leftzeropad(string& s, unsigned len)
 	s = s.insert(0, len - s.length(), '0');
 }
 
+// Duplicate map<string,string> while ensuring no shared string data (to pass
+// to other thread):
+void map_ss_cp_noshr(const std::map<std::string,std::string> s,
+                      std::map<std::string,std::string> *d);
+
 // Code for static initialization of an stl map. Somewhat like Boost.assign. 
 // Ref: http://stackoverflow.com/questions/138600/initializing-a-static-stdmapint-int-in-c
 // Example use: map<int, int> m = create_map<int, int> (1,2) (3,4) (5,6) (7,8);

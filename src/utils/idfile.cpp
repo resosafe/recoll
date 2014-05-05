@@ -30,6 +30,18 @@
 using namespace std;
 #endif /* NO_NAMESPACES */
 
+// Bogus code to avoid bogus valgrind mt warnings about the
+// initialization of treat_mbox_...  which I can't even remember the
+// use of (it's not documented or ever set)
+static int treat_mbox_as_rfc822;
+class InitTMAR {
+public:
+    InitTMAR() {
+        treat_mbox_as_rfc822 = getenv("RECOLL_TREAT_MBOX_AS_RFC822") ? 1 : -1;
+    }
+};
+static InitTMAR initTM;
+
 /** 
  * This code is currently ONLY used to identify mbox and mail message files
  * which are badly handled by standard mime type identifiers
@@ -49,11 +61,6 @@ const int wantnhead = 3;
 // fn is for message printing
 static string idFileInternal(istream& input, const char *fn)
 {
-    static int treat_mbox_as_rfc822;
-    if (treat_mbox_as_rfc822 == 0) {
-	treat_mbox_as_rfc822 = getenv("RECOLL_TREAT_MBOX_AS_RFC822") ? 1 : -1;
-    }
-
     bool line1HasFrom = false;
     bool gotnonempty = false;
     int lookslikemail = 0;

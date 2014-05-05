@@ -373,6 +373,7 @@ MyHtmlParser::opening_tag(const string &tag)
 			    // Specific to Recoll filters.
 			    decode_entities(content);
 			    struct tm tm;
+                            memset(&tm, 0, sizeof(tm));
 			    if (strptime(content.c_str(), 
 					 " %Y-%m-%d %H:%M:%S ", &tm) ||
 				strptime(content.c_str(), 

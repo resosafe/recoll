@@ -42,6 +42,16 @@ using namespace std;
 #include "hldata.h"
 #include "cstr.h"
 
+void map_ss_cp_noshr(const map<string,string> s, map<string,string> *d)
+{
+    for (map<string,string>::const_iterator it= s.begin();
+         it != s.end(); it++) {
+        d->insert(
+            pair<string,string>(string(it->first.begin(), it->first.end()),
+                                string(it->second.begin(), it->second.end())));
+    }
+}
+
 int stringicmp(const string & s1, const string& s2) 
 {
     string::const_iterator it1 = s1.begin();

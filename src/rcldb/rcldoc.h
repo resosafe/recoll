@@ -19,12 +19,12 @@
 
 #include <string>
 #include <map>
-
-#ifndef NO_NAMESPACES
 using std::string;
 using std::map;
+
+#include "smallut.h"
+
 namespace Rcl {
-#endif
 
 /**
  * Dumb holder for document attributes and data. 
@@ -139,6 +139,8 @@ class Doc {
 
     void erase() {
 	url.erase();
+        idxurl.erase();
+        idxi = 0;
 	ipath.erase();
 	mimetype.erase();
 	fmtime.erase();
@@ -159,6 +161,30 @@ class Doc {
 	haspages = false;
 	haschildren = false;
 	onlyxattr = false;
+    }
+    // Copy ensuring no shared string data, for threading issues.
+    void copyto(Doc *d) const {
+	d->url.assign(url.begin(), url.end());
+        d->idxurl.assign(idxurl.begin(), idxurl.end());
+        d->idxi = idxi;
+	d->ipath.assign(ipath.begin(), ipath.end());
+	d->mimetype.assign(mimetype.begin(), mimetype.end());
+	d->fmtime.assign(fmtime.begin(), fmtime.end());
+	d->dmtime.assign(dmtime.begin(), dmtime.end());
+	d->origcharset.assign(origcharset.begin(), origcharset.end());
+        map_ss_cp_noshr(meta, &d->meta);
+	d->syntabs = syntabs;
+	d->pcbytes.assign(pcbytes.begin(), pcbytes.end());
+	d->fbytes.assign(fbytes.begin(), fbytes.end());
+	d->dbytes.assign(dbytes.begin(), dbytes.end());
+	d->sig.assign(sig.begin(), sig.end());
+        d->text.assign(text.begin(), text.end());
+	d->pc = pc;
+	d->xdocid = xdocid;
+	d->idxi = idxi;
+	d->haspages = haspages;
+	d->haschildren = haschildren;
+	d->onlyxattr = onlyxattr;
     }
     Doc()
 	: idxi(0), syntabs(false), pc(0), xdocid(0),
@@ -247,8 +273,6 @@ class Doc {
 };
 
 
-#ifndef NO_NAMESPACES
 }
-#endif
 
 #endif /* _RCLDOC_H_INCLUDED_ */

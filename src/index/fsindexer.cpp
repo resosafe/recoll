@@ -63,9 +63,12 @@ using namespace std;
 #ifdef IDX_THREADS
 class DbUpdTask {
 public:
+    // Take some care to avoid sharing string data (if string impl is cow)
     DbUpdTask(const string& u, const string& p, const Rcl::Doc& d)
-	: udi(u), parent_udi(p), doc(d)
-    {}
+	: udi(u.begin(), u.end()), parent_udi(p.begin(), p.end())
+    {
+        d.copyto(&doc);
+    }
     string udi;
     string parent_udi;
     Rcl::Doc doc;
@@ -74,10 +77,13 @@ extern void *FsIndexerDbUpdWorker(void*);
 
 class InternfileTask {
 public:
+    // Take some care to avoid sharing string data (if string impl is cow)
     InternfileTask(const std::string &f, const struct stat *i_stp,
 		   map<string,string> lfields)
-	: fn(f), statbuf(*i_stp), localfields(lfields)
-    {}
+	: fn(f.begin(), f.end()), statbuf(*i_stp)
+    {
+        map_ss_cp_noshr(lfields, &localfields);
+    }
     string fn;
     struct stat statbuf;
     map<string,string> localfields;

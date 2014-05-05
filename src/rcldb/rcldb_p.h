@@ -50,9 +50,11 @@ public:
     // Note that udi and uniterm are strictly equivalent and are
     // passed both just to avoid recomputing uniterm which is
     // available on the caller site.
+    // Take some care to avoid sharing string data (if string impl is cow)
     DbUpdTask(Op _op, const string& ud, const string& un, 
 	      Xapian::Document *d, size_t tl)
-	: op(_op), udi(ud), uniterm(un), doc(d), txtlen(tl)
+	: op(_op), udi(ud.begin(), ud.end()), uniterm(un.begin(), un.end()), 
+          doc(d), txtlen(tl)
     {}
     // Udi and uniterm equivalently designate the doc
     Op op;

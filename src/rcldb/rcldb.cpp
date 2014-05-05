@@ -1419,10 +1419,11 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi, Doc &doc)
 	// Dates etc.
 	time_t mtime = atoll(doc.dmtime.empty() ? doc.fmtime.c_str() : 
 			     doc.dmtime.c_str());
-	struct tm *tm = localtime(&mtime);
+        struct tm tmb;
+	localtime_r(&mtime, &tmb);
 	char buf[9];
 	snprintf(buf, 9, "%04d%02d%02d",
-		 tm->tm_year+1900, tm->tm_mon + 1, tm->tm_mday);
+		 tmb.tm_year+1900, tmb.tm_mon + 1, tmb.tm_mday);
 	// Date (YYYYMMDD)
 	newdocument.add_boolean_term(wrap_prefix(xapday_prefix) + string(buf)); 
 	// Month (YYYYMM)

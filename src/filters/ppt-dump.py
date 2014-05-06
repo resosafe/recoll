@@ -116,9 +116,13 @@ def main (args):
         usage(exname)
         return
 
-    dumper = PPTDumper(args[0], globals.params)
-    if not dumper.dump():
-        error("FAILURE\n")
+    try:
+        dumper = PPTDumper(args[0], globals.params)
+        if not dumper.dump():
+            error("ppt-dump: dump error\n")
+    except:
+        error("ppt-dump: FAILURE (bad format?)\n")
+
     if globals.params.dumpText:
         print(globals.textdump.replace("\r", "\n"))
 

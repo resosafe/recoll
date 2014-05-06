@@ -45,4 +45,8 @@ class XlsXmlHandler(xml.sax.handler.ContentHandler):
         elif name == "worksheet":
             print("")
 
-xml.sax.parse(sys.stdin, XlsXmlHandler())
+try:
+    xml.sax.parse(sys.stdin, XlsXmlHandler())
+except:
+    sys.exit(1)
+sys.exit(0)

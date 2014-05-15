@@ -661,7 +661,7 @@ int FileInterner::addHandler()
     }
 
     // We need to stack another handler. Check stack size
-    if (m_handlers.size() > MAXHANDLERS) {
+    if (m_handlers.size() >= MAXHANDLERS) {
 	// Stack too big. Skip this and go on to check if there is
 	// something else in the current back()
 	LOGERR(("FileInterner::addHandler: stack too high\n"));

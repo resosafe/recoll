@@ -86,7 +86,8 @@ done
 
 @NOQTMAKE@test -d ${datadir}/applications \
 @NOQTMAKE@  || mkdir -p ${datadir}/applications || exit 1
-
+@NOQTMAKE@test -d ${datadir}/appdata \
+@NOQTMAKE@  || mkdir -p ${datadir}/appdata || exit 1
 
 # Use the xdg utilies to install the desktop file and icon? Couldn't find
 # out how to get this to work sanely. So keep the old way
@@ -94,6 +95,7 @@ done
 #export PATH
 #xdg-desktop-menu install desktop/recoll-searchgui.desktop
 #xdg-icon-resource install --size 48 desktop/recoll.png
+@NOQTMAKE@${INSTALL} -m 0444 desktop/recoll.appdata.xml ${datadir}/appdata
 @NOQTMAKE@${INSTALL} -m 0444 desktop/recoll-searchgui.desktop ${datadir}/applications
 @NOQTMAKE@${INSTALL} -m 0444 desktop/recoll.png ${datadir}/icons/hicolor/48x48/apps
 @NOQTMAKE@${INSTALL} -m 0444 desktop/recoll.png ${datadir}/pixmaps/
@@ -106,7 +108,8 @@ else
 fi
 
 @NOQTMAKE@${INSTALL} -m 0444 doc/man/recoll.1 ${mandir}/man1/
-@NOCMDLINE@${INSTALL} -m 0444 doc/man/recollq.1 ${mandir}/man1/
+# Install the recollq man page in all cases, it's useful for recoll -t
+${INSTALL} -m 0444 doc/man/recollq.1 ${mandir}/man1/
 ${INSTALL} -m 0444 doc/man/recollindex.1 ${mandir}/man1/
 ${INSTALL} -m 0444 doc/man/recoll.conf.5  ${mandir}/man5/
 

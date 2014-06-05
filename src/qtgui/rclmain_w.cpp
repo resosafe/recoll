@@ -197,7 +197,7 @@ void RclMain::init()
 	}
 	but->setText(tr(but_txt.toUtf8()));
 	if (prefs.catgToolBar && catgCMB)
-	    catgCMB->addItem(tr(catgnm.toUtf8()));
+	    catgCMB->addItem(tr(but_txt.toUtf8()));
         bgrphbox->addWidget(but);
         bgrp->addButton(but, bgrpid++);
     }

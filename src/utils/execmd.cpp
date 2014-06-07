@@ -185,14 +185,21 @@ ExecCmd::~ExecCmd()
 // *** This can be called after a vfork, so no modification of the
 //     process memory at all is allowed ***
 // The LOGXX calls should not be there, but they occur only after "impossible"
-// errors, which we would most definitely want to have a hint about
+// errors, which we would most definitely want to have a hint about.
+//
+// Note that any of the LOGXX calls could block on a mutex set in the
+// father process, so that only absolutely exceptional conditions, 
+// should be logged, for debugging and post-mortem purposes
+// If one of the calls block, the problem manifests itself by 20mn
+// (filter timeout) of looping on "ExecCmd::doexec: selectloop
+// returned 1', because the father is waiting on the read descriptor
 inline void ExecCmd::dochild(const string &cmd, const char **argv,
 			     const char **envv,
 			     bool has_input, bool has_output)
 {
     // Start our own process group
     if (setpgid(0, getpid())) {
-	LOGINFO(("ExecCmd::dochild: setpgid(0, %d) failed: errno %d\n",
+	LOGINFO(("ExecCmd::DOCHILD: setpgid(0, %d) failed: errno %d\n",
 		 getpid(), errno));
     }
 
@@ -202,7 +209,7 @@ inline void ExecCmd::dochild(const string &cmd, const char **argv,
     // all of this is needed. But an ignored sigterm and the masks are
     // normally inherited.
     if (signal(SIGTERM, SIG_DFL) == SIG_ERR) {
-	LOGERR(("ExecCmd::dochild: signal() failed, errno %d\n", errno));
+	//LOGERR(("ExecCmd::DOCHILD: signal() failed, errno %d\n", errno));
     }
     sigset_t sset;
     sigfillset(&sset);
@@ -220,10 +227,10 @@ inline void ExecCmd::dochild(const string &cmd, const char **argv,
 	close(m_pipeout[0]);
 	if (m_pipeout[1] != 1) {
 	    if (dup2(m_pipeout[1], 1) < 0) {
-		LOGERR(("ExecCmd::doexec: dup2(2) failed. errno %d\n", errno));
+		LOGERR(("ExecCmd::DOCHILD: dup2() failed. errno %d\n", errno));
 	    }
 	    if (close(m_pipeout[1]) < 0) {
-		LOGERR(("ExecCmd::doexec: close(2) failed. errno %d\n", errno));
+		LOGERR(("ExecCmd::DOCHILD: close() failed. errno %d\n", errno));
 	    }
 	}
     }
@@ -248,8 +255,10 @@ inline void ExecCmd::dochild(const string &cmd, const char **argv,
     libclf_closefrom(3);
 
     execve(cmd.c_str(), (char *const*)argv, (char *const*)envv);
-    // Hu ho
-    LOGERR(("ExecCmd::doexec: execve(%s) failed. errno %d\n", cmd.c_str(),
+    // Hu ho. This should never happened as we checked the existence of the
+    // executable before calling dochild... Until we did this, this was 
+    // the chief cause of LOG mutex deadlock
+    LOGERR(("ExecCmd::DOCHILD: execve(%s) failed. errno %d\n", cmd.c_str(),
 	    errno));
     _exit(127);
 }
@@ -292,7 +301,7 @@ int ExecCmd::startExec(const string &cmd, const vector<string>& args,
     argv = (Ccharp *)malloc((args.size()+2) * sizeof(char *));
     if (argv == 0) {
 	LOGERR(("ExecCmd::doexec: malloc() failed. errno %d\n",	errno));
-	exit(1);
+        return -1;
     }
     // Fill up argv
     argv[0] = cmd.c_str();
@@ -309,6 +318,11 @@ int ExecCmd::startExec(const string &cmd, const vector<string>& args,
 	if (environ[envsize] == 0)
 	    break;
     envv = (Ccharp *)malloc((envsize + m_env.size() + 2) * sizeof(char *));
+    if (envv == 0) {
+	LOGERR(("ExecCmd::doexec: malloc() failed. errno %d\n",	errno));
+        free(argv);
+        return -1;
+    }
     int eidx;
     for (eidx = 0; eidx < envsize; eidx++)
 	envv[eidx] = environ[eidx];
@@ -318,11 +332,14 @@ int ExecCmd::startExec(const string &cmd, const vector<string>& args,
     }
     envv[eidx] = 0;
 
-    // As we are going to use execve, not execvp, do the PATH
-    // thing. If the command is not found, exe will be empty and the
-    // exec will fail, which is what we want.
+    // As we are going to use execve, not execvp, do the PATH thing.
     string exe;
-    which(cmd, exe);
+    if (!which(cmd, exe)) {
+        LOGERR(("ExecCmd::startExec: %s not found\n", cmd.c_str()));
+        free(argv);
+        free(envv);
+        return -1;
+    }
 ////////////////////////////////
 
     if (o_useVfork) {
@@ -344,6 +361,7 @@ int ExecCmd::startExec(const string &cmd, const vector<string>& args,
     }
 
     // Father process
+
 ////////////////////
     // Vfork cleanup section
     free(argv);
@@ -355,8 +373,8 @@ int ExecCmd::startExec(const string &cmd, const vector<string>& args,
     if (setpgid(m_pid, m_pid)) {
         // This can fail with EACCES if the son has already done execve 
         // (linux at least)
-        LOGDEB(("ExecCmd: father setpgid(son)(%d,%d) errno %d (ok)\n",
-                m_pid, m_pid, errno));
+        LOGDEB2(("ExecCmd: father setpgid(son)(%d,%d) errno %d (ok)\n",
+                 m_pid, m_pid, errno));
     }
 
     sigemptyset(&m_blkcld);

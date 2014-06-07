@@ -781,12 +781,16 @@ bool Db::open(OpenMode mode, OpenError *error)
 #ifdef IDX_THREADS
 		m_ndb->maybeStartThreads();
 #endif
-		// We open a readonly object in all cases (possibly in
-		// addition to the r/w one) because some operations
-		// are faster when performed through a Database: no
-		// forced flushes on allterms_begin(), ie, used in
-		// subDocs()
-		m_ndb->xrdb = Xapian::Database(dir);
+		// We used to open a readonly object in addition to
+		// the r/w one because some operations were faster
+		// when performed through a Database: no forced
+		// flushes on allterms_begin(), used in
+		// subDocs(). This issue has been gone for a long time
+                // (now: Xapian 1.2) and the separate objects seem to
+                // trigger other Xapian issues, so the query db is now
+                // a clone of the update one.
+//		m_ndb->xrdb = Xapian::Database(dir);
+		m_ndb->xrdb = m_ndb->xwdb;
 		LOGDEB(("Db::open: lastdocid: %d\n", 
 			m_ndb->xwdb.get_lastdocid()));
                 LOGDEB2(("Db::open: resetting updated\n"));

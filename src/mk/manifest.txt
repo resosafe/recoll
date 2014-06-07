@@ -53,6 +53,7 @@ configure.ac
 desktop/
 desktop/hotrecoll.py
 desktop/recoll-searchgui.desktop
+desktop/recoll.appdata.xml
 desktop/recoll.png
 desktop/recoll.svg
 desktop/recoll.xcf

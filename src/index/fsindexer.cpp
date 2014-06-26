@@ -713,19 +713,13 @@ FsIndexer::processonefile(RclConfig *config,
 		make_udi(fn, doc.ipath, udi);
 	    }
 
-	    // Set file name, mod time and url if not done by
-            // filter. We used to set the top-level container file
-            // name for all subdocs without a proper file name, but
-            // this did not make sense (resulted in multiple not
-            // useful hits on the subdocs when searching for the
-            // file name).
+	    // Set file name, mod time and url if not done by filter
 	    if (doc.fmtime.empty())
 		doc.fmtime = ascdate;
 	    if (doc.url.empty())
 		doc.url = cstr_fileu + fn;
 	    const string *fnp = 0;
-	    if (doc.ipath.empty() &&
-                (!doc.peekmeta(Rcl::Doc::keyfn, &fnp) || fnp->empty()))
+	    if (!doc.peekmeta(Rcl::Doc::keyfn, &fnp) || fnp->empty())
 		doc.meta[Rcl::Doc::keyfn] = utf8fn;
 
 	    char cbuf[100]; 

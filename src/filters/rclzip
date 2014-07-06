@@ -98,7 +98,8 @@ class ZipExtractor:
         try:
             self.zip = ZipFile(filename)
             return True
-        except:
+        except Exception, err:
+            self.em.rclog("openfile: failed: [%s]" % err)
             return False
 
     def getipath(self, params):

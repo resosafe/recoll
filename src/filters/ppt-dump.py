@@ -53,7 +53,7 @@ class PPTDumper(object):
             try:
                 dirstrm = strm.getDirectoryStreamByName(dirname)
             except Exception, err:
-                error("getDirectoryStreamByName(%s): %s\n" % (dirname,str(err)))
+                error("getDirectoryStreamByName(%s): %s - %s\n" % (dirname,str(err),self.filepath))
                 # The previous version was killed by the exception
                 # here, so the equivalent is to break, but maybe there
                 # is no reason to do so.
@@ -119,9 +119,9 @@ def main (args):
     try:
         dumper = PPTDumper(args[0], globals.params)
         if not dumper.dump():
-            error("ppt-dump: dump error\n")
+            error("ppt-dump: dump error " + args[0] + "\n")
     except:
-        error("ppt-dump: FAILURE (bad format?)\n")
+        error("ppt-dump: FAILURE (bad format?) " + args[0] + "\n")
 
     if globals.params.dumpText:
         print(globals.textdump.replace("\r", "\n"))

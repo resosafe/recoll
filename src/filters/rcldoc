@@ -90,23 +90,30 @@ umask 77
 
 checkcmds awk antiword iconv
 
-# output the result
+# We need to do some strange stuff to retrieve the status from antiword. Things
+# would be simpler if we relied on using bash.
+# Explanations:
+#http://stackoverflow.com/questions/1221833/bash-pipe-output-and-capture-exit-status
+
+stdintoexitstatus() {
+  read exitstatus
+  return $exitstatus
+}
+
 # The strange 'BEGIN' setup is to prevent 'file' from thinking this file
 # is an awk program
-$decoder "$infile" |
+(((($decoder "$infile"; echo $? >&3) |
 awk 'BEGIN'\
 ' {
   cont = ""
   gotdata = 0
 }
 {
-  if (!($0 ~ /^[ 	]*$/)) {
+  if (!($0 ~ /^[ 	]*$/) && gotdata == 0) {
+    print "<html><head><title></title>"
+    print "<meta http-equiv=\"Content-Type\" content=\"text/html;charset=UTF-8\">"
+    print "</head>\n<body>\n<p>"
     gotdata = 1
-    if (gotdata == 0) {
-      print "<html><head><title></title>"
-      print "<meta http-equiv=\"Content-Type\" content=\"text/html;charset=UTF-8\">"
-      print "</head>\n<body>\n<p>"
-    }
   }
   $0 = cont $0
   cont = ""
@@ -124,17 +131,19 @@ awk 'BEGIN'\
     print "</p><hr><p>"
     next
   } 
-  gsub(/&/, "\\&amp;", $0)
-  gsub(/</, "\\&lt;", $0)
-  gsub(/>/, "\\&gt;", $0)
 
-  print $0 "<br>"
+  if (gotdata == 1) {
+    gsub(/&/, "\\&amp;", $0)
+    gsub(/</, "\\&lt;", $0)
+    gsub(/>/, "\\&gt;", $0)
+
+    print $0 "<br>"
+  }
 }
 END {
-    if (gotdata == 0)
-       exit(1)
-    print "</p></body></html>"
-}' 
+    if (gotdata == 1)
+      print "</p></body></html>"
+}' >&4) 3>&1) | stdintoexitstatus) 4>&1
 
 
 # Antiword rarely fails, we try to catch the most common reasons:

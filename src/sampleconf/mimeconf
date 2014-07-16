@@ -26,6 +26,7 @@
 #
 # The script (ie: rcluncomp) must output the uncompressed file name on
 # stdout. 
+application/gzip  =  uncompress rcluncomp gunzip %f %t
 application/x-gzip  =  uncompress rcluncomp gunzip %f %t
 application/x-compress = uncompress rcluncomp gunzip %f %t
 application/x-bzip2 =  uncompress rcluncomp bunzip2 %f %t

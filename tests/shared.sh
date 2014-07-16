@@ -3,7 +3,11 @@
 
 RECOLL_TESTDATA=/home/dockes/projets/fulltext/testrecoll
 
-RECOLL_CONFDIR=/home/dockes/projets/fulltext/recoll/tests/config
+# All source'rs should set topdir as a relative path from their location to
+# this directory
+topdir=${topdir:-.}
+
+RECOLL_CONFDIR=$topdir/config/
 export RECOLL_CONFDIR
 
 ECHON="/bin/echo -n"

@@ -97,6 +97,8 @@ sub main {
 	    #  Hindi Devanagari
 	    && !(hex $code_value >= 0x0900 && hex $code_value <= 0x097f)
 	    && !(hex $code_value >= 0xa8e0 && hex $code_value <= 0xa8ff)
+            # Bengali
+	    && !(hex $code_value >= 0x0980 && hex $code_value <= 0x09ff)
 	    ) {
 	    # If a decomposition exists, record it
 	    if($character_decomposition_mapping =~ /(<.*>)?\s*(.+)/) {

@@ -838,6 +838,7 @@ Query_init(recoll_QueryObject *self, PyObject *, PyObject *)
 static PyObject *
 Query_iter(PyObject *self)
 {
+    Py_INCREF(self);
     return self;
 }
 

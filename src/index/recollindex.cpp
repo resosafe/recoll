@@ -209,8 +209,6 @@ bool recursive_index(RclConfig *config, const string& top)
 // this case we're called repeatedly in the same process, and the
 // confindexer is only created once by makeIndexerOrExit (but the db closed and
 // flushed every time)
-// We set the noweb flag (the web queue is processed by default when
-// confindexer::indexFiles is called from the realtime monitor)
 bool indexfiles(RclConfig *config, list<string> &filenames)
 {
     if (filenames.empty())
@@ -218,7 +216,7 @@ bool indexfiles(RclConfig *config, list<string> &filenames)
     makeIndexerOrExit(config, (op_flags & OPT_Z) != 0);
     return confindexer->indexFiles(filenames, (op_flags&OPT_f) ? 
 				   ConfIndexer::IxFIgnoreSkip : 
-				   ConfIndexer::IxFNoWeb);
+				   ConfIndexer::IxFNone);
 }
 
 // Delete a list of files. Same comments about call contexts as indexfiles.
@@ -227,7 +225,7 @@ bool purgefiles(RclConfig *config, list<string> &filenames)
     if (filenames.empty())
 	return true;
     makeIndexerOrExit(config, (op_flags & OPT_Z) != 0);
-    return confindexer->purgeFiles(filenames, ConfIndexer::IxFNoWeb);
+    return confindexer->purgeFiles(filenames, ConfIndexer::IxFNone);
 }
 
 // Create stemming and spelling databases

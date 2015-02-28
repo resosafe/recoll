@@ -103,8 +103,8 @@ Chapter 5. Installation and configuration
 
      o Openoffice files need unzip and xsltproc.
 
-     o PDF files need pdftotext which is part of the Xpdf or Poppler
-       packages.
+     o PDF files need pdftotext which is part of Poppler (usually comes with
+       the poppler-utils package). Avoid the original one from Xpdf.
 
      o Postscript files need pstotext. The original version has an issue with
        shell character in file names, which is corrected in recent packages.
@@ -121,9 +121,10 @@ Chapter 5. Installation and configuration
      o Wordperfect files need wpd2html from the libwpd (or libwpd-tools on
        Ubuntu) package.
 
-     o RTF files need unrtf, which, in its standard version, has much trouble
-       with non-western character sets. Check
-       http://www.recoll.org/features.html.
+     o RTF files need unrtf, which, in its older versions, has much trouble
+       with non-western character sets. Many Linux distributions carry
+       outdated unrtf versions. Check http://www.recoll.org/features.html for
+       details.
 
      o TeX files need untex or detex. Check
        http://www.recoll.org/features.html for sources if it's not packaged

@@ -29,8 +29,9 @@
 #include "copyfile.h"
 #include "debuglog.h"
 
+using namespace std;
+
 #define CPBSIZ 8192
-#define COPYFILE_NOERRUNLINK 1
 
 bool copyfile(const char *src, const char *dst, string &reason, int flags)
 {
@@ -38,6 +39,7 @@ bool copyfile(const char *src, const char *dst, string &reason, int flags)
   int dfd = -1;
   bool ret = false;
   char buf[CPBSIZ];
+  int oflags = O_WRONLY|O_CREAT|O_TRUNC;
 
   LOGDEB(("copyfile: %s to %s\n", src, dst));
 
@@ -46,7 +48,11 @@ bool copyfile(const char *src, const char *dst, string &reason, int flags)
       goto out;
   }
 
-  if ((dfd = open(dst, O_WRONLY|O_CREAT|O_TRUNC, 0644)) < 0) {
+  if (flags & COPYFILE_EXCL) {
+      oflags |= O_EXCL;
+  }
+
+  if ((dfd = open(dst, oflags, 0644)) < 0) {
       reason += string("open/creat ") + dst + ": " + strerror(errno);
       // If we fail because of an open/truncate error, we do not want to unlink
       // the file, we might succeed...
@@ -143,18 +149,21 @@ bool renameormove(const char *src, const char *dst, string &reason)
 
 #include <string>
 #include <iostream>
-using namespace std;
 
 #include "copyfile.h"
+
+using namespace std;
 
 static int     op_flags;
 #define OPT_MOINS 0x1
 #define OPT_m     0x2
+#define OPT_e     0x4
 
 static const char *thisprog;
 static char usage [] =
 "trcopyfile [-m] src dst\n"
 " -m : move instead of copying\n"
+" -e : fail if dest exists (only for copy)\n"
 "\n"
 ;
 static void
@@ -177,6 +186,7 @@ int main(int argc, const char **argv)
         while (**argv)
             switch (*(*argv)++) {
             case 'm':	op_flags |= OPT_m; break;
+            case 'e':	op_flags |= OPT_e; break;
             default: Usage();	break;
             }
         argc--; argv++;
@@ -191,7 +201,11 @@ int main(int argc, const char **argv)
     if (op_flags & OPT_m) {
         ret = renameormove(src.c_str(), dst.c_str(), reason);
     } else {
-        ret = copyfile(src.c_str(), dst.c_str(), reason);
+        int flags = 0;
+        if (op_flags & OPT_e) {
+            flags |= COPYFILE_EXCL;
+        }
+        ret = copyfile(src.c_str(), dst.c_str(), reason, flags);
     }
     if (!ret) {
         cerr << reason << endl;

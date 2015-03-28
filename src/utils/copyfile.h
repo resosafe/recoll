@@ -18,14 +18,23 @@
 #define _COPYFILE_H_INCLUDED_
 
 #include <string>
-using std::string;
 
-enum CopyfileFlags {COPYFILE_NONE = 0, COPYFILE_NOERRUNLINK = 1};
+enum CopyfileFlags {COPYFILE_NONE = 0, 
+                    COPYFILE_NOERRUNLINK = 1,
+                    COPYFILE_EXCL = 2,
+};
 
-extern bool copyfile(const char *src, const char *dst, string &reason,
+/** Copy src to dst. 
+ *
+ * We destroy an existing dst except if COPYFILE_EXCL is set (or we if
+ * have no permission...).
+ * A partially copied dst is normally removed, except if COPYFILE_NOERRUNLINK 
+ * is set.
+ */
+extern bool copyfile(const char *src, const char *dst, std::string &reason,
 		     int flags = 0);
 
-// Try to rename, copy/unlink source if this fails (different devs)
-extern bool renameormove(const char *src, const char *dst, string &reason);
+/** Try to rename src. If this fails (different devices) copy then unlink src */
+extern bool renameormove(const char *src, const char *dst, std::string &reason);
 
 #endif /* _COPYFILE_H_INCLUDED_ */

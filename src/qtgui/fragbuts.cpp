@@ -36,6 +36,7 @@
 #include "recoll.h"
 #include "debuglog.h"
 #include "readfile.h"
+#include "copyfile.h"
 
 using namespace std;
 
@@ -147,6 +148,12 @@ FragButs::FragButs(QWidget* parent)
     m_fn = path_cat(theconfig->getConfDir(), "fragbuts.xml");
 
     string data, reason;
+    if (access(m_fn.c_str(), 0) != 0) {
+        // config does not exist: try to create it from sample
+        string src = path_cat(theconfig->getDatadir(), "examples");
+        src = path_cat(src, "fragbuts.xml");
+        copyfile(src.c_str(), m_fn.c_str(), reason);
+    }
     if (!file_to_string(m_fn, data, &reason)) {
 	QMessageBox::warning(0, "Recoll", 
 			     tr("%1 not found.").arg(

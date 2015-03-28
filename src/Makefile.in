@@ -45,7 +45,6 @@ clean:
 	${MAKE} -C query clean
 	${MAKE} -C utils clean
 	-${MAKE} -C lib clean
-	-${MAKE} -C desktop/unity-lens-recoll clean
 	-${MAKE} -C python/recoll clean
 	@NOQTMAKE@@-${MAKE} -C $(QTGUI) clean
 	rm -f qtgui/Makefile qtgui/confgui/Makefile qtgui/recoll
@@ -59,7 +58,6 @@ clean:
 # Note: we don't remove the top Makefile, to keep the "clean" targets
 # available but a "Make" won't work without a configure anyway
 distclean: clean
-	-${MAKE} -C desktop/unity-lens-recoll distclean
 	-${MAKE} -C python/recoll distclean
 	rm -f mk/sysconf mk/localdefs sampleconf/recoll.conf \
 	   qtgui/recoll.pro \

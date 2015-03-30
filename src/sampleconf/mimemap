@@ -173,6 +173,7 @@
 recoll_noindex = .md5 .map \
        .o .lib .dll .a .sys .exe .com \
        .mpp .mpt .vsd \
+	   .img .img.gz .img.bz2 .img.xz .image .image.gz .image.bz2 .image.xz \
        .dat .bak .rdf .log.gz .log .db .msf .pid \
        ,v ~ #
 

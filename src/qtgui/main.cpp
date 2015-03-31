@@ -188,7 +188,7 @@ void applyStyleSheet(const QString& ssfname)
     if (cfname && *cfname) {
 	string stylesheet;
 	file_to_string(cfname, stylesheet);
-	qApp->setStyleSheet(QString::fromAscii(stylesheet.c_str()));
+	qApp->setStyleSheet(QString::fromUtf8(stylesheet.c_str()));
     } else {
 	qApp->setStyleSheet(QString());
     }

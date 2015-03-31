@@ -341,7 +341,7 @@ size_t AdvSearch::stringToSize(QString qsize)
     size_t size = size_t(-1);
     qsize.replace(QRegExp("[\\s]+"), "");
     if (!qsize.isEmpty()) {
-	string csize((const char*)qsize.toAscii());
+	string csize(qs2utf8s(qsize));
 	char *cp;
 	size = strtoll(csize.c_str(), &cp, 10);
 	if (*cp != 0) {

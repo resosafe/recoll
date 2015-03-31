@@ -243,7 +243,7 @@ bool SSearch::startSimpleSearch(const string& u8, int maxexp)
             sdata = wasaStringToRcl(theconfig, stemlang, u8, reason);
 	if (sdata == 0) {
 	    QMessageBox::warning(0, "Recoll", tr("Bad query string") + ": " +
-				 QString::fromAscii(reason.c_str()));
+				 QString::fromUtf8(reason.c_str()));
 	    return false;
 	}
     } else {

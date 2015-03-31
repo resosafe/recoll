@@ -67,7 +67,7 @@ public:
     virtual string startMatch(unsigned int) 
     {
 	return string("<span style='color: ")
-	    + string((const char *)prefs.qtermcolor.toAscii()) + string("'>");
+	    + qs2utf8s(prefs.qtermcolor) + string("'>");
     }
     virtual string endMatch() {return string("</span>");}
 };
@@ -286,7 +286,8 @@ int RecollModel::columnCount(const QModelIndex&) const
 void RecollModel::readDocSource()
 {
     LOGDEB(("RecollModel::readDocSource()\n"));
-    reset();
+    beginResetModel();
+    endResetModel();
 }
 
 void RecollModel::setDocSource(RefCntr<DocSequence> nsource)
@@ -459,8 +460,8 @@ public:
 		    pen.setBrush(opt.palette.brush(QPalette::HighlightedText));
 		    painter->setPen(pen);
 #else
-		    text = QString::fromAscii("<div style='color: white'> ") + 
-			text + QString::fromAscii("</div>");
+		    text = QString::fromUtf8("<div style='color: white'> ") + 
+			text + QString::fromUtf8("</div>");
 #endif
 		} 
 		painter->setClipRect(option.rect);
@@ -508,7 +509,11 @@ void ResTable::init()
 	connect(header, SIGNAL(customContextMenuRequested(const QPoint&)),
 		this, SLOT(createHeaderPopupMenu(const QPoint&)));
     }
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
+    header->setSectionsMovable(true);
+#else
     header->setMovable(true);
+#endif
 
     header = tableView->verticalHeader();
     if (header) {
@@ -540,9 +545,9 @@ void ResTable::init()
 
     delete textBrowser;
     m_detail = new ResTableDetailArea(this);
-    m_detail->setReadOnly(TRUE);
-    m_detail->setUndoRedoEnabled(FALSE);
-    m_detail->setOpenLinks(FALSE);
+    m_detail->setReadOnly(true);
+    m_detail->setUndoRedoEnabled(false);
+    m_detail->setOpenLinks(false);
     // signals and slots connections
     connect(m_detail, SIGNAL(anchorClicked(const QUrl &)), 
 	    this, SLOT(linkWasClicked(const QUrl &)));
@@ -755,7 +760,7 @@ void ResTable::linkWasClicked(const QUrl &url)
 	return;
     }
     QString s = url.toString();
-    const char *ascurl = s.toAscii();
+    const char *ascurl = s.toUtf8();
     LOGDEB(("ResTable::linkWasClicked: [%s]\n", ascurl));
 
     int i = atoi(ascurl+1) -1;

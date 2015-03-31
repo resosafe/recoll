@@ -59,9 +59,9 @@ void CronToolW::init()
     string id = idstring(theconfig->getConfDir());
     vector<string> sched;
     if (getCrontabSched(marker, id, sched)) {
-	minsLE->setText(QString::fromAscii(sched[0].c_str()));
-	hoursLE->setText(QString::fromAscii(sched[1].c_str()));
-	daysLE->setText(QString::fromAscii(sched[4].c_str()));
+        minsLE->setText(QString::fromUtf8(sched[0].c_str()));
+        hoursLE->setText(QString::fromUtf8(sched[1].c_str()));
+        daysLE->setText(QString::fromUtf8(sched[4].c_str()));
     }
 }
 
@@ -88,9 +88,9 @@ void CronToolW::changeCron(bool enable)
 	editCrontab(marker, id, "", "", reason);
 	accept();
     } else {
-	string mins((const char *)minsLE->text().toAscii());
-	string hours((const char *)hoursLE->text().toAscii());
-	string days((const char *)daysLE->text().toAscii());
+        string mins(qs2utf8s(minsLE->text()));
+        string hours(qs2utf8s(hoursLE->text()));
+        string days(qs2utf8s(daysLE->text()));
 	string sched = mins + " " + hours + "  * * " + days;
 	if (editCrontab(marker, id, sched, cmd, reason)) {
 	    accept();

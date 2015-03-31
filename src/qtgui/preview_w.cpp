@@ -201,8 +201,8 @@ void Preview::init()
     QWidget *unnamed = new QWidget(pvTab);
     QVBoxLayout *unnamedLayout = new QVBoxLayout(unnamed);
     PreviewTextEdit *pvEdit = new PreviewTextEdit(unnamed, "pvEdit", this);
-    pvEdit->setReadOnly(TRUE);
-    pvEdit->setUndoRedoEnabled(FALSE);
+    pvEdit->setReadOnly(true);
+    pvEdit->setUndoRedoEnabled(false);
     unnamedLayout->addWidget(pvEdit);
     pvTab->addTab(unnamed, "");
 
@@ -232,13 +232,13 @@ void Preview::init()
     layout3->addWidget(searchTextCMB);
 
     nextButton = new QPushButton(this);
-    nextButton->setEnabled(TRUE);
+    nextButton->setEnabled(true);
     layout3->addWidget(nextButton);
     prevButton = new QPushButton(this);
-    prevButton->setEnabled(TRUE);
+    prevButton->setEnabled(true);
     layout3->addWidget(prevButton);
     clearPB = new QPushButton(this);
-    clearPB->setEnabled(FALSE);
+    clearPB->setEnabled(false);
     layout3->addWidget(clearPB);
     matchCheck = new QCheckBox(this);
     layout3->addWidget(matchCheck);
@@ -397,7 +397,7 @@ bool Preview::eventFilter(QObject *target, QEvent *event)
 void Preview::searchTextChanged(const QString & text)
 {
     LOGDEB1(("Search line text changed. text: '%s'\n", 
-	     (const char *)text.toAscii()));
+	     (const char *)text.toUtf8()));
     m_searchTextFromIndex = -1;
     if (text.isEmpty()) {
 	m_dynSearchActive = false;
@@ -581,8 +581,8 @@ PreviewTextEdit *Preview::addEditorTab()
     QWidget *anon = new QWidget((QWidget *)pvTab);
     QVBoxLayout *anonLayout = new QVBoxLayout(anon); 
     PreviewTextEdit *editor = new PreviewTextEdit(anon, "pvEdit", this);
-    editor->setReadOnly(TRUE);
-    editor->setUndoRedoEnabled(FALSE );
+    editor->setReadOnly(true);
+    editor->setUndoRedoEnabled(false );
     anonLayout->addWidget(editor);
     pvTab->addTab(anon, "Tab");
     pvTab->setCurrentIndex(pvTab->count() -1);
@@ -811,7 +811,7 @@ bool Preview::loadDocInCurrentTab(const Rcl::Doc &idoc, int docnum)
 
     QString msg = QString("Loading: %1 (size %2 bytes)")
 	.arg(QString::fromLocal8Bit(idoc.url.c_str()))
-	.arg(QString::fromAscii(idoc.fbytes.c_str()));
+	.arg(QString::fromUtf8(idoc.fbytes.c_str()));
 
     // Create progress dialog and aux objects
     const int nsteps = 20;
@@ -848,7 +848,7 @@ bool Preview::loadDocInCurrentTab(const Rcl::Doc &idoc, int docnum)
     if (status != 0) {
         QString explain;
 	if (!lthr.missing.empty()) {
-            explain = QString::fromAscii("<br>") +
+            explain = QString::fromUtf8("<br>") +
                 tr("Missing helper program: ") +
                 QString::fromLocal8Bit(lthr.missing.c_str());
 	    QMessageBox::warning(0, "Recoll",

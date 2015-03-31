@@ -19,8 +19,8 @@
 
 #include <vector>
 
-#include <qvariant.h>
-#include <qdialog.h>
+#include <QVariant>
+#include <QDialog>
 
 #include "searchclause_w.h"
 #include "recoll.h"

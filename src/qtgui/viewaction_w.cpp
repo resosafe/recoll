@@ -88,12 +88,12 @@ void ViewAction::fillLists()
     for (vector<pair<string, string> >::const_iterator it = defs.begin();
 	 it != defs.end(); it++) {
 	actionsLV->setItem(row, 0, 
-	   new QTableWidgetItem(QString::fromAscii(it->first.c_str())));
+	   new QTableWidgetItem(QString::fromUtf8(it->first.c_str())));
 	if (!prefs.useDesktopOpen ||
 	    viewerXs.find(it->first) != viewerXs.end()) {
 	    actionsLV->setItem(
 		row, 1, 
-		new QTableWidgetItem(QString::fromAscii(it->second.c_str())));
+		new QTableWidgetItem(QString::fromUtf8(it->second.c_str())));
 	} else {
 	    actionsLV->setItem(
 		row, 1, new QTableWidgetItem(tr("Desktop Default")));
@@ -119,7 +119,6 @@ void ViewAction::selectMT(const QString& mt)
 
 void ViewAction::onSelSameClicked()
 {
-    fprintf(stderr, "onSelSameClicked()\n");
     actionsLV->clearSelection();
     QString value = currentLBL->text();
     if (value.isEmpty())
@@ -131,7 +130,7 @@ void ViewAction::onSelSameClicked()
     for (unsigned int i = 0; i < defs.size(); i++) {
 	if (defs[i].second == action) {
 	    QList<QTableWidgetItem *>items = 
-		actionsLV->findItems(QString::fromAscii(defs[i].first.c_str()), 
+		actionsLV->findItems(QString::fromUtf8(defs[i].first.c_str()), 
 				  Qt::MatchFixedString|Qt::MatchCaseSensitive);
 	    for (QList<QTableWidgetItem *>::iterator it = items.begin();
 		 it != items.end(); it++) {
@@ -153,7 +152,7 @@ void ViewAction::onItemClicked(QTableWidgetItem * item)
     theconfig->getMimeViewerDefs(defs);
     for (unsigned int i = 0; i < defs.size(); i++) {
 	if (defs[i].first == mtype) {
-	    currentLBL->setText(QString::fromAscii(defs[i].second.c_str()));
+	    currentLBL->setText(QString::fromUtf8(defs[i].second.c_str()));
 	    selSamePB->setEnabled(true);
 	    return;
 	}

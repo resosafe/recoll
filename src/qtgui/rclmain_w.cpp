@@ -197,7 +197,7 @@ void RclMain::init()
     QAction *id; 
     for (vector<string>::const_iterator it = langs.begin(); 
 	 it != langs.end(); it++) {
-	QString qlang = QString::fromAscii(it->c_str(), it->length());
+	QString qlang = QString::fromUtf8(it->c_str(), it->length());
 	id = preferencesMenu->addAction(qlang);
 	id->setCheckable(true);
 	m_stemLangToId[qlang] = id;
@@ -222,7 +222,7 @@ void RclMain::init()
     // Document filter buttons and combobox
     // Combobox version of the document filter control
     m_filtCMB = new QComboBox(m_resTB);
-    m_filtCMB->setEditable(FALSE);
+    m_filtCMB->setEditable(false);
     m_filtCMB->addItem(tr("All"));
     m_filtCMB->setToolTip(tr("Document filter"));
     // Buttons version of the document filter control
@@ -449,8 +449,8 @@ void RclMain::init()
         m_trayicon = 0;
     }
 
-    fileRebuildIndexAction->setEnabled(FALSE);
-    fileToggleIndexingAction->setEnabled(FALSE);
+    fileRebuildIndexAction->setEnabled(false);
+    fileToggleIndexingAction->setEnabled(false);
     // Start timer on a slow period (used for checking ^C). Will be
     // speeded up during indexing
     periodictimer->start(1000);
@@ -635,7 +635,7 @@ void RclMain::setStemLang(QAction *id)
     }
     prefs.queryStemLang = lang;
     LOGDEB(("RclMain::setStemLang(%d): lang [%s]\n", 
-	    id, (const char *)prefs.queryStemLang.toAscii()));
+	    id, (const char *)prefs.queryStemLang.toUtf8()));
     rwSettings(true);
     emit stemLangChanged(lang);
 }
@@ -643,7 +643,7 @@ void RclMain::setStemLang(QAction *id)
 // Set the checked stemming language item before showing the prefs menu
 void RclMain::setStemLang(const QString& lang)
 {
-    LOGDEB(("RclMain::setStemLang(%s)\n", (const char *)lang.toAscii()));
+    LOGDEB(("RclMain::setStemLang(%s)\n", (const char *)lang.toUtf8()));
     QAction *id;
     if (lang == "") {
 	id = m_idNoStem;
@@ -741,7 +741,7 @@ void RclMain::idxStatus()
 		    status.dbtotdocs);
 	else
 	    sprintf(cnts, "(%d/%d) ", status.docsdone, status.filesdone);
-	msg += QString::fromAscii(cnts) + " ";
+	msg += QString::fromUtf8(cnts) + " ";
     }
     string mf;int ecnt = 0;
     string fcharset = theconfig->getDefCharset(true);
@@ -792,23 +792,23 @@ void RclMain::periodic100()
     if (m_idxproc) {
 	m_indexerState = IXST_RUNNINGMINE;
 	fileToggleIndexingAction->setText(tr("Stop &Indexing"));
-	fileToggleIndexingAction->setEnabled(TRUE);
-	fileRebuildIndexAction->setEnabled(FALSE);
+	fileToggleIndexingAction->setEnabled(true);
+	fileRebuildIndexAction->setEnabled(false);
 	periodictimer->setInterval(200);
     } else {
 	Pidfile pidfile(theconfig->getPidfile());
 	if (pidfile.open() == 0) {
 	    m_indexerState = IXST_NOTRUNNING;
 	    fileToggleIndexingAction->setText(tr("Update &Index"));
-	    fileToggleIndexingAction->setEnabled(TRUE);
-	    fileRebuildIndexAction->setEnabled(TRUE);
+	    fileToggleIndexingAction->setEnabled(true);
+	    fileRebuildIndexAction->setEnabled(true);
 	    periodictimer->setInterval(1000);
 	} else {
 	    // Real time or externally started batch indexer running
 	    m_indexerState = IXST_RUNNINGNOTMINE;
 	    fileToggleIndexingAction->setText(tr("Stop &Indexing"));
-	    fileToggleIndexingAction->setEnabled(TRUE);
-	    fileRebuildIndexAction->setEnabled(FALSE);
+	    fileToggleIndexingAction->setEnabled(true);
+	    fileRebuildIndexAction->setEnabled(false);
 	    periodictimer->setInterval(200);
 	}	    
     }
@@ -1272,7 +1272,7 @@ void RclMain::showMissingHelpers()
 	QMessageBox::information(this, "", tr("Indexing did not run yet"));
 	return;
     }
-    QString msg = QString::fromAscii("<p>") +
+    QString msg = QString::fromUtf8("<p>") +
 	tr("External applications/commands needed for your file types "
 	   "and not found, as stored by the last indexing pass in ");
     msg += "<i>";
@@ -1347,12 +1347,12 @@ void RclMain::showActiveTypes()
     // We replace the list with an editor so that the user can copy/paste
     delete dialog.listWidget;
     QTextEdit *editor = new QTextEdit(dialog.groupBox);
-    editor->setReadOnly(TRUE);
+    editor->setReadOnly(true);
     dialog.horizontalLayout->addWidget(editor);
 
     for (set<string>::const_iterator it = mtypesfromdbconf.begin(); 
 	 it != mtypesfromdbconf.end(); it++) {
-	editor->append(QString::fromAscii(it->c_str()));
+	editor->append(QString::fromUtf8(it->c_str()));
     }
     editor->moveCursor(QTextCursor::Start);
     editor->ensureCursorVisible();
@@ -1528,7 +1528,7 @@ void RclMain::updateIdxForDocs(vector<Rcl::Doc>& docs)
 	m_idxproc->startExec("recollindex", args, false, false);
 	fileToggleIndexingAction->setText(tr("Stop &Indexing"));
     }
-    fileToggleIndexingAction->setEnabled(FALSE);
+    fileToggleIndexingAction->setEnabled(false);
 }
 
 /** 
@@ -1773,7 +1773,7 @@ void RclMain::newDupsW(const Rcl::Doc, const vector<Rcl::Doc> dups)
     // We replace the list with an editor so that the user can copy/paste
     delete dialog.listWidget;
     QTextEdit *editor = new QTextEdit(dialog.groupBox);
-    editor->setReadOnly(TRUE);
+    editor->setReadOnly(true);
     dialog.horizontalLayout->addWidget(editor);
 
     for (vector<Rcl::Doc>::const_iterator it = dups.begin(); 
@@ -1839,7 +1839,7 @@ void RclMain::openWith(Rcl::Doc doc, string cmdspec)
 	QMessageBox::warning(0, "Recoll", 
 			     tr("Bad desktop app spec for %1: [%2]\n"
 				"Please check the desktop file")
-			     .arg(QString::fromAscii(doc.mimetype.c_str()))
+			     .arg(QString::fromUtf8(doc.mimetype.c_str()))
 			     .arg(QString::fromLocal8Bit(cmdspec.c_str())));
 	return;
     }
@@ -1896,7 +1896,7 @@ void RclMain::startNativeViewer(Rcl::Doc doc, int pagenum, QString term)
 	QMessageBox::warning(0, "Recoll", 
 			     tr("Bad viewer command line for %1: [%2]\n"
 				"Please check the mimeview file")
-			     .arg(QString::fromAscii(doc.mimetype.c_str()))
+			     .arg(QString::fromUtf8(doc.mimetype.c_str()))
 			     .arg(QString::fromLocal8Bit(cmd.c_str())));
 	return;
     }
@@ -1928,7 +1928,7 @@ void RclMain::startNativeViewer(Rcl::Doc doc, int pagenum, QString term)
 
     // Command not found: start the user dialog to help find another one:
     if (execpath.empty()) {
-	QString mt = QString::fromAscii(doc.mimetype.c_str());
+	QString mt = QString::fromUtf8(doc.mimetype.c_str());
 	QString message = tr("The viewer specified in mimeview for %1: %2"
 			     " is not found.\nDo you want to start the "
 			     " preferences dialog ?")
@@ -1969,7 +1969,7 @@ void RclMain::startNativeViewer(Rcl::Doc doc, int pagenum, QString term)
 	QMessageBox::warning(0, "Recoll", 
 			     tr("Viewer command line for %1 specifies both "
 				"file and parent file value: unsupported")
-			     .arg(QString::fromAscii(doc.mimetype.c_str())));
+			     .arg(QString::fromUtf8(doc.mimetype.c_str())));
 	return;
     }
 	

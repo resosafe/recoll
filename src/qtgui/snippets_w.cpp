@@ -54,7 +54,7 @@ public:
     virtual string startMatch(unsigned int)
     {
 	return string("<span class='rclmatch' style='color: ")
-	    + string((const char *)prefs.qtermcolor.toAscii()) + string("'>");
+	    + qs2utf8s(prefs.qtermcolor) + string("'>");
     }
     virtual string endMatch() 
     {

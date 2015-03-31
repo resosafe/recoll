@@ -22,13 +22,13 @@
 #include <string>
 #include <vector>
 
-#include <QtGui/QHBoxLayout>
-#include <QtGui/QVBoxLayout>
-#include <QtGui/QCheckBox>
-#include <QtGui/QRadioButton>
-#include <QtGui/QButtonGroup>
-#include <QtGui/QMessageBox>
-#include <QtXml/QXmlDefaultHandler>
+#include <QHBoxLayout>
+#include <QVBoxLayout>
+#include <QCheckBox>
+#include <QRadioButton>
+#include <QButtonGroup>
+#include <QMessageBox>
+#include <QXmlDefaultHandler>
 
 #include "fragbuts.h"
 #include "pathut.h"

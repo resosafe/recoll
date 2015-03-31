@@ -93,7 +93,7 @@ void SpellW::init()
     for (vector<string>::const_iterator it = langs.begin(); 
 	 it != langs.end(); it++) {
 	stemLangCMB->
-	    addItem(QString::fromAscii(it->c_str(), it->length()));
+	    addItem(QString::fromUtf8(it->c_str(), it->length()));
     }
 
     (void)new HelpClient(this);
@@ -109,7 +109,11 @@ void SpellW::init()
     connect(expTypeCMB, SIGNAL(activated(int)), this, SLOT(modeSet(int)));
 
     resTW->setShowGrid(0);
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
+    resTW->horizontalHeader()->setSectionResizeMode(0, QHeaderView::Stretch);
+#else
     resTW->horizontalHeader()->setResizeMode(0, QHeaderView::Stretch);
+#endif
     resTW->verticalHeader()->setDefaultSectionSize(20); 
     connect(resTW,
 	   SIGNAL(cellDoubleClicked(int, int)),
@@ -260,7 +264,7 @@ void SpellW::doExpand()
             resTW->setItem(row, 0, 
                     new QTableWidgetItem(QString::fromUtf8(it->term.c_str()))); 
             resTW->setItem(row++, 1, 
-                             new QTableWidgetItem(QString::fromAscii(num)));
+                             new QTableWidgetItem(QString::fromUtf8(num)));
 	}
     }
 }

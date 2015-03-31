@@ -184,8 +184,8 @@ void UIPrefsDialog::setFromPrefs()
     for (vector<string>::const_iterator it = langs.begin(); 
 	 it != langs.end(); it++) {
 	stemLangCMB->
-	    addItem(QString::fromAscii(it->c_str(), it->length()));
-	if (cur == 0 && !strcmp((const char*)prefs.queryStemLang.toAscii(), 
+	    addItem(QString::fromUtf8(it->c_str(), it->length()));
+	if (cur == 0 && !strcmp((const char*)prefs.queryStemLang.toUtf8(), 
 				it->c_str())) {
 	    cur = stemLangCMB->count();
 	}

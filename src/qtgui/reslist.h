@@ -30,7 +30,7 @@ using std::pair;
 #include <QTextBrowser>
 #define RESLIST_PARENTCLASS QTextBrowser
 #else
-#include <QtWebKit/QWebView>
+#include <QWebView>
 #define RESLIST_PARENTCLASS QWebView
 #endif
 

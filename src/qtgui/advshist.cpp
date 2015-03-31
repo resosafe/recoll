@@ -77,7 +77,7 @@ bool SDHXMLHandler::startElement(const QString & /* namespaceURI */,
 				const QXmlAttributes &)
 {
     LOGDEB2(("SDHXMLHandler::startElement: name [%s]\n", 
-	     (const char *)qName.toAscii()));
+	     (const char *)qName.toUtf8()));
     if (qName == "SD") {
 	resetTemps();
 	// A new search descriptor. Allocate data structure
@@ -95,7 +95,7 @@ bool SDHXMLHandler::endElement(const QString & /* namespaceURI */,
 			      const QString &qName)
 {
     LOGDEB2(("SDHXMLHandler::endElement: name [%s]\n", 
-	     (const char *)qName.toAscii()));
+	     (const char *)qName.toUtf8()));
 
     if (qName == "CLT") {
 	if (currentText == "OR") {
@@ -110,7 +110,7 @@ bool SDHXMLHandler::endElement(const QString & /* namespaceURI */,
     } else if (qName == "T") {
 	text = base64_decode(qs2utf8s(currentText.trimmed()));
     } else if (qName == "S") {
-	slack = atoi((const char *)currentText.toAscii());
+	slack = atoi((const char *)currentText.toUtf8());
     } else if (qName == "C") {
 	SearchDataClause *c;
 	if (whatclause == "AND" || whatclause.isEmpty()) {
@@ -144,11 +144,11 @@ bool SDHXMLHandler::endElement(const QString & /* namespaceURI */,
 	slack = 0;
 	exclude = false;
     } else if (qName == "D") {
-	d = atoi((const char *)currentText.toAscii());
+	d = atoi((const char *)currentText.toUtf8());
     } else if (qName == "M") {
-	m = atoi((const char *)currentText.toAscii());
+	m = atoi((const char *)currentText.toUtf8());
     } else if (qName == "Y") {
-	y = atoi((const char *)currentText.toAscii());
+	y = atoi((const char *)currentText.toUtf8());
     } else if (qName == "DMI") {
 	di.d1 = d;
 	di.m1 = m;
@@ -160,28 +160,28 @@ bool SDHXMLHandler::endElement(const QString & /* namespaceURI */,
 	di.y2 = y;
 	hasdates = true;
     } else if (qName == "MIS") {
-	sd->setMinSize(atoll((const char *)currentText.toAscii()));
+	sd->setMinSize(atoll((const char *)currentText.toUtf8()));
     } else if (qName == "MAS") {
-	sd->setMaxSize(atoll((const char *)currentText.toAscii()));
+	sd->setMaxSize(atoll((const char *)currentText.toUtf8()));
     } else if (qName == "ST") {
-	string types = (const char *)currentText.toAscii();
+	string types = (const char *)currentText.toUtf8();
 	vector<string> vt;
 	stringToTokens(types, vt);
 	for (unsigned int i = 0; i < vt.size(); i++) 
 	    sd->addFiletype(vt[i]);
     } else if (qName == "IT") {
-	string types = (const char *)currentText.toAscii();
+	string types(qs2utf8s(currentText));
 	vector<string> vt;
 	stringToTokens(types, vt);
 	for (unsigned int i = 0; i < vt.size(); i++) 
 	    sd->remFiletype(vt[i]);
     } else if (qName == "YD") {
 	string d;
-	base64_decode((const char*)currentText.trimmed().toAscii(), d);
+	base64_decode(qs2utf8s(currentText.trimmed()), d);
 	sd->addClause(new SearchDataClausePath(d));
     } else if (qName == "ND") {
 	string d;
-	base64_decode((const char*)currentText.trimmed().toAscii(), d);
+	base64_decode(qs2utf8s(currentText.trimmed()), d);
 	sd->addClause(new SearchDataClausePath(d, true));
     } else if (qName == "SD") {
 	// Closing current search descriptor. Finishing touches...

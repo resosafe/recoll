@@ -174,7 +174,7 @@ ConfParamCStrW::ConfParamCStrW(QWidget *parent, ConfLink cflink,
     if (!createCommon(lbltxt, tltptxt))
 	return;
     m_cmb = new QComboBox(this);
-    m_cmb->setEditable(FALSE);
+    m_cmb->setEditable(false);
     m_cmb->insertItems(0, sl);
 
     setSzPol(m_cmb, QSizePolicy::Preferred, QSizePolicy::Fixed, 1, 0);
@@ -449,7 +449,7 @@ void ConfParamCSLW::showInputDialog()
 				       "", // label, 
 				       m_sl, // items, 
 				       0, // current = 0
-				       FALSE, // editable = true, 
+				       false, // editable = true, 
 				       &ok);
 
     if (ok && !s.isEmpty()) {

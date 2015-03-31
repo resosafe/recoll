@@ -35,7 +35,7 @@
 #include <QTextBlock>
 #include <QShortcut>
 #ifndef __APPLE__
-#include <qx11info_x11.h>
+//#include <qx11info_x11.h>
 #endif
 
 #include "debuglog.h"
@@ -288,7 +288,7 @@ public:
 	}
 		
 	return string("<span class='rclmatch' style='color: ")
-	    + string((const char *)prefs.qtermcolor.toAscii()) + string("'>");
+	    + qs2utf8s(prefs.qtermcolor) + string("'>");
     }
     virtual string endMatch() 
     {
@@ -329,8 +329,7 @@ ResList::ResList(QWidget* parent, const char* name)
     languageChange();
 
     (void)new HelpClient(this);
-    HelpClient::installMap((const char *)this->objectName().toAscii(), 
-			   "RCL.SEARCH.RESLIST");
+    HelpClient::installMap(qs2utf8s(this->objectName()), "RCL.SEARCH.RESLIST");
 
 #if 0
     // See comments in "highlighted
@@ -465,7 +464,7 @@ void ResList::resetView()
     QTextBrowser::append(".");
     clear();
 #ifndef __APPLE__
-    XFlush(QX11Info::display());
+//    XFlush(QX11Info::display());
 #endif
 #else
     m_text = "";
@@ -786,7 +785,7 @@ void ResList::previewExposed(int docnum)
 	QString sel = 
 	   QString("div[rcldocnum=\"%1\"]").arg(m_curPvDoc - pageFirstDocNum());
 	LOGDEB2(("Searching for element, selector: [%s]\n", 
-		 (const char *)sel.toAscii()));
+			 qs2utf8s(sel).c_str()));
 	QWebElement elt = page()->mainFrame()->findFirstElement(sel);
 	if (!elt.isNull()) {
 	    LOGDEB2(("Found\n"));
@@ -823,7 +822,7 @@ void ResList::previewExposed(int docnum)
     QString sel = 
 	QString("div[rcldocnum=\"%1\"]").arg(docnum - pageFirstDocNum());
     LOGDEB2(("Searching for element, selector: [%s]\n", 
-	    (const char *)sel.toAscii()));
+			 qs2utf8s(sel).c_str()));
     QWebElement elt = page()->mainFrame()->findFirstElement(sel);
     if (!elt.isNull()) {
 	LOGDEB2(("Found\n"));
@@ -860,7 +859,7 @@ void ResList::showQueryDetails()
 
 void ResList::linkWasClicked(const QUrl &url)
 {
-    string ascurl = (const char *)url.toString().toAscii();;
+    string ascurl = qs2utf8s(url.toString());
     LOGDEB(("ResList::linkWasClicked: [%s]\n", ascurl.c_str()));
 
     int what = ascurl[0];

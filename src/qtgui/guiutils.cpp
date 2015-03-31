@@ -87,7 +87,7 @@ void rwSettings(bool writing)
 	     it != prefs.advSearchClauses.end(); it++) {
 	    char buf[20];
 	    sprintf(buf, "%d ", *it);
-	    advSearchClauses += QString::fromAscii(buf);
+	    advSearchClauses += QString::fromUtf8(buf);
 	}
     }
     SETTING_RW(advSearchClauses, "/Recoll/prefs/adv/clauseList", String, ascdflt);
@@ -139,7 +139,7 @@ void rwSettings(bool writing)
     SETTING_RW(prefs.reslistfontsize, "/Recoll/prefs/reslist/fontSize", Int, 
 	       10);
 
-    QString rlfDflt = QString::fromAscii(prefs.dfltResListFormat);
+    QString rlfDflt = QString::fromUtf8(prefs.dfltResListFormat);
     if (writing) {
 	if (prefs.reslistformat.compare(rlfDflt)) {
 	    settings.setValue("/Recoll/prefs/reslist/format", 
@@ -236,7 +236,7 @@ void rwSettings(bool writing)
 	     it != prefs.restableColWidths.end(); it++) {
 	    char buf[20];
 	    sprintf(buf, "%d ", *it);
-	    rtcw += QString::fromAscii(buf);
+	    rtcw += QString::fromUtf8(buf);
 	}
     }
     SETTING_RW(rtcw, "/Recoll/prefs/query/restableWidths", String, 
@@ -387,7 +387,7 @@ void rwSettings(bool writing)
 
 string PrefsPack::stemlang()
 {
-    string stemLang = (const char *)prefs.queryStemLang.toAscii();
+    string stemLang(qs2utf8s(prefs.queryStemLang));
     if (stemLang == "ALL") {
 	if (theconfig)
 	    theconfig->getConfParam("indexstemminglanguages", stemLang);

@@ -89,7 +89,6 @@ public:
 	init();
     }
     ~RclMain() {}
-    virtual bool eventFilter(QObject *target, QEvent *event);
     QString getQueryDescription();
 
     /** This is only called from main() to set an URL to be displayed (using
@@ -105,6 +104,9 @@ public:
 
     // Takes copies of the args instead of refs. Lazy and safe.
     void newDupsW(const Rcl::Doc doc, const std::vector<Rcl::Doc> dups);
+
+protected:
+    virtual void showEvent(QShowEvent *);
 
 public slots:
     virtual void fileExit();

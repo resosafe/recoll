@@ -136,7 +136,7 @@ public slots:
 			  bool wo = false);
     virtual void nextPressed();
     virtual void prevPressed();
-    virtual void currentChanged(QWidget *tw);
+    virtual void currentChanged(int);
     virtual void closeCurrentTab();
     virtual void emitSaveDocToFile();
     virtual void togglePlainPre();

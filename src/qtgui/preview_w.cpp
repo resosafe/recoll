@@ -271,8 +271,8 @@ void Preview::init()
     connect(nextButton, SIGNAL(clicked()), this, SLOT(nextPressed()));
     connect(prevButton, SIGNAL(clicked()), this, SLOT(prevPressed()));
     connect(clearPB, SIGNAL(clicked()), searchTextCMB, SLOT(clearEditText()));
-    connect(pvTab, SIGNAL(currentChanged(QWidget *)), 
-	    this, SLOT(currentChanged(QWidget *)));
+    connect(pvTab, SIGNAL(currentChanged(int)), 
+	    this, SLOT(currentChanged(int)));
     connect(bt, SIGNAL(clicked()), this, SLOT(closeCurrentTab()));
 
     m_dynSearchActive = false;
@@ -281,7 +281,7 @@ void Preview::init()
 	resize(prefs.pvwidth, prefs.pvheight);
     }
     m_loading = false;
-    currentChanged(pvTab->currentWidget());
+    currentChanged(pvTab->currentIndex());
     m_justCreated = true;
 }
 
@@ -536,9 +536,10 @@ void Preview::prevPressed()
 }
 
 // Called when user clicks on tab
-void Preview::currentChanged(QWidget * tw)
+void Preview::currentChanged(int index)
 {
     LOGDEB2(("PreviewTextEdit::currentChanged\n"));
+    QWidget *tw = pvTab->widget(index);
     PreviewTextEdit *edit = 
 	tw->findChild<PreviewTextEdit*>("pvEdit");
     LOGDEB1(("Preview::currentChanged(). Editor: %p\n", edit));

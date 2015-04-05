@@ -8,7 +8,7 @@ LANGUAGE        = C++
 @QMAKE_ENABLE_ZEITGEIST@QMAKE_CXXFLAGS += -DUSE_ZEITGEIST
 
 QT += xml
-greaterThan(QT_MAJOR_VERSION, 4): QT += widgets webkitwidgets
+greaterThan(QT_MAJOR_VERSION, 4): QT += widgets webkitwidgets printsupport
 
 CONFIG  += qt warn_on thread release 
 

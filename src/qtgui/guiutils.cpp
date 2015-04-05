@@ -64,9 +64,16 @@ PrefsPack prefs;
  * structure during program execution and saved to disk using the QT
  * settings mechanism
  */
+/* Remember if settings were actually read (to avoid writing them if
+ * we stopped before reading them (else some kinds of errors would reset
+ * the qt/recoll settings to defaults) */
+static bool havereadsettings;
+
 void rwSettings(bool writing)
 {
     LOGDEB1(("rwSettings: write %d\n", int(writing)));
+    if (writing && !havereadsettings)
+        return;
     QSettings settings("Recoll.org", "recoll");
     SETTING_RW(prefs.mainwidth, "/Recoll/geometry/width", Int, 0);
     SETTING_RW(prefs.mainheight, "/Recoll/geometry/height", Int, 0);
@@ -383,6 +390,8 @@ void rwSettings(bool writing)
 	for (list<string>::iterator it = tl.begin(); it != tl.end(); it++)
 	    prefs.asearchSubdirHist.push_front(QString::fromUtf8(it->c_str()));
     }
+    if (!writing)
+        havereadsettings = true;
 }
 
 string PrefsPack::stemlang()

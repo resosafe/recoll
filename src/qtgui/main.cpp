@@ -52,11 +52,6 @@
 
 extern RclConfig *theconfig;
 
-// To avoid writing settings if we stopped before reading them (else
-// some kinds of errors would reset the qt/recoll settings to
-// defaults)
-static bool havereadsettings;
-
 PTMutexInit thetempfileslock;
 static vector<TempFile>  o_tempfiles;
 /* Keep an array of temporary files for deletion at exit. It happens that we
@@ -155,10 +150,6 @@ bool getStemLangs(vector<string>& vlangs)
 
 static void recollCleanup()
 {
-    if (havereadsettings) {
-	LOGDEB(("recollCleanup: writing settings\n"));
-	rwSettings(true);
-    }
     LOGDEB2(("recollCleanup: closing database\n"));
     deleteZ(rcldb);
     deleteZ(theconfig);
@@ -349,7 +340,6 @@ int main(int argc, char **argv)
 
     //    fprintf(stderr, "History done\n");
     rwSettings(false);
-    havereadsettings = true;
     //    fprintf(stderr, "Settings done\n");
 
     if (!prefs.qssFile.isEmpty()) {

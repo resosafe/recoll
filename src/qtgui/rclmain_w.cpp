@@ -700,6 +700,8 @@ void RclMain::fileExit()
     if (asearchform)
 	delete asearchform;
 
+    rwSettings(true);
+
     // Let the exit handler clean up the rest (internal recoll stuff).
     exit(0);
 }

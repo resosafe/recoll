@@ -159,11 +159,13 @@ string mimetype(const string &fn, const struct stat *stp,
     }
 
     // Compute file name suffix and search the mimetype map
-    string::size_type dot = fn.find_last_of(".");
-    string suff;
-    if (dot != string::npos) {
-        suff = stringtolower(fn.substr(dot));
+    string::size_type dot = fn.find_first_of(".");
+    while (dot != string::npos) {
+	string suff = stringtolower(fn.substr(dot));
 	mtype = cfg->getMimeTypeFromSuffix(suff);
+	if (!mtype.empty() || dot >= fn.size() - 1)
+	    break;
+	dot = fn.find_first_of(".", dot + 1);
     }
 
     // If type was not determined from suffix, examine file data. Can

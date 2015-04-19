@@ -386,7 +386,11 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>Fragment Buttons</source>
-        <translation>Fragments de recherche</translation>
+        <translation type="obsolete">Fragments de recherche</translation>
+    </message>
+    <message>
+        <source>Query Fragments</source>
+        <translation type="unfinished">Fragments de recherche</translation>
     </message>
 </context>
 <context>
@@ -640,6 +644,29 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
     <message>
         <source>Character set used for reading files which do not identify the character set internally, for example pure text files.&lt;br&gt;The default value is empty, and the value from the NLS environnement is used.</source>
         <translation>Jeu de caractères utilisé pour lire les fichiers qui n&apos;identifient pas de manière interne leur encodage, par exemple les fichiers texte purs.&lt;br&gt;La valeur par défaut est vide, et la valeur obtenue à partir de l&apos;environnement est utilisée dans ce cas.</translation>
+    </message>
+</context>
+<context>
+    <name>QWidget</name>
+    <message>
+        <source>Create or choose save directory</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Choose exactly one directory</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Could not read directory: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Unexpected file name collision, cancelling.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Cannot extract document: </source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1306,6 +1333,17 @@ Merci de vérifier le fichier desktop </translation>
     <message>
         <source>Query Fragments</source>
         <translation>Fragments de recherche</translation>
+    </message>
+</context>
+<context>
+    <name>RclTrayIcon</name>
+    <message>
+        <source>Restore</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Quit</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -3040,6 +3078,14 @@ La valeur par défaut est 2%</translation>
     <message>
         <source>Menu</source>
         <translation>Menu</translation>
+    </message>
+    <message>
+        <source>Show system tray icon.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Close to tray instead of exiting.</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 </TS>

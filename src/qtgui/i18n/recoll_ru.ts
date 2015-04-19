@@ -380,7 +380,7 @@ p, li { white-space: pre-wrap; }
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Fragment Buttons</source>
+        <source>Query Fragments</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -635,6 +635,29 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
     </message>
     <message>
         <source>Character set used for reading files which do not identify the character set internally, for example pure text files.&lt;br&gt;The default value is empty, and the value from the NLS environnement is used.</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>QWidget</name>
+    <message>
+        <source>Create or choose save directory</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Choose exactly one directory</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Could not read directory: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Unexpected file name collision, cancelling.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Cannot extract document: </source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1297,6 +1320,17 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>Query Fragments</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>RclTrayIcon</name>
+    <message>
+        <source>Restore</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Quit</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2992,6 +3026,14 @@ The default value is 2 (percent). </source>
     </message>
     <message>
         <source>Menu</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show system tray icon.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Close to tray instead of exiting.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

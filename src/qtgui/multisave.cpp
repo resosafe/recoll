@@ -38,7 +38,7 @@ const unsigned int maxlen = 200;
 
 void multiSave(QWidget *p, vector<Rcl::Doc>& docs)
 {
-    QFileDialog fdialog(p, p->tr("Create or choose save directory"));
+    QFileDialog fdialog(p, QWidget::tr("Create or choose save directory"));
     fdialog.setAcceptMode(QFileDialog::AcceptSave);
     fdialog.setFileMode(QFileDialog::Directory);
     fdialog.setOption(QFileDialog::ShowDirsOnly);
@@ -48,7 +48,7 @@ void multiSave(QWidget *p, vector<Rcl::Doc>& docs)
     if (dirl.size() != 1) {
 	// Can't happen ?
 	QMessageBox::warning(0, "Recoll",
-			     p->tr("Choose exactly one directory"));
+			     QWidget::tr("Choose exactly one directory"));
 	return;
     }
     string dir((const char *)dirl[0].toLocal8Bit());
@@ -79,7 +79,7 @@ void multiSave(QWidget *p, vector<Rcl::Doc>& docs)
     string reason;
     if (!readdir(dir, reason, existingNames)) {
 	QMessageBox::warning(0, "Recoll",
-			     p->tr("Could not read directory: ") +
+			     QWidget::tr("Could not read directory: ") +
 			     QString::fromLocal8Bit(reason.c_str()));
 	return;
     }
@@ -125,7 +125,7 @@ void multiSave(QWidget *p, vector<Rcl::Doc>& docs)
 	string fn = path_cat(dir, filenames[i]);
 	if (access(fn.c_str(), 0) == 0) {
 	    QMessageBox::warning(0, "Recoll",
-				 p->tr("Unexpected file name collision, "
+				 QWidget::tr("Unexpected file name collision, "
 				       "cancelling."));
 	    return;
 	}
@@ -133,7 +133,7 @@ void multiSave(QWidget *p, vector<Rcl::Doc>& docs)
 	TempFile temp;// not used
 	if (!FileInterner::idocToFile(temp, fn, theconfig, docs[i])) {
 	    QMessageBox::warning(0, "Recoll",
-				 p->tr("Cannot extract document: ") +
+				 QWidget::tr("Cannot extract document: ") +
 				 QString::fromLocal8Bit(docs[i].url.c_str()) +
 				 " | " +
 				 QString::fromLocal8Bit(docs[i].ipath.c_str())

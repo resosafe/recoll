@@ -167,15 +167,24 @@ EOF
 
 sed -e ':a' -e '/[^>] *$/N; s/\n/ /; ta' < "$infile" | \
 awk '
-/<ITEXT / {
+/<ITEXT |<para|<trail PA/ {
     if (match($0, " CH=\"[^\"]+")) { 
        s=substr($0, RSTART+5, RLENGTH-5)
        printf("%s", s)
-       # Note: there is no way to know if this ends a frame, so no "<br>"
+       # Note: No way to know if this ends a paragraph, so no "<br>"
+       #  but it migth be good to have one in some instances
+    }
+    else if (match($0, "<para+")) {
+       printf("<br>")
+       # New paragraph so a <br>
+    }
+    else if (match($0, "<trail PARENT=\"+")) {
+       printf("<br>")
+       # End of something so a <br>
     }
 }
 END {
     print "</p></body></html>"
 }
 ' | \
-sed -e 's/&#x5;/<br>/g' -e 's/&#x1c;/<br>/g' -e 's//<br>/g'
+sed -e 's/&#x5;/<br>/g' -e 's/&#x1c;/<br>/g' -e 's//<br>/g' -e 's//<br>/g' -e 's// /g'

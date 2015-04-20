@@ -390,7 +390,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>Query Fragments</source>
-        <translation type="unfinished">Fragments de recherche</translation>
+        <translation>Fragments de recherche</translation>
     </message>
 </context>
 <context>
@@ -650,23 +650,23 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
     <name>QWidget</name>
     <message>
         <source>Create or choose save directory</source>
-        <translation type="unfinished"></translation>
+        <translation>Créer ou choisir un répertoire d&apos;écriture</translation>
     </message>
     <message>
         <source>Choose exactly one directory</source>
-        <translation type="unfinished"></translation>
+        <translation>Choisir exactement un répertoire</translation>
     </message>
     <message>
         <source>Could not read directory: </source>
-        <translation type="unfinished"></translation>
+        <translation>Impossible de lire le répertoire</translation>
     </message>
     <message>
         <source>Unexpected file name collision, cancelling.</source>
-        <translation type="unfinished"></translation>
+        <translation>Collision inattendue dans les noms de fichiers, annulation.</translation>
     </message>
     <message>
         <source>Cannot extract document: </source>
-        <translation type="unfinished"></translation>
+        <translation>Impossible d&apos;extraire le document</translation>
     </message>
 </context>
 <context>
@@ -1339,11 +1339,11 @@ Merci de vérifier le fichier desktop </translation>
     <name>RclTrayIcon</name>
     <message>
         <source>Restore</source>
-        <translation type="unfinished"></translation>
+        <translation>Restaurer</translation>
     </message>
     <message>
         <source>Quit</source>
-        <translation type="unfinished"></translation>
+        <translation>Quitter</translation>
     </message>
 </context>
 <context>
@@ -3081,11 +3081,11 @@ La valeur par défaut est 2%</translation>
     </message>
     <message>
         <source>Show system tray icon.</source>
-        <translation type="unfinished"></translation>
+        <translation>Afficher l&apos;icone dans la barre d&apos;état système.</translation>
     </message>
     <message>
         <source>Close to tray instead of exiting.</source>
-        <translation type="unfinished"></translation>
+        <translation>Réduire dans la barre d&apos;état au lieu de quitter.</translation>
     </message>
 </context>
 </TS>

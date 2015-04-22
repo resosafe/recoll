@@ -59,7 +59,7 @@ using namespace std;
 #include "wipedir.h"
 #include "md5.h"
 
-bool fsocc(const string &path, int *pc, long *blocks)
+bool fsocc(const string &path, int *pc, long long *blocks)
 {
 #ifdef sun
     struct statvfs buf;
@@ -88,8 +88,9 @@ bool fsocc(const string &path, int *pc, long *blocks)
 	    int ratio = buf.f_bsize > FSOCC_MB ? buf.f_bsize / FSOCC_MB :
 		FSOCC_MB / buf.f_bsize;
 
-	    *blocks = buf.f_bsize > FSOCC_MB ? long(buf.f_bavail) * ratio :
-		long(buf.f_bavail) / ratio;
+	    *blocks = buf.f_bsize > FSOCC_MB ? 
+                ((long long)buf.f_bavail) * ratio :
+		((long long)buf.f_bavail) / ratio;
 	}
     }
     return true;
@@ -890,7 +891,7 @@ int main(int argc, const char **argv)
   string path = *argv++;argc--;
 
   int pc;
-  long blocks;
+  long long blocks;
   if (!fsocc(path, &pc, &blocks)) {
       fprintf(stderr, "fsocc failed\n");
       return 1;

@@ -77,7 +77,7 @@ extern bool readdir(const std::string& dir, std::string& reason,
 /** A small wrapper around statfs et al, to return percentage of disk
     occupation */
 bool fsocc(const std::string &path, int *pc, // Percent occupied
-	   long *avmbs = 0 // Mbs available to non-superuser
+	   long long *avmbs = 0 // Mbs available to non-superuser. Mb=1024*1024
 	   );
 
 /// Retrieve the temp dir location: $RECOLL_TMPDIR else $TMPDIR else /tmp

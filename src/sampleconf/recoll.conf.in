@@ -221,8 +221,8 @@ membermaxkbs = 50000
 # Size limit for compressed files. We need to decompress these in a
 # temporary directory for identification, which can be wasteful in some
 # cases. Limit the waste. Negative means no limit. 0 results in no
-# processing of any compressed file
-compressedfilemaxkbs = -1
+# processing of any compressed file. Used to be -1 by default.
+compressedfilemaxkbs = 20000
 
 # Size limit for text files. This is for skipping monster logs
 textfilemaxmbs = 20

@@ -17,6 +17,9 @@
 
 #include "autoconfig.h"
 
+#include <errno.h>
+#include <sys/stat.h>
+
 #include <string>
 #include <vector>
 #include <map>
@@ -28,6 +31,7 @@ using std::vector;
 #include "debuglog.h"
 #include "smallut.h"
 #include "execmd.h"
+#include "pathut.h"
 
 Uncomp::UncompCache Uncomp::o_cache;
 
@@ -56,6 +60,38 @@ bool Uncomp::uncompressfile(const string& ifn,
 	LOGERR(("uncompressfile: can't clear temp dir %s\n", m_dir->dirname()));
 	return false;
     }
+
+    // Check that we have enough available space to have some hope of
+    // decompressing the file.
+    int pc;
+    long long availmbs;
+    if (!fsocc(m_dir->dirname(), &pc, &availmbs)) {
+        LOGERR(("uncompressfile: can't retrieve avail space for %s\n", 
+                m_dir->dirname()));
+        // Hope for the best
+    } else {
+        struct stat stb;
+        if (stat(ifn.c_str(), &stb) < 0) {
+            LOGERR(("uncompressfile: stat input file %s errno %d\n", 
+                    ifn.c_str(), errno));
+            return false;
+        }
+        // We need at least twice the file size for the uncompressed
+        // and compressed versions. Most compressors don't store the
+        // uncompressed size, so we have no way to be sure that we
+        // have enough space before trying. We take a little margin
+
+        // use same Mb def as fsocc()
+        long long filembs = stb.st_size / (1024 * 1024); 
+        
+        if (availmbs < 2 * filembs + 1) {
+            LOGERR(("uncompressfile. %lld MBs available in %s not enough "
+                    "to uncompress %s of size %lld mbs\n", availmbs,
+                    m_dir->dirname(), ifn.c_str(), filembs));
+            return false;
+        }
+    }
+
     string cmd = cmdv.front();
 
     // Substitute file name and temp dir in command elements

@@ -59,28 +59,28 @@ bool RecollProtocol::isRecollResult(const KUrl &url, int *num, QString *q)
 
     // Basic checks
     if (!url.host().isEmpty() || url.path().isEmpty() || 
-	(url.protocol().compare("recoll") && url.protocol().compare("recollf")))
-	return false;
+        (url.protocol().compare("recoll") && url.protocol().compare("recollf")))
+        return false;
     QString path = url.path();
     if (!path.startsWith("/")) 
-	return false;
+        return false;
 
     // Look for the last '/' and check if it is followed by
     // resultBaseName (riiiight...)
     int slashpos = path.lastIndexOf("/");
     if (slashpos == -1 || slashpos == 0 || slashpos == path.length() -1)
-	return false;
+        return false;
     slashpos++;
     //kDebug() << "Comparing " << path.mid(slashpos, resultBaseName.length()) <<
-    //	"and " << resultBaseName;
+    //  "and " << resultBaseName;
     if (path.mid(slashpos, resultBaseName.length()).compare(resultBaseName))
-	return false;
+        return false;
 
     // Extract the result number
     QString snum = path.mid(slashpos + resultBaseName.length());
     sscanf(snum.toAscii(), "%d", num);
     if (*num == -1)
-	return false;
+        return false;
 
     //kDebug() << "URL analysis ok, num:" << *num;
 
@@ -103,22 +103,22 @@ static const UDSEntry resultToUDSEntry(const Rcl::Doc& doc, int num)
     entry.insert(KIO::UDSEntry::UDS_NAME, resultBaseName + cnum);
 
     if (!doc.mimetype.compare("application/x-fsdirectory") || 
-	!doc.mimetype.compare("inode/directory")) {
-	entry.insert(KIO::UDSEntry::UDS_MIME_TYPE, "inode/directory");
-    	entry.insert( KIO::UDSEntry::UDS_FILE_TYPE, S_IFDIR);
+        !doc.mimetype.compare("inode/directory")) {
+        entry.insert(KIO::UDSEntry::UDS_MIME_TYPE, "inode/directory");
+        entry.insert( KIO::UDSEntry::UDS_FILE_TYPE, S_IFDIR);
     } else {
-	entry.insert(KIO::UDSEntry::UDS_MIME_TYPE, doc.mimetype.c_str());
-    	entry.insert( KIO::UDSEntry::UDS_FILE_TYPE, S_IFREG);
+        entry.insert(KIO::UDSEntry::UDS_MIME_TYPE, doc.mimetype.c_str());
+        entry.insert( KIO::UDSEntry::UDS_FILE_TYPE, S_IFREG);
     }
     entry.insert(KIO::UDSEntry::UDS_LOCAL_PATH, url.path());
     // For local files, supply the usual file stat information
     struct stat info;
     if (lstat(url.path().toAscii(), &info) >= 0) {
-	entry.insert( KIO::UDSEntry::UDS_SIZE, info.st_size);
-	entry.insert( KIO::UDSEntry::UDS_ACCESS, info.st_mode);
-	entry.insert( KIO::UDSEntry::UDS_MODIFICATION_TIME, info.st_mtime);
-    	entry.insert( KIO::UDSEntry::UDS_ACCESS_TIME, info.st_atime);
-    	entry.insert( KIO::UDSEntry::UDS_CREATION_TIME, info.st_ctime);
+        entry.insert( KIO::UDSEntry::UDS_SIZE, info.st_size);
+        entry.insert( KIO::UDSEntry::UDS_ACCESS, info.st_mode);
+        entry.insert( KIO::UDSEntry::UDS_MODIFICATION_TIME, info.st_mtime);
+        entry.insert( KIO::UDSEntry::UDS_ACCESS_TIME, info.st_atime);
+        entry.insert( KIO::UDSEntry::UDS_CREATION_TIME, info.st_ctime);
     }
     entry.insert(KIO::UDSEntry::UDS_TARGET_URL, doc.url.c_str());
 
@@ -153,13 +153,13 @@ static void createGoHomeEntry(KIO::UDSEntry& entry)
 static void createGoHelpEntry(KIO::UDSEntry& entry)
 {
     QString location = 
-	KStandardDirs::locate("data", "kio_recoll/help.html");
+        KStandardDirs::locate("data", "kio_recoll/help.html");
     entry.clear();
     entry.insert(KIO::UDSEntry::UDS_NAME, "help");
     entry.insert(KIO::UDSEntry::UDS_DISPLAY_NAME, "Recoll help (click me first)");
     entry.insert(KIO::UDSEntry::UDS_FILE_TYPE, S_IFREG);
     entry.insert(KIO::UDSEntry::UDS_TARGET_URL, QString("file://") +
-		 location);
+                 location);
     entry.insert(KIO::UDSEntry::UDS_ACCESS, 0500);
     entry.insert(KIO::UDSEntry::UDS_MIME_TYPE, "text/html");
     entry.insert(KIO::UDSEntry::UDS_ICON_NAME, "help");
@@ -177,52 +177,52 @@ void RecollProtocol::stat(const KUrl & url)
     QueryDesc qd;
     int num;
     if (ingest.isRootEntry(&rettp)) {
-	switch(rettp) {
-	case UrlIngester::UIRET_ROOT:
-	    createRootEntry(entry);
-	    break;
-	case UrlIngester::UIRET_HELP: 
-	    createGoHelpEntry(entry);
-	    break;
-	case UrlIngester::UIRET_SEARCH:
-	    createGoHomeEntry(entry);
-	    break;
-	default: 
-	    error(ERR_DOES_NOT_EXIST, "");
-	    break;
-	}
+        switch(rettp) {
+        case UrlIngester::UIRET_ROOT:
+            createRootEntry(entry);
+            break;
+        case UrlIngester::UIRET_HELP: 
+            createGoHelpEntry(entry);
+            break;
+        case UrlIngester::UIRET_SEARCH:
+            createGoHomeEntry(entry);
+            break;
+        default: 
+            error(ERR_DOES_NOT_EXIST, "");
+            break;
+        }
     } else if (ingest.isResult(&qd, &num)) {
-	if (syncSearch(qd)) {
-	    Rcl::Doc doc;
-	    if (num >= 0 && !m_source.isNull() && 
-		m_source->getDoc(num, doc)) {
-		entry = resultToUDSEntry(doc, num);
-	    } else {
-		error(ERR_DOES_NOT_EXIST, "");
-	    }
-	} else {
-	    // hopefully syncSearch() set the error?
-	}
+        if (syncSearch(qd)) {
+            Rcl::Doc doc;
+            if (num >= 0 && !m_source.isNull() && 
+                m_source->getDoc(num, doc)) {
+                entry = resultToUDSEntry(doc, num);
+            } else {
+                error(ERR_DOES_NOT_EXIST, "");
+            }
+        } else {
+            // hopefully syncSearch() set the error?
+        }
     } else if (ingest.isQuery(&qd)) {
-	// ie "recoll:/some string" or "recoll:/some string/" 
-	//
-	// We have a problem here. We'd like to let the user enter
-	// either form and get an html or a dir contents result,
-	// depending on the ending /. Otoh this makes the name space
-	// inconsistent, because /toto can't be a file (the html
-	// result page) while /toto/ would be a directory ? or can it
-	//
-	// Another approach would be to use different protocol names
-	// to avoid any possibility of mixups
-	if (m_alwaysdir || ingest.alwaysDir() || ingest.endSlashQuery()) {
-	    kDebug() << "Directory type";
-	    entry.insert(KIO::UDSEntry::UDS_FILE_TYPE, S_IFDIR);
-	    entry.insert(KIO::UDSEntry::UDS_ACCESS, 0700);
-	    entry.insert(KIO::UDSEntry::UDS_MIME_TYPE, "inode/directory");
-	    entry.insert(KIO::UDSEntry::UDS_NAME, qd.query);
-	    entry.insert( KIO::UDSEntry::UDS_MODIFICATION_TIME, time(0));
-	    entry.insert( KIO::UDSEntry::UDS_CREATION_TIME, time(0));
-	}
+        // ie "recoll:/some string" or "recoll:/some string/" 
+        //
+        // We have a problem here. We'd like to let the user enter
+        // either form and get an html or a dir contents result,
+        // depending on the ending /. Otoh this makes the name space
+        // inconsistent, because /toto can't be a file (the html
+        // result page) while /toto/ would be a directory ? or can it
+        //
+        // Another approach would be to use different protocol names
+        // to avoid any possibility of mixups
+        if (m_alwaysdir || ingest.alwaysDir() || ingest.endSlashQuery()) {
+            kDebug() << "Directory type";
+            entry.insert(KIO::UDSEntry::UDS_FILE_TYPE, S_IFDIR);
+            entry.insert(KIO::UDSEntry::UDS_ACCESS, 0700);
+            entry.insert(KIO::UDSEntry::UDS_MIME_TYPE, "inode/directory");
+            entry.insert(KIO::UDSEntry::UDS_NAME, qd.query);
+            entry.insert( KIO::UDSEntry::UDS_MODIFICATION_TIME, time(0));
+            entry.insert( KIO::UDSEntry::UDS_CREATION_TIME, time(0));
+        }
     }
     statEntry(entry);
     finished();
@@ -237,65 +237,73 @@ void RecollProtocol::listDir(const KUrl& url)
     QueryDesc qd;
 
     if (ingest.isRootEntry(&rettp)) {
-	switch(rettp) {
-	case UrlIngester::UIRET_ROOT:
-	    {
-		kDebug() << "list /" << endl;
-		UDSEntryList entries;
-		KIO::UDSEntry entry;
-		createRootEntry(entry);
-		entries.append(entry);
-		createGoHomeEntry(entry);
-		entries.append(entry);
-		createGoHelpEntry(entry);
-		entries.append(entry);
-		listEntries(entries);
-		finished();
-	    }
-	    return;
-	default:
-	    error(ERR_CANNOT_ENTER_DIRECTORY, "");
-	    return;
-	}
+        switch(rettp) {
+        case UrlIngester::UIRET_ROOT:
+            {
+                kDebug() << "list /" << endl;
+                UDSEntryList entries;
+                KIO::UDSEntry entry;
+                createRootEntry(entry);
+                entries.append(entry);
+                createGoHomeEntry(entry);
+                entries.append(entry);
+                createGoHelpEntry(entry);
+                entries.append(entry);
+                listEntries(entries);
+                finished();
+            }
+            return;
+        default:
+            error(ERR_CANNOT_ENTER_DIRECTORY, "");
+            return;
+        }
     } else if (ingest.isQuery(&qd)) {
-	// At this point, it seems that when the request is from
-	// konqueror autocompletion it comes with a / at the end,
-	// which offers an opportunity to not perform it.
-	if (ingest.endSlashQuery()) {
-	    kDebug() << "Ends With /" << endl;
-	    error(ERR_SLAVE_DEFINED, "Autocompletion search aborted");
-	    return;
-	}
-	if (!syncSearch(qd)) {
-	    // syncSearch did the error thing
-	    return;
-	}
-	// Fallthrough to actually listing the directory
+        // At this point, it seems that when the request is from
+        // konqueror autocompletion it comes with a / at the end,
+        // which offers an opportunity to not perform it.
+        if (ingest.endSlashQuery()) {
+            kDebug() << "Ends With /" << endl;
+            error(ERR_SLAVE_DEFINED, "Autocompletion search aborted");
+            return;
+        }
+        if (!syncSearch(qd)) {
+            // syncSearch did the error thing
+            return;
+        }
+        // Fallthrough to actually listing the directory
     } else {
-	kDebug() << "Cant grok input url";
-	error(ERR_CANNOT_ENTER_DIRECTORY, "");
-	return;
+        kDebug() << "Cant grok input url";
+        error(ERR_CANNOT_ENTER_DIRECTORY, "");
+        return;
     }
 
-    static int numentries = -1;
-    if (numentries == -1) {
-	if (o_rclconfig)
-	    o_rclconfig->getConfParam("kio_max_direntries", &numentries);
-	if (numentries == -1)
-	    numentries = 100;
+    static int maxentries = -1;
+    if (maxentries == -1) {
+        if (o_rclconfig)
+            o_rclconfig->getConfParam("kio_max_direntries", &maxentries);
+        if (maxentries == -1)
+            maxentries = 10000;
     }
-
-    vector<ResListEntry> page;
-    int pagelen = m_source->getSeqSlice(0, numentries, page);
-    if (pagelen < 0) {
-	error(ERR_SLAVE_DEFINED, "Internal error");
-	return;
+    static const int pagesize = 200;
+    int pagebase = 0;
+    while (pagebase < maxentries) {
+        vector<ResListEntry> page;
+        int pagelen = m_source->getSeqSlice(pagebase, pagesize, page);
+        UDSEntry entry;
+        if (pagelen < 0) {
+            error(ERR_SLAVE_DEFINED, "Internal error");
+            listEntry(entry, true);
+            break;
+        }
+        for (int i = 0; i < pagelen; i++) {
+            listEntry(resultToUDSEntry(page[i].doc, i), false);
+        }
+        if (pagelen != pagesize) {
+            listEntry(entry, true);
+            break;
+        }
+        pagebase += pagelen;
     }
-    UDSEntryList entries;
-    for (int i = 0; i < pagelen; i++) {
-	entries.append(resultToUDSEntry(page[i].doc, i));
-    }
-    listEntries(entries);
     finished();
 }
 

@@ -88,6 +88,12 @@ RecollProtocol::RecollProtocol(const QByteArray &pool, const QByteArray &app)
 	o_rclconfig->getConfParam("kio_always_dir", &m_alwaysdir);
     }
 
+    cp = getenv("RECOLL_KIO_STEMLANG");
+    if (cp) {
+        m_stemlang = cp;
+    } else {
+        m_stemlang = "english";
+    }
     m_pager.setParent(this);
     m_initok = true;
     return;
@@ -315,11 +321,11 @@ bool RecollProtocol::doSearch(const QueryDesc& qd)
             clp = new Rcl::SearchDataClauseSimple(opt == 'o' ? Rcl::SCLT_OR : 
                                                   Rcl::SCLT_AND, qs);
 	}
-	sd = new Rcl::SearchData(Rcl::SCLT_OR, "english");
+	sd = new Rcl::SearchData(Rcl::SCLT_OR, m_stemlang);
 	if (sd && clp)
 	    sd->addClause(clp);
     } else {
-	sd = wasaStringToRcl(o_rclconfig, "english", qs, m_reason);
+	sd = wasaStringToRcl(o_rclconfig, m_stemlang, qs, m_reason);
     }
     if (!sd) {
 	m_reason = "Internal Error: cant build search";

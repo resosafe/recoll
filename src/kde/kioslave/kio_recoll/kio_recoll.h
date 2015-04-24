@@ -171,6 +171,8 @@ class RecollProtocol : public KIO::SlaveBase {
     Rcl::Db    *m_rcldb;
     string      m_reason;
     bool        m_alwaysdir;
+    string      m_stemlang; // english by default else env[RECOLL_KIO_STEMLANG]
+
     // Search state: because of how the KIO slaves are used / reused,
     // we can't be sure that the next request will be for the same
     // search, and we need to check and restart one if the data

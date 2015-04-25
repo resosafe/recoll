@@ -693,6 +693,58 @@ p, li { white-space: pre-wrap; }
         <source>Cannot extract document: </source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>&amp;Preview</source>
+        <translation type="unfinished">预览（&amp;P）</translation>
+    </message>
+    <message>
+        <source>&amp;Open</source>
+        <translation type="unfinished">打开（&amp;O）</translation>
+    </message>
+    <message>
+        <source>Open With</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Run Script</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Copy &amp;File Name</source>
+        <translation type="unfinished">复制文件名（&amp;F）</translation>
+    </message>
+    <message>
+        <source>Copy &amp;URL</source>
+        <translation type="unfinished">复制路径（&amp;U）</translation>
+    </message>
+    <message>
+        <source>&amp;Write to File</source>
+        <translation type="unfinished">写入文件（&amp;W）</translation>
+    </message>
+    <message>
+        <source>Save selection to files</source>
+        <translation type="unfinished">将选中内容保存到文件中</translation>
+    </message>
+    <message>
+        <source>Preview P&amp;arent document/folder</source>
+        <translation type="unfinished">预览上一级文档/目录（&amp;a）</translation>
+    </message>
+    <message>
+        <source>&amp;Open Parent document/folder</source>
+        <translation type="unfinished">打开上一级文档/目录（&amp;O）</translation>
+    </message>
+    <message>
+        <source>Find &amp;similar documents</source>
+        <translation type="unfinished">查找类似的文档（&amp;s）</translation>
+    </message>
+    <message>
+        <source>Open &amp;Snippets window</source>
+        <translation type="unfinished">打开片断窗口（&amp;S）</translation>
+    </message>
+    <message>
+        <source>Show subdocuments / attachments</source>
+        <translation type="unfinished">显示子文档/附件</translation>
+    </message>
 </context>
 <context>
     <name>RTIToolW</name>
@@ -1637,55 +1689,47 @@ Please check the desktop file</source>
     <name>ResultPopup</name>
     <message>
         <source>&amp;Preview</source>
-        <translation>预览（&amp;P）</translation>
+        <translation type="obsolete">预览（&amp;P）</translation>
     </message>
     <message>
         <source>&amp;Open</source>
-        <translation>打开（&amp;O）</translation>
+        <translation type="obsolete">打开（&amp;O）</translation>
     </message>
     <message>
         <source>Copy &amp;File Name</source>
-        <translation>复制文件名（&amp;F）</translation>
+        <translation type="obsolete">复制文件名（&amp;F）</translation>
     </message>
     <message>
         <source>Copy &amp;URL</source>
-        <translation>复制路径（&amp;U）</translation>
+        <translation type="obsolete">复制路径（&amp;U）</translation>
     </message>
     <message>
         <source>&amp;Write to File</source>
-        <translation>写入文件（&amp;W）</translation>
+        <translation type="obsolete">写入文件（&amp;W）</translation>
     </message>
     <message>
         <source>Save selection to files</source>
-        <translation>将选中内容保存到文件中</translation>
+        <translation type="obsolete">将选中内容保存到文件中</translation>
     </message>
     <message>
         <source>Preview P&amp;arent document/folder</source>
-        <translation>预览上一级文档/目录（&amp;a）</translation>
+        <translation type="obsolete">预览上一级文档/目录（&amp;a）</translation>
     </message>
     <message>
         <source>&amp;Open Parent document/folder</source>
-        <translation>打开上一级文档/目录（&amp;O）</translation>
+        <translation type="obsolete">打开上一级文档/目录（&amp;O）</translation>
     </message>
     <message>
         <source>Find &amp;similar documents</source>
-        <translation>查找类似的文档（&amp;s）</translation>
+        <translation type="obsolete">查找类似的文档（&amp;s）</translation>
     </message>
     <message>
         <source>Open &amp;Snippets window</source>
-        <translation>打开片断窗口（&amp;S）</translation>
+        <translation type="obsolete">打开片断窗口（&amp;S）</translation>
     </message>
     <message>
         <source>Show subdocuments / attachments</source>
-        <translation>显示子文档/附件</translation>
-    </message>
-    <message>
-        <source>Open With</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Run Script</source>
-        <translation type="unfinished"></translation>
+        <translation type="obsolete">显示子文档/附件</translation>
     </message>
 </context>
 <context>

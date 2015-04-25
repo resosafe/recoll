@@ -622,6 +622,58 @@ p, li { white-space: pre-wrap; }
         <source>Cannot extract document: </source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>&amp;Preview</source>
+        <translation type="unfinished">&amp;Peržiūra</translation>
+    </message>
+    <message>
+        <source>&amp;Open</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Open With</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Run Script</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Copy &amp;File Name</source>
+        <translation type="unfinished">Kopijuoti &amp;Bylos vardą</translation>
+    </message>
+    <message>
+        <source>Copy &amp;URL</source>
+        <translation type="unfinished">Kopijuoti &amp;URL</translation>
+    </message>
+    <message>
+        <source>&amp;Write to File</source>
+        <translation type="unfinished">&amp;Įrašyti į bylą</translation>
+    </message>
+    <message>
+        <source>Save selection to files</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Preview P&amp;arent document/folder</source>
+        <translation type="unfinished">Peržiūrėti &amp;Aukštesnio lygio dokumentus/direktorijas</translation>
+    </message>
+    <message>
+        <source>&amp;Open Parent document/folder</source>
+        <translation type="unfinished">Atidaryti &amp;Aukštesnio lygio dokumentus/direktorijas</translation>
+    </message>
+    <message>
+        <source>Find &amp;similar documents</source>
+        <translation type="unfinished">Rasti &amp;panašius dokumentus</translation>
+    </message>
+    <message>
+        <source>Open &amp;Snippets window</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show subdocuments / attachments</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>RTIToolW</name>
@@ -1526,55 +1578,31 @@ Please check the desktop file</source>
     <name>ResultPopup</name>
     <message>
         <source>&amp;Preview</source>
-        <translation type="unfinished">&amp;Peržiūra</translation>
-    </message>
-    <message>
-        <source>&amp;Open</source>
-        <translation type="unfinished"></translation>
+        <translation type="obsolete">&amp;Peržiūra</translation>
     </message>
     <message>
         <source>Copy &amp;File Name</source>
-        <translation type="unfinished">Kopijuoti &amp;Bylos vardą</translation>
+        <translation type="obsolete">Kopijuoti &amp;Bylos vardą</translation>
     </message>
     <message>
         <source>Copy &amp;URL</source>
-        <translation type="unfinished">Kopijuoti &amp;URL</translation>
+        <translation type="obsolete">Kopijuoti &amp;URL</translation>
     </message>
     <message>
         <source>&amp;Write to File</source>
-        <translation type="unfinished">&amp;Įrašyti į bylą</translation>
-    </message>
-    <message>
-        <source>Save selection to files</source>
-        <translation type="unfinished"></translation>
+        <translation type="obsolete">&amp;Įrašyti į bylą</translation>
     </message>
     <message>
         <source>Preview P&amp;arent document/folder</source>
-        <translation type="unfinished">Peržiūrėti &amp;Aukštesnio lygio dokumentus/direktorijas</translation>
+        <translation type="obsolete">Peržiūrėti &amp;Aukštesnio lygio dokumentus/direktorijas</translation>
     </message>
     <message>
         <source>&amp;Open Parent document/folder</source>
-        <translation type="unfinished">Atidaryti &amp;Aukštesnio lygio dokumentus/direktorijas</translation>
+        <translation type="obsolete">Atidaryti &amp;Aukštesnio lygio dokumentus/direktorijas</translation>
     </message>
     <message>
         <source>Find &amp;similar documents</source>
-        <translation type="unfinished">Rasti &amp;panašius dokumentus</translation>
-    </message>
-    <message>
-        <source>Open &amp;Snippets window</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Show subdocuments / attachments</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Open With</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Run Script</source>
-        <translation type="unfinished"></translation>
+        <translation type="obsolete">Rasti &amp;panašius dokumentus</translation>
     </message>
 </context>
 <context>

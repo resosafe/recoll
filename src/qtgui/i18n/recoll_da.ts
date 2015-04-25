@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.1" language="da">
+<TS version="2.0" language="da">
 <context>
     <name>AdvSearch</name>
     <message>
@@ -17,7 +17,7 @@
     </message>
     <message>
         <source>other</source>
-        <translation>andre</translation>
+        <translation>andet</translation>
     </message>
     <message>
         <source>Bad multiplier suffix in size filter</source>
@@ -41,11 +41,11 @@
     </message>
     <message>
         <source>texts</source>
-        <translation>tekst</translation>
+        <translation type="obsolete">tekst</translation>
     </message>
     <message>
         <source>spreadsheets</source>
-        <translation>regneark</translation>
+        <translation type="obsolete">regneark</translation>
     </message>
 </context>
 <context>
@@ -208,7 +208,7 @@ p, li { white-space: pre-wrap; }
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
 &lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:&apos;Sans Serif&apos;; font-size:10pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Recoll&lt;/span&gt; batch tidsplan for indeksering (cron) &lt;/p&gt;
+&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Recoll&lt;/span&gt; batch indekseringstidsplan (cron) &lt;/p&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;Hvert felt kan indeholde et jokertegn (*), en enkelt numerisk værdi, kommaseparerede lister (1,3,5) og intervaller (1-7). Mere generelt vil felterne blive brugt &lt;span style=&quot; font-style:italic;&quot;&gt; som de er&lt;/span&gt; inde i crontabfilen, og den fulde crontab syntaks kan bruges, se crontab (5).&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;For eksempel, indtastning af &lt;span style=&quot; font-family:&apos;Courier New,courier&apos;;&quot;&gt;*&lt;/span&gt; i &lt;span style=&quot; font-style:italic;&quot;&gt;Dage, &lt;/span&gt;&lt;span style=&quot; font-family:&apos;Courier New,courier&apos;;&quot;&gt;12,19&lt;/span&gt; i &lt;span style=&quot; font-style:italic;&quot;&gt;Timer&lt;/span&gt; og &lt;span style=&quot; font-family:&apos;Courier New,courier&apos;;&quot;&gt;15&lt;/span&gt; i &lt;span style=&quot; font-style:italic;&quot;&gt;Minutter&lt;/span&gt; ville starte recollindex hver dag kl. 00:15 og 19:15 &lt;/p&gt;
@@ -583,7 +583,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>Index the names of files for which the contents cannot be identified or processed (no or unsupported mime type). Default true</source>
-        <translation>Indekser navnene på filer, hvor indholdet ikke kan identificeres eller behandles (ingen eller ikke-understøttet mime-type). Standard er true</translation>
+        <translation>Indekser navnene på filer, hvor indholdet ikke kan identificeres eller behandles (ingen eller ikke-understøttet mimetype). Standard er true</translation>
     </message>
     <message>
         <source>Search parameters</source>
@@ -599,7 +599,82 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>Character set used for reading files which do not identify the character set internally, for example pure text files.&lt;br&gt;The default value is empty, and the value from the NLS environnement is used.</source>
-        <translation>Tegnsæt, der bruges til at læse filer, hvor tegnsættet ikke kan identificeres ud fra indholdet, f.eks. rene tekstfiler.&lt;br&gt;Standardværdien er tom, og værdien fra NLS-omgivelserne anvendes.</translation>
+        <translation>Tegnsæt, der bruges til at læse filer, hvor tegnsættet ikke kan identificeres ud fra indholdet, f.eks rene tekstfiler.&lt;br&gt;Standardværdien er tom, og værdien fra NLS-omgivelserne anvendes.</translation>
+    </message>
+</context>
+<context>
+    <name>QWidget</name>
+    <message>
+        <source>Create or choose save directory</source>
+        <translation>Opret eller vælg mappe til at gemme i</translation>
+    </message>
+    <message>
+        <source>Choose exactly one directory</source>
+        <translation>Vælg præcis en mappe</translation>
+    </message>
+    <message>
+        <source>Could not read directory: </source>
+        <translation>Kunne ikke læse mappe: </translation>
+    </message>
+    <message>
+        <source>Unexpected file name collision, cancelling.</source>
+        <translation>Uventet kollision af filnavn, annullerer.</translation>
+    </message>
+    <message>
+        <source>Cannot extract document: </source>
+        <translation>Kan ikke udtrække dokument: </translation>
+    </message>
+    <message>
+        <source>&amp;Preview</source>
+        <translation type="unfinished">&amp;Forhåndsvisning</translation>
+    </message>
+    <message>
+        <source>&amp;Open</source>
+        <translation type="unfinished">&amp;Åbn</translation>
+    </message>
+    <message>
+        <source>Open With</source>
+        <translation type="unfinished">Åbn med</translation>
+    </message>
+    <message>
+        <source>Run Script</source>
+        <translation type="unfinished">Kør skript</translation>
+    </message>
+    <message>
+        <source>Copy &amp;File Name</source>
+        <translation type="unfinished">Kopier &amp;Filnavn</translation>
+    </message>
+    <message>
+        <source>Copy &amp;URL</source>
+        <translation type="unfinished">Kopier &amp;URL</translation>
+    </message>
+    <message>
+        <source>&amp;Write to File</source>
+        <translation type="unfinished">&amp;Skriv til fil</translation>
+    </message>
+    <message>
+        <source>Save selection to files</source>
+        <translation type="unfinished">Gem det valgte til filer</translation>
+    </message>
+    <message>
+        <source>Preview P&amp;arent document/folder</source>
+        <translation type="unfinished">Forhåndsvis &amp;Forældre-dokument/mappe</translation>
+    </message>
+    <message>
+        <source>&amp;Open Parent document/folder</source>
+        <translation type="unfinished">&amp;Åbn Forældre-dokument/mappe</translation>
+    </message>
+    <message>
+        <source>Find &amp;similar documents</source>
+        <translation type="unfinished">Find &amp;lignende dokumenter</translation>
+    </message>
+    <message>
+        <source>Open &amp;Snippets window</source>
+        <translation type="unfinished">Åbn vindue til &amp;tekststumper</translation>
+    </message>
+    <message>
+        <source>Show subdocuments / attachments</source>
+        <translation type="unfinished">Vis underdokumenter / vedhæftede filer</translation>
     </message>
 </context>
 <context>
@@ -687,7 +762,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>Purge</source>
-        <translation>Tøm</translation>
+        <translation>Rydder op</translation>
     </message>
     <message>
         <source>Stemdb</source>
@@ -695,7 +770,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>Closing</source>
-        <translation>Lukker</translation>
+        <translation>Afslutter</translation>
     </message>
     <message>
         <source>Unknown</source>
@@ -763,7 +838,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>other</source>
-        <translation>andre</translation>
+        <translation>andet</translation>
     </message>
     <message>
         <source>presentation</source>
@@ -795,7 +870,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>No external viewer configured for mime type [</source>
-        <translation>Ingen ekstern fremviser konfigureret for mime-type [</translation>
+        <translation>Ingen ekstern fremviser konfigureret for mimetype [</translation>
     </message>
     <message>
         <source>The viewer specified in mimeview for %1: %2 is not found.
@@ -899,7 +974,7 @@ Kontroller venligst mimeview-filen</translation>
     </message>
     <message>
         <source>Cannot find parent document</source>
-        <translation>Kan ikke finde forælderdokument</translation>
+        <translation>Kan ikke finde forældredokument</translation>
     </message>
     <message>
         <source>Indexing did not run yet</source>
@@ -1004,11 +1079,11 @@ Tjek venligst desktopfilen</translation>
     </message>
     <message>
         <source>Document &amp;History</source>
-        <translation>Dokument&amp;historik</translation>
+        <translation>Dokument&amp;Historik</translation>
     </message>
     <message>
         <source>Document  History</source>
-        <translation>Dokumenthistorik</translation>
+        <translation>DokumentHistorik</translation>
     </message>
     <message>
         <source>&amp;Advanced Search</source>
@@ -1060,7 +1135,7 @@ Tjek venligst desktopfilen</translation>
     </message>
     <message>
         <source>External index dialog</source>
-        <translation>Eksterne indeks</translation>
+        <translation>Eksterne indekser</translation>
     </message>
     <message>
         <source>&amp;Show missing helpers</source>
@@ -1120,7 +1195,7 @@ Tjek venligst desktopfilen</translation>
     </message>
     <message>
         <source>E&amp;xternal index dialog</source>
-        <translation>E&amp;ksterne indeks</translation>
+        <translation>E&amp;ksterne indekser</translation>
     </message>
     <message>
         <source>&amp;Index configuration</source>
@@ -1355,55 +1430,55 @@ Tjek venligst desktopfilen</translation>
     <name>ResultPopup</name>
     <message>
         <source>&amp;Preview</source>
-        <translation>&amp;Forhåndsvisning</translation>
+        <translation type="obsolete">&amp;Forhåndsvisning</translation>
     </message>
     <message>
         <source>&amp;Open</source>
-        <translation>&amp;Åbn</translation>
+        <translation type="obsolete">&amp;Åbn</translation>
     </message>
     <message>
         <source>Copy &amp;File Name</source>
-        <translation>Kopier &amp;Filnavn</translation>
+        <translation type="obsolete">Kopier &amp;Filnavn</translation>
     </message>
     <message>
         <source>Copy &amp;URL</source>
-        <translation>Kopier &amp;URL</translation>
+        <translation type="obsolete">Kopier &amp;URL</translation>
     </message>
     <message>
         <source>&amp;Write to File</source>
-        <translation>&amp;Skriv til fil</translation>
+        <translation type="obsolete">&amp;Skriv til fil</translation>
     </message>
     <message>
         <source>Save selection to files</source>
-        <translation>Gem det valgte til filer</translation>
+        <translation type="obsolete">Gem det valgte til filer</translation>
     </message>
     <message>
         <source>Preview P&amp;arent document/folder</source>
-        <translation>Forhåndsvis &amp;Forældre-dokument/mappe</translation>
+        <translation type="obsolete">Forhåndsvis &amp;Forældre-dokument/mappe</translation>
     </message>
     <message>
         <source>&amp;Open Parent document/folder</source>
-        <translation>&amp;Åbn Forældre-dokument/mappe</translation>
+        <translation type="obsolete">&amp;Åbn Forældre-dokument/mappe</translation>
     </message>
     <message>
         <source>Find &amp;similar documents</source>
-        <translation>Find &amp;lignende dokumenter</translation>
+        <translation type="obsolete">Find &amp;lignende dokumenter</translation>
     </message>
     <message>
         <source>Open &amp;Snippets window</source>
-        <translation>Åbn &amp;Tekststykke-vindue</translation>
+        <translation type="obsolete">Åbn vindue til &amp;tekststumper</translation>
     </message>
     <message>
         <source>Show subdocuments / attachments</source>
-        <translation>Vis underdokumenter / vedhæftede filer</translation>
+        <translation type="obsolete">Vis underdokumenter / vedhæftede filer</translation>
     </message>
     <message>
         <source>Open With</source>
-        <translation>Åbn med</translation>
+        <translation type="obsolete">Åbn med</translation>
     </message>
     <message>
         <source>Run Script</source>
-        <translation>Kør skript</translation>
+        <translation type="obsolete">Kør skript</translation>
     </message>
 </context>
 <context>
@@ -1546,7 +1621,7 @@ Brug &lt;b&gt;Vis Forespørgsel&lt;/b&gt; link når i tvivl om resultatet og se 
     <name>Snippets</name>
     <message>
         <source>Snippets</source>
-        <translation>Tekststykker</translation>
+        <translation>Tekststumper</translation>
     </message>
     <message>
         <source>Find:</source>
@@ -1738,7 +1813,7 @@ Brug &lt;b&gt;Vis Forespørgsel&lt;/b&gt; link når i tvivl om resultatet og se 
     </message>
     <message>
         <source>The selected directory looks like a Recoll configuration directory but the configuration could not be read</source>
-        <translation>Den valgte mappe ligner en Recoll konfigurationsmappe, men konfigurationen kunne ikke læses</translation>
+        <translation>Den valgte mappe ligner en Recoll konfigurationmappe, men konfigurationen kunne ikke læses</translation>
     </message>
     <message>
         <source>At most one index should be selected</source>
@@ -2058,7 +2133,7 @@ Dette vil hjælpe søgning i meget store tekstfiler (dvs.: log-filer).</translat
     </message>
     <message>
         <source>&lt;p&gt;These are exceptions to the unac mechanism which, by default, removes all diacritics, and performs canonic decomposition. You can override unaccenting for some characters, depending on your language, and specify additional decompositions, e.g. for ligatures. In each space-separated entry, the first character is the source one, and the rest is the translation.</source>
-        <translation>&lt;p&gt;Disse er undtagelser fra unac mekanismen, der, som standard, fjerner alle diakritiske tegn, og udfører kanoniske nedbrydning. Du kan tilsidesætte fjernelse af accent for nogle tegn, afhængigt af dit sprog, og angive yderligere dekomponeringer, f.eks. for ligaturer. I hver indgang adskilt af mellemrum, er det første tegn kildedelen, og resten er oversættelsen.</translation>
+        <translation>&lt;p&gt;Disse er undtagelser fra unac mekanismen, der, som standard, fjerner alle diakritiske tegn, og udfører kanoniske nedbrydning. Du kan tilsidesætte fjernelse af accent for nogle tegn, afhængigt af dit sprog, og angive yderligere dekomponeringer, f.eks for ligaturer. I hver indgang adskilt af mellemrum, er det første tegn kildedelen, og resten er oversættelsen.</translation>
     </message>
 </context>
 <context>
@@ -2169,7 +2244,7 @@ Kan være langsomt for store dokumenter.</translation>
     </message>
     <message>
         <source>Replace abstracts from documents</source>
-        <translation>Erstat sammendrag fra dokumenter</translation>
+        <translation>Erstat sammendrag fra dokummenter</translation>
     </message>
     <message>
         <source>Synthetic abstract size (characters)</source>
@@ -2185,7 +2260,7 @@ Kan være langsomt for store dokumenter.</translation>
     </message>
     <message>
         <source>Query language magic file name suffixes.</source>
-        <translation>Forespørgselssprogets magiske filnavns-endelser.</translation>
+        <translation>Forespørgselssprogets magiske filnavnsendelser.</translation>
     </message>
     <message>
         <source>Enable</source>
@@ -2237,7 +2312,7 @@ Kan være langsomt for store dokumenter.</translation>
     </message>
     <message>
         <source>Abstract snippet separator</source>
-        <translation>Separator mellem sammendragets tekststykker</translation>
+        <translation>Separator mellem sammendragets tekststumper</translation>
     </message>
     <message>
         <source>Style sheet</source>
@@ -2276,9 +2351,9 @@ Kan være langsomt for store dokumenter.</translation>
 Frequent terms are a major performance issue with phrases. 
 Skipped terms augment the phrase slack, and reduce the autophrase efficiency.
 The default value is 2 (percent). </source>
-        <translation>Procentvise tærskel for hyppigheden af ord, hvorover vi ikke bruger disse ord inde i autofrase.
-Hyppige ord er et stort problem i forhold til ydeevne med fraser.
-Udeladte ord forøger frase stilstand, og reducerer effektiviteten af autofrase.
+        <translation>Hyppighedens procentvise tærskel, hvorover vi ikke bruger ord inde i autofrase.
+Hyppige ord er et stort ydeevneproblem med fraser.
+Udeladte ord forøger frase stilstand, og reducere effektiviteten af autofrase.
 Standardværdien er 2 (procent).</translation>
     </message>
     <message>
@@ -2323,15 +2398,15 @@ Standardværdien er 2 (procent).</translation>
     </message>
     <message>
         <source>Snippets window CSS file</source>
-        <translation>CSS-fil for vindue til  tekststykker</translation>
+        <translation>CSS-fil for vindue til tekststumper</translation>
     </message>
     <message>
         <source>Opens a dialog to select the Snippets window CSS style sheet file</source>
-        <translation>Åbner et vindue for at vælge tekststykke-vinduets CSS-stylesheetfil</translation>
+        <translation>Åbner et vindue til at vælge CSS stylesheetfil for vinduet til tekststumper</translation>
     </message>
     <message>
         <source>Resets the Snippets window style</source>
-        <translation>Nulstil tekststykke-vinduets stil</translation>
+        <translation>Nulstil stilen for vinduet til tekststumper</translation>
     </message>
     <message>
         <source>Decide if document filters are shown as radio buttons, toolbar combobox, or menu.</source>
@@ -2347,7 +2422,7 @@ Standardværdien er 2 (procent).</translation>
     </message>
     <message>
         <source>Toolbar Combobox</source>
-        <translation>værktøjslinje Kombinationsfelt</translation>
+        <translation>værktøjslinje Comboboks</translation>
     </message>
     <message>
         <source>Menu</source>

@@ -123,6 +123,7 @@ macx {
 
 TRANSLATIONS = \
 	     i18n/recoll_cs.ts \
+	     i18n/recoll_da.ts \
 	     i18n/recoll_de.ts \
 	     i18n/recoll_el.ts \
 	     i18n/recoll_es.ts \

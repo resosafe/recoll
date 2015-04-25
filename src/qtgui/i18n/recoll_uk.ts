@@ -625,6 +625,58 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
         <source>Cannot extract document: </source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>&amp;Preview</source>
+        <translation type="unfinished">&amp;Переглянути</translation>
+    </message>
+    <message>
+        <source>&amp;Open</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Open With</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Run Script</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Copy &amp;File Name</source>
+        <translation type="unfinished">Копіювати &amp;назву файла</translation>
+    </message>
+    <message>
+        <source>Copy &amp;URL</source>
+        <translation type="unfinished">Копіювати &amp;URL</translation>
+    </message>
+    <message>
+        <source>&amp;Write to File</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Save selection to files</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Preview P&amp;arent document/folder</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Open Parent document/folder</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Find &amp;similar documents</source>
+        <translation type="unfinished">Знайти &amp;схожі документи</translation>
+    </message>
+    <message>
+        <source>Open &amp;Snippets window</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show subdocuments / attachments</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>RTIToolW</name>
@@ -1488,55 +1540,19 @@ Please check the desktop file</source>
     <name>ResultPopup</name>
     <message>
         <source>&amp;Preview</source>
-        <translation type="unfinished">&amp;Переглянути</translation>
-    </message>
-    <message>
-        <source>&amp;Open</source>
-        <translation type="unfinished"></translation>
+        <translation type="obsolete">&amp;Переглянути</translation>
     </message>
     <message>
         <source>Copy &amp;File Name</source>
-        <translation type="unfinished">Копіювати &amp;назву файла</translation>
+        <translation type="obsolete">Копіювати &amp;назву файла</translation>
     </message>
     <message>
         <source>Copy &amp;URL</source>
-        <translation type="unfinished">Копіювати &amp;URL</translation>
-    </message>
-    <message>
-        <source>&amp;Write to File</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Save selection to files</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Preview P&amp;arent document/folder</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>&amp;Open Parent document/folder</source>
-        <translation type="unfinished"></translation>
+        <translation type="obsolete">Копіювати &amp;URL</translation>
     </message>
     <message>
         <source>Find &amp;similar documents</source>
-        <translation type="unfinished">Знайти &amp;схожі документи</translation>
-    </message>
-    <message>
-        <source>Open &amp;Snippets window</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Show subdocuments / attachments</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Open With</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Run Script</source>
-        <translation type="unfinished"></translation>
+        <translation type="obsolete">Знайти &amp;схожі документи</translation>
     </message>
 </context>
 <context>

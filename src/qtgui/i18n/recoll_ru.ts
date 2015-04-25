@@ -660,6 +660,58 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
         <source>Cannot extract document: </source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>&amp;Preview</source>
+        <translation type="unfinished">&amp;Просмотр</translation>
+    </message>
+    <message>
+        <source>&amp;Open</source>
+        <translation type="unfinished">О&amp;ткрыть</translation>
+    </message>
+    <message>
+        <source>Open With</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Run Script</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Copy &amp;File Name</source>
+        <translation type="unfinished">Скопировать &amp;имя файла</translation>
+    </message>
+    <message>
+        <source>Copy &amp;URL</source>
+        <translation type="unfinished">Копировать &amp;URL</translation>
+    </message>
+    <message>
+        <source>&amp;Write to File</source>
+        <translation type="unfinished">&amp;Сохранить в файл</translation>
+    </message>
+    <message>
+        <source>Save selection to files</source>
+        <translation type="unfinished">Сохранить выделение в файлы</translation>
+    </message>
+    <message>
+        <source>Preview P&amp;arent document/folder</source>
+        <translation type="unfinished">&amp;Предпросмотр родительского документа/каталога</translation>
+    </message>
+    <message>
+        <source>&amp;Open Parent document/folder</source>
+        <translation type="unfinished">&amp;Открыть родительский документ/каталог</translation>
+    </message>
+    <message>
+        <source>Find &amp;similar documents</source>
+        <translation type="unfinished">Найти &amp;подобные документы</translation>
+    </message>
+    <message>
+        <source>Open &amp;Snippets window</source>
+        <translation type="unfinished">Открыть окно &amp;Фрагменты</translation>
+    </message>
+    <message>
+        <source>Show subdocuments / attachments</source>
+        <translation type="unfinished">Показать вложенные документы</translation>
+    </message>
 </context>
 <context>
     <name>RTIToolW</name>
@@ -1630,55 +1682,47 @@ Please check the desktop file</source>
     <name>ResultPopup</name>
     <message>
         <source>&amp;Preview</source>
-        <translation>&amp;Просмотр</translation>
+        <translation type="obsolete">&amp;Просмотр</translation>
     </message>
     <message>
         <source>&amp;Open</source>
-        <translation>О&amp;ткрыть</translation>
+        <translation type="obsolete">О&amp;ткрыть</translation>
     </message>
     <message>
         <source>Copy &amp;File Name</source>
-        <translation>Скопировать &amp;имя файла</translation>
+        <translation type="obsolete">Скопировать &amp;имя файла</translation>
     </message>
     <message>
         <source>Copy &amp;URL</source>
-        <translation>Копировать &amp;URL</translation>
+        <translation type="obsolete">Копировать &amp;URL</translation>
     </message>
     <message>
         <source>&amp;Write to File</source>
-        <translation>&amp;Сохранить в файл</translation>
+        <translation type="obsolete">&amp;Сохранить в файл</translation>
     </message>
     <message>
         <source>Save selection to files</source>
-        <translation type="unfinished">Сохранить выделение в файлы</translation>
+        <translation type="obsolete">Сохранить выделение в файлы</translation>
     </message>
     <message>
         <source>Preview P&amp;arent document/folder</source>
-        <translation>&amp;Предпросмотр родительского документа/каталога</translation>
+        <translation type="obsolete">&amp;Предпросмотр родительского документа/каталога</translation>
     </message>
     <message>
         <source>&amp;Open Parent document/folder</source>
-        <translation>&amp;Открыть родительский документ/каталог</translation>
+        <translation type="obsolete">&amp;Открыть родительский документ/каталог</translation>
     </message>
     <message>
         <source>Find &amp;similar documents</source>
-        <translation>Найти &amp;подобные документы</translation>
+        <translation type="obsolete">Найти &amp;подобные документы</translation>
     </message>
     <message>
         <source>Open &amp;Snippets window</source>
-        <translation>Открыть окно &amp;Фрагменты</translation>
+        <translation type="obsolete">Открыть окно &amp;Фрагменты</translation>
     </message>
     <message>
         <source>Show subdocuments / attachments</source>
-        <translation>Показать вложенные документы</translation>
-    </message>
-    <message>
-        <source>Open With</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Run Script</source>
-        <translation type="unfinished"></translation>
+        <translation type="obsolete">Показать вложенные документы</translation>
     </message>
 </context>
 <context>

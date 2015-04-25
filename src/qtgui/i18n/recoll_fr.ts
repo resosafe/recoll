@@ -668,6 +668,58 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
         <source>Cannot extract document: </source>
         <translation>Impossible d&apos;extraire le document</translation>
     </message>
+    <message>
+        <source>&amp;Preview</source>
+        <translation>&amp;Voir contenu</translation>
+    </message>
+    <message>
+        <source>&amp;Open</source>
+        <translation>&amp;Ouvrir</translation>
+    </message>
+    <message>
+        <source>Open With</source>
+        <translation>Ouvrir Avec</translation>
+    </message>
+    <message>
+        <source>Run Script</source>
+        <translation>Exécuter le Script</translation>
+    </message>
+    <message>
+        <source>Copy &amp;File Name</source>
+        <translation>Copier le nom de &amp;Fichier</translation>
+    </message>
+    <message>
+        <source>Copy &amp;URL</source>
+        <translation>Copier l&apos;&amp;Url</translation>
+    </message>
+    <message>
+        <source>&amp;Write to File</source>
+        <translation>&amp;Sauver sous</translation>
+    </message>
+    <message>
+        <source>Save selection to files</source>
+        <translation>Sauvegarder la sélection courante dans des fichiers</translation>
+    </message>
+    <message>
+        <source>Preview P&amp;arent document/folder</source>
+        <translation>Prévisualiser le document p&amp;arent</translation>
+    </message>
+    <message>
+        <source>&amp;Open Parent document/folder</source>
+        <translation>&amp;Ouvrir le document parent</translation>
+    </message>
+    <message>
+        <source>Find &amp;similar documents</source>
+        <translation>Chercher des documents &amp;similaires</translation>
+    </message>
+    <message>
+        <source>Open &amp;Snippets window</source>
+        <translation>Ouvrir la fenêtre des e&amp;xtraits</translation>
+    </message>
+    <message>
+        <source>Show subdocuments / attachments</source>
+        <translation>Afficher les sous-documents et attachements</translation>
+    </message>
 </context>
 <context>
     <name>RTIToolW</name>
@@ -1650,55 +1702,55 @@ Merci de vérifier le fichier desktop </translation>
     <name>ResultPopup</name>
     <message>
         <source>&amp;Preview</source>
-        <translation>&amp;Voir contenu</translation>
+        <translation type="obsolete">&amp;Voir contenu</translation>
     </message>
     <message>
         <source>&amp;Open</source>
-        <translation>&amp;Ouvrir</translation>
+        <translation type="obsolete">&amp;Ouvrir</translation>
     </message>
     <message>
         <source>Copy &amp;File Name</source>
-        <translation>Copier le nom de &amp;Fichier</translation>
+        <translation type="obsolete">Copier le nom de &amp;Fichier</translation>
     </message>
     <message>
         <source>Copy &amp;URL</source>
-        <translation>Copier l&apos;&amp;Url</translation>
+        <translation type="obsolete">Copier l&apos;&amp;Url</translation>
     </message>
     <message>
         <source>&amp;Write to File</source>
-        <translation>&amp;Sauver sous</translation>
+        <translation type="obsolete">&amp;Sauver sous</translation>
     </message>
     <message>
         <source>Save selection to files</source>
-        <translation>Sauvegarder la sélection courante dans des fichiers</translation>
+        <translation type="obsolete">Sauvegarder la sélection courante dans des fichiers</translation>
     </message>
     <message>
         <source>Preview P&amp;arent document/folder</source>
-        <translation>Prévisualiser le document p&amp;arent</translation>
+        <translation type="obsolete">Prévisualiser le document p&amp;arent</translation>
     </message>
     <message>
         <source>&amp;Open Parent document/folder</source>
-        <translation>&amp;Ouvrir le document parent</translation>
+        <translation type="obsolete">&amp;Ouvrir le document parent</translation>
     </message>
     <message>
         <source>Find &amp;similar documents</source>
-        <translation>Chercher des documents &amp;similaires</translation>
+        <translation type="obsolete">Chercher des documents &amp;similaires</translation>
     </message>
     <message>
         <source>Open &amp;Snippets window</source>
-        <translation>Ouvrir la fenêtre des e&amp;xtraits</translation>
+        <translation type="obsolete">Ouvrir la fenêtre des e&amp;xtraits</translation>
     </message>
     <message>
         <source>Show subdocuments / attachments</source>
-        <translation>Afficher les sous-documents et attachements</translation>
+        <translation type="obsolete">Afficher les sous-documents et attachements</translation>
     </message>
     <message>
         <source>Open With</source>
-        <translation>Ouvrir Avec</translation>
+        <translation type="obsolete">Ouvrir Avec</translation>
     </message>
     <message>
         <source>Run Script</source>
-        <translation>Exécuter le Script</translation>
+        <translation type="obsolete">Exécuter le Script</translation>
     </message>
 </context>
 <context>

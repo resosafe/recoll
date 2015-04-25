@@ -655,6 +655,58 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
         <source>Cannot extract document: </source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>&amp;Preview</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Open</source>
+        <translation type="unfinished">&amp;Abrir</translation>
+    </message>
+    <message>
+        <source>Open With</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Run Script</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Copy &amp;File Name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Copy &amp;URL</source>
+        <translation type="unfinished">Copiar &amp;URL</translation>
+    </message>
+    <message>
+        <source>&amp;Write to File</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Save selection to files</source>
+        <translation type="unfinished">Guardar selección a archivos</translation>
+    </message>
+    <message>
+        <source>Preview P&amp;arent document/folder</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Open Parent document/folder</source>
+        <translation type="unfinished">&amp;Abrir documento/directorio ascendente</translation>
+    </message>
+    <message>
+        <source>Find &amp;similar documents</source>
+        <translation type="unfinished">Buscar documentos &amp;similares</translation>
+    </message>
+    <message>
+        <source>Open &amp;Snippets window</source>
+        <translation type="unfinished">Abrir ventana de &amp;fragmentos</translation>
+    </message>
+    <message>
+        <source>Show subdocuments / attachments</source>
+        <translation type="unfinished">Mostrar subdocumentos / adjuntos</translation>
+    </message>
 </context>
 <context>
     <name>RTIToolW</name>
@@ -1616,55 +1668,47 @@ Please check the desktop file</source>
     <name>ResultPopup</name>
     <message>
         <source>&amp;Preview</source>
-        <translation>&amp;Previsualización</translation>
+        <translation type="obsolete">&amp;Previsualización</translation>
     </message>
     <message>
         <source>&amp;Open</source>
-        <translation>&amp;Abrir</translation>
+        <translation type="obsolete">&amp;Abrir</translation>
     </message>
     <message>
         <source>Copy &amp;File Name</source>
-        <translation>Copiar nombre de &amp;archivo</translation>
+        <translation type="obsolete">Copiar nombre de &amp;archivo</translation>
     </message>
     <message>
         <source>Copy &amp;URL</source>
-        <translation>Copiar &amp;URL</translation>
+        <translation type="obsolete">Copiar &amp;URL</translation>
     </message>
     <message>
         <source>&amp;Write to File</source>
-        <translation>&amp;Escribir a archivo</translation>
+        <translation type="obsolete">&amp;Escribir a archivo</translation>
     </message>
     <message>
         <source>Save selection to files</source>
-        <translation>Guardar selección a archivos</translation>
+        <translation type="obsolete">Guardar selección a archivos</translation>
     </message>
     <message>
         <source>Preview P&amp;arent document/folder</source>
-        <translation>&amp;Vista previa de documento o directorio ascendente</translation>
+        <translation type="obsolete">&amp;Vista previa de documento o directorio ascendente</translation>
     </message>
     <message>
         <source>&amp;Open Parent document/folder</source>
-        <translation>&amp;Abrir documento/directorio ascendente</translation>
+        <translation type="obsolete">&amp;Abrir documento/directorio ascendente</translation>
     </message>
     <message>
         <source>Find &amp;similar documents</source>
-        <translation>Buscar documentos &amp;similares</translation>
+        <translation type="obsolete">Buscar documentos &amp;similares</translation>
     </message>
     <message>
         <source>Open &amp;Snippets window</source>
-        <translation>Abrir ventana de &amp;fragmentos</translation>
+        <translation type="obsolete">Abrir ventana de &amp;fragmentos</translation>
     </message>
     <message>
         <source>Show subdocuments / attachments</source>
-        <translation>Mostrar subdocumentos / adjuntos</translation>
-    </message>
-    <message>
-        <source>Open With</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Run Script</source>
-        <translation type="unfinished"></translation>
+        <translation type="obsolete">Mostrar subdocumentos / adjuntos</translation>
     </message>
 </context>
 <context>

@@ -42,10 +42,10 @@ QMenu *create(QWidget *me, int opts, RefCntr<DocSequence> source, Rcl::Doc& doc)
     string apptag;
     doc.getmeta(Rcl::Doc::keyapptg, &apptag);
 
-    popup->addAction(me->tr("&Preview"), me, SLOT(menuPreview()));
+    popup->addAction(QWidget::tr("&Preview"), me, SLOT(menuPreview()));
 
     if (!theconfig->getMimeViewerDef(doc.mimetype, apptag, 0).empty()) {
-	popup->addAction(me->tr("&Open"), me, SLOT(menuEdit()));
+	popup->addAction(QWidget::tr("&Open"), me, SLOT(menuEdit()));
     }
 
     bool needopenwith = true;
@@ -63,7 +63,7 @@ QMenu *create(QWidget *me, int opts, RefCntr<DocSequence> source, Rcl::Doc& doc)
         DesktopDb *ddb = DesktopDb::getDb();
         if (ddb && ddb->appForMime(doc.mimetype, &aps) && 
             !aps.empty()) {
-            QMenu *sub = popup->addMenu(me->tr("Open With"));
+            QMenu *sub = popup->addMenu(QWidget::tr("Open With"));
             if (sub) {
                 for (vector<DesktopDb::AppDef>::const_iterator it = aps.begin();
                      it != aps.end(); it++) {
@@ -83,7 +83,7 @@ QMenu *create(QWidget *me, int opts, RefCntr<DocSequence> source, Rcl::Doc& doc)
         aps.clear();
         ddb = new DesktopDb(path_cat(theconfig->getConfDir(), "scripts"));
         if (ddb && ddb->allApps(&aps) && !aps.empty()) {
-            QMenu *sub = popup->addMenu(me->tr("Run Script"));
+            QMenu *sub = popup->addMenu(QWidget::tr("Run Script"));
             if (sub) {
                 for (vector<DesktopDb::AppDef>::const_iterator it = aps.begin();
                      it != aps.end(); it++) {
@@ -100,36 +100,36 @@ QMenu *create(QWidget *me, int opts, RefCntr<DocSequence> source, Rcl::Doc& doc)
         delete ddb;
     }
 
-    popup->addAction(me->tr("Copy &File Name"), me, SLOT(menuCopyFN()));
-    popup->addAction(me->tr("Copy &URL"), me, SLOT(menuCopyURL()));
+    popup->addAction(QWidget::tr("Copy &File Name"), me, SLOT(menuCopyFN()));
+    popup->addAction(QWidget::tr("Copy &URL"), me, SLOT(menuCopyURL()));
 
     if ((opts&showSaveOne) && !doc.ipath.empty())
-	popup->addAction(me->tr("&Write to File"), me, SLOT(menuSaveToFile()));
+	popup->addAction(QWidget::tr("&Write to File"), me, SLOT(menuSaveToFile()));
 
     if ((opts&showSaveSel))
-	popup->addAction(me->tr("Save selection to files"), 
+	popup->addAction(QWidget::tr("Save selection to files"), 
 			 me, SLOT(menuSaveSelection()));
 
     Rcl::Doc pdoc;
     if (source.isNotNull() && source->getEnclosing(doc, pdoc)) {
-	popup->addAction(me->tr("Preview P&arent document/folder"), 
+	popup->addAction(QWidget::tr("Preview P&arent document/folder"), 
 			 me, SLOT(menuPreviewParent()));
     }
     // Open parent is useful even if there is no parent because we open
     // the enclosing folder.
-    popup->addAction(me->tr("&Open Parent document/folder"), 
+    popup->addAction(QWidget::tr("&Open Parent document/folder"), 
 		     me, SLOT(menuOpenParent()));
 
     if (opts & showExpand)
-	popup->addAction(me->tr("Find &similar documents"), 
+	popup->addAction(QWidget::tr("Find &similar documents"), 
 			 me, SLOT(menuExpand()));
 
     if (doc.haspages && source.isNotNull() && source->snippetsCapable()) 
-	popup->addAction(me->tr("Open &Snippets window"), 
+	popup->addAction(QWidget::tr("Open &Snippets window"), 
 			 me, SLOT(menuShowSnippets()));
 
     if ((opts & showSubs) && rcldb && rcldb->hasSubDocs(doc)) 
-	popup->addAction(me->tr("Show subdocuments / attachments"), 
+	popup->addAction(QWidget::tr("Show subdocuments / attachments"), 
 			 me, SLOT(menuShowSubDocs()));
 
     return popup;

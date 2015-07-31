@@ -12,8 +12,15 @@
 
 using namespace std;
 
+// #define LOG_PARSER
+#ifdef LOG_PARSER
+#define LOGP(X) {cerr << X;}
+#else
+#define LOGP(X)
+#endif
+
 int yylex(yy::parser::semantic_type *, yy::parser::location_type *, 
-		  WasaParserDriver *);
+          WasaParserDriver *);
 void yyerror(char const *);
 static void qualify(Rcl::SearchDataClauseDist *, const string &);
 
@@ -46,8 +53,8 @@ static void addSubQuery(WasaParserDriver *d,
 %type <sd> query
 %type <str> complexfieldname
 
- /* Non operator tokens need precedence because of the possibility of
-    concatenation which needs to have lower prec than OR */
+                          /* Non operator tokens need precedence because of the possibility of
+                             concatenation which needs to have lower prec than OR */
 %left <str> WORD
 %left <str> QUOTED
 %left <str> QUALIFIERS
@@ -60,13 +67,14 @@ static void addSubQuery(WasaParserDriver *d,
 
 topquery: query
 {
+    LOGP("PARSING\n");
     d->m_result = $1;
 }
 
 query: 
 query query %prec UCONCAT
 {
-    //cerr << "q: query query" << endl;
+    LOGP("q: query query\n");
     Rcl::SearchData *sd = new Rcl::SearchData(Rcl::SCLT_AND, d->m_stemlang);
     addSubQuery(d, sd, $1);
     addSubQuery(d, sd, $2);
@@ -74,7 +82,7 @@ query query %prec UCONCAT
 }
 | query AND query
 {
-    //cerr << "q: query AND query" << endl;
+    LOGP("q: query AND query\n");
     Rcl::SearchData *sd = new Rcl::SearchData(Rcl::SCLT_AND, d->m_stemlang);
     addSubQuery(d, sd, $1);
     addSubQuery(d, sd, $3);
@@ -82,7 +90,7 @@ query query %prec UCONCAT
 }
 | query OR query
 {
-    //cerr << "q: query OR query" << endl;
+    LOGP("q: query OR query\n");
     Rcl::SearchData *top = new Rcl::SearchData(Rcl::SCLT_AND, d->m_stemlang);
     Rcl::SearchData *sd = new Rcl::SearchData(Rcl::SCLT_OR, d->m_stemlang);
     addSubQuery(d, sd, $1);
@@ -92,13 +100,13 @@ query query %prec UCONCAT
 }
 | '(' query ')' 
 {
-    //cerr << "q: ( query )" << endl;
+    LOGP("q: ( query )\n");
     $$ = $2;
 }
 |
 fieldexpr %prec UCONCAT
 {
-    //cerr << "q: fieldexpr" << endl;
+    LOGP("q: fieldexpr\n");
     Rcl::SearchData *sd = new Rcl::SearchData(Rcl::SCLT_AND, d->m_stemlang);
     d->addClause(sd, $1);
     $$ = sd;
@@ -107,12 +115,12 @@ fieldexpr %prec UCONCAT
 
 fieldexpr: term 
 {
-    // cerr << "fe: simple fieldexpr: " << $1->gettext() << endl;
+    LOGP("fe: simple fieldexpr: " << $1->gettext() << endl);
     $$ = $1;
 }
 | complexfieldname EQUALS term 
 {
-    // cerr << "fe: " << *$1 << " = " << $3->gettext() << endl;
+    LOGP("fe: " << *$1 << " = " << $3->gettext() << endl);
     $3->setfield(*$1);
     $3->setrel(Rcl::SearchDataClause::REL_EQUALS);
     $$ = $3;
@@ -120,7 +128,7 @@ fieldexpr: term
 }
 | complexfieldname CONTAINS term 
 {
-    // cerr << "fe: " << *$1 << " : " << $3->gettext() << endl;
+    LOGP("fe: " << *$1 << " : " << $3->gettext() << endl);
     $3->setfield(*$1);
     $3->setrel(Rcl::SearchDataClause::REL_CONTAINS);
     $$ = $3;
@@ -128,7 +136,7 @@ fieldexpr: term
 }
 | complexfieldname SMALLER term 
 {
-    // cerr << "fe: " << *$1 << " < " << $3->gettext() << endl;
+    LOGP(cerr << "fe: " << *$1 << " < " << $3->gettext() << endl);
     $3->setfield(*$1);
     $3->setrel(Rcl::SearchDataClause::REL_LT);
     $$ = $3;
@@ -136,7 +144,7 @@ fieldexpr: term
 }
 | complexfieldname SMALLEREQ term 
 {
-    // cerr << "fe: " << *$1 << " <= " << $3->gettext() << endl;
+    LOGP("fe: " << *$1 << " <= " << $3->gettext() << endl);
     $3->setfield(*$1);
     $3->setrel(Rcl::SearchDataClause::REL_LTE);
     $$ = $3;
@@ -144,7 +152,7 @@ fieldexpr: term
 }
 | complexfieldname GREATER term 
 {
-    // cerr << "fe: "  << *$1 << " > " << $3->gettext() << endl;
+    LOGP("fe: "  << *$1 << " > " << $3->gettext() << endl);
     $3->setfield(*$1);
     $3->setrel(Rcl::SearchDataClause::REL_GT);
     $$ = $3;
@@ -152,7 +160,7 @@ fieldexpr: term
 }
 | complexfieldname GREATEREQ term 
 {
-    // cerr << "fe: " << *$1 << " >= " << $3->gettext() << endl;
+    LOGP("fe: " << *$1 << " >= " << $3->gettext() << endl);
     $3->setfield(*$1);
     $3->setrel(Rcl::SearchDataClause::REL_GTE);
     $$ = $3;
@@ -160,7 +168,7 @@ fieldexpr: term
 }
 | '-' fieldexpr 
 {
-    // cerr << "fe: - fieldexpr[" << $2->gettext() << "]" << endl;
+    LOGP("fe: - fieldexpr[" << $2->gettext() << "]" << endl);
     $2->setexclude(true);
     $$ = $2;
 }
@@ -170,13 +178,13 @@ fieldexpr: term
 complexfieldname: 
 WORD
 {
-    // cerr << "cfn: WORD" << endl;
+    LOGP("cfn: WORD" << endl);
     $$ = $1;
 }
 |
 complexfieldname CONTAINS WORD
 {
-    // cerr << "cfn: complexfieldname ':' WORD" << endl;
+    LOGP("cfn: complexfieldname ':' WORD" << endl);
     $$ = new string(*$1 + string(":") + *$3);
     delete $1;
     delete $3;
@@ -185,7 +193,7 @@ complexfieldname CONTAINS WORD
 term: 
 WORD
 {
-    //cerr << "term[" << *$1 << "]" << endl;
+    LOGP("term[" << *$1 << "]" << endl);
     $$ = new Rcl::SearchDataClauseSimple(Rcl::SCLT_AND, *$1);
     delete $1;
 }
@@ -197,13 +205,13 @@ WORD
 qualquote: 
 QUOTED
 {
-    // cerr << "QUOTED[" << *$1 << "]" << endl;
+    LOGP("QUOTED[" << *$1 << "]" << endl);
     $$ = new Rcl::SearchDataClauseDist(Rcl::SCLT_PHRASE, *$1, 0);
     delete $1;
 }
 | QUOTED QUALIFIERS 
 {
-    // cerr << "QUOTED[" << *$1 << "] QUALIFIERS[" << *$2 << "]" << endl;
+    LOGP("QUOTED[" << *$1 << "] QUALIFIERS[" << *$2 << "]" << endl);
     Rcl::SearchDataClauseDist *cl = 
         new Rcl::SearchDataClauseDist(Rcl::SCLT_PHRASE, *$1, 0);
     qualify(cl, *$2);
@@ -318,8 +326,9 @@ static int parseString(WasaParserDriver *d, yy::parser::semantic_type *yylval)
             break;
         case '"':
             /* End of string. Look for qualifiers */
-            while ((c = d->GETCHAR()) && !isspace(c))
+            while ((c = d->GETCHAR()) && (isalnum(c) || c == '.'))
                 d->qualifiers().push_back(c);
+            d->UNGETCHAR(c);
             goto out;
         default:
             value->push_back(c);

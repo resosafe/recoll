@@ -268,6 +268,9 @@ bool Aspell::buildDict(Rcl::Db &db, string &reason)
     if (!ok())
 	return false;
 
+    string addCreateParam;
+    m_config->getConfParam("aspellAddCreateParam", addCreateParam);
+
     // We create the dictionary by executing the aspell command:
     // aspell --lang=[lang] create master [dictApath]
     string cmdstring(m_data->m_exec);
@@ -277,6 +280,10 @@ bool Aspell::buildDict(Rcl::Db &db, string &reason)
     cmdstring += string(" ") + string("--lang=") + m_lang;
     args.push_back("--encoding=utf-8");
     cmdstring += string(" ") + "--encoding=utf-8";
+    if (!addCreateParam.empty()) {
+	args.push_back(addCreateParam);
+	cmdstring += string(" ") + addCreateParam;
+    }
     args.push_back("create");
     cmdstring += string(" ") + "create";
     args.push_back("master");

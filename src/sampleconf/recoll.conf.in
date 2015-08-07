@@ -266,10 +266,18 @@ filtermaxmbytes = 2000
 
 # Language definitions to use when creating the aspell dictionary. 
 # The value must match a set of aspell language definition files. 
-# You can type "aspell config"  to see where these are installed.
+# You can type "aspell dicts"  to see a list
 # The default if this is not set is to use the NLS environment to guess the
 # value
 # aspellLanguage = en
+
+# Somme aspell packages may need an additional option (e.g. on Debian
+# Jessie). See Debian bug 772415
+# aspellAddCreateParam = --local-data-dir=/usr/lib/aspell
+
+# You may also want to set this to have a look at aspell dictionary
+# creation errors. But there are always many, so this is mostly for debugging
+# aspellKeepStderr = 1
 
 # Disabling aspell use. The aspell dictionary generation takes some time,
 # and some combinations of aspell version, language, and local terms,

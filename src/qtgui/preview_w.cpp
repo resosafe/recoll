@@ -70,6 +70,12 @@ public:
 	: m_curanchor(1), m_lastanchor(0)
     {
     }    
+    void clear() {
+	m_curanchor = 1; 
+	m_lastanchor = 0;
+	m_groupanchors.clear();
+	m_groupcuranchors.clear();
+    }
 
     bool haveAnchors()
     {
@@ -840,7 +846,7 @@ bool Preview::loadDocInCurrentTab(const Rcl::Doc &idoc, int docnum)
 	    sleep(1);
     }
 
-    LOGDEB(("LoadFileInCurrentTab: after file load: cancel %d status %d"
+    LOGDEB(("loadDocInCurrentTab: after file load: cancel %d status %d"
 	    " text length %d\n", 
 	    CancelCheck::instance().cancelState(), status, fdoc.text.length()));
 
@@ -878,6 +884,8 @@ bool Preview::loadDocInCurrentTab(const Rcl::Doc &idoc, int docnum)
     // while still inserting at bottom
     list<QString> qrichlst;
     PreviewTextEdit *editor = currentEditor();
+
+    editor->m_plaintorich->clear();
 
     // For an actual html file, if we want to have the images and
     // style loaded in the preview, we need to set the search
@@ -997,7 +1005,7 @@ bool Preview::loadDocInCurrentTab(const Rcl::Doc &idoc, int docnum)
 
 	if (progress.wasCanceled()) {
             editor->append("<b>Cancelled !</b>");
-	    LOGDEB(("LoadFileInCurrentTab: cancelled in editor load\n"));
+	    LOGDEB(("loadDocInCurrentTab: cancelled in editor load\n"));
 	    break;
 	}
     }
@@ -1079,7 +1087,7 @@ bool Preview::loadDocInCurrentTab(const Rcl::Doc &idoc, int docnum)
 
     editor->setFocus();
     emit(previewExposed(this, m_searchId, docnum));
-    LOGDEB(("LoadFileInCurrentTab: returning true\n"));
+    LOGDEB(("loadDocInCurrentTab: returning true\n"));
     return true;
 }
 

@@ -139,7 +139,7 @@ OBJS = $OBJS
 DEPS = $DEPS
 
 librecoll.a : \$(DEPS) \$(OBJS)
-	ar ru librecoll.a \$(OBJS)
+	\$(AR) ru librecoll.a \$(OBJS)
 	\$(RANLIB) librecoll.a
 
 # Note that we are using the Recoll release number in the soname. There is

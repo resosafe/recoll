@@ -97,6 +97,8 @@ bool createExpansionDbs(Xapian::WritableDatabase& wdb,
 
 	    // Detect and skip CJK terms.
 	    Utf8Iter utfit(*it);
+            if (utfit.eof()) // Empty term?? Seems to happen.
+                continue;
 	    if (TextSplit::isCJK(*utfit)) {
 		// LOGDEB(("stemskipped: Skipping CJK\n"));
 		continue;

@@ -59,7 +59,7 @@ int stringicmp(const string & s1, const string& s2)
     int size1 = s1.length(), size2 = s2.length();
     char c1, c2;
 
-    if (size1 > size2) {
+    if (size1 < size2) {
 	while (it1 != s1.end()) { 
 	    c1 = ::toupper(*it1);
 	    c2 = ::toupper(*it2);
@@ -68,7 +68,7 @@ int stringicmp(const string & s1, const string& s2)
 	    }
 	    ++it1; ++it2;
 	}
-	return size1 == size2 ? 0 : 1;
+	return size1 == size2 ? 0 : -1;
     } else {
 	while (it2 != s2.end()) { 
 	    c1 = ::toupper(*it1);
@@ -78,7 +78,7 @@ int stringicmp(const string & s1, const string& s2)
 	    }
 	    ++it1; ++it2;
 	}
-	return size1 == size2 ? 0 : -1;
+	return size1 == size2 ? 0 : 1;
     }
 }
 void stringtolower(string& io)
@@ -119,7 +119,7 @@ int stringlowercmp(const string & s1, const string& s2)
     int size1 = s1.length(), size2 = s2.length();
     char c2;
 
-    if (size1 > size2) {
+    if (size1 < size2) {
 	while (it1 != s1.end()) { 
 	    c2 = ::tolower(*it2);
 	    if (*it1 != c2) {
@@ -127,7 +127,7 @@ int stringlowercmp(const string & s1, const string& s2)
 	    }
 	    ++it1; ++it2;
 	}
-	return size1 == size2 ? 0 : 1;
+	return size1 == size2 ? 0 : -1;
     } else {
 	while (it2 != s2.end()) { 
 	    c2 = ::tolower(*it2);
@@ -136,7 +136,7 @@ int stringlowercmp(const string & s1, const string& s2)
 	    }
 	    ++it1; ++it2;
 	}
-	return size1 == size2 ? 0 : -1;
+	return size1 == size2 ? 0 : 1;
     }
 }
 
@@ -148,7 +148,7 @@ int stringuppercmp(const string & s1, const string& s2)
     int size1 = s1.length(), size2 = s2.length();
     char c2;
 
-    if (size1 > size2) {
+    if (size1 < size2) {
 	while (it1 != s1.end()) { 
 	    c2 = ::toupper(*it2);
 	    if (*it1 != c2) {
@@ -156,7 +156,7 @@ int stringuppercmp(const string & s1, const string& s2)
 	    }
 	    ++it1; ++it2;
 	}
-	return size1 == size2 ? 0 : 1;
+	return size1 == size2 ? 0 : -1;
     } else {
 	while (it2 != s2.end()) { 
 	    c2 = ::toupper(*it2);
@@ -165,7 +165,7 @@ int stringuppercmp(const string & s1, const string& s2)
 	    }
 	    ++it1; ++it2;
 	}
-	return size1 == size2 ? 0 : -1;
+	return size1 == size2 ? 0 : 1;
     }
 }
 

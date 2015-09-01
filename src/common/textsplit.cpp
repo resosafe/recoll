@@ -142,6 +142,8 @@ static inline int whatcc(unsigned int c)
 	} else {
 	    vector<unsigned int>::iterator it = 
 		lower_bound(vpuncblocks.begin(), vpuncblocks.end(), c);
+		if (it == vpuncblocks.end())
+			return LETTER;
 	    if (c == *it)
 		return SPACE;
 	    if ((it - vpuncblocks.begin()) % 2 == 1) {

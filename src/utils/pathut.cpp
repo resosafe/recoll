@@ -549,10 +549,17 @@ string fileurltolocalpath(string url)
         url = url.substr(7, string::npos);
     else
         return string();
+
+    // Removing the fragment part. This is exclusively used when
+    // executing a viewer for the recoll manual, and we only strip the
+    // part after # if it is preceded by .html
     string::size_type pos;
-    if ((pos = url.find_last_of("#")) != string::npos) {
-        url.erase(pos);
+    if ((pos = url.rfind(".html#")) != string::npos) {
+        url.erase(pos+5);
+    } else if ((pos = url.rfind(".htm#")) != string::npos) {
+        url.erase(pos+4);
     }
+
     return url;
 }
 

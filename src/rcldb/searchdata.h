@@ -152,7 +152,9 @@ public:
     {
 	m_tp = tp;
     }
-
+    SClType getTp() {
+        return m_tp;
+    }
     void setMaxExpand(int max)
     {
 	m_softmaxexpand = max;

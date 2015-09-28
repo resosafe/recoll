@@ -424,9 +424,19 @@ void AdvSearch::runSearch()
 
     if (!subtreeCMB->currentText().isEmpty()) {
 	QString current = subtreeCMB->currentText();
-	sdata->addClause(new Rcl::SearchDataClausePath(
-			     (const char*)current.toLocal8Bit(),
-			     direxclCB->isChecked()));
+        Rcl::SearchDataClausePath *pathclause = 
+            new Rcl::SearchDataClausePath((const char*)current.toLocal8Bit(), 
+                                          direxclCB->isChecked());
+        if (sdata->getTp() == SCLT_AND) {
+            sdata->addClause(pathclause);
+        } else {
+            RefCntr<SearchData> nsdata(new SearchData(SCLT_AND, stemLang));
+            nsdata->addClause(new Rcl::SearchDataClauseSub(sdata));
+            nsdata->addClause(pathclause);
+            sdata = nsdata;
+        }
+
+
 	// Keep history clean and sorted. Maybe there would be a
 	// simpler way to do this
 	list<QString> entries;
@@ -447,6 +457,7 @@ void AdvSearch::runSearch()
 	for (int index = 0; index < subtreeCMB->count(); index++)
 	    prefs.asearchSubdirHist.push_back(subtreeCMB->itemText(index));
     }
+
     saveCnf();
     g_advshistory && g_advshistory->push(sdata);
     emit startSearch(sdata, false);

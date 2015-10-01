@@ -1,3 +1,12 @@
+recoll (1.21.2-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
+                
+  * New special indexing dialog in GUI
+  * Fix advanced search dialog "Any Clause" mode
+  * Fixed a few bounds issues catched by Windows VC++
+  * Miscellaneous other minor fixes
+
+ -- Jean-Francois Dockes <jf@dockes.org>  Tue, 01 Oct 2015 09:40:00 +0200
+
 recoll (1.21.0-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
                 
   * New bison-based query parser.

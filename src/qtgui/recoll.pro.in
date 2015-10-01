@@ -32,6 +32,7 @@ HEADERS += \
         rtitool.h \
         searchclause_w.h \
         snippets_w.h \
+        specialindex.h \
         spell_w.h \
         ssearch_w.h \
         systray.h \
@@ -82,6 +83,7 @@ FORMS   = \
         rclmain.ui \
         restable.ui \
         rtitool.ui \
+        specialindex.ui \
         spell.ui \
         snippets.ui \
         ssearchb.ui \

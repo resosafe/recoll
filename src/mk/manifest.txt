@@ -435,6 +435,8 @@ qtgui/searchclause_w.h
 qtgui/snippets.ui
 qtgui/snippets_w.cpp
 qtgui/snippets_w.h
+qtgui/specialindex.h
+qtgui/specialindex.ui
 qtgui/spell.ui
 qtgui/spell_w.cpp
 qtgui/spell_w.h

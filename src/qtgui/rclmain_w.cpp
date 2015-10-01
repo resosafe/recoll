@@ -325,6 +325,8 @@ void RclMain::init()
 	    this, SLOT(showSpellDialog()));
     connect(actionQuery_Fragments, SIGNAL(triggered()), 
 	    this, SLOT(showFragButs()));
+    connect(actionSpecial_Indexing, SIGNAL(triggered()), 
+	    this, SLOT(showSpecIdx()));
     connect(indexConfigAction, SIGNAL(triggered()), 
 	    this, SLOT(showIndexConfig()));
     connect(indexScheduleAction, SIGNAL(triggered()), 

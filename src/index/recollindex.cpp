@@ -21,6 +21,7 @@
 #include <stdio.h>
 #include <signal.h>
 #include <errno.h>
+#include <fnmatch.h>
 #include <sys/time.h>
 #include <sys/resource.h>
 #include <fcntl.h>
@@ -71,7 +72,7 @@ static int     op_flags;
 #define OPT_r     0x40000
 #define OPT_k     0x80000
 #define OPT_E     0x100000
-
+#define OPT_K     0x200000
 ReExec *o_reexec;
 
 // Globals for atexit cleanup
@@ -180,27 +181,46 @@ void rclIxIonice(const RclConfig *config)
 
 class MakeListWalkerCB : public FsTreeWalkerCB {
 public:
-    MakeListWalkerCB(list<string>& files)
-	: m_files(files)
+    MakeListWalkerCB(list<string>& files, const vector<string>& selpats)
+	: m_files(files), m_pats(selpats)
     {
     }
     virtual FsTreeWalker::Status 
     processone(const string& fn, const struct stat *, FsTreeWalker::CbFlag flg) 
     {
-	if (flg == FsTreeWalker::FtwDirEnter || flg == FsTreeWalker::FtwRegular)
-	    m_files.push_back(fn);
+	if (flg== FsTreeWalker::FtwDirEnter || flg == FsTreeWalker::FtwRegular){
+            if (m_pats.empty()) {
+                cerr << "Selecting " << fn << endl;
+                m_files.push_back(fn);
+            } else {
+                for (vector<string>::const_iterator it = m_pats.begin();
+                     it != m_pats.end(); it++) {
+                    if (fnmatch(it->c_str(), fn.c_str(), 0) == 0) {
+                        m_files.push_back(fn);
+                        break;
+                    }
+                }
+            }
+        }
 	return FsTreeWalker::FtwOk;
     }
     list<string>& m_files;
+    const vector<string>& m_pats;
 };
 
-// Build a list of things to index and call indexfiles.
-bool recursive_index(RclConfig *config, const string& top)
+// Build a list of things to index, then call purgefiles and/or
+// indexfiles.  This is basically the same as find xxx | recollindex
+// -i [-e] without the find (so, simpler but less powerfull)
+bool recursive_index(RclConfig *config, const string& top, 
+                     const vector<string>& selpats)
 {
     list<string> files;
-    MakeListWalkerCB cb(files);
+    MakeListWalkerCB cb(files, selpats);
     FsTreeWalker walker;
     walker.walk(top, cb);
+    if (op_flags & OPT_e) {
+        purgefiles(config, files);
+    }
     return indexfiles(config, files);
 }
 
@@ -217,9 +237,13 @@ bool indexfiles(RclConfig *config, list<string> &filenames)
     if (filenames.empty())
 	return true;
     makeIndexerOrExit(config, (op_flags & OPT_Z) != 0);
-    return confindexer->indexFiles(filenames, (op_flags&OPT_f) ? 
-				   ConfIndexer::IxFIgnoreSkip : 
-				   ConfIndexer::IxFNone);
+    // The default is to retry failed files
+    int indexerFlags = ConfIndexer::IxFNone; 
+    if (op_flags & OPT_K) 
+        indexerFlags |= ConfIndexer::IxFNoRetryFailed; 
+    if (op_flags & OPT_f)
+        indexerFlags |= ConfIndexer::IxFIgnoreSkip;
+    return confindexer->indexFiles(filenames, indexerFlags);
 }
 
 // Delete a list of files. Same comments about call contexts as indexfiles.
@@ -333,8 +357,11 @@ static const char usage [] =
 "recollindex -i [-f] [-Z] <filename [filename ...]>\n"
 "    Index individual files. No database purge or stem database updates\n"
 "    -f : ignore skippedPaths and skippedNames while doing this\n"
-"recollindex -r [-f] [-Z] <top> \n"
-"   Recursive partial reindex\n"
+"recollindex -r [-K] [-f] [-Z] [-p pattern] <top> \n"
+"   Recursive partial reindex. \n"
+"     -p : filter file names, multiple instances are allowed, e.g.: \n"
+"        -p *.odt -p *.pdf\n"
+"     -K : skip previously failed files (they are retried by default)\n"
 "recollindex -l\n"
 "    List available stemming languages\n"
 "recollindex -s <lang>\n"
@@ -383,6 +410,7 @@ int main(int argc, char **argv)
 {
     string a_config;
     int sleepsecs = 60;
+    vector<string> selpatterns;
 
     // The reexec struct is used by the daemon to shed memory after
     // the initial indexing pass and to restart when the configuration
@@ -413,9 +441,13 @@ int main(int argc, char **argv)
 	    case 'h': op_flags |= OPT_h; break;
 	    case 'i': op_flags |= OPT_i; break;
 	    case 'k': op_flags |= OPT_k; break;
+	    case 'K': op_flags |= OPT_K; break;
 	    case 'l': op_flags |= OPT_l; break;
 	    case 'm': op_flags |= OPT_m; break;
 	    case 'n': op_flags |= OPT_n; break;
+	    case 'p':	if (argc < 2)  Usage();
+		selpatterns.push_back(*(++argv));
+		argc--; goto b1;
 	    case 'r': op_flags |= OPT_r; break;
 	    case 's': op_flags |= OPT_s; break;
 #ifdef RCL_USE_ASPELL
@@ -523,7 +555,15 @@ int main(int argc, char **argv)
     // Try to ionice. This does not work on all platforms
     rclIxIonice(config);
 
-    if (op_flags & (OPT_i|OPT_e)) {
+    if (op_flags & OPT_r) {
+	if (argc != 1) 
+	    Usage();
+	string top = *argv++; argc--;
+	bool status = recursive_index(config, top, selpatterns);
+        if (confindexer && !confindexer->getReason().empty())
+            cerr << confindexer->getReason() << endl;
+        exit(status ? 0 : 1);
+    } else if (op_flags & (OPT_i|OPT_e)) {
 	lockorexit(&pidfile);
 
 	list<string> filenames;
@@ -552,14 +592,6 @@ int main(int argc, char **argv)
         if (status && (op_flags & OPT_i)) {
 	    status = indexfiles(config, filenames);
         }
-        if (confindexer && !confindexer->getReason().empty())
-            cerr << confindexer->getReason() << endl;
-        exit(status ? 0 : 1);
-    } else if (op_flags & OPT_r) {
-	if (argc != 1) 
-	    Usage();
-	string top = *argv++; argc--;
-	bool status = recursive_index(config, top);
         if (confindexer && !confindexer->getReason().empty())
             cerr << confindexer->getReason() << endl;
         exit(status ? 0 : 1);

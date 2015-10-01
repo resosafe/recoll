@@ -28,6 +28,7 @@
 #include "rtitool.h"
 #include "snippets_w.h"
 #include "fragbuts.h"
+#include "specialindex.h"
 #include "rclmain_w.h"
 
 using namespace std;
@@ -92,6 +93,19 @@ void RclMain::showFragButs()
 	// Close and reopen, in hope that makes us visible...
 	fragbuts->close();
         fragbuts->show();
+    }
+}
+
+void RclMain::showSpecIdx()
+{
+    if (specidx == 0) {
+	specidx = new SpecIdxW(0);
+        connect(specidx, SIGNAL(accepted()), this, SLOT(specialIndex()));
+        specidx->show();
+    } else {
+	// Close and reopen, in hope that makes us visible...
+	specidx->close();
+        specidx->show();
     }
 }
 

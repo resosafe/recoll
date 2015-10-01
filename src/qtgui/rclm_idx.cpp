@@ -24,6 +24,7 @@
 #include "transcode.h"
 #include "indexer.h"
 #include "rclmain_w.h"
+#include "specialindex.h"
 
 using namespace std;
 
@@ -114,25 +115,25 @@ void RclMain::periodic100()
 	m_indexerState = IXST_RUNNINGMINE;
 	fileToggleIndexingAction->setText(tr("Stop &Indexing"));
 	fileToggleIndexingAction->setEnabled(true);
-        fileRetryFailedAction->setEnabled(false);
 	fileRebuildIndexAction->setEnabled(false);
+        actionSpecial_Indexing->setEnabled(false);
 	periodictimer->setInterval(200);
     } else {
 	Pidfile pidfile(theconfig->getPidfile());
 	if (pidfile.open() == 0) {
 	    m_indexerState = IXST_NOTRUNNING;
 	    fileToggleIndexingAction->setText(tr("Update &Index"));
-            fileRetryFailedAction->setEnabled(true);
 	    fileToggleIndexingAction->setEnabled(true);
 	    fileRebuildIndexAction->setEnabled(true);
+            actionSpecial_Indexing->setEnabled(true);
 	    periodictimer->setInterval(1000);
 	} else {
 	    // Real time or externally started batch indexer running
 	    m_indexerState = IXST_RUNNINGNOTMINE;
 	    fileToggleIndexingAction->setText(tr("Stop &Indexing"));
 	    fileToggleIndexingAction->setEnabled(true);
-            fileRetryFailedAction->setEnabled(false);
 	    fileRebuildIndexAction->setEnabled(false);
+            actionSpecial_Indexing->setEnabled(false);
 	    periodictimer->setInterval(200);
 	}	    
     }
@@ -227,8 +228,6 @@ void RclMain::toggleIndexing()
         args.clear();
 	args.push_back("-c");
 	args.push_back(theconfig->getConfDir());
-        if (fileRetryFailedAction->isChecked())
-            args.push_back("-k");
 	m_idxproc = new ExecCmd;
 	m_idxproc->startExec("recollindex", args, false, false);
     }
@@ -247,6 +246,10 @@ void RclMain::rebuildIndex()
 	return; //?? Should not have been called
     case IXST_NOTRUNNING:
     {
+        if (m_idxproc) {
+            LOGERR(("RclMain::rebuildIndex: current indexer exec not null\n"));
+            return;
+        }
 	int rep = 
 	    QMessageBox::warning(0, tr("Erasing index"), 
 				     tr("Reset the index and start "
@@ -272,6 +275,126 @@ void RclMain::rebuildIndex()
     }
 }
 
+void SpecIdxW::onBrowsePB_clicked()
+{
+    QString dir = myGetFileName(true, tr("Top indexed entity"), true);
+    targLE->setText(dir);
+}
+
+bool SpecIdxW::noRetryFailed()
+{
+    return noRetryFailedCB->isChecked();
+}
+
+bool SpecIdxW::eraseFirst()
+{
+    return eraseBeforeCB->isChecked();
+}
+
+std::vector<std::string> SpecIdxW::selpatterns()
+{
+    vector<string> pats;
+    string text = qs2utf8s(selPatsLE->text());
+    if (!text.empty()) {
+        stringToStrings(text, pats);
+    }
+    return pats;
+}
+
+std::string SpecIdxW::toptarg()
+{
+    return qs2utf8s(targLE->text());
+}
+
+void SpecIdxW::onTargLE_textChanged(const QString& text)
+{
+    if (text.isEmpty())
+        selPatsLE->setEnabled(false);
+    else
+        selPatsLE->setEnabled(true);
+}
+
+static string execToString(const string& cmd, const vector<string>& args)
+{
+    string command = cmd + " ";
+    for (vector<string>::const_iterator it = args.begin();
+         it != args.end(); it++) {
+        command += "{" + *it + "} ";
+    }
+    return command;
+}
+
+void RclMain::specialIndex()
+{
+    LOGDEB(("RclMain::specialIndex\n"));
+    switch (m_indexerState) {
+    case IXST_UNKNOWN:
+    case IXST_RUNNINGMINE:
+    case IXST_RUNNINGNOTMINE:
+	return; //?? Should not have been called
+    case IXST_NOTRUNNING:
+    default:
+        break;
+    }
+    if (m_idxproc) {
+        LOGERR(("RclMain::rebuildIndex: current indexer exec not null\n"));
+        return;
+    }
+    if (!specidx) // ??
+        return;
+
+    vector<string> args;
+    args.push_back("-c");
+    args.push_back(theconfig->getConfDir());
+
+    string top = specidx->toptarg();
+    if (!top.empty()) {
+        args.push_back("-r");
+    }
+
+    if (specidx->eraseFirst()) {
+        if (top.empty()) {
+            args.push_back("-Z");
+        } else {
+            args.push_back("-e");
+        }
+    } 
+
+    // The default for retrying differ depending if -r is set
+    if (top.empty()) {
+        if (!specidx->noRetryFailed()) {
+            args.push_back("-k");
+        }
+    } else {
+        if (specidx->noRetryFailed()) {
+            args.push_back("-K");
+        }
+    }
+        
+    vector<string> selpats = specidx->selpatterns();
+    if (!selpats.empty() && top.empty()) {
+        QMessageBox::warning(0, tr("Selection patterns need topdir"), 
+                             tr("Selection patterns can only be used with a "
+                                "start directory"),
+                                     QMessageBox::Ok,
+                                     QMessageBox::NoButton);
+        return;
+    }
+
+    for (vector<string>::const_iterator it = selpats.begin();
+         it != selpats.end(); it++) {
+        args.push_back("-p");
+        args.push_back(*it);
+    }
+    if (!top.empty()) {
+        args.push_back(top);
+    }
+    m_idxproc = new ExecCmd;
+    LOGINFO(("specialIndex: exec: %s\n", 
+            execToString("recollindex", args).c_str()));
+    m_idxproc->startExec("recollindex", args, false, false);
+}
+
 void RclMain::updateIdxForDocs(vector<Rcl::Doc>& docs)
 {
     if (m_idxproc) {
@@ -295,6 +418,6 @@ void RclMain::updateIdxForDocs(vector<Rcl::Doc>& docs)
 	fileToggleIndexingAction->setText(tr("Stop &Indexing"));
     }
     fileToggleIndexingAction->setEnabled(false);
-    fileRetryFailedAction->setEnabled(false);
+    actionSpecial_Indexing->setEnabled(false);
 }
 

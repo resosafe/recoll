@@ -40,6 +40,7 @@ class ResTable;
 class CronToolW;
 class RTIToolW;
 class FragButs;
+class SpecIdxW;
 
 #include "ui_rclmain.h"
 
@@ -69,6 +70,7 @@ public:
 	  rtiTool(0),
 	  spellform(0),
           fragbuts(0),
+          specidx(0),
 	  periodictimer(0),
 	  restable(0),
 	  displayingTable(0),
@@ -114,11 +116,13 @@ public slots:
     virtual void periodic100();
     virtual void toggleIndexing();
     virtual void rebuildIndex();
+    virtual void specialIndex();
     virtual void startSearch(RefCntr<Rcl::SearchData> sdata, bool issimple);
     virtual void previewClosed(Preview *w);
     virtual void showAdvSearchDialog();
     virtual void showSpellDialog();
     virtual void showFragButs();
+    virtual void showSpecIdx();
     virtual void showAboutDialog();
     virtual void showMissingHelpers();
     virtual void showActiveTypes();
@@ -191,6 +195,7 @@ private:
     RTIToolW       *rtiTool;
     SpellW         *spellform;
     FragButs       *fragbuts;
+    SpecIdxW       *specidx;
     QTimer         *periodictimer;
     ResTable       *restable;
     bool            displayingTable;

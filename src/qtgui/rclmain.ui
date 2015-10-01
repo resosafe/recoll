@@ -73,8 +73,8 @@
      <string>&amp;File</string>
     </property>
     <addaction name="fileToggleIndexingAction"/>
-    <addaction name="fileRetryFailedAction"/>
     <addaction name="fileRebuildIndexAction"/>
+    <addaction name="actionSpecial_Indexing"/>
     <addaction name="separator"/>
     <addaction name="actionSave_last_query"/>
     <addaction name="actionLoad_saved_query"/>
@@ -495,6 +495,14 @@
   <action name="actionLoad_saved_query">
    <property name="text">
     <string>Load saved query</string>
+   </property>
+  </action>
+  <action name="actionSpecial_Indexing">
+   <property name="text">
+    <string>Special Indexing</string>
+   </property>
+   <property name="toolTip">
+    <string>Indexing with special options</string>
    </property>
   </action>
  </widget>

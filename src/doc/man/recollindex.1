@@ -67,7 +67,17 @@ recollindex \- indexing command for the Recoll full text search system
 .B \-Z
 ]
 [
+.B \-K
+]
+[
+.B \-e
+]
+[
 .B \-f
+]
+[
+.B \-p 
+pattern
 ]
 <dirpath>
 .br
@@ -208,6 +218,14 @@ control system).
 will erase data for individual files from the database. The stem expansion
 databases will not be updated.
 .PP
+Options
+.B
+\-i
+and
+.B
+\-e
+can be combined. This will first perform the purge, then the indexing.
+.PP
 With options 
 .B \-i 
 or 
@@ -215,24 +233,30 @@ or
 , if no file names are given on the command line, they
 will be read from stdin, so that you could for example run:
 .PP
-find /path/to/dir \-print | recollindex \-e 
-.PP
-followed by 
-.PP
-find /path/to/dir \-print | recollindex \-i
+find /path/to/dir \-print | recollindex \-e \-i
 .PP
 to force the reindexing of a directory tree (which has to exist inside the
 file system area defined by
 .I topdirs 
 in recoll.conf). You could mostly accomplish the same thing with
 .PP
-.B find /path/to/dir \-print | recollindex \-f \-Z 
+find /path/to/dir \-print | recollindex \-Z \-i
+.PP
+The latter will perform a less thorough job of purging stale sub-documents
+though.
 .PP
 .B recollindex \-r
-mostly works like \-i, but the parameter is a single directory, which will
+mostly works like 
+.B \-i
+, but the parameter is a single directory, which will
 be recursively updated. This mostly does nothing more than 
 .B find topdir | recollindex \-i
-but it may be more convenient to use when started from another program.
+but it may be more convenient to use when started from another
+program. This retries failed files by default, use option
+.B \-K
+to change. One or multiple 
+.B \-p
+options can be used to set shell-type selection patterns (e.g.: *.pdf).
 .PP
 .B recollindex \-l 
 will list the names of available language stemmers.

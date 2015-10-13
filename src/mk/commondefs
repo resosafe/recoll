@@ -18,4 +18,4 @@ SYSPICFLAGS = -fPIC -DPIC
 LIBRECOLL = -L$(depth)/lib -lrecoll -Wl,-rpath=$(libdir)/recoll
 
 RANLIB = test -f
-AR=ar
+AR ?= ar

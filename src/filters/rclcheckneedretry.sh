@@ -13,7 +13,7 @@
 # Bin dirs to be tested:
 bindirs="/usr/bin /usr/local/bin $HOME/bin /opt/*/bin"
 
-rfiledir=~/.config/Recoll.org
+rfiledir=$HOME/.config/Recoll.org
 rfile=$rfiledir/needidxretrydate
 nrfile=$rfiledir/tneedidxretrydate
 

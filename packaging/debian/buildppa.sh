@@ -19,7 +19,7 @@ case $RCLVERS in
     1.14*) PPANAME=recoll-ppa;;
     *)     PPANAME=recoll15-ppa;;
 esac
-PPANAME=recollexp-ppa
+#PPANAME=recollexp-ppa
 echo "PPA: $PPANAME. Type CR if Ok, else ^C"
 read rep
 
@@ -41,7 +41,7 @@ check_recoll_orig()
 ####### QT4
 debdir=debian
 # Note: no new releases for lucid: no webkit. Or use old debianrclqt4 dir.
-#series="precise trusty utopic vivid"
+series="precise trusty utopic vivid wily"
 series=
 
 if test "X$series" != X ; then
@@ -70,8 +70,8 @@ for series in $series ; do
 done
 
 ### KIO
-series="precise trusty utopic vivid"
-series=vivid
+series="precise trusty utopic vivid wily"
+series=
 
 debdir=debiankio
 topdir=kio-recoll-${RCLVERS}
@@ -141,7 +141,7 @@ done
 
 ### Unity Scope
 series="trusty utopic vivid"
-series=
+series=wily
 
 debdir=debianunityscope
 if test ! -d ${debdir}/ ; then
@@ -155,9 +155,14 @@ if test "X$series" != X ; then
             mv unity-scope-recoll-${SCOPEVERS}.tar.gz \
                 unity-scope-recoll_${SCOPEVERS}.orig.tar.gz
         else
-            fatal "Can find neither " \
-                "unity-scope-recoll_${SCOPEVERS}.orig.tar.gz nor " \
-                "unity-scope-recoll-${SCOPEVERS}.tar.gz"
+            if test -f $RCLDOWNLOAD/unity-scope-recoll-${SCOPEVERS}.tar.gz;then
+                cp -p $RCLDOWNLOAD/unity-scope-recoll-${SCOPEVERS}.tar.gz \
+                    unity-scope-recoll_${SCOPEVERS}.orig.tar.gz || fatal copy
+            else
+                fatal "Can find neither " \
+                    "unity-scope-recoll_${SCOPEVERS}.orig.tar.gz nor " \
+                    "$RCLDOWNLOAD/unity-scope-recoll-${SCOPEVERS}.tar.gz"
+            fi
         fi
     fi
     test -d $topdir ||  tar xvzf unity-scope-recoll_${SCOPEVERS}.orig.tar.gz \

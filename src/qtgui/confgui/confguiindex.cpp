@@ -150,7 +150,7 @@ ConfBeaglePanelW::ConfBeaglePanelW(QWidget *parent, ConfNull *config)
     ConfParamIntW *cp3 =
         new ConfParamIntW(this, lnk3, tr("Max. size for the web store (MB)"),
 		      tr("Entries will be recycled once the size is reached"),
-                          -1, 1000);
+                          -1, 1000*1000); // Max 1TB...
     cp3->setEnabled(cp1->m_cb->isChecked());
     connect(cp1->m_cb, SIGNAL(toggled(bool)), cp3, SLOT(setEnabled(bool)));
     vboxLayout->addWidget(cp3);

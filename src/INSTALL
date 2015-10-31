@@ -42,7 +42,7 @@ Chapter 5. Installation and configuration
      ----------------------------------------------------------------------
 
    Prev                                                                  Next 
-   4.3. API                           Home           5.2. Supporting packages 
+   4.3. API  Home                                    5.2. Supporting packages 
    Link: home: Recoll user manual
    Link: up: Chapter 5. Installation and configuration
    Link: prev: Chapter 5. Installation and configuration
@@ -303,14 +303,14 @@ Chapter 5. Installation and configuration
 
      ----------------------------------------------------------------------
 
-   Prev                                Up                                Next 
-   5.2. Supporting packages           Home        5.4. Configuration overview 
+   Prev                       Up                                         Next 
+   5.2. Supporting packages  Home                 5.4. Configuration overview 
    Link: home: Recoll user manual
    Link: up: Chapter 5. Installation and configuration
    Link: prev: 5.3. Building from source
 
                           5.4. Configuration overview
-   Prev            Chapter 5. Installation and configuration                  
+   Prev              Chapter 5. Installation and configuration                
 
      ----------------------------------------------------------------------
 
@@ -1344,5 +1344,5 @@ Chapter 5. Installation and configuration
 
      ----------------------------------------------------------------------
 
-   Prev                                Up                                     
-   5.3. Building from source          Home                                    
+   Prev                                                                 Up    
+   5.3. Building from source                                           Home   

@@ -292,8 +292,8 @@ bool TextSplit::span_is_acronym(string *acronym)
 }
 
 
-        // Generate terms from span. Have to take into account the
-        // flags: ONLYSPANS, NOSPANS, noNumbers
+// Generate terms from span. Have to take into account the
+// flags: ONLYSPANS, NOSPANS, noNumbers
 bool TextSplit::words_from_span(int bp)
 {
 #if 0
@@ -307,6 +307,11 @@ bool TextSplit::words_from_span(int bp)
     cerr << endl;
 #endif
     unsigned int spanwords = m_words_in_span.size();
+
+    // Not supposed to happen.
+    if (spanwords == 0 || m_span.size() == 0)
+        return true;
+
     int pos = m_spanpos;
     // Byte position of the span start
     int spboffs = bp - m_span.size();
@@ -392,9 +397,18 @@ inline bool TextSplit::doemit(bool spanerase, int bp)
 	    case '_':
 	    case '\'':
 		m_span.resize(m_span.length()-1);
+                // Trim last word in span word array. Pop it if it
+                // goes to zero. This is not supposed to happen
+                // because it would probably signal a parser bug, but
+                // makes sense anyway
                 if (m_words_in_span.size() &&
-                    m_words_in_span.back().second > m_span.size())
+                    m_words_in_span.back().second > m_span.size()) {
                     m_words_in_span.back().second = m_span.size();
+                    if (m_words_in_span.back().second <=
+                        m_words_in_span.back().first) {
+                        m_words_in_span.pop_back();
+                    }
+                }
 		if (--bp < 0) 
 		    bp = 0;
 		break;
@@ -404,7 +418,7 @@ inline bool TextSplit::doemit(bool spanerase, int bp)
 	}
     breaktrimloop:
 
-        if (!words_from_span(bp)) {
+        if (m_words_in_span.size() && !words_from_span(bp)) {
             return false;
         }
 	discardspan();

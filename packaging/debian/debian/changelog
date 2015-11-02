@@ -1,3 +1,9 @@
+recoll (1.21.3-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
+                
+  * Fix webcache size being capped at 1 GB
+
+ -- Jean-Francois Dockes <jf@dockes.org>  Sat, 31 Oct 2015 09:26:00 +0200
+
 recoll (1.21.2-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
                 
   * New special indexing dialog in GUI

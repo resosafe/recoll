@@ -53,6 +53,7 @@ using namespace std;
 #include "termproc.h"
 #include "expansiondbs.h"
 #include "rclinit.h"
+#include "internfile.h"
 
 // Recoll index format version is stored in user metadata. When this change,
 // we can't open the db and will have to reindex.
@@ -2115,15 +2116,23 @@ bool Db::hasSubDocs(const Doc &idoc)
 	LOGERR(("Db::hasSubDocs: no input udi or empty\n"));
 	return false;
     }
+    LOGDEB1(("Db::hasSubDocs: idxi %d inudi [%s]\n", idoc.idxi, inudi.c_str()));
+
+    // Not sure why we perform both the subDocs() call and the test on
+    // has_children. The former will return docs if the input is a
+    // file-level document, but the latter should be true both in this
+    // case and if the input is already a subdoc, so the first test
+    // should be redundant. Does not hurt much in any case, to be
+    // checked one day.
     vector<Xapian::docid> docids;
     if (!m_ndb->subDocs(inudi, idoc.idxi, docids)) {
-	LOGDEB(("Db:getSubDocs: lower level subdocs failed\n"));
+	LOGDEB(("Db::hasSubDocs: lower level subdocs failed\n"));
 	return false;
     }
     if (!docids.empty())
 	return true;
 
-    // Check if doc has an has_children term
+    // Check if doc has an "has_children" term
     if (m_ndb->hasTerm(inudi, idoc.idxi, has_children_term))
 	return true;
     return false;
@@ -2144,6 +2153,8 @@ bool Db::getSubDocs(const Doc &idoc, vector<Doc>& subdocs)
 
     string rootudi;
     string ipath = idoc.ipath;
+    LOGDEB0(("Db::getSubDocs: idxi %d inudi [%s] ipath [%s]\n",
+             idoc.idxi, inudi.c_str(), ipath.c_str()));
     if (ipath.empty()) {
 	// File-level doc. Use it as root
 	rootudi = inudi;
@@ -2174,7 +2185,7 @@ bool Db::getSubDocs(const Doc &idoc, vector<Doc>& subdocs)
     // Retrieve all subdoc xapian ids for the root
     vector<Xapian::docid> docids;
     if (!m_ndb->subDocs(rootudi, idoc.idxi, docids)) {
-	LOGDEB(("Db:getSubDocs: lower level subdocs failed\n"));
+	LOGDEB(("Db::getSubDocs: lower level subdocs failed\n"));
 	return false;
     }
 
@@ -2195,8 +2206,10 @@ bool Db::getSubDocs(const Doc &idoc, vector<Doc>& subdocs)
 		    LOGERR(("Db::getSubDocs: doc conversion error\n"));
 		    return false;
 		}
-		if (ipath.empty() || doc.ipath.find(ipath) == 0)
-		    subdocs.push_back(doc);
+                if (ipath.empty() ||
+                    FileInterner::ipathContains(ipath, doc.ipath)) {
+                    subdocs.push_back(doc);
+                }
 	    }
 	    return true;
 	} catch (const Xapian::DatabaseModifiedError &e) {

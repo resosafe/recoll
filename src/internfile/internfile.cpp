@@ -102,6 +102,12 @@ string FileInterner::getLastIpathElt(const string& ipath)
     }
 }
 
+bool FileInterner::ipathContains(const string& parent, const string& child)
+{
+    return child.find(parent) == 0 &&
+        child.find(cstr_isep, parent.size()) == parent.size();
+}
+
 // Constructor: identify the input file, possibly create an
 // uncompressed temporary copy, and create the top filter for the
 // uncompressed file type.

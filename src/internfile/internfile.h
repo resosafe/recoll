@@ -206,6 +206,9 @@ class FileInterner {
     /** Return last element in ipath, like basename */
     static std::string getLastIpathElt(const std::string& ipath);
 
+    /** Check that 2nd param is child of first */
+    static bool ipathContains(const std::string& parent,
+                              const std::string& child);
     /** 
      * Build sig for doc coming from rcldb. This is here because we know how
      * to query the right backend. Used to check up-to-dateness at query time */

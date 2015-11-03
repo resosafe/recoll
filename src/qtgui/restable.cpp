@@ -790,10 +790,15 @@ void ResTable::linkWasClicked(const QUrl &url)
     case 'P': 
     case 'E': 
     {
-	if (what == 'P')
-	    emit docPreviewClicked(i, m_detaildoc, 0);
-	else
+	if (what == 'P') {
+            if (m_ismainres) {
+                emit docPreviewClicked(i, m_detaildoc, 0);
+            }  else {
+                emit previewRequested(m_detaildoc);
+            }
+        } else {
 	    emit editRequested(m_detaildoc);
+        }
     }
     break;
 

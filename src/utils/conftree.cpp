@@ -44,19 +44,19 @@ using namespace std;
 #define LOGDEB(X)
 #endif
 
-#define LL 1024
 void ConfSimple::parseinput(istream &input)
 {
     string submapkey;
-    char cline[LL];
+    string cline;
     bool appending = false;
     string line;
     bool eof = false;
 
     for (;;) {
-        cline[0] = 0;
-	input.getline(cline, LL-1);
-	LOGDEB((stderr, "Parse:line: [%s] status %d\n", cline, int(status)));
+        cline.clear();
+        std::getline(input, cline);
+	LOGDEB((stderr, "Parse:line: [%s] status %d\n",
+                cline.c_str(), int(status)));
 	if (!input.good()) {
 	    if (input.bad()) {
                 LOGDEB((stderr, "Parse: input.bad()\n"));
@@ -71,10 +71,11 @@ void ConfSimple::parseinput(istream &input)
 	}
 
         {
-            int ll = strlen(cline);
-            while (ll > 0 && (cline[ll-1] == '\n' || cline[ll-1] == '\r')) {
-                cline[ll-1] = 0;
-                ll--;
+            string::size_type pos = cline.find_last_not_of("\n\r");
+            if (pos == string::npos) {
+                cline.clear();
+            } else if (pos != cline.length()-1) {
+                cline.erase(pos+1);
             }
         }
 

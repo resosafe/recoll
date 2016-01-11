@@ -113,13 +113,7 @@ void RclConfig::zeroMe() {
     m_ptrans = 0;
     m_stopsuffixes = 0;
     m_maxsufflen = 0;
-
-    m_oldstpsuffstate.init(0);
-    m_stpsuffstate.init(0);
-    m_skpnstate.init(0);
-    m_rmtstate.init(0);
-    m_xmtstate.init(0);
-    m_mdrstate.init(0);
+    initParamStale(0, 0);
 }
 
 bool RclConfig::isDefaultConfig() const
@@ -284,12 +278,7 @@ RclConfig::RclConfig(const string *argcnf)
     m_ok = true;
     setKeyDir(cstr_null);
 
-    m_oldstpsuffstate.init(mimemap);
-    m_stpsuffstate.init(m_conf);
-    m_skpnstate.init(m_conf);
-    m_rmtstate.init(m_conf);
-    m_xmtstate.init(m_conf);
-    m_mdrstate.init(m_conf);
+    initParamStale(m_conf, mimemap);
 
     return;
 }
@@ -305,20 +294,14 @@ bool RclConfig::updateMainConfig()
 	stringsToString(m_cdirs, where);
 	m_reason = string("No/bad main configuration file in: ") + where;
 	m_ok = false;
-        m_skpnstate.init(0);
-        m_rmtstate.init(0);
-        m_xmtstate.init(0);
-        m_mdrstate.init(0);
+        initParamStale(0, 0);
 	return false;
     }
 
     delete m_conf;
     m_conf = newconf;
 
-    m_skpnstate.init(m_conf);
-    m_rmtstate.init(m_conf);
-    m_xmtstate.init(m_conf);
-    m_mdrstate.init(m_conf);
+    initParamStale(m_conf, mimemap);
 
     setKeyDir(cstr_null);
     bool nocjk = false;
@@ -1476,14 +1459,19 @@ void RclConfig::initFrom(const RclConfig& r)
     m_maxsufflen = r.m_maxsufflen;
     m_defcharset = r.m_defcharset;
 
-    m_oldstpsuffstate.init(mimemap);
-    m_stpsuffstate.init(m_conf);
-    m_skpnstate.init(m_conf);
-    m_rmtstate.init(m_conf);
-    m_xmtstate.init(m_conf);
-    m_mdrstate.init(m_conf);
+    initParamStale(m_conf, mimemap);
 
     m_thrConf = r.m_thrConf;
+}
+
+void RclConfig::initParamStale(ConfNull *cnf, ConfNull *mimemap)
+{
+    m_oldstpsuffstate.init(mimemap);
+    m_stpsuffstate.init(cnf);
+    m_skpnstate.init(cnf);
+    m_rmtstate.init(cnf);
+    m_xmtstate.init(cnf);
+    m_mdrstate.init(cnf);
 }
 
 #else // -> Test

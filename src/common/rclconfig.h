@@ -379,6 +379,8 @@ class RclConfig {
 
     /** Create initial user configuration */
     bool initUserConfig();
+    /** Init all ParamStale members */
+    void initParamStale(ConfNull *cnf, ConfNull *mimemap);
     /** Copy from other */
     void initFrom(const RclConfig& r);
     /** Init pointers to 0 */

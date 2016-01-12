@@ -244,6 +244,8 @@ void RclMain::showUIPrefs()
     } else {
 	// Close and reopen, in hope that makes us visible...
 	uiprefs->close();
+        rwSettings(false);
+        uiprefs->setFromPrefs();
     }
     uiprefs->show();
 }

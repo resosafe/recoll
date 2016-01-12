@@ -268,6 +268,8 @@ void rwSettings(bool writing)
 	       Bool, false);
     SETTING_RW(prefs.showTrayIcon, "/Recoll/prefs/showTrayIcon", Bool, false);
     SETTING_RW(prefs.closeToTray, "/Recoll/prefs/closeToTray", Bool, false);
+    SETTING_RW(prefs.showTempFileWarning, "Recoll/prefs/showTempFileWarning",
+               Int, -1);
 
     if (g_dynconf == 0) {
         // Happens

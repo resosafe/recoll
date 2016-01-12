@@ -233,7 +233,7 @@ private:
     virtual void setupResTB(bool combo);
     virtual void previewPrevOrNextInTab(Preview *, int sid, int docnum, 
 					bool next);
-    virtual void execViewer(const map<string, string>& subs, bool istempfile,
+    virtual void execViewer(const map<string, string>& subs, bool enterHistory,
                             const string& execpath, const vector<string>& lcmd,
                             const string& cmd, Rcl::Doc doc);
     virtual void setStemLang(const QString& lang);

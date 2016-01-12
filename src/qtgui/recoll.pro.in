@@ -18,7 +18,6 @@ HEADERS += \
         confgui/confgui.h \
         confgui/confguiindex.h \
         crontool.h \
-        editdialog.h \
         firstidx.h \
         fragbuts.h \
         idxsched.h \
@@ -38,6 +37,9 @@ HEADERS += \
         systray.h \
         uiprefs_w.h \
         viewaction_w.h \
+        widgets/editdialog.h \
+        widgets/listdialog.h \
+        widgets/qxtconfirmationmessage.h
 
 SOURCES += \
         advsearch_w.cpp \
@@ -52,15 +54,15 @@ SOURCES += \
         preview_w.cpp \
         ptrans_w.cpp \
         rclhelp.cpp \
-        rclmain_w.cpp \
         rclm_idx.cpp \
         rclm_preview.cpp \
         rclm_saveload.cpp \
         rclm_view.cpp \
         rclm_wins.cpp \
+        rclmain_w.cpp \
         rclzg.cpp \
-        respopup.cpp \
         reslist.cpp \
+        respopup.cpp \
         restable.cpp \
         rtitool.cpp \
         searchclause_w.cpp \
@@ -70,15 +72,16 @@ SOURCES += \
         systray.cpp \
         uiprefs_w.cpp \
         viewaction_w.cpp \
+        widgets/qxtconfirmationmessage.cpp \
         xmltosd.cpp
 
 FORMS   = \
         advsearch.ui \
         crontool.ui \
-        editdialog.ui \
+        widgets/editdialog.ui \
         firstidx.ui \
         idxsched.ui \
-        listdialog.ui \
+        widgets/listdialog.ui \
         ptrans.ui \
         rclmain.ui \
         restable.ui \
@@ -110,7 +113,7 @@ unix {
 
   INCLUDEPATH += ../common ../index ../internfile ../query ../unac \
               ../utils ../aspell ../rcldb ../qtgui \
-              confgui
+              confgui widgets
   DEPENDPATH += $$INCLUDEPATH
   POST_TARGETDEPS = ../lib/librecoll.a
 }

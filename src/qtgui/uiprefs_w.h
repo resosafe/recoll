@@ -44,6 +44,7 @@ public:
     QString snipCssFile;
 
     virtual void init();
+    void setFromPrefs();
 
 public slots:
     virtual void showFontDialog();
@@ -65,7 +66,7 @@ public slots:
     virtual void editHeaderText();
     virtual void extradDbSelectChanged();
     virtual void extraDbEditPtrans();
-
+    
 signals:
     void uiprefsDone();
 
@@ -77,7 +78,6 @@ private:
     // Locally stored data (pending ok/cancel)
     QString paraFormat;
     QString headerText;
-    void setFromPrefs();
     ViewAction *m_viewAction;
     RclMain *m_mainWindow;
 };

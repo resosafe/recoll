@@ -308,8 +308,6 @@ qtgui/confgui/trconf.pro
 qtgui/crontool.cpp
 qtgui/crontool.h
 qtgui/crontool.ui
-qtgui/editdialog.h
-qtgui/editdialog.ui
 qtgui/firstidx.h
 qtgui/firstidx.ui
 qtgui/fragbuts.cpp
@@ -365,8 +363,6 @@ qtgui/images/sortparms.png
 qtgui/images/spell.png
 qtgui/images/table.png
 qtgui/images/up.png
-qtgui/listdialog.h
-qtgui/listdialog.ui
 qtgui/main.cpp
 qtgui/mtpics/
 qtgui/mtpics/License_sidux.txt
@@ -452,6 +448,14 @@ qtgui/uiprefs_w.h
 qtgui/viewaction.ui
 qtgui/viewaction_w.cpp
 qtgui/viewaction_w.h
+qtgui/widgets/
+qtgui/widgets/editdialog.h
+qtgui/widgets/editdialog.ui
+qtgui/widgets/listdialog.h
+qtgui/widgets/listdialog.ui
+qtgui/widgets/qxtconfirmationmessage.cpp
+qtgui/widgets/qxtconfirmationmessage.h
+qtgui/widgets/qxtglobal.h
 qtgui/xmltosd.cpp
 qtgui/xmltosd.h
 query/

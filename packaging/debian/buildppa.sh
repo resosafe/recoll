@@ -41,7 +41,7 @@ check_recoll_orig()
 ####### QT4
 debdir=debian
 # Note: no new releases for lucid: no webkit. Or use old debianrclqt4 dir.
-series="precise trusty utopic vivid wily"
+series="precise trusty vivid wily xenial"
 #series=
 
 if test "X$series" != X ; then

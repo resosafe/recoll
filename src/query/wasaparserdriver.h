@@ -19,6 +19,9 @@
 
 #include <string>
 #include <stack>
+#include <vector>
+
+#include "smallut.h"
 
 class WasaParserDriver;
 namespace Rcl {
@@ -35,10 +38,9 @@ class WasaParserDriver {
 public:
     
     WasaParserDriver(const RclConfig *c, const std::string sl, 
-                     const std::string& as)
-        : m_stemlang(sl), m_autosuffs(as), m_config(c),
-          m_index(0), m_result(0) {}
-
+                     const std::string& as);
+    ~WasaParserDriver();
+    
     Rcl::SearchData *parse(const std::string&);
     bool addClause(Rcl::SearchData *sd, Rcl::SearchDataClauseSimple* cl);
 
@@ -62,10 +64,22 @@ private:
     std::string m_autosuffs;
     const RclConfig  *m_config;
 
+    // input string.
     std::string m_input;
+    // Current position in m_input
     unsigned int m_index;
+    // Characters pushed-back, ready for next getchar.
     std::stack<int> m_returns;
+    // Result, set by parser.
     Rcl::SearchData *m_result;
+
+    // Storage for top level filters
+    std::vector<std::string>  m_filetypes; 
+    std::vector<std::string>  m_nfiletypes;
+    bool                      m_haveDates;
+    DateInterval              m_dates; // Restrict to date interval
+    size_t                    m_maxSize;
+    size_t                    m_minSize;
 
     std::string m_reason;
 

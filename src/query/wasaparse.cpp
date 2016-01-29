@@ -50,6 +50,19 @@ SearchData *wasaStringToRcl(const RclConfig *config,
     return sd;
 }
 
+WasaParserDriver::WasaParserDriver(const RclConfig *c, const std::string sl, 
+                                   const std::string& as)
+    : m_stemlang(sl), m_autosuffs(as), m_config(c),
+      m_index(0), m_result(0), m_haveDates(false), 
+      m_maxSize((size_t)-1), m_minSize((size_t)-1)
+{
+
+}
+
+WasaParserDriver::~WasaParserDriver()
+{
+}
+
 SearchData *WasaParserDriver::parse(const std::string& in)
 {
     m_input = in;
@@ -66,6 +79,28 @@ SearchData *WasaParserDriver::parse(const std::string& in)
         m_result = 0;
     }
 
+    if (m_result == 0)
+        return m_result;
+
+    // Set the top level filters (types, dates, size)
+    for (vector<string>::const_iterator it = m_filetypes.begin();
+         it != m_filetypes.end(); it++) {
+        m_result->addFiletype(*it);
+    }
+    for (vector<string>::const_iterator it = m_nfiletypes.begin();
+         it != m_nfiletypes.end(); it++) {
+        m_result->remFiletype(*it);
+    }
+    if (m_haveDates) {
+        m_result->setDateSpan(&m_dates);
+    }
+    if (m_minSize != (size_t)-1) {
+        m_result->setMinSize(m_minSize);
+    }
+    if (m_maxSize != (size_t)-1) {
+        m_result->setMaxSize(m_maxSize);
+    }
+    //if (m_result)  m_result->dump(cout);
     return m_result;
 }
 
@@ -113,12 +148,12 @@ bool WasaParserDriver::addClause(SearchData *sd,
     // MIME types and categories
     if (!stringicmp("mime", fld) ||!stringicmp("format", fld)) {
         if (cl->getexclude()) {
-            sd->remFiletype(cl->gettext());
+            m_nfiletypes.push_back(cl->gettext());
         } else {
-            sd->addFiletype(cl->gettext());
+            m_filetypes.push_back(cl->gettext());
         }
         delete cl;
-        return true;
+        return false;
     } 
 
     if (!stringicmp("rclcat", fld) || !stringicmp("type", fld)) {
@@ -127,14 +162,14 @@ bool WasaParserDriver::addClause(SearchData *sd,
             for (vector<string>::iterator mit = mtypes.begin();
                  mit != mtypes.end(); mit++) {
                 if (cl->getexclude()) {
-                    sd->remFiletype(*mit);
+                    m_nfiletypes.push_back(*mit);
                 } else {
-                    sd->addFiletype(*mit);
+                    m_filetypes.push_back(*mit);
                 }
             }
         }
         delete cl;
-        return true;
+        return false;
     }
 
     // Handle "date" spec
@@ -149,9 +184,10 @@ bool WasaParserDriver::addClause(SearchData *sd,
         }
         LOGDEB(("addClause:: date span:  %d-%d-%d/%d-%d-%d\n",
                 di.y1,di.m1,di.d1, di.y2,di.m2,di.d2));
-        sd->setDateSpan(&di);
+        m_haveDates = true;
+        m_dates = di;
         delete cl;
-        return true;
+        return false;
     } 
 
     // Handle "size" spec
@@ -177,22 +213,21 @@ bool WasaParserDriver::addClause(SearchData *sd,
 
         switch (rel) {
         case SearchDataClause::REL_EQUALS:
-            sd->setMaxSize(size);
-            sd->setMinSize(size);
+            m_maxSize = m_minSize = size;
             break;
         case SearchDataClause::REL_LT:
         case SearchDataClause::REL_LTE:
-            sd->setMaxSize(size);
+            m_maxSize = size;
             break;
         case SearchDataClause::REL_GT: 
         case SearchDataClause::REL_GTE:
-            sd->setMinSize(size);
+            m_minSize = size;
             break;
         default:
             m_reason = "Bad relation operator with size query. Use > < or =";
             return false;
         }
-        return true;
+        return false;
     }
 
     if (!stringicmp("dir", fld)) {

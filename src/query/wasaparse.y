@@ -27,7 +27,9 @@ static void qualify(Rcl::SearchDataClauseDist *, const string &);
 static void addSubQuery(WasaParserDriver *d,
                         Rcl::SearchData *sd, Rcl::SearchData *sq)
 {
-    sd->addClause(new Rcl::SearchDataClauseSub(RefCntr<Rcl::SearchData>(sq)));
+    if (sd && sq)
+        sd->addClause(
+            new Rcl::SearchDataClauseSub(STD_SHARED_PTR<Rcl::SearchData>(sq)));
 }
 
 %}
@@ -53,8 +55,8 @@ static void addSubQuery(WasaParserDriver *d,
 %type <sd> query
 %type <str> complexfieldname
 
-                          /* Non operator tokens need precedence because of the possibility of
-                             concatenation which needs to have lower prec than OR */
+/* Non operator tokens need precedence because of the possibility of
+   concatenation which needs to have lower prec than OR */
 %left <str> WORD
 %left <str> QUOTED
 %left <str> QUALIFIERS
@@ -67,35 +69,48 @@ static void addSubQuery(WasaParserDriver *d,
 
 topquery: query
 {
-    LOGP("PARSING\n");
-    d->m_result = $1;
+    // It's possible that we end up with no query (e.g.: because just a
+    // date filter was set, no terms). Allocate an empty query so that we
+    // have something to set the global criteria on (this will yield a
+    // Xapian search like <alldocuments> FILTER xxx
+    if ($1 == 0)
+        d->m_result = new Rcl::SearchData(Rcl::SCLT_AND, d->m_stemlang);
+    else
+        d->m_result = $1;
 }
 
 query: 
 query query %prec UCONCAT
 {
     LOGP("q: query query\n");
-    Rcl::SearchData *sd = new Rcl::SearchData(Rcl::SCLT_AND, d->m_stemlang);
-    addSubQuery(d, sd, $1);
-    addSubQuery(d, sd, $2);
+    Rcl::SearchData *sd = 0;
+    if ($1 || $2) {
+        sd = new Rcl::SearchData(Rcl::SCLT_AND, d->m_stemlang);
+        addSubQuery(d, sd, $1);
+        addSubQuery(d, sd, $2);
+    }
     $$ = sd;
 }
 | query AND query
 {
-    LOGP("q: query AND query\n");
-    Rcl::SearchData *sd = new Rcl::SearchData(Rcl::SCLT_AND, d->m_stemlang);
-    addSubQuery(d, sd, $1);
-    addSubQuery(d, sd, $3);
+     LOGP("q: query AND query\n");
+    Rcl::SearchData *sd = 0;
+    if ($1 || $3) {
+        sd = new Rcl::SearchData(Rcl::SCLT_AND, d->m_stemlang);
+        addSubQuery(d, sd, $1);
+        addSubQuery(d, sd, $3);
+    }
     $$ = sd;
 }
 | query OR query
 {
-    LOGP("q: query OR query\n");
-    Rcl::SearchData *top = new Rcl::SearchData(Rcl::SCLT_AND, d->m_stemlang);
-    Rcl::SearchData *sd = new Rcl::SearchData(Rcl::SCLT_OR, d->m_stemlang);
-    addSubQuery(d, sd, $1);
-    addSubQuery(d, sd, $3);
-    addSubQuery(d, top, sd);
+    LOGP("query: query OR query\n");
+    Rcl::SearchData *top = 0;
+    if ($1 || $3) {
+       top = new Rcl::SearchData(Rcl::SCLT_OR, d->m_stemlang);
+       addSubQuery(d, top, $1);
+       addSubQuery(d, top, $3);
+    }
     $$ = top;
 }
 | '(' query ')' 
@@ -108,8 +123,12 @@ fieldexpr %prec UCONCAT
 {
     LOGP("q: fieldexpr\n");
     Rcl::SearchData *sd = new Rcl::SearchData(Rcl::SCLT_AND, d->m_stemlang);
-    d->addClause(sd, $1);
-    $$ = sd;
+    if (d->addClause(sd, $1)) {
+        $$ = sd;
+    } else {
+        delete sd;
+        $$ = 0;
+    }
 }
 ;
 

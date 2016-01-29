@@ -291,6 +291,20 @@ void SearchData::getTerms(HighlightData &hld) const
     return;
 }
 
+static const char * tpToString(SClType t)
+{
+    switch (t) {
+    case SCLT_AND: return "AND";
+    case SCLT_OR: return "OR";
+    case SCLT_FILENAME: return "FILENAME";
+    case SCLT_PHRASE: return "PHRASE";
+    case SCLT_NEAR: return "NEAR";
+    case SCLT_PATH: return "PATH";
+    case SCLT_SUB: return "SUB";
+    default: return "UNKNOWN";
+    }
+}
+
 static string dumptabs;
 
 void SearchData::dump(ostream& o) const
@@ -360,7 +374,7 @@ void SearchDataClauseSub::dump(ostream& o) const
 {
     o << "ClauseSub {\n";
     dumptabs += '\t';
-    m_sub->dump(o);
+    m_sub.getconstptr()->dump(o);
     dumptabs.erase(dumptabs.size()- 1);
     o << dumptabs << "}";
 }

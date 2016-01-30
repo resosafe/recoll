@@ -37,7 +37,7 @@
     </message>
     <message>
         <source>message</source>
-        <translation>meddelelse</translation>
+        <translation>besked</translation>
     </message>
     <message>
         <source>texts</source>
@@ -249,7 +249,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>It seems that manually edited entries exist for recollindex, cannot edit crontab</source>
-        <translation>Det ser ud til, at manuelt redigerede indgange findes for recollindex, kan ikke redigere crontab</translation>
+        <translation>Det ser ud til, at manuelt redigerede indgange findes for recollindeks, kan ikke redigere crontab</translation>
     </message>
     <message>
         <source>Error installing cron entry. Bad syntax in fields ?</source>
@@ -317,7 +317,7 @@ p, li { white-space: pre-wrap; }
     <name>FirstIdxDialog</name>
     <message>
         <source>First indexing setup</source>
-        <translation>Første opsætning indeksering</translation>
+        <translation>Opsætning af første indeksering</translation>
     </message>
     <message>
         <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
@@ -385,7 +385,7 @@ p, li { white-space: pre-wrap; }
     <name>IdxSchedW</name>
     <message>
         <source>Index scheduling setup</source>
-        <translation>Opsætning af tidsplanlægning for index</translation>
+        <translation>Opsætning af indeks skedulering</translation>
     </message>
     <message>
         <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
@@ -407,7 +407,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>Cron scheduling</source>
-        <translation>Tidsplanlægning med cron</translation>
+        <translation>Cron skedulering</translation>
     </message>
     <message>
         <source>The tool will let you decide at what time indexing should run and will install a crontab entry.</source>
@@ -687,6 +687,13 @@ p, li { white-space: pre-wrap; }
     </message>
 </context>
 <context>
+    <name>QxtConfirmationMessage</name>
+    <message>
+        <source>Do not show again.</source>
+        <translation>Vis ikke igen.</translation>
+    </message>
+</context>
+<context>
     <name>RTIToolW</name>
     <message>
         <source>Real time indexing automatic start</source>
@@ -843,7 +850,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>message</source>
-        <translation>meddelelse</translation>
+        <translation>besked</translation>
     </message>
     <message>
         <source>other</source>
@@ -941,7 +948,7 @@ Do you want to start the  preferences dialog ?</source>
     </message>
     <message>
         <source>Reset the index and start from scratch ?</source>
-        <translation>Nulstil indekset og starte fra bunden?</translation>
+        <translation>Nulstil indekset og start forfra?</translation>
     </message>
     <message>
         <source>Query in progress.&lt;br&gt;Due to limitations of the indexing library,&lt;br&gt;cancelling will exit the program</source>
@@ -1015,11 +1022,11 @@ Kontroller venligst mimeview-filen</translation>
     </message>
     <message>
         <source>The document belongs to an external indexwhich I can&apos;t update. </source>
-        <translation>Dokumentet tilhører et ekstern indeks, som jeg ikke kan opdatere. </translation>
+        <translation type="obsolete">Dokumentet tilhører et ekstern indeks, som jeg ikke kan opdatere. </translation>
     </message>
     <message>
         <source>Click Cancel to return to the list. Click Ignore to show the preview anyway. </source>
-        <translation>Klik på Annuller for at vende tilbage til listen. Klik på Ignorer for at vise forhåndsvisningen alligevel.</translation>
+        <translation type="obsolete">Klik på Annuller for at vende tilbage til listen. Klik på Ignorer for at vise forhåndsvisningen alligevel.</translation>
     </message>
     <message>
         <source>Duplicate documents</source>
@@ -1046,6 +1053,91 @@ Tjek venligst desktopfilen</translation>
     <message>
         <source>This configuration tool only works for the main index.</source>
         <translation>Dette konfigurationsværktøj virker kun for hovedindekset.</translation>
+    </message>
+    <message>
+        <source>The current indexing process was not started from this interface, can&apos;t kill it</source>
+        <translation>Den nuværende indekseringsproces blev ikke startet fra denne grænseflade, kan ikke stoppe den</translation>
+    </message>
+    <message>
+        <source>Bad paths</source>
+        <translation>Ugyldige stier</translation>
+    </message>
+    <message>
+        <source>Bad paths in configuration file:
+</source>
+        <translation>Ugyldige stier i konfigurationsfil:</translation>
+    </message>
+    <message>
+        <source>Selection patterns need topdir</source>
+        <translation>Mønstre for udvælgelse skal have en øverste mappe</translation>
+    </message>
+    <message>
+        <source>Selection patterns can only be used with a start directory</source>
+        <translation>Mønstre for udvælgelse kan kun bruges med en startmappe</translation>
+    </message>
+    <message>
+        <source>No search</source>
+        <translation>Ingen søgning</translation>
+    </message>
+    <message>
+        <source>No preserved previous search</source>
+        <translation>Ingen tidligere søgning er bevaret</translation>
+    </message>
+    <message>
+        <source>Choose file to save</source>
+        <translation>Vælg fil, der skal gemmes</translation>
+    </message>
+    <message>
+        <source>Saved Queries (*.rclq)</source>
+        <translation>Gemte forespørgsler (*.rclq)</translation>
+    </message>
+    <message>
+        <source>Write failed</source>
+        <translation>Skrivning mislykkedes</translation>
+    </message>
+    <message>
+        <source>Could not write to file</source>
+        <translation>Kunne ikke skrive til fil</translation>
+    </message>
+    <message>
+        <source>Read failed</source>
+        <translation>Læsning mislykkedes</translation>
+    </message>
+    <message>
+        <source>Could not open file: </source>
+        <translation>Kunne ikke åbne fil: </translation>
+    </message>
+    <message>
+        <source>Load error</source>
+        <translation>Indlæsningsfejl</translation>
+    </message>
+    <message>
+        <source>Could not load saved query</source>
+        <translation>Kunne ikke indlæse gemte forespørgsel</translation>
+    </message>
+    <message>
+        <source>Index scheduling</source>
+        <translation>Indeks skedulering</translation>
+    </message>
+    <message>
+        <source>Sorry, not available under Windows for now, use the File menu entries to update the index</source>
+        <translation>Beklager, er endnu ikke tilgængelig for Windows, bruge Fil menuindgange for at opdatere indekset</translation>
+    </message>
+    <message>
+        <source>Can&apos;t set synonyms file (parse error?)</source>
+        <translation>Kan ikke aktivere synonymer-fil (analysefejl?)</translation>
+    </message>
+    <message>
+        <source>The document belongs to an external index which I can&apos;t update. </source>
+        <translation>Dokumentet tilhører et eksternt indeks, som jeg ikke kan opdatere.</translation>
+    </message>
+    <message>
+        <source>Click Cancel to return to the list. &lt;br&gt;Click Ignore to show the preview anyway (and remember for this session).</source>
+        <translation>Klik på Annuller for at vende tilbage til listen. &lt;br&gt;Klik på Ignorer for at vise forhåndsvisningen alligevel. (og husk for denne session).</translation>
+    </message>
+    <message>
+        <source>Opening a temporary copy. Edits will be lost if you don&apos;t save&lt;br/&gt;them to a permanent location.</source>
+        <translation>Åbner en midlertidig kopi. Ændringer vil gå tabt, hvis du ikke gemmer&lt;br/&gt;dem til en permanent sted.</translation>
     </message>
 </context>
 <context>
@@ -1208,7 +1300,7 @@ Tjek venligst desktopfilen</translation>
     </message>
     <message>
         <source>&amp;Indexing schedule</source>
-        <translation>&amp;Tidsplan for Indeksering</translation>
+        <translation type="obsolete">&amp;Tidsplan for Indeksering</translation>
     </message>
     <message>
         <source>E&amp;xternal index dialog</source>
@@ -1273,6 +1365,30 @@ Tjek venligst desktopfilen</translation>
     <message>
         <source>Next update will retry previously failed files</source>
         <translation>Næste opdatering vil igen forsøge med filer, der tidligere mislykkedes</translation>
+    </message>
+    <message>
+        <source>Indexing &amp;schedule</source>
+        <translation>Tid&amp;splan for Indeksering</translation>
+    </message>
+    <message>
+        <source>Enable synonyms</source>
+        <translation>Aktiver synonymer</translation>
+    </message>
+    <message>
+        <source>Save last query</source>
+        <translation>Gem sidste forespørgsel</translation>
+    </message>
+    <message>
+        <source>Load saved query</source>
+        <translation>Indlæs gemte forespørgsel</translation>
+    </message>
+    <message>
+        <source>Special Indexing</source>
+        <translation>Særlig indeksering</translation>
+    </message>
+    <message>
+        <source>Indexing with special options</source>
+        <translation>Indeksering med særlige indstillinger </translation>
     </message>
 </context>
 <context>
@@ -1598,6 +1714,30 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
 &lt;i&gt;&quot;ord1 ord2&quot;p &lt;/i&gt; : uordnet nærheds-søgning med standard afstand.&lt;br&gt;
 Brug &lt;b&gt;Vis Forespørgsel&lt;/b&gt; link når i tvivl om resultatet og se manual (&amp;lt;F1&gt;) for flere detaljer.</translation>
     </message>
+    <message>
+        <source>Stemming languages for stored query: </source>
+        <translation>Ordstammer til sprogene for gemte forespørgsel:</translation>
+    </message>
+    <message>
+        <source> differ from current preferences (kept)</source>
+        <translation> adskiller sig fra de nuværende præferencer (beholdt)</translation>
+    </message>
+    <message>
+        <source>Auto suffixes for stored query: </source>
+        <translation>Automatiske suffikser for gemte forespørgsel:</translation>
+    </message>
+    <message>
+        <source>External indexes for stored query: </source>
+        <translation>Eksterne Indekser for gemte forespørgsel:</translation>
+    </message>
+    <message>
+        <source>Autophrase is set but it was unset for stored query</source>
+        <translation>Autofrase er aktiveret, men var deaktiveret for gemte forespørgsel</translation>
+    </message>
+    <message>
+        <source>Autophrase is unset but it was set for stored query</source>
+        <translation>Autofrase er deaktiveret, men var aktiveret for gemte forespørgsel</translation>
+    </message>
 </context>
 <context>
     <name>SSearchBase</name>
@@ -1701,6 +1841,49 @@ Brug &lt;b&gt;Vis Forespørgsel&lt;/b&gt; link når i tvivl om resultatet og se 
     <message>
         <source>&lt;p&gt;Sorry, no exact match was found within limits. Probably the document is very big and the snippets generator got lost in a maze...&lt;/p&gt;</source>
         <translation>&lt;p&gt;Desværre blev der ikke, inden for rimelige grænser, fundet en nøjagtig match. Sandsynligvis fordi dokumentet er meget stort, så tekststump-generatoren for vild i mængden...&lt;/ p&gt;</translation>
+    </message>
+</context>
+<context>
+    <name>SpecIdxW</name>
+    <message>
+        <source>Special Indexing</source>
+        <translation>Særlig indeksering</translation>
+    </message>
+    <message>
+        <source>Do not retry previously failed files.</source>
+        <translation>Forsøg ikke igen med filer, der tidligere mislykkedes.</translation>
+    </message>
+    <message>
+        <source>Else only modified or failed files will be processed.</source>
+        <translation>Ellers vil kun ændrede eller mislykkede filer blive behandlet.</translation>
+    </message>
+    <message>
+        <source>Erase selected files data before indexing.</source>
+        <translation>Slet udvalgte filers data, før indeksering.</translation>
+    </message>
+    <message>
+        <source>Directory to recursively index. This must be inside the regular indexed area&lt;br&gt; as defined in the configuration file (topdirs).</source>
+        <translation>Mappe for rekursiv indeksering. Dette skal være indenfor det regulære indekserede område&lt;br&gt; som defineret i konfigurationsfilen (øverste mapper).</translation>
+    </message>
+    <message>
+        <source>Browse</source>
+        <translation>Gennemse</translation>
+    </message>
+    <message>
+        <source>Start directory (else use regular topdirs):</source>
+        <translation>Startmappe (ellers brug de regulære øverste mapper):</translation>
+    </message>
+    <message>
+        <source>Leave empty to select all files. You can use multiple space-separated shell-type patterns.&lt;br&gt;Patterns with embedded spaces should be quoted with double quotes.&lt;br&gt;Can only be used if the start target is set.</source>
+        <translation>Lad stå tomt for at vælge alle filer. Du kan bruge adskillige mellemrums-adskilte shell-type mønstre.&lt;br&gt;Mønstre med indlejrede mellemrum skal citeres med dobbelte anførselstegn.&lt;br&gt;Kan kun bruges, hvis startmålet er angivet.</translation>
+    </message>
+    <message>
+        <source>Selection patterns:</source>
+        <translation>Mønstre for udvælgelse:</translation>
+    </message>
+    <message>
+        <source>Top indexed entity</source>
+        <translation>Top indekserede enhed</translation>
     </message>
 </context>
 <context>
@@ -1887,6 +2070,26 @@ Brug &lt;b&gt;Vis Forespørgsel&lt;/b&gt; link når i tvivl om resultatet og se 
         <source>Default QtWebkit font</source>
         <translation>Standard skrifttype for QtWebkit</translation>
     </message>
+    <message>
+        <source>Any term</source>
+        <translation>Vilkårlig ord</translation>
+    </message>
+    <message>
+        <source>All terms</source>
+        <translation>Alle ord</translation>
+    </message>
+    <message>
+        <source>File name</source>
+        <translation>Filnavn</translation>
+    </message>
+    <message>
+        <source>Query language</source>
+        <translation>Forespørgselssprog</translation>
+    </message>
+    <message>
+        <source>Value from previous program exit</source>
+        <translation>Værdi fra tidligere programafslutning</translation>
+    </message>
 </context>
 <context>
     <name>ViewAction</name>
@@ -1962,7 +2165,7 @@ Brug &lt;b&gt;Vis Forespørgsel&lt;/b&gt; link når i tvivl om resultatet og se 
     <name>confgui::ConfBeaglePanelW</name>
     <message>
         <source>Entries will be recycled once the size is reached</source>
-        <translation>Indgangene vil blive genbrugt, når størrelsen er nået</translation>
+        <translation type="obsolete">Indgangene vil blive genbrugt, når størrelsen er nået</translation>
     </message>
     <message>
         <source>Web page store directory name</source>
@@ -1983,6 +2186,10 @@ Brug &lt;b&gt;Vis Forespørgsel&lt;/b&gt; link når i tvivl om resultatet og se 
     <message>
         <source>Enables indexing Firefox visited pages.&lt;br&gt;(you need also install the Firefox Recoll plugin)</source>
         <translation>Aktiverer indeksering af sider besøgt af Firefox.&lt;br&gt;(Du skal også installere Firefox Recoll plugin)</translation>
+    </message>
+    <message>
+        <source>Entries will be recycled once the size is reached.&lt;br&gt;Only increasing the size really makes sense because reducing the value will not truncate an existing file (only waste space at the end).</source>
+        <translation>Indgangene vil blive genbrugt, når størrelsen er nået.&lt;br&gt;Kun en øgning af størrelsen giver god mening, da en reducering af værdien ikke vil afkorte en eksisterende fil (kun spildplads i slutningen).</translation>
     </message>
 </context>
 <context>
@@ -2076,7 +2283,7 @@ Dette er for at udelukke monster logfiler fra indekset.</translation>
     <message>
         <source>If this value is set (not equal to -1), text files will be split in chunks of this size for indexing.
 This will help searching very big text  files (ie: log files).</source>
-        <translation>Hvis denne værdi er indstillet (ikke lig med -1), vil tekstfiler opdeles i bidder af denne størrelse for indeksering.
+        <translation>Hvis denne værdi er angivet (ikke lig med -1), vil tekstfiler opdeles i bidder af denne størrelse for indeksering.
 Dette vil hjælpe søgning i meget store tekstfiler (dvs.: log-filer).</translation>
     </message>
     <message>
@@ -2495,6 +2702,22 @@ Standardværdien er 2 (procent).</translation>
     <message>
         <source>Close to tray instead of exiting.</source>
         <translation>Luk til systembakke i stedet for at afslutte.</translation>
+    </message>
+    <message>
+        <source>Start with simple search mode</source>
+        <translation>Start med enkel søgetilstand</translation>
+    </message>
+    <message>
+        <source>User style to apply to the snippets window.&lt;br&gt; Note: the result page header insert is also included in the snippets window header.</source>
+        <translation>Brugerstil der skal anvendes på vinduet til tekststumper.&lt;br&gt;Bemærk: Det færdige sidehoved-indstik er også inkluderet i tekststumper-vinduets hoved.</translation>
+    </message>
+    <message>
+        <source>Synonyms file</source>
+        <translation>Synonymer-fil</translation>
+    </message>
+    <message>
+        <source>Show warning when opening temporary file.</source>
+        <translation>Vis advarsel, når der åbnes en midlertidig fil.</translation>
     </message>
 </context>
 </TS>

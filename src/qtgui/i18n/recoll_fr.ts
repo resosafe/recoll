@@ -738,6 +738,13 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
     </message>
 </context>
 <context>
+    <name>QxtConfirmationMessage</name>
+    <message>
+        <source>Do not show again.</source>
+        <translation>Ne plus afficher.</translation>
+    </message>
+</context>
+<context>
     <name>RTIToolW</name>
     <message>
         <source>Real time indexing automatic start</source>
@@ -1147,6 +1154,79 @@ Please check the desktop file</source>
         <translation>Mauvaise spécification d&apos;application pour %1: [%2]
 Merci de vérifier le fichier desktop </translation>
     </message>
+    <message>
+        <source>Bad paths</source>
+        <translation>Chemins inexistants</translation>
+    </message>
+    <message>
+        <source>Bad paths in configuration file:
+</source>
+        <translation>Chemins inexistants définis dans le fichier de configuration:</translation>
+    </message>
+    <message>
+        <source>Selection patterns need topdir</source>
+        <translation>Les schémas de sélection nécessitent un répertoire de départ</translation>
+    </message>
+    <message>
+        <source>Selection patterns can only be used with a start directory</source>
+        <translation>Les schémas de sélection ne peuvent être utilisés qu&apos;avec un répertoire de départ</translation>
+    </message>
+    <message>
+        <source>No search</source>
+        <translation>Pas de recherche</translation>
+    </message>
+    <message>
+        <source>No preserved previous search</source>
+        <translation>Pas de recherche sauvegardée</translation>
+    </message>
+    <message>
+        <source>Choose file to save</source>
+        <translation>Choisir un fichier pour sauvegarder</translation>
+    </message>
+    <message>
+        <source>Saved Queries (*.rclq)</source>
+        <translation>Recherches Sauvegardées (*.rclq)</translation>
+    </message>
+    <message>
+        <source>Write failed</source>
+        <translation>Échec d&apos;écriture</translation>
+    </message>
+    <message>
+        <source>Could not write to file</source>
+        <translation>Impossible d&apos;écrire dans le fichier</translation>
+    </message>
+    <message>
+        <source>Read failed</source>
+        <translation>Erreur de lecture</translation>
+    </message>
+    <message>
+        <source>Could not open file: </source>
+        <translation>Impossible d&apos;ouvrir le fichier:</translation>
+    </message>
+    <message>
+        <source>Load error</source>
+        <translation>Erreur de chargement</translation>
+    </message>
+    <message>
+        <source>Could not load saved query</source>
+        <translation>Le chargement de la recherche sauvegardée a échoué</translation>
+    </message>
+    <message>
+        <source>Opening a temporary copy. Edits will be lost if you don&apos;t save&lt;br/&gt;them to a permanent location.</source>
+        <translation>Ouverture d&apos;un fichier temporaire. Les modification seront perdues&lt;br/&gt;si vous ne les sauvez pas dans un emplacement permanent.</translation>
+    </message>
+    <message>
+        <source>Do not show this warning next time (use GUI preferences to restore).</source>
+        <translation>Ne plus afficher ce message (utiliser le dialogue de préférences pour rétablir).</translation>
+    </message>
+    <message>
+        <source>Disabled because the real time indexer was not compiled in.</source>
+        <translation>Désactivé parce que l&apos;indexeur au fil de l&apos;eau n&apos;est pas disponible dans cet exécutable.</translation>
+    </message>
+    <message>
+        <source>This configuration tool only works for the main index.</source>
+        <translation>Cet outil de configuration ne travaille que sur l&apos;index principal.</translation>
+    </message>
 </context>
 <context>
     <name>RclMainBase</name>
@@ -1409,6 +1489,22 @@ Merci de vérifier le fichier desktop </translation>
     <message>
         <source>Next update will retry previously failed files</source>
         <translation>La prochaine mise à jour de l&apos;index essaiera de traiter les fichiers actuellement en échec</translation>
+    </message>
+    <message>
+        <source>Save last query</source>
+        <translation>Sauvegarder la dernière recherche</translation>
+    </message>
+    <message>
+        <source>Load saved query</source>
+        <translation>Charger une recherche sauvegardée</translation>
+    </message>
+    <message>
+        <source>Special Indexing</source>
+        <translation>Indexation spéciale</translation>
+    </message>
+    <message>
+        <source>Indexing with special options</source>
+        <translation>Indexation avec des options spéciales</translation>
     </message>
 </context>
 <context>
@@ -1883,6 +1979,30 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
 Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual (&amp;lt;F1&gt;) for more detail.
 </translation>
     </message>
+    <message>
+        <source>Stemming languages for stored query: </source>
+        <translation>Les langages d&apos;expansion pour la recherche sauvegardée:</translation>
+    </message>
+    <message>
+        <source> differ from current preferences (kept)</source>
+        <translation>diffèrent des préférences en cours (conservées)</translation>
+    </message>
+    <message>
+        <source>Auto suffixes for stored query: </source>
+        <translation>L&apos;option de suffixe automatique pour la recherche sauvegardée:</translation>
+    </message>
+    <message>
+        <source>External indexes for stored query: </source>
+        <translation>Les index externes pour la recherche sauvegardée:</translation>
+    </message>
+    <message>
+        <source>Autophrase is set but it was unset for stored query</source>
+        <translation>L&apos;option autophrase est positionnée, mais ne l&apos;était pas pour la recherche sauvegardée</translation>
+    </message>
+    <message>
+        <source>Autophrase is unset but it was set for stored query</source>
+        <translation>L&apos;option autophrase est désactivée  mais était active pour la recherche sauvegardée</translation>
+    </message>
 </context>
 <context>
     <name>SSearchBase</name>
@@ -2060,6 +2180,49 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     <message>
         <source>Apply</source>
         <translation type="obsolete">Appliquer</translation>
+    </message>
+</context>
+<context>
+    <name>SpecIdxW</name>
+    <message>
+        <source>Special Indexing</source>
+        <translation>Indexation spéciale</translation>
+    </message>
+    <message>
+        <source>Do not retry previously failed files.</source>
+        <translation>Ne pas réessayer les fichiers en erreur.</translation>
+    </message>
+    <message>
+        <source>Else only modified or failed files will be processed.</source>
+        <translation>Sinon, seulement les fichiers modifiés ou en erreur seront traités.</translation>
+    </message>
+    <message>
+        <source>Erase selected files data before indexing.</source>
+        <translation>Effacer les données pour les fichiers sélectionnés avant de réindexer.</translation>
+    </message>
+    <message>
+        <source>Directory to recursively index</source>
+        <translation>Répertoire à indexer récursivement</translation>
+    </message>
+    <message>
+        <source>Browse</source>
+        <translation>Parcourir</translation>
+    </message>
+    <message>
+        <source>Start directory (else use regular topdirs):</source>
+        <translation>Répertoire de départ (sinon utiliser la variable normale topdirs):</translation>
+    </message>
+    <message>
+        <source>Leave empty to select all files. You can use multiple space-separated shell-type patterns.&lt;br&gt;Patterns with embedded spaces should be quoted with double quotes.&lt;br&gt;Can only be used if the start target is set.</source>
+        <translation>Laisser vide pour sélectionner tous les fichiers. Vous pouvez utiliser plusieurs schémas séparés par des espaces.&lt;br&gt;Les schémas contenant des espaces doivent ere enclos dans des apostrophes doubles.&lt;br&gt;Ne peut être utilisé que si le répertoire de départ est positionné.</translation>
+    </message>
+    <message>
+        <source>Selection patterns:</source>
+        <translation>Schémas de sélection:</translation>
+    </message>
+    <message>
+        <source>Top indexed entity</source>
+        <translation>Objet indexé de démarrage</translation>
     </message>
 </context>
 <context>
@@ -2261,6 +2424,26 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     <message>
         <source>Default QtWebkit font</source>
         <translation>Fonte par défaut de QtWebkit</translation>
+    </message>
+    <message>
+        <source>Any term</source>
+        <translation>Certains termes</translation>
+    </message>
+    <message>
+        <source>All terms</source>
+        <translation>Tous les termes</translation>
+    </message>
+    <message>
+        <source>File name</source>
+        <translation>Nom de fichier</translation>
+    </message>
+    <message>
+        <source>Query language</source>
+        <translation>Language d&apos;interrogation</translation>
+    </message>
+    <message>
+        <source>Value from previous program exit</source>
+        <translation>Valeur obtenue de la dernière exécution</translation>
     </message>
 </context>
 <context>
@@ -3198,6 +3381,18 @@ La valeur par défaut est 2%</translation>
     <message>
         <source>Close to tray instead of exiting.</source>
         <translation>Réduire dans la barre d&apos;état au lieu de quitter.</translation>
+    </message>
+    <message>
+        <source>Start with simple search mode</source>
+        <translation>Démarrer en mode recherche simple</translation>
+    </message>
+    <message>
+        <source>Show warning when opening temporary file.</source>
+        <translation>Afficher un avertissement quand on édite une copie temporaire.</translation>
+    </message>
+    <message>
+        <source>User style to apply to the snippets window.&lt;br&gt; Note: the result page header insert is also included in the snippets window header.</source>
+        <translation>Style utilisateur à appliquer à la fenêtre &quot;snippets&quot;.&lt;br&gt;Note: l&apos;en tête de page de résultat est aussi inclus dans la fenêtre &quot;snippets&quot;.</translation>
     </message>
 </context>
 </TS>

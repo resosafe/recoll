@@ -1022,11 +1022,11 @@ Kontroller venligst mimeview-filen</translation>
     </message>
     <message>
         <source>The document belongs to an external indexwhich I can&apos;t update. </source>
-        <translation type="obsolete">Dokumentet tilhører et ekstern indeks, som jeg ikke kan opdatere. </translation>
+        <translation type="unfinished">Dokumentet tilhører et ekstern indeks, som jeg ikke kan opdatere. </translation>
     </message>
     <message>
         <source>Click Cancel to return to the list. Click Ignore to show the preview anyway. </source>
-        <translation type="obsolete">Klik på Annuller for at vende tilbage til listen. Klik på Ignorer for at vise forhåndsvisningen alligevel.</translation>
+        <translation type="unfinished">Klik på Annuller for at vende tilbage til listen. Klik på Ignorer for at vise forhåndsvisningen alligevel.</translation>
     </message>
     <message>
         <source>Duplicate documents</source>
@@ -1056,7 +1056,7 @@ Tjek venligst desktopfilen</translation>
     </message>
     <message>
         <source>The current indexing process was not started from this interface, can&apos;t kill it</source>
-        <translation>Den nuværende indekseringsproces blev ikke startet fra denne grænseflade, kan ikke stoppe den</translation>
+        <translation type="obsolete">Den nuværende indekseringsproces blev ikke startet fra denne grænseflade, kan ikke stoppe den</translation>
     </message>
     <message>
         <source>Bad paths</source>
@@ -1117,27 +1117,31 @@ Tjek venligst desktopfilen</translation>
     </message>
     <message>
         <source>Index scheduling</source>
-        <translation>Indeks skedulering</translation>
+        <translation type="obsolete">Indeks skedulering</translation>
     </message>
     <message>
         <source>Sorry, not available under Windows for now, use the File menu entries to update the index</source>
-        <translation>Beklager, er endnu ikke tilgængelig for Windows, bruge Fil menuindgange for at opdatere indekset</translation>
+        <translation type="obsolete">Beklager, er endnu ikke tilgængelig for Windows, bruge Fil menuindgange for at opdatere indekset</translation>
     </message>
     <message>
         <source>Can&apos;t set synonyms file (parse error?)</source>
-        <translation>Kan ikke aktivere synonymer-fil (analysefejl?)</translation>
+        <translation type="obsolete">Kan ikke aktivere synonymer-fil (analysefejl?)</translation>
     </message>
     <message>
         <source>The document belongs to an external index which I can&apos;t update. </source>
-        <translation>Dokumentet tilhører et eksternt indeks, som jeg ikke kan opdatere.</translation>
+        <translation type="obsolete">Dokumentet tilhører et eksternt indeks, som jeg ikke kan opdatere.</translation>
     </message>
     <message>
         <source>Click Cancel to return to the list. &lt;br&gt;Click Ignore to show the preview anyway (and remember for this session).</source>
-        <translation>Klik på Annuller for at vende tilbage til listen. &lt;br&gt;Klik på Ignorer for at vise forhåndsvisningen alligevel. (og husk for denne session).</translation>
+        <translation type="obsolete">Klik på Annuller for at vende tilbage til listen. &lt;br&gt;Klik på Ignorer for at vise forhåndsvisningen alligevel. (og husk for denne session).</translation>
     </message>
     <message>
         <source>Opening a temporary copy. Edits will be lost if you don&apos;t save&lt;br/&gt;them to a permanent location.</source>
-        <translation>Åbner en midlertidig kopi. Ændringer vil gå tabt, hvis du ikke gemmer&lt;br/&gt;dem til en permanent sted.</translation>
+        <translation>Åbner en midlertidig kopi. Ændringer vil gå tabt, hvis du ikke gemmer&lt;br/&gt;dem til et permanent sted.</translation>
+    </message>
+    <message>
+        <source>Do not show this warning next time (use GUI preferences to restore).</source>
+        <translation>Vis ikke denne advarsel næste gang (brug GUI præferencer for at gendanne).</translation>
     </message>
 </context>
 <context>
@@ -1300,7 +1304,7 @@ Tjek venligst desktopfilen</translation>
     </message>
     <message>
         <source>&amp;Indexing schedule</source>
-        <translation type="obsolete">&amp;Tidsplan for Indeksering</translation>
+        <translation type="unfinished">&amp;Tidsplan for Indeksering</translation>
     </message>
     <message>
         <source>E&amp;xternal index dialog</source>
@@ -1368,11 +1372,11 @@ Tjek venligst desktopfilen</translation>
     </message>
     <message>
         <source>Indexing &amp;schedule</source>
-        <translation>Tid&amp;splan for Indeksering</translation>
+        <translation type="obsolete">Tid&amp;splan for Indeksering</translation>
     </message>
     <message>
         <source>Enable synonyms</source>
-        <translation>Aktiver synonymer</translation>
+        <translation type="obsolete">Aktiver synonymer</translation>
     </message>
     <message>
         <source>Save last query</source>
@@ -1863,7 +1867,7 @@ Brug &lt;b&gt;Vis Forespørgsel&lt;/b&gt; link når i tvivl om resultatet og se 
     </message>
     <message>
         <source>Directory to recursively index. This must be inside the regular indexed area&lt;br&gt; as defined in the configuration file (topdirs).</source>
-        <translation>Mappe for rekursiv indeksering. Dette skal være indenfor det regulære indekserede område&lt;br&gt; som defineret i konfigurationsfilen (øverste mapper).</translation>
+        <translation type="obsolete">Mappe for rekursiv indeksering. Dette skal være indenfor det regulære indekserede område&lt;br&gt; som defineret i konfigurationsfilen (øverste mapper).</translation>
     </message>
     <message>
         <source>Browse</source>
@@ -1884,6 +1888,10 @@ Brug &lt;b&gt;Vis Forespørgsel&lt;/b&gt; link når i tvivl om resultatet og se 
     <message>
         <source>Top indexed entity</source>
         <translation>Top indekserede enhed</translation>
+    </message>
+    <message>
+        <source>Directory to recursively index</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -2165,7 +2173,7 @@ Brug &lt;b&gt;Vis Forespørgsel&lt;/b&gt; link når i tvivl om resultatet og se 
     <name>confgui::ConfBeaglePanelW</name>
     <message>
         <source>Entries will be recycled once the size is reached</source>
-        <translation type="obsolete">Indgangene vil blive genbrugt, når størrelsen er nået</translation>
+        <translation type="unfinished">Indgangene vil blive genbrugt, når størrelsen er nået</translation>
     </message>
     <message>
         <source>Web page store directory name</source>
@@ -2189,7 +2197,7 @@ Brug &lt;b&gt;Vis Forespørgsel&lt;/b&gt; link når i tvivl om resultatet og se 
     </message>
     <message>
         <source>Entries will be recycled once the size is reached.&lt;br&gt;Only increasing the size really makes sense because reducing the value will not truncate an existing file (only waste space at the end).</source>
-        <translation>Indgangene vil blive genbrugt, når størrelsen er nået.&lt;br&gt;Kun en øgning af størrelsen giver god mening, da en reducering af værdien ikke vil afkorte en eksisterende fil (kun spildplads i slutningen).</translation>
+        <translation type="obsolete">Indgangene vil blive genbrugt, når størrelsen er nået.&lt;br&gt;Kun en øgning af størrelsen giver god mening, da en reducering af værdien ikke vil afkorte en eksisterende fil (kun spildplads i slutningen).</translation>
     </message>
 </context>
 <context>
@@ -2713,7 +2721,7 @@ Standardværdien er 2 (procent).</translation>
     </message>
     <message>
         <source>Synonyms file</source>
-        <translation>Synonymer-fil</translation>
+        <translation type="obsolete">Synonymer-fil</translation>
     </message>
     <message>
         <source>Show warning when opening temporary file.</source>

@@ -348,8 +348,7 @@ void RclMain::startNativeViewer(Rcl::Doc doc, int pagenum, QString term)
             "Recoll",
             tr("Opening a temporary copy. Edits will be lost if you don't save"
                "<br/>them to a permanent location."),
-            "Do not show this warning next time "
-            "(open GUI preferences to restore)");
+            tr("Do not show this warning next time. Use GUI preferences to restore."));
         confirm.setSettingsPath("Recoll/prefs");
         confirm.setOverrideSettingsKey("showTempFileWarning");
         confirm.exec();

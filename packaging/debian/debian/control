@@ -3,21 +3,21 @@ Section: x11
 Priority: optional
 Maintainer: Jean-Francois Dockes <jfd@recoll.org>
 Build-Depends: autotools-dev,
-               debhelper (>= 7),
-               hardening-wrapper,
                bison,
-               libqt4-dev,
+               debhelper (>= 9),
+               dpkg-dev (>= 1.16.1~),
                libqtwebkit-dev,
                libx11-dev,
                libxapian-dev (>= 1.2.0),
                libz-dev,
-               python-all-dev (>= 2.6.6-3~),
+               python-dev (>= 2.6.6-3~),
                python3-all-dev,
-Standards-Version: 3.9.4
+               libqt4-dev
 X-Python-Version: >= 2.7
+Vcs-Git: https://anonscm.debian.org/collab-maint/recoll.git
+Vcs-Browser: https://anonscm.debian.org/gitweb/?p=collab-maint/recoll.git;a=summary
 Homepage: http://www.lesbonscomptes.com/recoll
-Vcs-Git: git://anonscm.debian.org/collab-maint/recoll.git
-Vcs-Browser: http://anonscm.debian.org/gitweb/?p=collab-maint/recoll.git;a=summary
+Standards-Version: 3.9.6
 
 Package: recoll
 Architecture: any
@@ -67,8 +67,8 @@ Description: Python extension for recoll
  Personal full text search package which is based on a very strong backend
  (Xapian), for which it provides an easy to use and feature-rich interface.
  .
- This package provides Python extension module for recoll which can be use to
- extend recoll such as an Ubuntu Unity Lens.
+ This package provides Python extension module for recoll which can be
+ used to build tools such as a Ubuntu Unity Lens based on recoll 
 
 Package: python3-recoll
 Architecture: any
@@ -77,9 +77,9 @@ Depends: recoll (= ${binary:Version}),
          ${misc:Depends},
          ${python3:Depends},
          ${shlibs:Depends}
-Description: Python extension for recoll
+Description: Python extension for recoll (Python3)
  Personal full text search package which is based on a very strong backend
  (Xapian), for which it provides an easy to use and feature-rich interface.
  .
- This package provides Python extension module for recoll which can be use to
- extend recoll such as an Ubuntu Unity Lens.
+ This package provides a Python3 extension module for recoll which can be
+ used to build tools such as a Ubuntu Unity Lens based on recoll 

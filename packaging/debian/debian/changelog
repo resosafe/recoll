@@ -2,7 +2,7 @@ recoll (1.21.5-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
                 
   * Fix query language parser for multiple mime or rclcat entries
 
- -- Jean-Francois Dockes <jf@dockes.org>  Tue, 29 Jan 2016 14:48:00 +0200
+ -- Jean-Francois Dockes <jf@dockes.org>  Fri, 29 Jan 2016 14:48:00 +0200
 
 recoll (1.21.4-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
                 

@@ -1,11 +1,12 @@
 Summary:        Desktop full text search tool with Qt GUI
 Name:           recoll
-Version:        1.20.6
+Version:        1.21.5
 Release:        1%{?dist}
 Group:          Applications/Databases
 License:        GPLv2+
 URL:            http://www.lesbonscomptes.com/recoll/
 Source0:        http://www.lesbonscomptes.com/recoll/recoll-%{version}.tar.gz
+BuildRequires:  bison
 BuildRequires:  qt-devel
 BuildRequires:  qtwebkit-devel
 BuildRequires:  python-devel
@@ -84,6 +85,9 @@ exit 0
 %{_mandir}/man5/%{name}.conf.5*
 
 %changelog
+* Fri Feb 05 2016 Jean-Francois Dockes <jf@dockes.org> - 1.21.5-1
+- 1.21.5
+
 * Sat Apr 25 2015 Jean-Francois Dockes <jf@dockes.org> - 1.20.6-1
 - 1.20.6
 

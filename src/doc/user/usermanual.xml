@@ -3380,17 +3380,19 @@ dir:recoll dir:src -dir:utils -dir:common
 
       <para>For &RCL; versions 1.18 and later, and <emphasis>when working
           with a raw index</emphasis> (not the default), searches can be
-          made sensitive
-        to character case and diacritics. How this happens is controlled by
-        configuration variables and what search data is entered.</para>
+          sensitive to character case and diacritics. How this happens
+          is controlled by configuration variables and what search data is
+          entered.</para>
 
-      <para>The general default is that searches are insensitive to case
-      and diacritics. An entry of <literal>resume</literal> will match any
-      of <literal>Resume</literal>, <literal>RESUME</literal>,
+      <para>The general default is that searches entered without upper-case
+      or accented characters are insensitive to case and diacritics. An
+      entry of <literal>resume</literal> will match any of
+      <literal>Resume</literal>, <literal>RESUME</literal>,
       <literal>résumé</literal>, <literal>Résumé</literal> etc.</para>
 
       <para>Two configuration variables can automate switching on
-        sensitivity:</para> 
+        sensitivity (they were documented but actually did nothing until
+      &RCL; 1.22):</para>
 
       <variablelist>
 

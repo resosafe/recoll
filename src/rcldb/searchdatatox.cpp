@@ -164,6 +164,8 @@ bool SearchData::toNativeQuery(Rcl::Db &db, void *d)
 
     db.getConf()->getConfParam("maxTermExpand", &m_maxexp);
     db.getConf()->getConfParam("maxXapianClauses", &m_maxcl);
+    db.getConf()->getConfParam("autocasesens", &m_autocasesens);
+    db.getConf()->getConfParam("autodiacsens", &m_autodiacsens);
 
     // Walk the clause list translating each in turn and building the 
     // Xapian query tree

@@ -50,7 +50,13 @@ void reapXAttrs(const RclConfig* cfg, const string& path,
     // Retrieve xattrs names from files and mapping table from config
     vector<string> xnames;
     if (!pxattr::list(path, &xnames)) {
-	LOGERR(("FileInterner::reapXattrs: pxattr::list: errno %d\n", errno));
+        if (errno == ENOTSUP) {
+            LOGDEB(("FileInterner::reapXattrs: pxattr::list: errno %d\n",
+                    errno));
+        } else {
+            LOGERR(("FileInterner::reapXattrs: pxattr::list: errno %d\n",
+                    errno));
+        }
 	return;
     }
     const map<string, string>& xtof = cfg->getXattrToField();

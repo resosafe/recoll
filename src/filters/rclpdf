@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 #================================================================
 # Copyright (C) 2015 J.F. Dockes
 # There used to be Estraier content in there, but I quite believe that is not

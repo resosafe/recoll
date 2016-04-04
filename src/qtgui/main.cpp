@@ -31,6 +31,7 @@
 #include <qcombobox.h>
 #include <QLocale>
 #include <QLibraryInfo>
+#include <QFileDialog>
 
 #include "rcldb.h"
 #include "rclconfig.h"
@@ -406,4 +407,33 @@ int main(int argc, char **argv)
 	mainWindow->setUrlToView(QString::fromLocal8Bit(urltoview.c_str()));
     }
     return app.exec();
+}
+
+QString myGetFileName(bool isdir, QString caption, bool filenosave)
+{
+    LOGDEB1(("myFileDialog: isdir %d\n", isdir));
+    QFileDialog dialog(0, caption);
+
+    if (isdir) {
+	dialog.setFileMode(QFileDialog::Directory);
+	dialog.setOptions(QFileDialog::ShowDirsOnly);
+    } else {
+	dialog.setFileMode(QFileDialog::AnyFile);
+	if (filenosave)
+	    dialog.setAcceptMode(QFileDialog::AcceptOpen);
+	else
+	    dialog.setAcceptMode(QFileDialog::AcceptSave);
+    }
+    dialog.setViewMode(QFileDialog::List);
+    QFlags<QDir::Filter> flags = QDir::NoDotAndDotDot | QDir::Hidden; 
+    if (isdir)
+	flags |= QDir::Dirs;
+    else 
+	flags |= QDir::Dirs | QDir::Files;
+    dialog.setFilter(flags);
+
+    if (dialog.exec() == QDialog::Accepted) {
+        return dialog.selectedFiles().value(0);
+    }
+    return QString();
 }

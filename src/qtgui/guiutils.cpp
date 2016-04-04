@@ -27,10 +27,8 @@
 #include "base64.h"
 #include "advshist.h"
 
-#include <QApplication>
 #include <QSettings>
 #include <QStringList>
-#include <QFileDialog>
 
 RclDynConf *g_dynconf;
 AdvSearchHist *g_advshistory;
@@ -150,8 +148,6 @@ void rwSettings(bool writing)
 	       String, "");
     SETTING_RW(prefs.reslistfontsize, "/Recoll/prefs/reslist/fontSize", Int, 
 	       10);
-
-    prefs.fontcolor = QApplication::palette().text().color().name();
 
     QString rlfDflt = QString::fromUtf8(prefs.dfltResListFormat);
     if (writing) {
@@ -413,33 +409,4 @@ string PrefsPack::stemlang()
 	    stemLang = "";
     }
     return stemLang;
-}
-
-QString myGetFileName(bool isdir, QString caption, bool filenosave)
-{
-    LOGDEB1(("myFileDialog: isdir %d\n", isdir));
-    QFileDialog dialog(0, caption);
-
-    if (isdir) {
-	dialog.setFileMode(QFileDialog::Directory);
-	dialog.setOptions(QFileDialog::ShowDirsOnly);
-    } else {
-	dialog.setFileMode(QFileDialog::AnyFile);
-	if (filenosave)
-	    dialog.setAcceptMode(QFileDialog::AcceptOpen);
-	else
-	    dialog.setAcceptMode(QFileDialog::AcceptSave);
-    }
-    dialog.setViewMode(QFileDialog::List);
-    QFlags<QDir::Filter> flags = QDir::NoDotAndDotDot | QDir::Hidden; 
-    if (isdir)
-	flags |= QDir::Dirs;
-    else 
-	flags |= QDir::Dirs | QDir::Files;
-    dialog.setFilter(flags);
-
-    if (dialog.exec() == QDialog::Accepted) {
-        return dialog.selectedFiles().value(0);
-    }
-    return QString();
 }

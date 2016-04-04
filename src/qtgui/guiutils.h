@@ -165,9 +165,4 @@ extern void rwSettings(bool dowrite);
 
 extern QString g_stringAllStem, g_stringNoStem;
 
-/** Specialized version of the qt file dialog. Can't use getOpenFile()
-   etc. cause they hide dot files... */
-extern QString myGetFileName(bool isdir, QString caption = QString(),
-			     bool filenosave = false);
-
 #endif /* _GUIUTILS_H_INCLUDED_ */

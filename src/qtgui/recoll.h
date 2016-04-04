@@ -54,4 +54,10 @@ inline std::string qs2utf8s(const QString& qs)
 {
     return std::string((const char *)qs.toUtf8());
 }
+
+/** Specialized version of the qt file dialog. Can't use getOpenFile()
+   etc. cause they hide dot files... */
+extern QString myGetFileName(bool isdir, QString caption = QString(),
+			     bool filenosave = false);
+
 #endif /* _RECOLL_H_INCLUDED_ */

@@ -18,18 +18,15 @@
  */
 
 #include <string>
-using std::string;
 
-#include <qglobal.h>
-#include <qstring.h>
+#include <QString>
+#include <QUrl>
 
-#include <kurl.h>
-#include <kio/global.h>
 #include <kio/slavebase.h>
-#include <kdeversion.h>
 
 #include "rclconfig.h"
 #include "rcldb.h"
+#include "docseq.h"
 #include "reslistpager.h"
 #include "docseq.h"
 #include "refcntr.h"
@@ -42,14 +39,14 @@ public:
     RecollKioPager() : m_parent(0) {}
     void setParent(RecollProtocol *proto) {m_parent = proto;}
 
-    virtual bool append(const string& data);
-    virtual bool append(const string& data, int, const Rcl::Doc&)
+    virtual bool append(const std::string& data);
+    virtual bool append(const std::string& data, int, const Rcl::Doc&)
     {return append(data);}
-    virtual string detailsLink();
-    virtual const string &parFormat();
-    virtual string nextUrl();
-    virtual string prevUrl();
-    virtual string pageTop();
+    virtual std::string detailsLink();
+    virtual const std::string &parFormat();
+    virtual std::string nextUrl();
+    virtual std::string prevUrl();
+    virtual std::string pageTop();
 
 private:
     RecollProtocol *m_parent;
@@ -71,7 +68,7 @@ public:
 // and tell what we should do with it
 class UrlIngester {
 public:
-    UrlIngester(RecollProtocol *p, const KUrl& url);
+    UrlIngester(RecollProtocol *p, const QUrl& url);
     enum RootEntryType {UIRET_NONE, UIRET_ROOT, UIRET_HELP, UIRET_SEARCH};
     bool isRootEntry(RootEntryType *tp) {
 	if (m_type != UIMT_ROOTENTRY) return false;
@@ -110,7 +107,6 @@ private:
     MyType           m_type;
 };
 
-
 /**
  * A KIO slave to execute and display Recoll searches.
  *
@@ -140,14 +136,12 @@ class RecollProtocol : public KIO::SlaveBase {
  public:
     RecollProtocol(const QByteArray &pool, const QByteArray &app );
     virtual ~RecollProtocol();
-    virtual void mimetype(const KUrl& url);
-    virtual void get(const KUrl& url);
+    virtual void mimetype(const QUrl& url);
+    virtual void get(const QUrl& url);
     // The directory mode is not available with KDE 4.0, I could find
     // no way to avoid crashing kdirmodel
-#if KDE_IS_VERSION(4,1,0)
-    virtual void stat(const KUrl & url);
-    virtual void listDir(const KUrl& url);
-#endif
+    virtual void stat(const QUrl & url);
+    virtual void listDir(const QUrl& url);
 
     static RclConfig  *o_rclconfig;
 
@@ -155,23 +149,24 @@ class RecollProtocol : public KIO::SlaveBase {
     friend class UrlIngester;
 
  private:
-    bool maybeOpenDb(string& reason);
-    bool URLToQuery(const KUrl &url, QString& q, QString& opt, int *page=0);
+    bool maybeOpenDb(std::string& reason);
+    bool URLToQuery(const QUrl &url, QString& q, QString& opt, int *page=0);
     bool doSearch(const QueryDesc& qd);
 
     void searchPage();
     void queryDetails();
-    string makeQueryUrl(int page, bool isdet = false);
+    std::string makeQueryUrl(int page, bool isdet = false);
     bool syncSearch(const QueryDesc& qd);
     void htmlDoSearch(const QueryDesc& qd);
     void showPreview(const Rcl::Doc& doc);
-    bool isRecollResult(const KUrl &url, int *num, QString* q);
+    bool isRecollResult(const QUrl &url, int *num, QString* q);
 
     bool        m_initok;
     Rcl::Db    *m_rcldb;
-    string      m_reason;
+    std::string      m_reason;
     bool        m_alwaysdir;
-    string      m_stemlang; // english by default else env[RECOLL_KIO_STEMLANG]
+    // english by default else env[RECOLL_KIO_STEMLANG]
+    std::string      m_stemlang; 
 
     // Search state: because of how the KIO slaves are used / reused,
     // we can't be sure that the next request will be for the same
@@ -186,6 +181,13 @@ class RecollProtocol : public KIO::SlaveBase {
     QueryDesc      m_query;
 };
 
-extern "C" {int kdemain(int, char**);}
+extern "C" { __attribute__ ((visibility("default"))) int 
+               kdemain(int argc, char **argv);}
+
+inline QString u8s2qs(const string& s)
+{
+  return QString::fromUtf8(s.c_str());
+}
+
 
 #endif // _RECOLL_H

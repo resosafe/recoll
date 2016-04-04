@@ -1,16 +1,42 @@
-cmake_minimum_required(VERSION 2.6)
-
 project(kio_recoll)
 
-find_package(KDE4 REQUIRED)
+cmake_minimum_required(VERSION 2.8.12)
 
-add_definitions(${QT_DEFINITIONS} ${KDE4_DEFINITIONS})
-add_definitions(-DKDE_DEFAULT_DEBUG_AREA=7130
-    -DRECOLL_DATADIR=\\"${CMAKE_INSTALL_PREFIX}/share/recoll\\"
-    -DLIBDIR=\\"${CMAKE_INSTALL_PREFIX}/lib\\"
+include(FeatureSummary)
+
+set(QT_MIN_VERSION 5.2.0)
+set(KF5_MIN_VERSION 5.0.0)
+
+find_package(Qt5 ${QT_MIN_VERSION} CONFIG REQUIRED COMPONENTS
+    Network
+    Widgets)
+
+find_package(ECM REQUIRED NO_MODULE)
+set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH})
+
+include(KDEInstallDirs)
+include(KDECMakeSettings)
+include(KDECompilerSettings NO_POLICY_SCOPE)
+
+# CoreAddons?
+find_package(KF5 ${KF5_MIN_VERSION} REQUIRED COMPONENTS
+    KIO)
+
+add_definitions(-DQT_NO_URL_CAST_FROM_STRING)
+
+include_directories(
+   ${CMAKE_SOURCE_DIR}
+   ${CMAKE_BINARY_DIR}
+)
+
+
+## Recoll stuff
+add_definitions(
+    -DRECOLL_DATADIR="${CMAKE_INSTALL_PREFIX}/share/recoll"
+    -DLIBDIR="${CMAKE_INSTALL_PREFIX}/lib"
     -DHAVE_CONFIG_H
 )
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${KDE4_ENABLE_EXCEPTIONS}") 
+
 
 set(rcltop ${CMAKE_CURRENT_SOURCE_DIR}/../../../)
 
@@ -25,7 +51,7 @@ execute_process(COMMAND /bin/sh mkMake
 
 link_directories(${rcltop}/lib ${CMAKE_INSTALL_PREFIX}/lib)
 
-include_directories (${CMAKE_SOURCE_DIR} ${CMAKE_BINARY_DIR} ${KDE4_INCLUDES}
+include_directories (${CMAKE_SOURCE_DIR}
   ${rcltop}/aspell 
   ${rcltop}/bincimapmime
   ${rcltop}/common 
@@ -38,16 +64,9 @@ include_directories (${CMAKE_SOURCE_DIR} ${CMAKE_BINARY_DIR} ${KDE4_INCLUDES}
   ${rcltop}/qtgui
 )
 
-set(kio_recoll_SRCS  kio_recoll.cpp htmlif.cpp dirif.cpp ${rcltop}/qtgui/guiutils.cpp)
+set(kio_recoll_SRCS  kio_recoll.cpp htmlif.cpp dirif.cpp 
+${rcltop}/qtgui/guiutils.cpp)
 
-CHECK_LIBRARY_EXISTS(dl dlopen "" DLOPEN_IN_LIBDL)
-IF(DLOPEN_IN_LIBDL)
-	LIST(APPEND EXTRA_LIBS dl)
-ENDIF(DLOPEN_IN_LIBDL)
-CHECK_LIBRARY_EXISTS(pthread pthread_sigmask "" PTHREAD_IN_LIBPTHREAD)
-IF(PTHREAD_IN_LIBPTHREAD)
-	LIST(APPEND EXTRA_LIBS pthread)
-ENDIF(PTHREAD_IN_LIBPTHREAD)
 
 # Had the idea to add e.g. /usr/lib/recoll to the rpath so that the dyn lib 
 # will be found at run time. But this does not seem to work with debian 
@@ -55,7 +74,7 @@ ENDIF(PTHREAD_IN_LIBPTHREAD)
 # paths but I did not find it. Link with the .a instead.
 #SET(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib/recoll")
 
-kde4_add_plugin(kio_recoll ${kio_recoll_SRCS})
+add_library(kio_recoll MODULE ${kio_recoll_SRCS})
 
 add_custom_target(parser
                  COMMAND make wasaparse.tab.cpp
@@ -68,16 +87,22 @@ add_custom_target(rcllib
 add_dependencies(rcllib parser)
 add_dependencies(kio_recoll parser rcllib)
 
-target_link_libraries(kio_recoll recoll xapian z ${EXTRA_LIBS} ${KDE4_KIO_LIBS})
+target_link_libraries(kio_recoll
+recoll 
+xapian 
+KF5::KIOCore
+z 
+pthread
+)
 
-install(TARGETS kio_recoll DESTINATION ${PLUGIN_INSTALL_DIR})
-
-IF ("${KDE_VERSION_MAJOR}.${KDE_VERSION_MINOR}" GREATER 4.0)
-     install(FILES recoll.protocol recollf.protocol DESTINATION ${SERVICES_INSTALL_DIR})
-ELSE ("${KDE_VERSION_MAJOR}.${KDE_VERSION_MINOR}" GREATER 4.0)
-   install(FILES recollnolist.protocol DESTINATION ${SERVICES_INSTALL_DIR}
-   		 RENAME recoll.protocol)
-ENDIF ("${KDE_VERSION_MAJOR}.${KDE_VERSION_MINOR}" GREATER 4.0)
-
+install(FILES recoll.protocol DESTINATION ${SERVICES_INSTALL_DIR})
 install(FILES data/welcome.html	data/help.html
 	      DESTINATION  ${DATA_INSTALL_DIR}/kio_recoll)
+
+# Tried but could not use PLUGIN_INSTALL_DIR (/usr/lib64/plugins), or
+# /usr/lib64/qt5/plugins/kf5/kio/recoll.so: the module is not found by
+# dolphin). Actually that's because of the protocol file. recoll has 
+# exec=kio_recoll, file has exec=kf5/kio/file
+
+set_target_properties(kio_recoll PROPERTIES OUTPUT_NAME "kio_recoll")
+install(TARGETS kio_recoll DESTINATION ${LIB_INSTALL_DIR}/qt5/plugins)

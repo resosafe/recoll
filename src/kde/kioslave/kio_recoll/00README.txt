@@ -55,12 +55,12 @@ Recipe:
    --prefix=/usr (or wherever KDE lives), build and install 
    Recoll.
 
- - In the Recoll source, go to kde/kioslave/recoll, then build and
+ - In the Recoll source, go to kde/kioslave/kio_recoll, then build and
    install the kio slave:
 
 mkdir builddir
 cd builddir
-cmake .. -DCMAKE_INSTALL_PREFIX=/usr -DQT_QMAKE_EXECUTABLE=/usr/bin/qmake-qt4
+cmake .. -DCMAKE_INSTALL_PREFIX=/usr 
 make
 sudo make install
 
@@ -78,17 +78,3 @@ You need to build/update the index with recollindex, the KIO slave
 doesn't deal with indexing for now.
 
 
-Misc build problems:
-===================
-
-KUBUNTU 8.10 (updated to 2008-27-11)
-------------------------------------
-cmake generates a bad dependancy on
-      /build/buildd/kde4libs-4.1.2/obj-i486-linux-gnu/lib/libkdecore.so 
-inside CMakeFiles/kio_recoll.dir/build.make 
-
-Found no way to fix this. You need to edit the line and replace the
-/build/[...]/lib with /usr/lib. This manifests itself with the
-following error message:
-
-   make[2]: *** No rule to make target `/build/buildd/kde4libs-4.1.2/obj-i486-linux-gnu/lib/libkdecore.so', needed by `lib/kio_recoll.so'.  Stop.

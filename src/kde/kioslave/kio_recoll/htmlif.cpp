@@ -22,11 +22,7 @@
 #include <sys/stat.h>
 
 #include <string>
-
-using namespace std;
-
-#include <kdebug.h>
-#include <kstandarddirs.h>
+#include <QStandardPaths>
 
 #include "rclconfig.h"
 #include "rcldb.h"
@@ -44,6 +40,7 @@ using namespace std;
 #include "wipedir.h"
 #include "hldata.h"
 
+using namespace std;
 using namespace KIO;
 
 bool RecollKioPager::append(const string& data)
@@ -110,7 +107,7 @@ string RecollKioPager::pageTop()
     return pt;
 // Would be nice to have but doesnt work because the query may be executed
 // by another kio instance which has no idea of the current page o
-#if 0 && KDE_IS_VERSION(4,1,0)
+#if 0 
 	" &nbsp;&nbsp;&nbsp;<a href=\"recoll:///" + 
 	url_encode(string(m_parent->m_query.query.toUtf8())) +
 	"/\">Directory view</a> (you may need to reload the page)"
@@ -143,8 +140,9 @@ void RecollProtocol::searchPage()
 {
     mimeType("text/html");
     if (welcomedata.empty()) {
-	QString location = 
-	    KStandardDirs::locate("data", "kio_recoll/welcome.html");
+      QString location = 
+	QStandardPaths::locate(QStandardPaths::GenericDataLocation, 
+			       "kio_recoll/welcome.html");
 	string reason;
 	if (location.isEmpty() || 
 	    !file_to_string((const char *)location.toUtf8(), 
@@ -239,7 +237,8 @@ void RecollProtocol::showPreview(const Rcl::Doc& idoc)
     Rcl::Doc fdoc;
     string ipath = idoc.ipath;
     if (!interner.internfile(fdoc, ipath)) {
-	error(KIO::ERR_SLAVE_DEFINED, "Cannot convert file to internal format");
+      error(KIO::ERR_SLAVE_DEFINED, 
+	    u8s2qs("Cannot convert file to internal format"));
 	return;
     }
     if (!interner.get_html().empty()) {
@@ -254,7 +253,7 @@ void RecollProtocol::showPreview(const Rcl::Doc& idoc)
     ptr.set_inputhtml(!fdoc.mimetype.compare("text/html"));
     list<string> otextlist;
     HighlightData hdata;
-    if (!m_source.isNull())
+    if (m_source)
 	m_source->getTerms(hdata);
     ptr.plaintorich(fdoc.text, otextlist, hdata);
 
@@ -270,7 +269,7 @@ void RecollProtocol::showPreview(const Rcl::Doc& idoc)
 
 void RecollProtocol::htmlDoSearch(const QueryDesc& qd)
 {
-    kDebug() << "q" << qd.query << "option" << qd.opt << "page" << qd.page <<
+    qDebug() << "q" << qd.query << "option" << qd.opt << "page" << qd.page <<
 	"isdet" << qd.isDetReq << endl;
  
     mimeType("text/html");

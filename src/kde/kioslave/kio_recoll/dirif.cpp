@@ -26,19 +26,15 @@
 
 #include "autoconfig.h"
 
-#include <kdeversion.h>
-
-#if KDE_IS_VERSION(4,1,0)
 // Couldn't get listDir() to work with kde 4.0, konqueror keeps
 // crashing because of kdirmodel, couldn't find a workaround (not
 // saying it's impossible)...
 
 #include <sys/stat.h>
 
-#include <kurl.h>
-#include <kio/global.h>
-#include <kstandarddirs.h>
-#include <kdebug.h>
+#include <QDebug>
+#include <QUrl>
+#include <QStandardPaths>
 
 #include "kio_recoll.h"
 #include "pathut.h"
@@ -52,18 +48,24 @@ static const QString resultBaseName("recollResult");
 // is the search string). If it is, extract return the result document
 // number. Possibly restart the search if the search string does not
 // match the current one
-bool RecollProtocol::isRecollResult(const KUrl &url, int *num, QString *q)
+bool RecollProtocol::isRecollResult(const QUrl &url, int *num, QString *q)
 {
     *num = -1;
-    kDebug() << "url" << url;
+    qDebug() << "RecollProtocol::isRecollResult: url: " << url;
 
     // Basic checks
     if (!url.host().isEmpty() || url.path().isEmpty() || 
-        (url.protocol().compare("recoll") && url.protocol().compare("recollf")))
+        (url.scheme().compare("recoll") && url.scheme().compare("recollf"))) {
+        qDebug() << "RecollProtocol::isRecollResult: no: url.host " <<
+            url.host() << " path " << url.path() << " scheme " << url.scheme();
         return false;
+    }
+
     QString path = url.path();
-    if (!path.startsWith("/")) 
-        return false;
+    qDebug() << "RecollProtocol::isRecollResult: path: " << path;
+//    if (!path.startsWith("/")) {
+//        return false;
+//    }
 
     // Look for the last '/' and check if it is followed by
     // resultBaseName (riiiight...)
@@ -71,18 +73,18 @@ bool RecollProtocol::isRecollResult(const KUrl &url, int *num, QString *q)
     if (slashpos == -1 || slashpos == 0 || slashpos == path.length() -1)
         return false;
     slashpos++;
-    //kDebug() << "Comparing " << path.mid(slashpos, resultBaseName.length()) <<
+    //qDebug() << "Comparing " << path.mid(slashpos, resultBaseName.length()) <<
     //  "and " << resultBaseName;
     if (path.mid(slashpos, resultBaseName.length()).compare(resultBaseName))
         return false;
 
     // Extract the result number
     QString snum = path.mid(slashpos + resultBaseName.length());
-    sscanf(snum.toAscii(), "%d", num);
+    sscanf(snum.toUtf8(), "%d", num);
     if (*num == -1)
         return false;
 
-    //kDebug() << "URL analysis ok, num:" << *num;
+    //qDebug() << "URL analysis ok, num:" << *num;
 
     // We do have something that ressembles a recoll result locator. Check if
     // this matches the current search, else have to run the requested one
@@ -95,8 +97,8 @@ static const UDSEntry resultToUDSEntry(const Rcl::Doc& doc, int num)
 {
     UDSEntry entry;
     
-    KUrl url(doc.url.c_str());
-//    kDebug() << doc.url.c_str();
+    QUrl url(doc.url.c_str());
+//    qDebug() << doc.url.c_str();
 
     entry.insert(KIO::UDSEntry::UDS_DISPLAY_NAME, url.fileName());
     char cnum[30];sprintf(cnum, "%04d", num);
@@ -105,7 +107,7 @@ static const UDSEntry resultToUDSEntry(const Rcl::Doc& doc, int num)
     if (!doc.mimetype.compare("application/x-fsdirectory") || 
         !doc.mimetype.compare("inode/directory")) {
         entry.insert(KIO::UDSEntry::UDS_MIME_TYPE, "inode/directory");
-        entry.insert( KIO::UDSEntry::UDS_FILE_TYPE, S_IFDIR);
+        entry.insert(KIO::UDSEntry::UDS_FILE_TYPE, S_IFDIR);
     } else {
         entry.insert(KIO::UDSEntry::UDS_MIME_TYPE, doc.mimetype.c_str());
         entry.insert( KIO::UDSEntry::UDS_FILE_TYPE, S_IFREG);
@@ -113,7 +115,7 @@ static const UDSEntry resultToUDSEntry(const Rcl::Doc& doc, int num)
     entry.insert(KIO::UDSEntry::UDS_LOCAL_PATH, url.path());
     // For local files, supply the usual file stat information
     struct stat info;
-    if (lstat(url.path().toAscii(), &info) >= 0) {
+    if (lstat(url.path().toUtf8(), &info) >= 0) {
         entry.insert( KIO::UDSEntry::UDS_SIZE, info.st_size);
         entry.insert( KIO::UDSEntry::UDS_ACCESS, info.st_mode);
         entry.insert( KIO::UDSEntry::UDS_MODIFICATION_TIME, info.st_mtime);
@@ -153,7 +155,8 @@ static void createGoHomeEntry(KIO::UDSEntry& entry)
 static void createGoHelpEntry(KIO::UDSEntry& entry)
 {
     QString location = 
-        KStandardDirs::locate("data", "kio_recoll/help.html");
+	QStandardPaths::locate(QStandardPaths::GenericDataLocation, 
+			       "kio_recoll/help.html");
     entry.clear();
     entry.insert(KIO::UDSEntry::UDS_NAME, "help");
     entry.insert(KIO::UDSEntry::UDS_DISPLAY_NAME, "Recoll help (click me first)");
@@ -165,45 +168,52 @@ static void createGoHelpEntry(KIO::UDSEntry& entry)
     entry.insert(KIO::UDSEntry::UDS_ICON_NAME, "help");
 }
 
-void RecollProtocol::stat(const KUrl & url)
+void RecollProtocol::stat(const QUrl& url)
 {
-    kDebug() << url << endl ;
+    qDebug() << "RecollProtocol::stat:" << url;
 
     UrlIngester ingest(this, url);
 
     KIO::UDSEntry entry;
     entry.insert(KIO::UDSEntry::UDS_TARGET_URL, url.url());
+    entry.insert(KIO::UDSEntry::UDS_URL, url.url());
     UrlIngester::RootEntryType rettp;
     QueryDesc qd;
     int num;
     if (ingest.isRootEntry(&rettp)) {
+        qDebug() << "RecollProtocol::stat: root entry";
         switch(rettp) {
         case UrlIngester::UIRET_ROOT:
+            qDebug() << "RecollProtocol::stat: root";
             createRootEntry(entry);
             break;
         case UrlIngester::UIRET_HELP: 
+            qDebug() << "RecollProtocol::stat: root help";
             createGoHelpEntry(entry);
             break;
         case UrlIngester::UIRET_SEARCH:
+            qDebug() << "RecollProtocol::stat: root search";
             createGoHomeEntry(entry);
             break;
         default: 
-            error(ERR_DOES_NOT_EXIST, "");
+            qDebug() << "RecollProtocol::stat: ??";
+	  error(ERR_DOES_NOT_EXIST, QString());
             break;
         }
     } else if (ingest.isResult(&qd, &num)) {
+        qDebug() << "RecollProtocol::stat: isresult";
         if (syncSearch(qd)) {
             Rcl::Doc doc;
-            if (num >= 0 && !m_source.isNull() && 
-                m_source->getDoc(num, doc)) {
+            if (num >= 0 && m_source && m_source->getDoc(num, doc)) {
                 entry = resultToUDSEntry(doc, num);
             } else {
-                error(ERR_DOES_NOT_EXIST, "");
+	      error(ERR_DOES_NOT_EXIST, QString());
             }
         } else {
             // hopefully syncSearch() set the error?
         }
     } else if (ingest.isQuery(&qd)) {
+        qDebug() << "RecollProtocol::stat: isquery";
         // ie "recoll:/some string" or "recoll:/some string/" 
         //
         // We have a problem here. We'd like to let the user enter
@@ -214,23 +224,31 @@ void RecollProtocol::stat(const KUrl & url)
         //
         // Another approach would be to use different protocol names
         // to avoid any possibility of mixups
-        if (m_alwaysdir || ingest.alwaysDir() || ingest.endSlashQuery()) {
-            kDebug() << "Directory type";
+        if (true || m_alwaysdir || ingest.alwaysDir() || ingest.endSlashQuery()) {
+            qDebug() << "RecollProtocol::stat: Directory type:";
+            // Need to check no / in there
+#if 0
+            entry.insert(KIO::UDSEntry::UDS_NAME, "dockes bla"/*qd.query*/);
+            entry.insert(KIO::UDSEntry::UDS_URL, "recoll:other query");
+            entry.insert(KIO::UDSEntry::UDS_DISPLAY_NAME, qd.query);
+            entry.insert(KIO::UDSEntry::UDS_ACCESS, 0777);
+            entry.insert(KIO::UDSEntry::UDS_SIZE, 20480);
+            entry.insert(KIO::UDSEntry::UDS_MODIFICATION_TIME, time(0));
+            entry.insert(KIO::UDSEntry::UDS_CREATION_TIME, time(0));
             entry.insert(KIO::UDSEntry::UDS_FILE_TYPE, S_IFDIR);
-            entry.insert(KIO::UDSEntry::UDS_ACCESS, 0700);
             entry.insert(KIO::UDSEntry::UDS_MIME_TYPE, "inode/directory");
-            entry.insert(KIO::UDSEntry::UDS_NAME, qd.query);
-            entry.insert( KIO::UDSEntry::UDS_MODIFICATION_TIME, time(0));
-            entry.insert( KIO::UDSEntry::UDS_CREATION_TIME, time(0));
+#endif
         }
+    } else {
+        qDebug() << "RecollProtocol::stat: none of the above ??";
     }
     statEntry(entry);
     finished();
 }
 
-void RecollProtocol::listDir(const KUrl& url)
+void RecollProtocol::listDir(const QUrl& url)
 {
-    kDebug() << url << endl;
+    qDebug() << "RecollProtocol::listDir: url: " << url;
 
     UrlIngester ingest(this, url);
     UrlIngester::RootEntryType rettp;
@@ -240,7 +258,7 @@ void RecollProtocol::listDir(const KUrl& url)
         switch(rettp) {
         case UrlIngester::UIRET_ROOT:
             {
-                kDebug() << "list /" << endl;
+                qDebug() << "RecollProtocol::listDir:list /";
                 UDSEntryList entries;
                 KIO::UDSEntry entry;
                 createRootEntry(entry);
@@ -254,7 +272,7 @@ void RecollProtocol::listDir(const KUrl& url)
             }
             return;
         default:
-            error(ERR_CANNOT_ENTER_DIRECTORY, "");
+	  error(ERR_CANNOT_ENTER_DIRECTORY, QString());
             return;
         }
     } else if (ingest.isQuery(&qd)) {
@@ -262,8 +280,8 @@ void RecollProtocol::listDir(const KUrl& url)
         // konqueror autocompletion it comes with a / at the end,
         // which offers an opportunity to not perform it.
         if (ingest.endSlashQuery()) {
-            kDebug() << "Ends With /" << endl;
-            error(ERR_SLAVE_DEFINED, "Autocompletion search aborted");
+            qDebug() << "RecollProtocol::listDir: Ends With /";
+            error(ERR_SLAVE_DEFINED, u8s2qs("Autocompletion search aborted"));
             return;
         }
         if (!syncSearch(qd)) {
@@ -272,8 +290,8 @@ void RecollProtocol::listDir(const KUrl& url)
         }
         // Fallthrough to actually listing the directory
     } else {
-        kDebug() << "Cant grok input url";
-        error(ERR_CANNOT_ENTER_DIRECTORY, "");
+        qDebug() << "RecollProtocol::listDir: Cant grok input url";
+        error(ERR_CANNOT_ENTER_DIRECTORY, QString());
         return;
     }
 
@@ -291,28 +309,18 @@ void RecollProtocol::listDir(const KUrl& url)
         int pagelen = m_source->getSeqSlice(pagebase, pagesize, page);
         UDSEntry entry;
         if (pagelen < 0) {
-            error(ERR_SLAVE_DEFINED, "Internal error");
-            listEntry(entry, true);
+	  error(ERR_SLAVE_DEFINED, u8s2qs("Internal error"));
             break;
         }
+        UDSEntryList entries;
         for (int i = 0; i < pagelen; i++) {
-            listEntry(resultToUDSEntry(page[i].doc, i), false);
+            entries.push_back(resultToUDSEntry(page[i].doc, i));
         }
+        listEntries(entries);
         if (pagelen != pagesize) {
-            listEntry(entry, true);
             break;
         }
         pagebase += pagelen;
     }
     finished();
 }
-
-#else // <--- KDE 4.1+ 
-
-#include <kurl.h>
-#include "kio_recoll.h"
-bool RecollProtocol::isRecollResult(const KUrl &, int *, QString *)
-{
-    return false;
-}
-#endif 

@@ -37,13 +37,16 @@ class RecollProtocol;
 class RecollKioPager : public ResListPager {
 public:
     RecollKioPager() : m_parent(0) {}
-    void setParent(RecollProtocol *proto) {m_parent = proto;}
+    void setParent(RecollProtocol *proto) {
+        m_parent = proto;
+    }
 
     virtual bool append(const std::string& data);
-    virtual bool append(const std::string& data, int, const Rcl::Doc&)
-    {return append(data);}
+    virtual bool append(const std::string& data, int, const Rcl::Doc&) {
+        return append(data);
+    }
     virtual std::string detailsLink();
-    virtual const std::string &parFormat();
+    virtual const std::string& parFormat();
     virtual std::string nextUrl();
     virtual std::string prevUrl();
     virtual std::string pageTop();
@@ -60,7 +63,7 @@ public:
     int page;
     bool isDetReq;
     bool sameQuery(const QueryDesc& o) const {
-	return !opt.compare(o.opt) && !query.compare(o.query);
+        return !opt.compare(o.opt) && !query.compare(o.query);
     }
 };
 
@@ -71,29 +74,41 @@ public:
     UrlIngester(RecollProtocol *p, const QUrl& url);
     enum RootEntryType {UIRET_NONE, UIRET_ROOT, UIRET_HELP, UIRET_SEARCH};
     bool isRootEntry(RootEntryType *tp) {
-	if (m_type != UIMT_ROOTENTRY) return false;
-	*tp = m_retType;
-	return true;
+        if (m_type != UIMT_ROOTENTRY) {
+            return false;
+        }
+        *tp = m_retType;
+        return true;
     }
     bool isQuery(QueryDesc *q) {
-	if (m_type != UIMT_QUERY) return false;
-	*q = m_query;
-	return true;
+        if (m_type != UIMT_QUERY) {
+            return false;
+        }
+        *q = m_query;
+        return true;
     }
     bool isResult(QueryDesc *q, int *num) {
-	if (m_type != UIMT_QUERYRESULT) return false;
-	*q = m_query;
-	*num = m_resnum;
-	return true;
+        if (m_type != UIMT_QUERYRESULT) {
+            return false;
+        }
+        *q = m_query;
+        *num = m_resnum;
+        return true;
     }
     bool isPreview(QueryDesc *q, int *num) {
-	if (m_type != UIMT_PREVIEW) return false;
-	*q = m_query;
-	*num = m_resnum;
-	return true;
+        if (m_type != UIMT_PREVIEW) {
+            return false;
+        }
+        *q = m_query;
+        *num = m_resnum;
+        return true;
     }
-    bool endSlashQuery() {return m_slashend;}
-    bool alwaysDir() {return m_alwaysdir;}
+    bool endSlashQuery() {
+        return m_slashend;
+    }
+    bool alwaysDir() {
+        return m_alwaysdir;
+    }
 
 private:
     RecollProtocol *m_parent;
@@ -103,7 +118,8 @@ private:
     RootEntryType   m_retType;
     int             m_resnum;
     enum MyType {UIMT_NONE, UIMT_ROOTENTRY, UIMT_QUERY, UIMT_QUERYRESULT,
-		 UIMT_PREVIEW};
+                 UIMT_PREVIEW
+                };
     MyType           m_type;
 };
 
@@ -113,7 +129,7 @@ private:
  * Things are made a little complicated because KIO slaves can't hope
  * that their internal state will remain consistent with their user
  * application state: slaves die, are restarted, reused, at random
- * between requests. 
+ * between requests.
  * In our case, this means that any request has to be processed
  * without reference to the last operation performed. Ie, if the
  * search parameters are not those from the last request, the search
@@ -130,17 +146,17 @@ private:
  * functionality, and one based on a directory listing model, which
  * will always be more limited, but may be useful in some cases to
  * allow easy copying of files etc. Which one is in use is decided by
- * the form of the URL. 
+ * the form of the URL.
  */
 class RecollProtocol : public KIO::SlaveBase {
- public:
-    RecollProtocol(const QByteArray &pool, const QByteArray &app );
+public:
+    RecollProtocol(const QByteArray& pool, const QByteArray& app);
     virtual ~RecollProtocol();
     virtual void mimetype(const QUrl& url);
     virtual void get(const QUrl& url);
     // The directory mode is not available with KDE 4.0, I could find
     // no way to avoid crashing kdirmodel
-    virtual void stat(const QUrl & url);
+    virtual void stat(const QUrl& url);
     virtual void listDir(const QUrl& url);
 
     static RclConfig  *o_rclconfig;
@@ -148,9 +164,9 @@ class RecollProtocol : public KIO::SlaveBase {
     friend class RecollKioPager;
     friend class UrlIngester;
 
- private:
+private:
     bool maybeOpenDb(std::string& reason);
-    bool URLToQuery(const QUrl &url, QString& q, QString& opt, int *page=0);
+    bool URLToQuery(const QUrl& url, QString& q, QString& opt, int *page = 0);
     bool doSearch(const QueryDesc& qd);
 
     void searchPage();
@@ -159,14 +175,14 @@ class RecollProtocol : public KIO::SlaveBase {
     bool syncSearch(const QueryDesc& qd);
     void htmlDoSearch(const QueryDesc& qd);
     void showPreview(const Rcl::Doc& doc);
-    bool isRecollResult(const QUrl &url, int *num, QString* q);
+    bool isRecollResult(const QUrl& url, int *num, QString* q);
 
     bool        m_initok;
     Rcl::Db    *m_rcldb;
     std::string      m_reason;
     bool        m_alwaysdir;
     // english by default else env[RECOLL_KIO_STEMLANG]
-    std::string      m_stemlang; 
+    std::string      m_stemlang;
 
     // Search state: because of how the KIO slaves are used / reused,
     // we can't be sure that the next request will be for the same
@@ -181,12 +197,14 @@ class RecollProtocol : public KIO::SlaveBase {
     QueryDesc      m_query;
 };
 
-extern "C" { __attribute__ ((visibility("default"))) int 
-               kdemain(int argc, char **argv);}
+extern "C" {
+    __attribute__((visibility("default"))) int
+    kdemain(int argc, char **argv);
+}
 
 inline QString u8s2qs(const string& s)
 {
-  return QString::fromUtf8(s.c_str());
+    return QString::fromUtf8(s.c_str());
 }
 
 

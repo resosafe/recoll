@@ -95,7 +95,8 @@ z
 pthread
 )
 
-install(FILES recoll.protocol DESTINATION ${SERVICES_INSTALL_DIR})
+install(FILES recoll.protocol recollf.protocol 
+              DESTINATION ${SERVICES_INSTALL_DIR})
 install(FILES data/welcome.html	data/help.html
 	      DESTINATION  ${DATA_INSTALL_DIR}/kio_recoll)
 

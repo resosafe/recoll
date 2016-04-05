@@ -19,7 +19,7 @@
  * A lot of code in this file was copied from kio_beagle 0.4.0,
  * which is a GPL program. The authors listed are:
  * Debajyoti Bera <dbera.web@gmail.com>
- * 
+ *
  * KDE4 port:
  * Stephan Binner <binner@kde.org>
  */
@@ -45,50 +45,53 @@ static const QString resultBaseName("recollResult");
 
 // Check if the input URL is of the form that konqueror builds by
 // appending one of our result file names to the directory name (which
-// is the search string). If it is, extract return the result document
-// number. Possibly restart the search if the search string does not
-// match the current one
-bool RecollProtocol::isRecollResult(const QUrl &url, int *num, QString *q)
+// is the search string). If it is, extract and return the result
+// document number. Possibly restart the search if the search string
+// does not match the current one
+bool RecollProtocol::isRecollResult(const QUrl& url, int *num, QString *q)
 {
     *num = -1;
     qDebug() << "RecollProtocol::isRecollResult: url: " << url;
 
     // Basic checks
-    if (!url.host().isEmpty() || url.path().isEmpty() || 
-        (url.scheme().compare("recoll") && url.scheme().compare("recollf"))) {
+    if (!url.host().isEmpty() || url.path().isEmpty() ||
+            (url.scheme().compare("recoll") && url.scheme().compare("recollf"))) {
         qDebug() << "RecollProtocol::isRecollResult: no: url.host " <<
-            url.host() << " path " << url.path() << " scheme " << url.scheme();
+                 url.host() << " path " << url.path() << " scheme " << url.scheme();
         return false;
     }
 
     QString path = url.path();
     qDebug() << "RecollProtocol::isRecollResult: path: " << path;
-//    if (!path.startsWith("/")) {
-//        return false;
-//    }
+    if (!path.startsWith("/")) {
+        return false;
+    }
 
     // Look for the last '/' and check if it is followed by
     // resultBaseName (riiiight...)
     int slashpos = path.lastIndexOf("/");
-    if (slashpos == -1 || slashpos == 0 || slashpos == path.length() -1)
+    if (slashpos == -1 || slashpos == 0 || slashpos == path.length() - 1) {
         return false;
+    }
     slashpos++;
     //qDebug() << "Comparing " << path.mid(slashpos, resultBaseName.length()) <<
     //  "and " << resultBaseName;
-    if (path.mid(slashpos, resultBaseName.length()).compare(resultBaseName))
+    if (path.mid(slashpos, resultBaseName.length()).compare(resultBaseName)) {
         return false;
+    }
 
     // Extract the result number
     QString snum = path.mid(slashpos + resultBaseName.length());
     sscanf(snum.toUtf8(), "%d", num);
-    if (*num == -1)
+    if (*num == -1) {
         return false;
+    }
 
     //qDebug() << "URL analysis ok, num:" << *num;
 
     // We do have something that ressembles a recoll result locator. Check if
     // this matches the current search, else have to run the requested one
-    *q = path.mid(1, slashpos-2);
+    *q = path.mid(1, slashpos - 2);
     return true;
 }
 
@@ -96,33 +99,59 @@ bool RecollProtocol::isRecollResult(const QUrl &url, int *num, QString *q)
 static const UDSEntry resultToUDSEntry(const Rcl::Doc& doc, int num)
 {
     UDSEntry entry;
-    
-    QUrl url(doc.url.c_str());
-//    qDebug() << doc.url.c_str();
 
-    entry.insert(KIO::UDSEntry::UDS_DISPLAY_NAME, url.fileName());
-    char cnum[30];sprintf(cnum, "%04d", num);
+    QUrl url(doc.url.c_str());
+    //qDebug() << doc.url.c_str();
+
+    /// Filename - as displayed in directory listings etc.
+    /// "." has the usual special meaning of "current directory"
+    /// UDS_NAME must always be set and never be empty, neither contain '/'.
+    ///
+    /// Note that KIO will append the UDS_NAME to the url of their
+    /// parent directory, so all kioslaves must use that naming scheme
+    /// ("url_of_parent/filename" will be the full url of that file).
+    /// To customize the appearance of files without changing the url
+    /// of the items, use UDS_DISPLAY_NAME.  
+    //
+    // Use the result number to designate the file in case we are
+    // asked to access it
+    char cnum[30];
+    sprintf(cnum, "%04d", num);
     entry.insert(KIO::UDSEntry::UDS_NAME, resultBaseName + cnum);
 
-    if (!doc.mimetype.compare("application/x-fsdirectory") || 
-        !doc.mimetype.compare("inode/directory")) {
+    // Display the real file name
+    entry.insert(KIO::UDSEntry::UDS_DISPLAY_NAME, url.fileName());
+
+    /// A local file path if the ioslave display files sitting on the
+    /// local filesystem (but in another hierarchy, e.g. settings:/ or
+    /// remote:/)
+    entry.insert(KIO::UDSEntry::UDS_LOCAL_PATH, url.path());
+
+    /// This file is a shortcut or mount, pointing to an
+    /// URL in a different hierarchy
+    /// @since 4.1
+    // We should probably set this only if the scheme is not 'file' (e.g.
+    // from the web cache).
+    entry.insert(KIO::UDSEntry::UDS_TARGET_URL, doc.url.c_str());
+
+    if (!doc.mimetype.compare("application/x-fsdirectory") ||
+            !doc.mimetype.compare("inode/directory")) {
         entry.insert(KIO::UDSEntry::UDS_MIME_TYPE, "inode/directory");
         entry.insert(KIO::UDSEntry::UDS_FILE_TYPE, S_IFDIR);
     } else {
         entry.insert(KIO::UDSEntry::UDS_MIME_TYPE, doc.mimetype.c_str());
-        entry.insert( KIO::UDSEntry::UDS_FILE_TYPE, S_IFREG);
+        entry.insert(KIO::UDSEntry::UDS_FILE_TYPE, S_IFREG);
     }
-    entry.insert(KIO::UDSEntry::UDS_LOCAL_PATH, url.path());
+
     // For local files, supply the usual file stat information
     struct stat info;
     if (lstat(url.path().toUtf8(), &info) >= 0) {
-        entry.insert( KIO::UDSEntry::UDS_SIZE, info.st_size);
-        entry.insert( KIO::UDSEntry::UDS_ACCESS, info.st_mode);
-        entry.insert( KIO::UDSEntry::UDS_MODIFICATION_TIME, info.st_mtime);
-        entry.insert( KIO::UDSEntry::UDS_ACCESS_TIME, info.st_atime);
-        entry.insert( KIO::UDSEntry::UDS_CREATION_TIME, info.st_ctime);
+        entry.insert(KIO::UDSEntry::UDS_SIZE, info.st_size);
+        entry.insert(KIO::UDSEntry::UDS_ACCESS, info.st_mode);
+        entry.insert(KIO::UDSEntry::UDS_MODIFICATION_TIME, info.st_mtime);
+        entry.insert(KIO::UDSEntry::UDS_ACCESS_TIME, info.st_atime);
+        entry.insert(KIO::UDSEntry::UDS_CREATION_TIME, info.st_ctime);
     }
-    entry.insert(KIO::UDSEntry::UDS_TARGET_URL, doc.url.c_str());
 
     return entry;
 }
@@ -132,10 +161,10 @@ static const UDSEntry resultToUDSEntry(const Rcl::Doc& doc, int num)
 static void createRootEntry(KIO::UDSEntry& entry)
 {
     entry.clear();
-    entry.insert( KIO::UDSEntry::UDS_NAME, ".");
-    entry.insert( KIO::UDSEntry::UDS_FILE_TYPE, S_IFDIR);
-    entry.insert( KIO::UDSEntry::UDS_ACCESS, 0700);
-    entry.insert( KIO::UDSEntry::UDS_MIME_TYPE, "inode/directory");
+    entry.insert(KIO::UDSEntry::UDS_NAME, ".");
+    entry.insert(KIO::UDSEntry::UDS_FILE_TYPE, S_IFDIR);
+    entry.insert(KIO::UDSEntry::UDS_ACCESS, 0700);
+    entry.insert(KIO::UDSEntry::UDS_MIME_TYPE, "inode/directory");
 }
 
 // Points to html query screen
@@ -154,9 +183,9 @@ static void createGoHomeEntry(KIO::UDSEntry& entry)
 // Points to help file
 static void createGoHelpEntry(KIO::UDSEntry& entry)
 {
-    QString location = 
-	QStandardPaths::locate(QStandardPaths::GenericDataLocation, 
-			       "kio_recoll/help.html");
+    QString location =
+        QStandardPaths::locate(QStandardPaths::GenericDataLocation,
+                               "kio_recoll/help.html");
     entry.clear();
     entry.insert(KIO::UDSEntry::UDS_NAME, "help");
     entry.insert(KIO::UDSEntry::UDS_DISPLAY_NAME, "Recoll help (click me first)");
@@ -168,6 +197,7 @@ static void createGoHelpEntry(KIO::UDSEntry& entry)
     entry.insert(KIO::UDSEntry::UDS_ICON_NAME, "help");
 }
 
+// As far as I can see we only ever get this on '/' so why all the code?
 void RecollProtocol::stat(const QUrl& url)
 {
     qDebug() << "RecollProtocol::stat:" << url;
@@ -175,19 +205,19 @@ void RecollProtocol::stat(const QUrl& url)
     UrlIngester ingest(this, url);
 
     KIO::UDSEntry entry;
-    entry.insert(KIO::UDSEntry::UDS_TARGET_URL, url.url());
-    entry.insert(KIO::UDSEntry::UDS_URL, url.url());
+//    entry.insert(KIO::UDSEntry::UDS_TARGET_URL, url.url());
+//    entry.insert(KIO::UDSEntry::UDS_URL, url.url());
     UrlIngester::RootEntryType rettp;
     QueryDesc qd;
     int num;
     if (ingest.isRootEntry(&rettp)) {
         qDebug() << "RecollProtocol::stat: root entry";
-        switch(rettp) {
+        switch (rettp) {
         case UrlIngester::UIRET_ROOT:
             qDebug() << "RecollProtocol::stat: root";
             createRootEntry(entry);
             break;
-        case UrlIngester::UIRET_HELP: 
+        case UrlIngester::UIRET_HELP:
             qDebug() << "RecollProtocol::stat: root help";
             createGoHelpEntry(entry);
             break;
@@ -195,9 +225,9 @@ void RecollProtocol::stat(const QUrl& url)
             qDebug() << "RecollProtocol::stat: root search";
             createGoHomeEntry(entry);
             break;
-        default: 
+        default:
             qDebug() << "RecollProtocol::stat: ??";
-	  error(ERR_DOES_NOT_EXIST, QString());
+            error(ERR_DOES_NOT_EXIST, QString());
             break;
         }
     } else if (ingest.isResult(&qd, &num)) {
@@ -207,14 +237,14 @@ void RecollProtocol::stat(const QUrl& url)
             if (num >= 0 && m_source && m_source->getDoc(num, doc)) {
                 entry = resultToUDSEntry(doc, num);
             } else {
-	      error(ERR_DOES_NOT_EXIST, QString());
+                error(ERR_DOES_NOT_EXIST, QString());
             }
         } else {
             // hopefully syncSearch() set the error?
         }
     } else if (ingest.isQuery(&qd)) {
         qDebug() << "RecollProtocol::stat: isquery";
-        // ie "recoll:/some string" or "recoll:/some string/" 
+        // ie "recoll:/some string" or "recoll:/some string/"
         //
         // We have a problem here. We'd like to let the user enter
         // either form and get an html or a dir contents result,
@@ -224,20 +254,15 @@ void RecollProtocol::stat(const QUrl& url)
         //
         // Another approach would be to use different protocol names
         // to avoid any possibility of mixups
-        if (true || m_alwaysdir || ingest.alwaysDir() || ingest.endSlashQuery()) {
+        if (m_alwaysdir || ingest.alwaysDir() || ingest.endSlashQuery()) {
             qDebug() << "RecollProtocol::stat: Directory type:";
             // Need to check no / in there
-#if 0
-            entry.insert(KIO::UDSEntry::UDS_NAME, "dockes bla"/*qd.query*/);
-            entry.insert(KIO::UDSEntry::UDS_URL, "recoll:other query");
-            entry.insert(KIO::UDSEntry::UDS_DISPLAY_NAME, qd.query);
-            entry.insert(KIO::UDSEntry::UDS_ACCESS, 0777);
-            entry.insert(KIO::UDSEntry::UDS_SIZE, 20480);
+            entry.insert(KIO::UDSEntry::UDS_NAME, qd.query);
+            entry.insert(KIO::UDSEntry::UDS_ACCESS, 0700);
             entry.insert(KIO::UDSEntry::UDS_MODIFICATION_TIME, time(0));
             entry.insert(KIO::UDSEntry::UDS_CREATION_TIME, time(0));
             entry.insert(KIO::UDSEntry::UDS_FILE_TYPE, S_IFDIR);
             entry.insert(KIO::UDSEntry::UDS_MIME_TYPE, "inode/directory");
-#endif
         }
     } else {
         qDebug() << "RecollProtocol::stat: none of the above ??";
@@ -255,24 +280,23 @@ void RecollProtocol::listDir(const QUrl& url)
     QueryDesc qd;
 
     if (ingest.isRootEntry(&rettp)) {
-        switch(rettp) {
-        case UrlIngester::UIRET_ROOT:
-            {
-                qDebug() << "RecollProtocol::listDir:list /";
-                UDSEntryList entries;
-                KIO::UDSEntry entry;
-                createRootEntry(entry);
-                entries.append(entry);
-                createGoHomeEntry(entry);
-                entries.append(entry);
-                createGoHelpEntry(entry);
-                entries.append(entry);
-                listEntries(entries);
-                finished();
-            }
-            return;
+        switch (rettp) {
+        case UrlIngester::UIRET_ROOT: {
+            qDebug() << "RecollProtocol::listDir:list /";
+            UDSEntryList entries;
+            KIO::UDSEntry entry;
+            createRootEntry(entry);
+            entries.append(entry);
+            createGoHomeEntry(entry);
+            entries.append(entry);
+            createGoHelpEntry(entry);
+            entries.append(entry);
+            listEntries(entries);
+            finished();
+        }
+        return;
         default:
-	  error(ERR_CANNOT_ENTER_DIRECTORY, QString());
+            error(ERR_CANNOT_ENTER_DIRECTORY, QString());
             return;
         }
     } else if (ingest.isQuery(&qd)) {
@@ -297,10 +321,12 @@ void RecollProtocol::listDir(const QUrl& url)
 
     static int maxentries = -1;
     if (maxentries == -1) {
-        if (o_rclconfig)
+        if (o_rclconfig) {
             o_rclconfig->getConfParam("kio_max_direntries", &maxentries);
-        if (maxentries == -1)
+        }
+        if (maxentries == -1) {
             maxentries = 10000;
+        }
     }
     static const int pagesize = 200;
     int pagebase = 0;
@@ -309,7 +335,7 @@ void RecollProtocol::listDir(const QUrl& url)
         int pagelen = m_source->getSeqSlice(pagebase, pagesize, page);
         UDSEntry entry;
         if (pagelen < 0) {
-	  error(ERR_SLAVE_DEFINED, u8s2qs("Internal error"));
+            error(ERR_SLAVE_DEFINED, u8s2qs("Internal error"));
             break;
         }
         UDSEntryList entries;

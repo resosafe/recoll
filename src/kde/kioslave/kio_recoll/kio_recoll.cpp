@@ -52,9 +52,6 @@ RecollProtocol::RecollProtocol(const QByteArray& pool, const QByteArray& app)
       m_alwaysdir(false)
 {
     qDebug() << "RecollProtocol::RecollProtocol()";
-    int fd = ::creat("/tmp/recolldebug", 0666);
-    ::write(fd, "Hello\n", strlen("Hello\n"));
-    ::close(fd);
     if (o_rclconfig == 0) {
         o_rclconfig = recollinit(0, 0, m_reason);
         if (!o_rclconfig || !o_rclconfig->ok()) {

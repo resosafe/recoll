@@ -32,7 +32,7 @@ using std::string;
 #include "rcldb.h"
 #include "reslistpager.h"
 #include "docseq.h"
-#include MEMORY_INCLUDE
+#include "refcntr.h"
 
 class RecollProtocol;
 
@@ -181,7 +181,7 @@ class RecollProtocol : public KIO::SlaveBase {
     // (one slave several konqueror windows) would be to have a small
     // cache of recent searches kept open.
     RecollKioPager m_pager;
-    STD_SHARED_PTR<DocSequence> m_source;
+    RefCntr<DocSequence> m_source;
     // Note: page here is not used, current page always comes from m_pager.
     QueryDesc      m_query;
 };

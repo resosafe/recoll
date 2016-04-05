@@ -332,8 +332,8 @@ bool RecollProtocol::doSearch(const QueryDesc& qd)
 	return false;
     }
 
-    STD_SHARED_PTR<Rcl::SearchData> sdata(sd);
-    STD_SHARED_PTR<Rcl::Query>query(new Rcl::Query(m_rcldb));
+    RefCntr<Rcl::SearchData> sdata(sd);
+    RefCntr<Rcl::Query>query(new Rcl::Query(m_rcldb));
     query->setCollapseDuplicates(prefs.collapseDuplicates);
     if (!query->setQuery(sdata)) {
 	m_reason = "Query execute failed. Invalid query or syntax error?";
@@ -342,12 +342,12 @@ bool RecollProtocol::doSearch(const QueryDesc& qd)
     }
 
     DocSequenceDb *src = 
-	new DocSequenceDb(STD_SHARED_PTR<Rcl::Query>(query), "Query results", sdata);
+	new DocSequenceDb(RefCntr<Rcl::Query>(query), "Query results", sdata);
     if (src == 0) {
 	error(KIO::ERR_SLAVE_DEFINED, "Can't build result sequence");
 	return false;
     }
-    m_source = STD_SHARED_PTR<DocSequence>(src);
+    m_source = RefCntr<DocSequence>(src);
     // Reset pager in all cases. Costs nothing, stays at page -1 initially
     // htmldosearch will fetch the first page if needed.
     m_pager.setDocSource(m_source);

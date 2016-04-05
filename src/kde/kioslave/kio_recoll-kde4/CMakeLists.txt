@@ -16,11 +16,14 @@ set(rcltop ${CMAKE_CURRENT_SOURCE_DIR}/../../../)
 
 # Execute recoll configuration to create autoconfig.h and version.h and
 # generate a PIC lib
-execute_process(COMMAND ${rcltop}/configure --disable-static --disable-qtgui --disable-x11mon --prefix=${CMAKE_INSTALL_PREFIX} --mandir=${CMAKE_INSTALL_PREFIX}/share/man
+execute_process(COMMAND ${rcltop}/configure --disable-qtgui --disable-x11mon --enable-pic --prefix=${CMAKE_INSTALL_PREFIX} --mandir=${CMAKE_INSTALL_PREFIX}/share/man
 		WORKING_DIRECTORY ${rcltop}
 )
+execute_process(COMMAND /bin/sh mkMake
+		WORKING_DIRECTORY ${rcltop}/lib
+)
 
-link_directories(${rcltop}/.libs ${CMAKE_INSTALL_PREFIX}/lib)
+link_directories(${rcltop}/lib ${CMAKE_INSTALL_PREFIX}/lib)
 
 include_directories (${CMAKE_SOURCE_DIR} ${CMAKE_BINARY_DIR} ${KDE4_INCLUDES}
   ${rcltop}/aspell 
@@ -49,16 +52,21 @@ ENDIF(PTHREAD_IN_LIBPTHREAD)
 # Had the idea to add e.g. /usr/lib/recoll to the rpath so that the dyn lib 
 # will be found at run time. But this does not seem to work with debian 
 # which strips RPATH by default (I think there is a way for libs in app-specific
-# paths but I did not find it). Link with the .a instead.
+# paths but I did not find it. Link with the .a instead.
 #SET(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib/recoll")
 
 kde4_add_plugin(kio_recoll ${kio_recoll_SRCS})
 
-add_custom_target(rcllib
-                 COMMAND make PicStatic
-                 WORKING_DIRECTORY ${rcltop}
+add_custom_target(parser
+                 COMMAND make wasaparse.tab.cpp
+                 WORKING_DIRECTORY ${rcltop}/query
 )
-add_dependencies(kio_recoll rcllib)
+add_custom_target(rcllib
+                 COMMAND make librecoll.a
+                 WORKING_DIRECTORY ${rcltop}/lib
+)
+add_dependencies(rcllib parser)
+add_dependencies(kio_recoll parser rcllib)
 
 target_link_libraries(kio_recoll recoll xapian z ${EXTRA_LIBS} ${KDE4_KIO_LIBS})
 

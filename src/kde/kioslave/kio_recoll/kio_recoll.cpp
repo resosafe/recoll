@@ -351,7 +351,7 @@ bool RecollProtocol::doSearch(const QueryDesc& qd)
         error(KIO::ERR_SLAVE_DEFINED, u8s2qs("Can't build result sequence"));
         return false;
     }
-    m_source = STD_SHARED_PTR<DocSequence>(src);
+    m_source = RefCntr<DocSequence>(src);
     // Reset pager in all cases. Costs nothing, stays at page -1 initially
     // htmldosearch will fetch the first page if needed.
     m_pager.setDocSource(m_source);

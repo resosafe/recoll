@@ -18,20 +18,17 @@
 	newer</em>, which presents results as directory entries</li>
   </ul>
 
-  <p>The module is still in its infancy. You will undoubtedly obtain
-    strange effects from time to time. If you have any remarks or
-    ideas about improving kio_recoll, or observe an interesting and
-    reproducible sequence, please <a href="mailto:jfd@recoll.org">
-    report it</a>.</p>
-  <p><b>kio_recoll</b> is primarily
-    designed and tested with <b>konqueror</b>, and you will
-    undoubtedly get <i>even</i> more surprising effects with other tools.</p>
-
-  <p>The Html interface is currently much more usable. The directory
-    interface is extremely quirky.</p>
+  <p>With recent KDE versions (now: 2016), the file manager
+    interface works in Dolphin, and both the file manager and the HTML
+    interface work in Konqueror.</p>
+  
+  <p>You will undoubtedly obtain strange effects from time to time. If
+    you have any remarks or ideas about improving kio_recoll, or
+    observe an interesting and reproducible sequence,
+    please <a href="mailto:jfd@recoll.org"> report it</a>.</p>
 
   <p>The module is particularly unhelpful with search hits inside
-    email folders, which Konqueror has no way to access.</p>
+    email folders, which Konqueror or Dolphin have no way to access.</p>
 
 
   <h3>HTML interface</h3>
@@ -62,37 +59,42 @@
 
   <p>There are several ways to enter this interface:</p>
   <ul>
-    <li>Using "recollf" as protocol name instead of "recoll". This is
-      probably the easiest option inside open dialogs.</li>
+    <li>Dolphin will only present the file manager interface. Enter
+      <i>recoll:/some&nbsp;query</i>
+      or <i>recoll:&nbsp;some&nbsp;query</i> in the address bar. Note: 
+      single-slash, not double, you will get something like "Protocol
+      unknown" if you enter 2 slashes.</li>
 
-    <li>Using an URL ending with a&nbsp;'/', ie:
-      <blockquote>
-	<a href="recoll:/red apples ext:html/">
-	  recoll:/red apples ext:html/</a>
-      </blockquote>
-    </li>
-    <li>Users who will want to use the file manager view most of the
-      time can set the <code>RECOLL_KIO_ALWAYS_DIR</code> environment
-      variable or the <code>kio_always_dir</code> recoll.conf variable
-      to&nbsp;1. The HTML interface will then only be accessible
-      through the search link in the top "recoll:" view.</li>
+    <li>Konqueror: this supports both the file manager and HTML
+    interfaces. You can force using the file manager interface in the
+      following ways:
+      <ul>
+        <li>Using "recollf" as protocol name instead of "recoll". This is
+          probably the easiest option inside open dialogs.</li>
+
+        <li>Using an URL ending with a&nbsp;'/', ie:
+          <blockquote>
+	    <a href="recoll:/red apples ext:html/">
+	      recoll:/red apples ext:html/</a>
+          </blockquote>
+        </li>
+        <li>If you would like to use the file manager view most of the
+          time, you can set the <code>RECOLL_KIO_ALWAYS_DIR</code> environment
+          variable or the <code>kio_always_dir</code> recoll.conf variable
+          to&nbsp;1. The HTML interface will then only be accessible
+          through the search link in the top "recoll:" view.</li>
+      </ul>
   </ul>
 
   <p>No search result details (samples, relevance etc.) are available,
     but this interface allows multiple selections and copies, usage
     inside any KDE open dialog, etc.</p>
 
-  <p>To avoid swamping the interface with thousands of results, the
-    result count is limited to 100 by default. You can change this value
-    by setting the <code>kio_max_direntries</code> parameter in your recoll
-    configuration file (typically ~/.recoll/recoll.conf)</p>
-
-  <p>Because of limitations in the current KIO slave usage, the actual
-    entry names are not those displayed but synthetic ones like
-    "recollResultxxx". This has unfortunate side-effects when
-    dragging/dropping the entries to some other application, or when
-    using an open dialog (the opened file doesn't have the correct path
-    to the original file).</p>
+  <p>To avoid swamping the interface with too many thousands of
+    results, the result count is limited to 10000 by default. You can
+    change this value by setting the <code>kio_max_direntries</code>
+    parameter in your recoll configuration file (typically
+    ~/.recoll/recoll.conf)</p>
 
   <p><a href="recoll:///search.html">Recoll Search</a></p>
 

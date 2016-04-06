@@ -1,18 +1,24 @@
 Summary:        Desktop full text search tool with Qt GUI
 Name:           recoll
-Version:        1.20.6
+Version:        1.21.6
 Release:        1%{?dist}
 Group:          Applications/Databases
 License:        GPLv2+
 URL:            http://www.lesbonscomptes.com/recoll/
 Source0:        http://www.lesbonscomptes.com/recoll/recoll-%{version}.tar.gz
-BuildRequires:  qt-devel
-BuildRequires:  qtwebkit-devel
-BuildRequires:  python-devel
-BuildRequires:  zlib-devel
+# Source10:       qmake-qt4.sh
 BuildRequires:  aspell-devel
-BuildRequires:  xapian-core-devel
+BuildRequires:  bison
 BuildRequires:  desktop-file-utils
+# kio
+BuildRequires:  kdelibs4-devel
+BuildRequires:  qt5-qtbase-devel
+BuildRequires:  qt5-qtwebkit-devel
+BuildRequires:  extra-cmake-modules
+BuildRequires:  kf5-kio-devel
+BuildRequires:  python2-devel
+BuildRequires:  xapian-core-devel
+BuildRequires:  zlib-devel
 Requires:       xdg-utils
 
 %description
@@ -20,15 +26,30 @@ Recoll is a personal full text search package for Linux, FreeBSD and
 other Unix systems. It is based on a very strong back end (Xapian), for
 which it provides an easy to use, feature-rich, easy administration
 interface.
-%global __provides_exclude_from ^%{_libdir}/recoll/librecoll\\.so.*$
-%global __requires_exclude      ^librecoll\\.so.*$
+
+%package       kio
+Summary:       KIO support for recoll
+Group:         Applications/Databases
+Requires:      %{name} = %{version}-%{release}
+
+%description   kio
+The recoll KIO slave allows performing a recoll search by entering an
+appropriate URL in a KDE open dialog, or with an HTML-based interface
+displayed in Konqueror.
 
 %prep
 %setup -q -n %{name}-%{version}
 chmod 0644 utils/{conftree.cpp,conftree.h,debuglog.cpp,debuglog.h}
 
 %build
-export QMAKE=qmake-qt4
+CFLAGS="%{optflags}"; export CFLAGS
+CXXFLAGS="%{optflags}"; export CXXFLAGS
+LDFLAGS="%{?__global_ldflags}"; export LDFLAGS
+
+# force use of custom/local qmake, to inject proper build flags (above)
+#install -m755 -D %{SOURCE10} qmake-qt4.sh
+export QMAKE=qmake-qt5
+
 %configure
 make %{?_smp_mflags}
 
@@ -46,6 +67,28 @@ rm -f %{buildroot}/usr/share/recoll/filters/xdg-open
 chmod 0755 %{buildroot}/usr/share/recoll/filters/rclexecm.py
 chmod 0755 %{buildroot}%{_libdir}/recoll/librecoll.so.*
 
+# kio_recoll -kde5
+(
+mkdir kde/kioslave/kio_recoll/build && pushd kde/kioslave/kio_recoll/build
+%cmake ..
+make %{?_smp_mflags} VERBOSE=1
+make install DESTDIR=%{buildroot}
+popd
+)
+
+# kio_recoll -kde4
+(
+mkdir kde/kioslave/kio_recoll-kde4/build && \
+      pushd kde/kioslave/kio_recoll-kde4/build
+%cmake ..
+make %{?_smp_mflags} VERBOSE=1
+make install DESTDIR=%{buildroot}
+popd
+)
+
+mkdir -p %{buildroot}%{_sysconfdir}/ld.so.conf.d
+echo "%{_libdir}/recoll" > %{buildroot}%{_sysconfdir}/ld.so.conf.d/%{name}-%{_arch}.conf
+
 %post
 touch --no-create %{_datadir}/icons/hicolor
 if [ -x %{_bindir}/gtk-update-icon-cache ] ; then
@@ -54,6 +97,7 @@ fi
 if [ -x %{_bindir}/update-desktop-database ] ; then
   %{_bindir}/update-desktop-database &> /dev/null
 fi
+/sbin/ldconfig
 exit 0
 
 %postun
@@ -64,10 +108,12 @@ fi
 if [ -x %{_bindir}/update-desktop-database ] ; then
   %{_bindir}/update-desktop-database &> /dev/null
 fi
+/sbin/ldconfig
 exit 0
 
 %files
 %doc COPYING ChangeLog README
+%{_sysconfdir}/ld.so.conf.d/%{name}-%{_arch}.conf
 %{_bindir}/%{name}
 %{_bindir}/%{name}index
 %{_datadir}/%{name}
@@ -79,18 +125,52 @@ exit 0
 %{python_sitearch}/recoll
 %{python_sitearch}/Recoll*.egg-info
 %{_mandir}/man1/%{name}.1*
-%{_mandir}/man1/recollq.1*
+%{_mandir}/man1/%{name}q.1*
 %{_mandir}/man1/%{name}index.1*
 %{_mandir}/man5/%{name}.conf.5*
 
-%changelog
-* Sat Apr 25 2015 Jean-Francois Dockes <jf@dockes.org> - 1.20.6-1
-- 1.20.6
+%files kio
+%{_libdir}/kde4/kio_recoll.so
+%{_libdir}/qt5/plugins/kio_recoll.so
+%{_datadir}/kde4/apps/kio_recoll/
+%{_datadir}/kde4/services/recoll.protocol
+%{_datadir}/kde4/services/recollf.protocol
+%{_datadir}/kio_recoll/help.html
+%{_datadir}/kio_recoll/welcome.html
+%{_datadir}/kservices5/recoll.protocol
+%{_datadir}/kservices5/recollf.protocol
 
-* Fri Dec 19 2014 Jean-Francois Dockes <jf@dockes.org> - 1.20.1-1
+%changelog
+* Mon Jan 18 2016 Terje Rosten <terje.rosten@ntnu.no> - 1.21.4-1
+- 1.21.4
+
+* Sat Oct 31 2015 Terje Rosten <terje.rosten@ntnu.no> - 1.21.3-1
+- 1.21.3
+
+* Sat Oct 03 2015 Terje Rosten <terje.rosten@ntnu.no> - 1.21.2-1
+- 1.21.2
+
+* Thu Jun 18 2015 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1.20.6-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_23_Mass_Rebuild
+
+* Tue May 05 2015 Terje Rosten <terje.rosten@ntnu.no> - 1.20.6-1
+- 1.20.6
+- Fixes bz#1218161 and bz#1204464
+
+* Sat May 02 2015 Kalev Lember <kalevlember@gmail.com> - 1.20.5-3
+- Rebuilt for GCC 5 C++11 ABI change
+
+* Sat Apr 11 2015 Terje Rosten <terje.rosten@ntnu.no> - 1.20.5-2
+- Add KIO subpackage
+
+* Tue Apr 07 2015 Terje Rosten <terje.rosten@ntnu.no> - 1.20.5-1
+- 1.20.5
+- Include kio support (bz#1203257)
+
+* Sat Jan 10 2015 Terje Rosten <terje.rosten@ntnu.no> - 1.20.1-1
 - 1.20.1
 
-* Sun Nov 09 2014 Jean-Francois Dockes <jf@dockes.org> - 1.19.14p2-1
+* Sun Nov 09 2014 Terje Rosten <terje.rosten@ntnu.no> - 1.19.14p2-1
 - 1.19.14p2
 
 * Sun Aug 17 2014 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1.19.13-3
@@ -221,4 +301,3 @@ exit 0
 
 * Wed Feb  1 2006 Jean-Francois Dockes <jfd@recoll.org> 1.2.0-1
 - initial packaging
-

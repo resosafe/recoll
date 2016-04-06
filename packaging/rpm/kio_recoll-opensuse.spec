@@ -26,6 +26,7 @@ Summary:        KIO slave for the Recoll full text search tool
 Group:          Productivity/Text/Utilities
 Url:            http://www.lesbonscomptes.com/recoll/
 Source:         http://www.lesbonscomptes.com/recoll/%{rname}-%{version}.tar.gz
+BuildRequires:  libkde4-devel
 BuildRequires:  kio-devel
 BuildRequires:  libxapian-devel
 BuildRequires:  recoll = %{version}
@@ -42,23 +43,36 @@ This package provides the kio-slave
 %setup -q -n %{rname}-%{version}
 
 %build
-cd kde/kioslave/kio_recoll
+pushd kde/kioslave/kio_recoll
+%cmake_kde4 -d build
+%make_jobs
+popd
+pushd kde/kioslave/kio_recoll-kde4
 %cmake_kde4 -d build
 %make_jobs
 
 %install
 pushd kde/kioslave/kio_recoll
 %kde4_makeinstall -C build
+popd
+pushd kde/kioslave/kio_recoll-kde4
+%kde4_makeinstall -C build
+
 
 %files
 %defattr(-,root,root)
 %{_libdir}/qt5/plugins/kio_recoll.so
 %{_datadir}/kio_recoll/
 %{_datadir}/kservices5/*.protocol
+%{_libdir}/kde4/kio_recoll.so
+%{_datadir}/kde4/apps/kio_recoll/help.html
+%{_datadir}/kde4/apps/kio_recoll/welcome.html
+%{_datadir}/kde4/services/recoll.protocol
+%{_datadir}/kde4/services/recollf.protocol
 
 %changelog
 * Tue Apr 05 2016 Jean-Francois Dockes <jfd@recoll.org> 1.21.6-0
-- Partial port to kde5 : works with Dolphin. Need kde4 version for
+- Also build kde5 versions: works with Dolphin. Keep kde4 version for
   Konqueror
 * Sun Mar 18 2012 Jean-Francois Dockes <jfd@recoll.org> 1.17.0-0
 - 1.17.0

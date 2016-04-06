@@ -21,7 +21,6 @@ HEADERS += \
         firstidx.h \
         fragbuts.h \
         idxsched.h \
-        listdialog.h \
         preview_w.h \
         ptrans_w.h \
         rclhelp.h \

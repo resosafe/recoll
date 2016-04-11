@@ -48,7 +48,6 @@ class CancelCheck {
     }
     void checkCancel() {
 	if (cancelRequested) {
-	    cancelRequested = false;
 	    throw CancelExcept();
 	}
     }

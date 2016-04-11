@@ -297,7 +297,7 @@ if test -z "$tesseractlang"; then
         # Someone will have to add more tesseract language codes here.
         esac
 
-        test -z "$tessractlang" && tesseractlang=`cat "$confdir/ocrpdf"`
+        test -z "$tesseractlang" && tesseractlang=`cat "$confdir/ocrpdf"`
 
         test -z "$tesseractlang" && tesseractlang="eng"
     fi

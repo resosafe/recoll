@@ -89,13 +89,13 @@ void AdvSearch::init()
     // Tune initial state according to last saved
     {
 	vector<SearchClauseW *>::iterator cit = m_clauseWins.begin();
-	for (vector<int>::iterator it = prefs.advSearchClauses.begin(); 
-	     it != prefs.advSearchClauses.end(); it++) {
-	    if (cit != m_clauseWins.end()) {
-		(*cit)->tpChange(*it);
+        unsigned int existing = m_clauseWins.size();
+	for (unsigned int i = 0; i < prefs.advSearchClauses.size(); i++) {
+	    if (i < existing) {
+		(*cit)->tpChange(prefs.advSearchClauses[i]);
 		cit++;
 	    } else {
-		addClause(*it);
+		addClause(prefs.advSearchClauses[i]);
 	    }
 	}
     }

@@ -85,7 +85,6 @@ ${depth}/utils/smallut.cpp \
 ${depth}/utils/strmatcher.cpp \
 ${depth}/utils/transcode.cpp \
 ${depth}/utils/wipedir.cpp \
-${depth}/utils/x11mon.cpp \
 "
 
 SRC_CC="\
@@ -148,7 +147,7 @@ librecoll.a : \$(DEPS) \$(OBJS)
 \$(LIBRECOLL): \$(DEPS) \$(OBJS)
 	\$(CXX) -shared -Wl,--no-undefined -Wl,--warn-unresolved-symbols \
           \$(LDFLAGS) -Wl,-soname=\$(LIBRECOLL) -o \$(LIBRECOLL) \$(OBJS) \
-           \$(LIBXAPIAN) \$(LIBICONV) \$(X_LIBX11) \$(LIBSYS)
+           \$(LIBXAPIAN) \$(LIBICONV) \$(LIBSYS)
 	rm -f librecoll.so
 	ln -s \$(LIBRECOLL) librecoll.so
 

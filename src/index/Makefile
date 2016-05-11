@@ -6,7 +6,7 @@ SRCS = recollindex.cpp rclmonrcv.cpp rclmonprc.cpp
 
 all: depend librecoll $(PROGS)
 
-RECOLLINDEX_OBJS= recollindex.o rclmonrcv.o rclmonprc.o 
+RECOLLINDEX_OBJS= recollindex.o rclmonrcv.o rclmonprc.o x11mon.o
 recollindex : $(RECOLLINDEX_OBJS)
 	$(CXX) $(ALL_CXXFLAGS) $(RECOLL_LDFLAGS) $(LDFLAGS) -o recollindex \
                $(RECOLLINDEX_OBJS) \
@@ -21,6 +21,8 @@ rclmonrcv.o : rclmonrcv.cpp
 	$(CXX) $(ALL_CXXFLAGS) -c -o rclmonrcv.o $<
 rclmonprc.o : rclmonprc.cpp 
 	$(CXX) $(ALL_CXXFLAGS) -c -o rclmonprc.o $<
+x11mon.o : ../utils/x11mon.cpp ../utils/x11mon.h
+	$(CXX) $(ALL_CXXFLAGS) -c -o x11mon.o $<
 
 SUBTREELIST_OBJS= subtreelist.o
 subtreelist : $(SUBTREELIST_OBJS)

@@ -183,7 +183,7 @@ void SpellW::doExpand()
 	}
         statsLBL->setText(tr("Index: %1 documents, average length %2 terms."
 			     "%3 results")
-                          .arg(dbs.dbdoccount).arg(dbs.dbavgdoclen, 0, 'f', 1)
+                          .arg(dbs.dbdoccount).arg(dbs.dbavgdoclen, 0, 'f', 0)
 			  .arg(res.entries.size()));
     }
         
@@ -289,7 +289,7 @@ void SpellW::showStats()
     resTW->setItem(row, 0,
 		   new QTableWidgetItem(tr("Average terms per document")));
     resTW->setItem(row++, 1, new QTableWidgetItem(
-		       QString::number(res.dbavgdoclen)));
+		       QString::number(res.dbavgdoclen, 'f', 0)));
 
     resTW->setRowCount(row+1);
     resTW->setItem(row, 0,

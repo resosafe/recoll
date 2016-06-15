@@ -329,6 +329,19 @@ kde/kioslave/kio_recoll/recollf.protocol \
 kde/kioslave/kio_recoll/recollnolist.protocol \
 kde/kioslave/kio_recoll/recoll.protocol \
 \
+kde/kioslave/kio_recoll-kde4/00README.txt \
+kde/kioslave/kio_recoll-kde4/CMakeLists.txt \
+kde/kioslave/kio_recoll-kde4/data/help.html \
+kde/kioslave/kio_recoll-kde4/data/searchable.html \
+kde/kioslave/kio_recoll-kde4/data/welcome.html \
+kde/kioslave/kio_recoll-kde4/dirif.cpp \
+kde/kioslave/kio_recoll-kde4/htmlif.cpp \
+kde/kioslave/kio_recoll-kde4/kio_recoll.cpp \
+kde/kioslave/kio_recoll-kde4/kio_recoll.h \
+kde/kioslave/kio_recoll-kde4/recollf.protocol \
+kde/kioslave/kio_recoll-kde4/recollnolist.protocol \
+kde/kioslave/kio_recoll-kde4/recoll.protocol \
+\
 query/location.hh  query/position.hh  query/stack.hh \
 \
 qtgui/advsearch.ui \

@@ -1,3 +1,10 @@
+recoll (1.22.1-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
+                
+  * Fixed two GUI crashes
+  * Small other fixes
+
+ -- Jean-Francois Dockes <jf@dockes.org>  Tue, 14 Jun 2016 17:31:00 +0200
+
 recoll (1.22.0-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
                 
   * New build based on autotools

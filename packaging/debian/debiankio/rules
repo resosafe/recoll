@@ -3,4 +3,4 @@
 include /usr/share/cdbs/1/rules/debhelper.mk
 include /usr/share/pkg-kde-tools/makefiles/1/cdbs/kde.mk
 
-DEB_SRCDIR = kde/kioslave/kio_recoll
+DEB_SRCDIR = kde/kioslave/kio_recoll-kde4

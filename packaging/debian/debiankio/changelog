@@ -1,4 +1,4 @@
-kio-recoll (1.22.1-0~ppaPPAVERS~SERIES1) SERIES; urgency=low
+kio-recoll (1.22.2-0~ppaPPAVERS~SERIES1) SERIES; urgency=low
 
   * No changes specific to the KIO, just use the 1.22 lib.
 

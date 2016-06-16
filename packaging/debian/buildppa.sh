@@ -4,10 +4,10 @@
 # For the kio: (and kdesdk?)
 # sudo apt-get install pkg-kde-tools  cdbs
 
-RCLVERS=1.22.1
+RCLVERS=1.22.2
 LENSVERS=1.19.10.3543
 SCOPEVERS=1.20.2.4
-PPAVERS=4
+PPAVERS=5
 
 # 
 RCLSRC=/y/home/dockes/projets/fulltext/recoll/src
@@ -19,7 +19,7 @@ case $RCLVERS in
     1.14*) PPANAME=recoll-ppa;;
     *)     PPANAME=recoll15-ppa;;
 esac
-#PPANAME=recollexp-ppa
+PPANAME=recollexp-ppa
 echo "PPA: $PPANAME. Type CR if Ok, else ^C"
 read rep
 
@@ -73,7 +73,7 @@ done
 
 ### KIO
 series="trusty utopic vivid wily xenial"
-series=trusty
+series="utopic vivid wily xenial"
 
 debdir=debiankio
 topdir=kio-recoll-${RCLVERS}

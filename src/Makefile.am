@@ -270,7 +270,7 @@ librecoll_la_LIBADD = $(LIBXAPIAN) $(LIBICONV) $(LIBTHREADS)
 PicStatic: $(librecoll_la_OBJECTS)
 	rm -f .libs/librecoll.a
 	rm -f .libs/librecoll.so
-	libtool --mode=link gcc -g -O -o librecoll.la \
+	./libtool --tag=LD --mode=link gcc -g -O -o librecoll.la \
 		$(librecoll_la_OBJECTS)
 
 bin_PROGRAMS = recollindex

@@ -7,7 +7,7 @@
 RCLVERS=1.22.2
 LENSVERS=1.19.10.3543
 SCOPEVERS=1.20.2.4
-PPAVERS=5
+PPAVERS=1
 
 # 
 RCLSRC=/y/home/dockes/projets/fulltext/recoll/src
@@ -19,7 +19,7 @@ case $RCLVERS in
     1.14*) PPANAME=recoll-ppa;;
     *)     PPANAME=recoll15-ppa;;
 esac
-PPANAME=recollexp-ppa
+#PPANAME=recollexp-ppa
 echo "PPA: $PPANAME. Type CR if Ok, else ^C"
 read rep
 
@@ -43,8 +43,8 @@ check_recoll_orig()
 ####### QT
 debdir=debian
 # Note: no new releases for lucid: no webkit. Or use old debianrclqt4 dir.
-series="trusty utopic vivid wily xenial"
-series=
+series="trusty vivid wily xenial"
+#series=trusty
 
 if test "X$series" != X ; then
     check_recoll_orig
@@ -72,8 +72,8 @@ for series in $series ; do
 done
 
 ### KIO
-series="trusty utopic vivid wily xenial"
-series="utopic vivid wily xenial"
+series="trusty vivid wily xenial"
+series=
 
 debdir=debiankio
 topdir=kio-recoll-${RCLVERS}
@@ -142,7 +142,7 @@ for series in $series ; do
 done
 
 ### Unity Scope
-series="trusty utopic vivid wily xenial"
+series="trusty vivid wily xenial"
 series=
 
 debdir=debianunityscope

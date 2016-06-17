@@ -64,6 +64,7 @@ application/vnd.ms-office = execm rcldoc.py
 application/ogg = execm rclaudio
 application/pdf = execm rclpdf.py
 application/postscript = exec pstotext;charset=iso-8859-1;mimetype=text/plain
+application/sql = internal text/plain
 application/vnd.ms-excel = execm rclxls.py
 application/vnd.ms-powerpoint = execm rclppt.py
 application/vnd.oasis.opendocument.text = execm rclsoff.py
@@ -152,6 +153,7 @@ text/x-html-sidux-man = exec rclsiduxman
 text/x-html-aptosid-man = exec rclaptosidman
 text/x-chm-html = internal text/html
 text/x-ini = internal text/plain
+text/x-java = internal text/plain
 text/x-mail = internal
 text/x-man = exec rclman
 text/x-perl = internal text/plain
@@ -181,6 +183,7 @@ application/msword = wordprocessing
 application/ogg = sownd
 application/pdf = pdf
 application/postscript = postscript
+application/sql = source
 application/vnd.ms-excel = spreadsheet
 application/vnd.ms-powerpoint = presentation
 application/vnd.oasis.opendocument.presentation = presentation
@@ -259,6 +262,7 @@ text/x-fictionbook = document
 text/x-html-aptosid-man = aptosid-book
 text/x-html-sidux-man = sidux-book
 text/x-ini = txt
+text/x-java = source
 text/x-mail = message
 text/x-man = document
 text/x-perl = source
@@ -290,6 +294,7 @@ text = \
       application/msword \
       application/pdf \
       application/postscript \
+      application/sql \
       application/vnd.oasis.opendocument.text \
       application/vnd.openxmlformats-officedocument.wordprocessingml.document \
       application/vnd.openxmlformats-officedocument.wordprocessingml.template \
@@ -327,6 +332,7 @@ text = \
       text/x-html-aptosid-man \
       text/x-html-sidux-man \
       text/x-ini \
+      text/x-java \
       text/x-man \
       text/x-perl \
       text/x-python \

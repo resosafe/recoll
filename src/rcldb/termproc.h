@@ -17,6 +17,9 @@
 #ifndef _TERMPROC_H_INCLUDED_
 #define _TERMPROC_H_INCLUDED_
 
+#include <vector>
+#include <string>
+
 #include "textsplit.h"
 #include "stoplist.h"
 #include "smallut.h"
@@ -164,9 +167,9 @@ public:
 	    }
 	}
 	if (hasspace) {
-	    vector<string> terms;
+            std::vector<std::string> terms;
 	    stringToTokens(otrm, terms, " ", true);
-	    for (vector<string>::const_iterator it = terms.begin(); 
+	    for (std::vector<std::string>::const_iterator it = terms.begin(); 
 		 it < terms.end(); it++) {
 		if (!TermProc::takeword(*it, pos, bs, be)) {
 		    return false;

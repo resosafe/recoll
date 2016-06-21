@@ -1345,6 +1345,7 @@ bool Db::addOrUpdate(const string &udi, const string &parent_udi, Doc &doc)
 		newdocument.add_posting(wrap_prefix(pathelt_prefix) + *it, 
 					splitter.basepos + splitter.curpos++);
 	    }
+            splitter.basepos += splitter.curpos + 100;
 	}
 
 	// Index textual metadata.  These are all indexed as text with

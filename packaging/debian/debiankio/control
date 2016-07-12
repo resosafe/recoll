@@ -3,7 +3,8 @@ Section: kde
 Priority: extra
 Maintainer: Jean-Francois Dockes <jfd@recoll.org>
 Build-Depends: cdbs, 
-               cmake, 
+               cmake,
+               libtool,
                debhelper (>= 7), 
                bison,
                kdelibs5-dev (>= 4:4.2.2), 

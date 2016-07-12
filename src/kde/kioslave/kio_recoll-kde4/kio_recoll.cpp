@@ -268,7 +268,7 @@ void RecollProtocol::get(const KUrl& url)
 	    return;
 	}
 	Rcl::Doc doc;
-	if (resnum >= 0 && !m_source.isNull() && m_source->getDoc(resnum, doc)) {
+	if (resnum >= 0 && m_source && m_source->getDoc(resnum, doc)) {
 	    mimeType(doc.mimetype.c_str());
 	    redirection(KUrl::fromLocalFile((const char *)(doc.url.c_str()+7)));
 	    goto out;
@@ -278,7 +278,7 @@ void RecollProtocol::get(const KUrl& url)
 	    return;
 	}
 	Rcl::Doc doc;
-	if (resnum >= 0 && !m_source.isNull() && m_source->getDoc(resnum, doc)) {
+	if (resnum >= 0 && m_source && m_source->getDoc(resnum, doc)) {
 	    showPreview(doc);
 	    goto out;
 	}

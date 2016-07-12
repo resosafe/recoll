@@ -22,9 +22,9 @@ Vcs-Browser: http://anonscm.debian.org/gitweb/?p=collab-maint/recoll.git;a=summa
 Package: recoll
 Architecture: any
 Depends: ${misc:Depends}, ${shlibs:Depends}, python
-Recommends: python-recoll, aspell, xdg-utils, xsltproc
+Recommends: python-recoll, aspell, xdg-utils, xsltproc,
+            python-libxml2, python-libxslt1
 Suggests: antiword,
-          catdoc,
           ghostscript,
           libimage-exiftool-perl,
           poppler-utils,

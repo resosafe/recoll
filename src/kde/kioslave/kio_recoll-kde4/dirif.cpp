@@ -194,7 +194,7 @@ void RecollProtocol::stat(const KUrl & url)
     } else if (ingest.isResult(&qd, &num)) {
         if (syncSearch(qd)) {
             Rcl::Doc doc;
-            if (num >= 0 && !m_source.isNull() && 
+            if (num >= 0 && m_source && 
                 m_source->getDoc(num, doc)) {
                 entry = resultToUDSEntry(doc, num);
             } else {

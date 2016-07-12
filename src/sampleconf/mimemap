@@ -20,12 +20,14 @@
 .hxx = text/x-c
 .cs = text/x-csharp
 .css = text/css
+.java = text/x-java
 .js = application/javascript
 .f   = text/x-fortran
 .py  = text/x-python
 .awk = application/x-awk
 .pl = application/x-perl
 .sh = application/x-shellscript
+.sql = application/sql
 .tcl = text/x-tcl
 
 .xml = text/xml

@@ -4,10 +4,10 @@
 # For the kio: (and kdesdk?)
 # sudo apt-get install pkg-kde-tools  cdbs
 
-RCLVERS=1.22.0
+RCLVERS=1.22.3
 LENSVERS=1.19.10.3543
 SCOPEVERS=1.20.2.4
-PPAVERS=3
+PPAVERS=1
 
 # 
 RCLSRC=/y/home/dockes/projets/fulltext/recoll/src
@@ -38,11 +38,13 @@ check_recoll_orig()
     fi
 }
 
-####### QT4
+# Note: recoll 1.22+ builds on precise fail. precise stays at 1.21
+
+####### QT
 debdir=debian
 # Note: no new releases for lucid: no webkit. Or use old debianrclqt4 dir.
-series="precise trusty utopic vivid wily xenial"
-series=
+series="trusty vivid wily xenial"
+#series=trusty
 
 if test "X$series" != X ; then
     check_recoll_orig
@@ -70,7 +72,7 @@ for series in $series ; do
 done
 
 ### KIO
-series="precise trusty utopic vivid wily xenial"
+series="trusty vivid wily xenial"
 series=
 
 debdir=debiankio
@@ -140,8 +142,8 @@ for series in $series ; do
 done
 
 ### Unity Scope
-series="trusty utopic vivid wily xenial"
-series=xenial
+series="trusty vivid wily xenial"
+series=
 
 debdir=debianunityscope
 if test ! -d ${debdir}/ ; then

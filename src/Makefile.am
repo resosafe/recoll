@@ -270,7 +270,7 @@ librecoll_la_LIBADD = $(LIBXAPIAN) $(LIBICONV) $(LIBTHREADS)
 PicStatic: $(librecoll_la_OBJECTS)
 	rm -f .libs/librecoll.a
 	rm -f .libs/librecoll.so
-	libtool --mode=link gcc -g -O -o librecoll.la \
+	./libtool --tag=LD --mode=link gcc -g -O -o librecoll.la \
 		$(librecoll_la_OBJECTS)
 
 bin_PROGRAMS = recollindex
@@ -328,6 +328,19 @@ kde/kioslave/kio_recoll/kio_recoll.h \
 kde/kioslave/kio_recoll/recollf.protocol \
 kde/kioslave/kio_recoll/recollnolist.protocol \
 kde/kioslave/kio_recoll/recoll.protocol \
+\
+kde/kioslave/kio_recoll-kde4/00README.txt \
+kde/kioslave/kio_recoll-kde4/CMakeLists.txt \
+kde/kioslave/kio_recoll-kde4/data/help.html \
+kde/kioslave/kio_recoll-kde4/data/searchable.html \
+kde/kioslave/kio_recoll-kde4/data/welcome.html \
+kde/kioslave/kio_recoll-kde4/dirif.cpp \
+kde/kioslave/kio_recoll-kde4/htmlif.cpp \
+kde/kioslave/kio_recoll-kde4/kio_recoll.cpp \
+kde/kioslave/kio_recoll-kde4/kio_recoll.h \
+kde/kioslave/kio_recoll-kde4/recollf.protocol \
+kde/kioslave/kio_recoll-kde4/recollnolist.protocol \
+kde/kioslave/kio_recoll-kde4/recoll.protocol \
 \
 query/location.hh  query/position.hh  query/stack.hh \
 \

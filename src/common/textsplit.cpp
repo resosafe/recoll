@@ -326,23 +326,25 @@ bool TextSplit::words_from_span(size_t bp)
 
     for (int i = 0; 
          i < ((m_flags&TXTS_ONLYSPANS) ? 1 : spanwords); 
-         i++, pos++) {
+         i++) {
 
         int deb = m_words_in_span[i].first;
-
+        bool noposinc = m_words_in_span[i].second == deb;
         for (int j = ((m_flags&TXTS_ONLYSPANS) ? spanwords-1 : i);
              j < ((m_flags&TXTS_NOSPANS) ? i+1 : spanwords);
              j++) {
 
             int fin = m_words_in_span[j].second;
             //cerr << "i " << i << " j " << j << " deb " << deb << 
-            // " fin " << fin << endl;
+            //" fin " << fin << endl;
             if (fin - deb > int(m_span.size()))
                 break;
             string word(m_span.substr(deb, fin-deb));
             if (!emitterm(j != i+1, word, pos, spboffs+deb, spboffs+fin))
                 return false;
         }
+        if (!noposinc)
+            ++pos;
     }
     return true;
 }
@@ -642,8 +644,12 @@ bool TextSplit::text_to_words(const string &in)
                     // Check for number like .1
                     if (isdigit(nextwhat, m_flags)) {
                         m_inNumber = true;
+                        m_wordLen += it.appendchartostring(m_span);
+                    } else {
+                        m_words_in_span.
+                            push_back(pair<int,int>(m_wordStart, m_wordStart));
+                        m_wordStart += it.appendchartostring(m_span);
                     }
-                    m_wordLen += it.appendchartostring(m_span);
                     STATS_INC_WORDCHARS;
                     break;
                 }

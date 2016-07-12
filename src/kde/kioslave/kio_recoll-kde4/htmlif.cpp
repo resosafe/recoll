@@ -254,7 +254,7 @@ void RecollProtocol::showPreview(const Rcl::Doc& idoc)
     ptr.set_inputhtml(!fdoc.mimetype.compare("text/html"));
     list<string> otextlist;
     HighlightData hdata;
-    if (!m_source.isNull())
+    if (m_source)
 	m_source->getTerms(hdata);
     ptr.plaintorich(fdoc.text, otextlist, hdata);
 

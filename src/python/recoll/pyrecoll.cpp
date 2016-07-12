@@ -1035,13 +1035,12 @@ Query_fetchone(PyObject *_self)
         PyErr_SetString(PyExc_EnvironmentError, "doc create failed");
 	return 0;
     }
-    if (self->next >= self->rowcount) {
-        PyErr_SetNone(PyExc_StopIteration);
-	return 0;
-    }
+
+    // We used to check against rowcount here, but this was wrong:
+    // xapian result count estimate are sometimes wrong, we must go on
+    // fetching until we fail
     if (!self->query->getDoc(self->next, *result->doc)) {
-        PyErr_SetString(PyExc_EnvironmentError, "query: cant fetch result");
-	self->next = -1;
+        PyErr_SetNone(PyExc_StopIteration);
 	return 0;
     }
     self->next++;
@@ -1081,8 +1080,7 @@ Query_fetchmany(recoll_QueryObject* self, PyObject *args, PyObject *kwargs)
     }
 
     PyObject *reslist = PyList_New(0);
-    int howmany = MIN(self->rowcount - self->next, size);
-    for (int i = 0; i < howmany; i++) {
+    for (int i = 0; i < size; i++) {
         recoll_DocObject *docobj = (recoll_DocObject *)
 	    PyObject_CallObject((PyObject *)&recoll_DocType, 0);
         if (!docobj) {
@@ -1090,9 +1088,8 @@ Query_fetchmany(recoll_QueryObject* self, PyObject *args, PyObject *kwargs)
             return 0;
         }
         if (!self->query->getDoc(self->next, *docobj->doc)) {
-            PyErr_SetString(PyExc_EnvironmentError, "can't fetch");
-            self->next = -1;
-            return 0;
+            PyErr_SetNone(PyExc_StopIteration);
+            break;
         }
         self->next++;
         movedocfields(docobj->doc);

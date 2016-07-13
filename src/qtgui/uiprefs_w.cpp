@@ -607,7 +607,6 @@ void UIPrefsDialog::addExtraDbPB_clicked()
     }
 
     LOGDEB(("ExtraDbDial: got: [%s]\n", dbdir.c_str()));
-    path_catslash(dbdir);
     bool stripped;
     if (!Rcl::Db::testDbDir(dbdir, &stripped)) {
 	QMessageBox::warning(0, "Recoll", 
@@ -642,3 +641,4 @@ void UIPrefsDialog::addExtraDbPB_clicked()
     item->setCheckState(Qt::Checked);
     idxLV->sortItems();
 }
+

@@ -364,6 +364,9 @@ string path_absolute(const string& is)
         return is;
     }
     string s = is;
+#ifdef _WIN32
+        path_slashize(s);
+#endif
     if (!path_isabsolute(s)) {
         char buf[MAXPATHLEN];
         if (!getcwd(buf, MAXPATHLEN)) {

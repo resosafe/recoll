@@ -468,7 +468,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>Loading preview text into editor</source>
-        <translation>Henter forhåndsvisningstekst ind i editoren</translation>
+        <translation>Henter forhåndsvisningstekst for redigering</translation>
     </message>
     <message>
         <source>&amp;Search for:</source>
@@ -531,7 +531,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>Fold lines</source>
-        <translation>Ombryd linier</translation>
+        <translation>Ombryd linjer</translation>
     </message>
     <message>
         <source>Preserve indentation</source>
@@ -598,7 +598,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>Character set used for reading files which do not identify the character set internally, for example pure text files.&lt;br&gt;The default value is empty, and the value from the NLS environnement is used.</source>
-        <translation>Tegnsæt, der bruges til at læse filer, hvor tegnsættet ikke kan identificeres ud fra indholdet, f.eks rene tekstfiler.&lt;br&gt;Standardværdien er tom, og værdien fra NLS-omgivelserne anvendes.</translation>
+        <translation>Tegnsæt, der bruges til at læse filer, hvor tegnsættet ikke kan identificeres ud fra indholdet, f.eks. rene tekstfiler.&lt;br&gt;Standardværdien er tom, og værdien fra NLS-omgivelserne anvendes.</translation>
     </message>
     <message>
         <source>Ignored endings</source>
@@ -608,7 +608,7 @@ p, li { white-space: pre-wrap; }
         <source>These are file name endings for files which will be indexed by name only 
 (no MIME type identification attempt, no decompression, no content indexing).</source>
         <translation>Dette er endelser på filnavne for filer, hvor kun navnet vil blive indekseret 
-(ingen forsøg på identification af MIME-type, ingen dekomprimering, ingen indeksering af indhold).</translation>
+(ingen forsøg på identifikation af MIME-type, ingen dekomprimering, ingen indeksering af indhold).</translation>
     </message>
 </context>
 <context>
@@ -972,7 +972,7 @@ Do you want to start the  preferences dialog ?</source>
     </message>
     <message>
         <source>Can&apos;t update index: indexer running</source>
-        <translation>Kan ikke opdatere indeks: indekseringsprogram kører</translation>
+        <translation>Kan ikke opdatere indeks: indeksering kører</translation>
     </message>
     <message>
         <source>Indexed MIME Types</source>
@@ -1018,7 +1018,7 @@ Kontroller venligst mimeview-filen</translation>
     </message>
     <message>
         <source>The indexer is running so things should improve when it&apos;s done. </source>
-        <translation>Indekseringsprogram kører så ting burde være bedre når det er færdig. </translation>
+        <translation>Indeksering kører, så ting burde være bedre, når den er færdig. </translation>
     </message>
     <message>
         <source>The document belongs to an external indexwhich I can&apos;t update. </source>
@@ -1145,15 +1145,15 @@ Tjek venligst desktopfilen</translation>
     </message>
     <message>
         <source>Index locked</source>
-        <translation type="unfinished"></translation>
+        <translation>Indeks låst</translation>
     </message>
     <message>
         <source>Unknown indexer state. Can&apos;t access webcache file.</source>
-        <translation type="unfinished"></translation>
+        <translation>Indeksering i ukendt tilstand. Kan ikke tilgå webcachefil.</translation>
     </message>
     <message>
         <source>Indexer is running. Can&apos;t access webcache file.</source>
-        <translation type="unfinished"></translation>
+        <translation>Indeksering kører. Kan ikke tilgå webcachefil.</translation>
     </message>
 </context>
 <context>
@@ -1276,7 +1276,7 @@ Tjek venligst desktopfilen</translation>
     </message>
     <message>
         <source>&amp;Full Screen</source>
-        <translation>&amp;Fuldskærm</translation>
+        <translation>&amp;Fuld skærm</translation>
     </message>
     <message>
         <source>F11</source>
@@ -1284,7 +1284,7 @@ Tjek venligst desktopfilen</translation>
     </message>
     <message>
         <source>Full Screen</source>
-        <translation>Fuldskærm</translation>
+        <translation>Fuld skærm</translation>
     </message>
     <message>
         <source>&amp;Erase search history</source>
@@ -1348,7 +1348,7 @@ Tjek venligst desktopfilen</translation>
     </message>
     <message>
         <source>Show results in a spreadsheet-like table</source>
-        <translation>Vis resultater i en regnearklignende tabel</translation>
+        <translation>Vis resultater i en regneark-lignende tabel</translation>
     </message>
     <message>
         <source>Save as CSV (spreadsheet) file</source>
@@ -1408,23 +1408,23 @@ Tjek venligst desktopfilen</translation>
     </message>
     <message>
         <source>&amp;View</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Vis</translation>
     </message>
     <message>
         <source>Missing &amp;helpers</source>
-        <translation type="unfinished"></translation>
+        <translation>Manglende &amp;hjælpere</translation>
     </message>
     <message>
         <source>Indexed &amp;MIME types</source>
-        <translation type="unfinished"></translation>
+        <translation>Indekserede &amp;MIME-typer</translation>
     </message>
     <message>
         <source>Index &amp;statistics</source>
-        <translation type="unfinished"></translation>
+        <translation>Indeks&amp;statistik</translation>
     </message>
     <message>
         <source>Webcache Editor</source>
-        <translation type="unfinished"></translation>
+        <translation>Rediger webcache</translation>
     </message>
 </context>
 <context>
@@ -2057,27 +2057,27 @@ Brug &lt;b&gt;Vis Forespørgsel&lt;/b&gt; link når i tvivl om resultatet og se 
     </message>
     <message>
         <source>Smallest document length (terms)</source>
-        <translation type="unfinished"></translation>
+        <translation>Mindste dokumentlængde (ord)</translation>
     </message>
     <message>
         <source>Longest document length (terms)</source>
-        <translation type="unfinished"></translation>
+        <translation>Længste dokumentlængde (ord)</translation>
     </message>
     <message>
         <source>Results from last indexing:</source>
-        <translation type="unfinished"></translation>
+        <translation>Resultater fra sidste indeksering:</translation>
     </message>
     <message>
         <source>  Documents created/updated</source>
-        <translation type="unfinished"></translation>
+        <translation>  Dokumenter oprettet/opdateret</translation>
     </message>
     <message>
         <source>  Files tested</source>
-        <translation type="unfinished"></translation>
+        <translation>  Filer testet</translation>
     </message>
     <message>
         <source>  Unindexed files</source>
-        <translation type="unfinished"></translation>
+        <translation>  ikke-indekserede filer</translation>
     </message>
 </context>
 <context>
@@ -2225,45 +2225,45 @@ Brug &lt;b&gt;Vis Forespørgsel&lt;/b&gt; link når i tvivl om resultatet og se 
     <name>Webcache</name>
     <message>
         <source>Webcache editor</source>
-        <translation type="unfinished"></translation>
+        <translation>Rediger webcache</translation>
     </message>
     <message>
         <source>Search regexp</source>
-        <translation type="unfinished"></translation>
+        <translation>Regex søgning</translation>
     </message>
 </context>
 <context>
     <name>WebcacheEdit</name>
     <message>
         <source>Copy URL</source>
-        <translation type="unfinished"></translation>
+        <translation>Kopier URL</translation>
     </message>
     <message>
         <source>Unknown indexer state. Can&apos;t edit webcache file.</source>
-        <translation type="unfinished"></translation>
+        <translation>Indeksering i ukendt tilstand. Kan ikke redigere webcachefil.</translation>
     </message>
     <message>
         <source>Indexer is running. Can&apos;t edit webcache file.</source>
-        <translation type="unfinished"></translation>
+        <translation>Indeksering kører. Kan ikke redigere webcachefil.</translation>
     </message>
     <message>
         <source>Delete selection</source>
-        <translation type="unfinished"></translation>
+        <translation>Slet det valgte</translation>
     </message>
     <message>
         <source>Webcache was modified, you will need to run the indexer after closing this window.</source>
-        <translation type="unfinished"></translation>
+        <translation>WebCache blev ændret, du er nød til at køre indeksering efter lukning af dette vindue.</translation>
     </message>
 </context>
 <context>
     <name>WebcacheModel</name>
     <message>
         <source>MIME</source>
-        <translation type="unfinished"></translation>
+        <translation>MIME</translation>
     </message>
     <message>
         <source>Url</source>
-        <translation type="unfinished"></translation>
+        <translation>Url</translation>
     </message>
 </context>
 <context>
@@ -2433,7 +2433,7 @@ Dette vil hjælpe søgning i meget store tekstfiler (dvs.: log-filer).</translat
     </message>
     <message>
         <source>These are names of directories which indexing will not enter.&lt;br&gt; May contain wildcards. Must match the paths seen by the indexer (ie: if topdirs includes &apos;/home/me&apos; and &apos;/home&apos; is actually a link to &apos;/usr/home&apos;, a correct skippedPath entry would be &apos;/home/me/tmp*&apos;, not &apos;/usr/home/me/tmp*&apos;)</source>
-        <translation>Dette er navne på mapper, som indeksering ikke går ind i.&lt;br&gt;Kan indeholde jokertegn. Skal stemme overens med stierne, som de er set af indekseringen (dvs. hvis de øverste mapper omfatter &apos;/home/mig&apos; og &apos;/home&apos; er et link til &apos;/usr/home&apos;, en korrekt udeladtSti indgang ville være &apos;/home/mig/tmp * &apos;, ikke &apos;/usr/home/mig/tmp * &apos;)</translation>
+        <translation>Dette er navne på mapper, som indeksering ikke går ind i.&lt;br&gt;Kan indeholde jokertegn. Skal stemme overens med stierne, som de ses af indekseringsprogrammet (dvs. hvis de øverste mapper omfatter &apos;/home/mig&apos; og &apos;/home&apos; er et link til &apos;/usr/home&apos;, en korrekt udeladtSti indgang ville være &apos;/home/mig/tmp * &apos;, ikke &apos;/usr/home/mig/tmp * &apos;)</translation>
     </message>
     <message>
         <source>Stemming languages</source>
@@ -2505,7 +2505,7 @@ Dette vil hjælpe søgning i meget store tekstfiler (dvs.: log-filer).</translat
     </message>
     <message>
         <source>&lt;p&gt;These are exceptions to the unac mechanism which, by default, removes all diacritics, and performs canonic decomposition. You can override unaccenting for some characters, depending on your language, and specify additional decompositions, e.g. for ligatures. In each space-separated entry, the first character is the source one, and the rest is the translation.</source>
-        <translation>&lt;p&gt;Disse er undtagelser fra unac mekanismen, der, som standard, fjerner alle diakritiske tegn, og udfører kanoniske nedbrydning. Du kan tilsidesætte fjernelse af accent for nogle tegn, afhængigt af dit sprog, og angive yderligere nedbrydninger, f.eks for ligaturer. I hver indgang adskilt af mellemrum, er det første tegn kildedelen, og resten er oversættelsen.</translation>
+        <translation>&lt;p&gt;Disse er undtagelser fra unac mekanismen, der, som standard, fjerner alle diakritiske tegn, og udfører kanonisk nedbrydning. Du kan tilsidesætte fjernelse af accent for nogle tegn, afhængigt af dit sprog, og angive yderligere nedbrydninger, f.eks. for ligaturer. I hver indgang adskilt af mellemrum, er det første tegn kildedelen, og resten er oversættelsen.</translation>
     </message>
 </context>
 <context>
@@ -2632,7 +2632,7 @@ Kan være langsomt for store dokumenter.</translation>
     </message>
     <message>
         <source>Query language magic file name suffixes.</source>
-        <translation>Forespørgselssprogets magiske filnavnsendelser.</translation>
+        <translation>Forespørgselssprogets magiske filnavnendelser.</translation>
     </message>
     <message>
         <source>Enable</source>
@@ -2688,11 +2688,11 @@ Kan være langsomt for store dokumenter.</translation>
     </message>
     <message>
         <source>Style sheet</source>
-        <translation>Stylesheet</translation>
+        <translation>Stilark</translation>
     </message>
     <message>
         <source>Opens a dialog to select the style sheet file</source>
-        <translation>Åbn et vindue for at vælge stylesheet-filen</translation>
+        <translation>Åbn et vindue for at vælge stilark-filen</translation>
     </message>
     <message>
         <source>Choose</source>
@@ -2700,7 +2700,7 @@ Kan være langsomt for store dokumenter.</translation>
     </message>
     <message>
         <source>Resets the style sheet to default</source>
-        <translation>Nulstil stylesheet til standard</translation>
+        <translation>Nulstil stilark til standard</translation>
     </message>
     <message>
         <source>Result List</source>
@@ -2712,7 +2712,7 @@ Kan være langsomt for store dokumenter.</translation>
     </message>
     <message>
         <source>Edit result page html header insert</source>
-        <translation>Rediger kode for indsætnig i html-header for resultatside</translation>
+        <translation>Rediger kode for indsætnig i html-hoved for resultatside</translation>
     </message>
     <message>
         <source>Date format (strftime(3))</source>
@@ -2774,7 +2774,7 @@ Standardværdien er 2 (procent).</translation>
     </message>
     <message>
         <source>Opens a dialog to select the Snippets window CSS style sheet file</source>
-        <translation>Åbner et vindue til at vælge CSS stylesheet-fil for vinduet til tekststumper</translation>
+        <translation>Åbner et vindue til at vælge CSS stilark-fil for vinduet til tekststumper</translation>
     </message>
     <message>
         <source>Resets the Snippets window style</source>

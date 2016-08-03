@@ -177,6 +177,30 @@ void RclMain::periodic100()
 	fileExit();
 }
 
+bool RclMain::checkIdxPaths()
+{
+    vector<string> args;
+
+    string badpaths;
+    args.push_back("recollindex");
+    args.push_back("-E");
+    args.push_back("-c");
+    args.push_back(theconfig->getConfDir());
+    ExecCmd::backtick(args, badpaths);
+    if (!badpaths.empty()) {
+        int rep = 
+            QMessageBox::warning(0, tr("Bad paths"), 
+                                 tr("Bad paths in configuration file:\n") +
+                                 QString::fromLocal8Bit(badpaths.c_str()),
+                                 QMessageBox::Ok,
+                                 QMessageBox::Cancel,
+                                 QMessageBox::NoButton);
+        if (rep == QMessageBox::Cancel)
+            return false;
+    }
+    return true;
+}
+
 // This gets called when the "update index" action is activated. It executes
 // the requested action, and disables the menu entry. This will be
 // re-enabled by the indexing status check
@@ -228,25 +252,10 @@ void RclMain::toggleIndexing()
 	string mhd;
 	m_firstIndexing = !theconfig->getMissingHelperDesc(mhd);
 
-	vector<string> args;
-
-        string badpaths;
-        args.push_back("recollindex");
-        args.push_back("-E");
-        ExecCmd::backtick(args, badpaths);
-        if (!badpaths.empty()) {
-            int rep = 
-                QMessageBox::warning(0, tr("Bad paths"), 
-				     tr("Bad paths in configuration file:\n") +
-                                     QString::fromLocal8Bit(badpaths.c_str()),
-                                     QMessageBox::Ok,
-                                     QMessageBox::Cancel,
-                                     QMessageBox::NoButton);
-            if (rep == QMessageBox::Cancel)
+        if (!checkIdxPaths()) {
                 return;
         }
-
-        args.clear();
+        vector<string> args;
 	args.push_back("-c");
 	args.push_back(theconfig->getConfDir());
 	m_idxproc = new ExecCmd;
@@ -280,9 +289,10 @@ void RclMain::rebuildIndex()
 					 QMessageBox::NoButton);
 	if (rep == QMessageBox::Ok) {
 #ifdef _WIN32
-            // Under windows, it's necessary to close the db here, else Xapian
-            // won't be able to do what it wants with the (open) files. Of course
-            // if there are several GUI instances, this won't work...
+            // Under windows, it's necessary to close the db here,
+            // else Xapian won't be able to do what it wants with the
+            // (open) files. Of course if there are several GUI
+            // instances, this won't work...
             if (rcldb)
                 rcldb->close();
 #endif // _WIN32
@@ -291,6 +301,11 @@ void RclMain::rebuildIndex()
 	    // firstIndexing is used for)
 	    string mhd;
 	    m_firstIndexing = !theconfig->getMissingHelperDesc(mhd);
+
+            if (!checkIdxPaths()) {
+                return;
+            }
+            
 	    vector<string> args;
 	    args.push_back("-c");
 	    args.push_back(theconfig->getConfDir());

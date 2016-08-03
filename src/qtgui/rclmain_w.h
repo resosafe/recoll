@@ -265,6 +265,7 @@ private:
     virtual void initiateQuery();
     virtual bool containerUpToDate(Rcl::Doc& doc);
     virtual void setFiltSpec();
+    virtual bool checkIdxPaths();
 };
 
 #endif // RCLMAIN_W_H

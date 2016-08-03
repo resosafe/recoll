@@ -479,7 +479,7 @@ int main(int argc, char **argv)
 	Usage();
     if ((op_flags & OPT_Z) && (op_flags & (OPT_m)))
 	Usage();
-    if ((op_flags & OPT_E) && (op_flags & ~OPT_E)) {
+    if ((op_flags & OPT_E) && (op_flags & ~(OPT_E|OPT_c))) {
         Usage();
     }
     string reason;

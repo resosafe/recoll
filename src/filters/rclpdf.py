@@ -88,6 +88,20 @@ class PDFExtractor:
         if not self.pdftotext:
             self.pdftotext = rclexecm.which("poppler/pdftotext")
 
+        # Check if we need to escape portions of text where old
+        # versions of pdftotext output raw HTML special characters.
+        self.needescape = True
+        try:
+            version = subprocess.check_output([self.pdftotext, "-v"],
+                                              stderr=subprocess.STDOUT)
+            major,minor,rev = version.split()[2].split('.')
+            # Don't know exactly when this changed but it's fixed in
+            # jessie 0.26.5
+            if int(major) > 0 or int(minor) >= 26:
+                self.needescape = False
+        except:
+            pass
+        
         # See if we'll try to perform OCR. Need the commands and the
         # either the presence of a file in the config dir (historical)
         # or a set config variable.
@@ -255,13 +269,13 @@ class PDFExtractor:
                     output += b'<meta http-equiv="Content-Type"' + \
                               b'content="text/html; charset=UTF-8">\n'
                     didcs = True
-
-                m = re.search(b'''(.*<title>)(.*)(<\/title>.*)''', line)
-                if not m:
-                    m = re.search(b'''(.*content=")(.*)(".*/>.*)''', line)
-                if m:
-                    line = m.group(1) + self.em.htmlescape(m.group(2)) + \
-                           m.group(3)
+                if self.needescape:
+                    m = re.search(b'''(.*<title>)(.*)(<\/title>.*)''', line)
+                    if not m:
+                        m = re.search(b'''(.*content=")(.*)(".*/>.*)''', line)
+                    if m:
+                        line = m.group(1) + self.em.htmlescape(m.group(2)) + \
+                               m.group(3)
 
                 # Recoll treats "Subject" as a "title" element
                 # (based on emails). The PDF "Subject" metadata

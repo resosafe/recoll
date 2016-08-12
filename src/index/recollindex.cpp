@@ -122,7 +122,8 @@ class MyUpdater : public DbIxStatusUpdater {
 	// it at the end (status DONE)
 	if (status.phase == DbIxStatus::DBIXS_DONE || 
             status.phase != m_prevphase || m_chron.millis() > 300) {
-            if (status.totfiles < status.filesdone) {
+            if (status.totfiles < status.filesdone ||
+                status.phase == DbIxStatus::DBIXS_DONE) {
                 status.totfiles = status.filesdone;
             }
 	    m_prevphase = status.phase;

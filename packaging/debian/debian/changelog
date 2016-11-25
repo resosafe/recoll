@@ -1,3 +1,9 @@
+recoll (1.22.4-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
+                
+  * Fix advanced search 'start search' not doing anything with qt5
+
+ -- Jean-Francois Dockes <jf@dockes.org>  Tue, 25 Nov 2016 11:38:00 +0100
+
 recoll (1.22.3-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
                 
   * 

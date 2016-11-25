@@ -1,3 +1,9 @@
+kio-recoll (1.22.3-0~ppaPPAVERS~SERIES1) SERIES; urgency=low
+
+  * No changes specific to the KIO, just use the 1.22 lib. Update to .3
+
+ -- Jean-Francois Dockes <jf@dockes.org>  Tue, 25 Nov 2016 10:59:00 +0100
+
 kio-recoll (1.22.2-0~ppaPPAVERS~SERIES1) SERIES; urgency=low
 
   * No changes specific to the KIO, just use the 1.22 lib.

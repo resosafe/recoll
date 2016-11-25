@@ -68,20 +68,6 @@
 #include "rclhelp.h"
 #include "moc_rclmain_w.cpp"
 
-/* Qt5 moc expands macros when defining signals. The SIGNAL() macro is
-   a stringification, so it does not expand macros. We have signals
-   where one of the types is a #define (for the variations on
-   std::shared_ptr). In qt5, the connection does not work because the
-   signal string is different between the definition and the connect
-   call, because of the different macro expansion. We have to use
-   another level of macro in Qt5 to force macro expansion, but not in
-   Qt4, so we both define the XSIGNAL and XSLOT macros here, and have
-   ifdefs in the code. What a mess... */
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
-#define XSIGNAL(X) SIGNAL(X)
-#define XSLOT(X) SLOT(X)
-#endif
-
 using std::pair;
 
 QString g_stringAllStem, g_stringNoStem;

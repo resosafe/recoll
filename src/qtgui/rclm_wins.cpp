@@ -48,9 +48,15 @@ void RclMain::showAdvSearchDialog()
 	connect(new QShortcut(quitKeySeq, asearchform), SIGNAL (activated()), 
 		this, SLOT (fileExit()));
 
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
+	connect(asearchform, 
+		XSIGNAL(startSearch(STD_SHARED_PTR<Rcl::SearchData>, bool)), 
+		this,XSLOT(startSearch(STD_SHARED_PTR<Rcl::SearchData>, bool)));
+#else
 	connect(asearchform, 
 		SIGNAL(startSearch(STD_SHARED_PTR<Rcl::SearchData>, bool)), 
 		this, SLOT(startSearch(STD_SHARED_PTR<Rcl::SearchData>, bool)));
+#endif
 	asearchform->show();
     } else {
 	// Close and reopen, in hope that makes us visible...

@@ -56,6 +56,10 @@ inline std::string qs2utf8s(const QString& qs)
 {
     return std::string((const char *)qs.toUtf8());
 }
+inline QString u8s2qs(const std::string us)
+{
+    return QString::fromUtf8(us.c_str());
+}
 
 /** Specialized version of the qt file dialog. Can't use getOpenFile()
    etc. cause they hide dot files... */

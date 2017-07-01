@@ -352,9 +352,11 @@ void RclMain::showMissingHelpers()
 
 void RclMain::showActiveTypes()
 {
-    if (rcldb == 0) {
+    string reason;
+    bool maindberror;
+    if (!maybeOpenDb(reason, true, &maindberror)) {
 	QMessageBox::warning(0, tr("Error"), 
-			     tr("Index not open"),
+			     u8s2qs(reason),
 			     QMessageBox::Ok, 
 			     QMessageBox::NoButton);
 	return;
@@ -413,9 +415,14 @@ void RclMain::showActiveTypes()
     editor->setReadOnly(true);
     dialog.horizontalLayout->addWidget(editor);
 
-    for (set<string>::const_iterator it = mtypesfromdbconf.begin(); 
-	 it != mtypesfromdbconf.end(); it++) {
-	editor->append(QString::fromUtf8(it->c_str()));
+    if (mtypesfromdbconf.empty()) {
+	editor->append(tr("Types list empty: maybe wait for indexing to "
+                          "progress?"));
+    } else {
+        for (set<string>::const_iterator it = mtypesfromdbconf.begin(); 
+             it != mtypesfromdbconf.end(); it++) {
+            editor->append(QString::fromUtf8(it->c_str()));
+        }
     }
     editor->moveCursor(QTextCursor::Start);
     editor->ensureCursorVisible();

@@ -256,7 +256,7 @@ double Query::Native::qualityTerms(Xapian::docid docid,
 // Return page number for first match of "significant" term.
 int Query::Native::getFirstMatchPage(Xapian::docid docid, string& term)
 {
-    LOGDEB("Query::Native::getFirstMatchPage\n");
+    LOGDEB(("Query::Native::getFirstMatchPage\n"));
     if (!m_q|| !m_q->m_db || !m_q->m_db->m_ndb || !m_q->m_db->m_ndb->m_isopen) {
 	LOGERR(("Query::getFirstMatchPage: no db\n"));
 	return -1;

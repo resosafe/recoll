@@ -44,7 +44,7 @@ check_recoll_orig()
 debdir=debian
 # Note: no new releases for lucid: no webkit. Or use old debianrclqt4 dir.
 series="trusty vivid wily xenial yakkety"
-series=
+series=yakkety
 
 if test "X$series" != X ; then
     check_recoll_orig
@@ -73,7 +73,7 @@ done
 
 ### KIO
 series="trusty vivid wily xenial yakkety"
-series=yakkety
+series=
 
 debdir=debiankio
 topdir=kio-recoll-${RCLVERS}
@@ -143,7 +143,7 @@ done
 
 ### Unity Scope
 series="trusty vivid wily xenial yakkety"
-series=yakkety
+series=
 
 debdir=debianunityscope
 if test ! -d ${debdir}/ ; then

@@ -256,6 +256,7 @@ double Query::Native::qualityTerms(Xapian::docid docid,
 // Return page number for first match of "significant" term.
 int Query::Native::getFirstMatchPage(Xapian::docid docid, string& term)
 {
+    LOGDEB("Query::Native::getFirstMatchPage\n");
     if (!m_q|| !m_q->m_db || !m_q->m_db->m_ndb || !m_q->m_db->m_ndb->m_isopen) {
 	LOGERR(("Query::getFirstMatchPage: no db\n"));
 	return -1;
@@ -280,6 +281,7 @@ int Query::Native::getFirstMatchPage(Xapian::docid docid, string& term)
 
     // We try to use a page which matches the "best" term. Get a sorted list
     multimap<double, vector<string> > byQ;
+    qualityTerms(docid, terms, byQ);
 
     for (multimap<double, vector<string> >::reverse_iterator mit = byQ.rbegin(); 
 	 mit != byQ.rend(); mit++) {

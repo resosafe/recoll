@@ -306,10 +306,11 @@ ConfTopPanelW::ConfTopPanelW(QWidget *parent, ConfNull *config)
     w = new ConfParamIntW(this, 
                           ConfLink(new ConfLinkRclRep(config, "maxfsoccuppc")),
                           tr("Max disk occupation (%)"),
-                          tr("This is the percentage of disk occupation where "
-                             "indexing will fail and stop (to avoid filling up "
-                             "your disk).<br>0 means no limit "
-                             "(this is the default)."), 0, 100);
+                          tr("This is the percentage of disk usage "
+                             "- total disk usage, not index size - at which "
+                             "indexing will fail and stop.<br>"
+                             "The default value of 0 removes any limit."),
+                          0, 100);
     gl1->addWidget(w, gridrow++, 0);
 
     ConfParamBoolW* cpasp =

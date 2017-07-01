@@ -1704,7 +1704,7 @@ void Db::waitUpdIdle()
 	// We flush here just for correct measurement of the thread work time
 	string ermsg;
 	try {
-	    m_ndb->xwdb.flush();
+	    m_ndb->xwdb.commit();
 	} XCATCHERROR(ermsg);
 	if (!ermsg.empty()) {
 	    LOGERR(("Db::waitUpdIdle: flush() failed: %s\n", ermsg.c_str()));
@@ -1738,7 +1738,7 @@ bool Db::doFlush()
     }
     string ermsg;
     try {
-	m_ndb->xwdb.flush();
+	m_ndb->xwdb.commit();
     } XCATCHERROR(ermsg);
     if (!ermsg.empty()) {
 	LOGERR(("Db::doFlush: flush() failed: %s\n", ermsg.c_str()));
@@ -1950,7 +1950,7 @@ bool Db::purge()
     // that any added document would go to the index. Kept here
     // because it doesn't really hurt.
     try {
-	m_ndb->xwdb.flush();
+	m_ndb->xwdb.commit();
     } catch (...) {
 	LOGERR(("Db::purge: 1st flush failed\n"));
 
@@ -1995,7 +1995,7 @@ bool Db::purge()
     }
 
     try {
-	m_ndb->xwdb.flush();
+	m_ndb->xwdb.commit();
     } catch (...) {
 	LOGERR(("Db::purge: 2nd flush failed\n"));
     }

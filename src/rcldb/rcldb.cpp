@@ -1051,13 +1051,17 @@ bool Db::testDbDir(const string &dir, bool *stripped_p)
     LOGDEB("Db::testDbDir: [" << dir << "]\n");
     try {
 	Xapian::Database db(dir);
-	// If we have terms with a leading ':' it's an
-	// unstripped index
-	Xapian::TermIterator term = db.allterms_begin(":");
-	if (term == db.allterms_end())
+	// If the prefix for mimetype is wrapped, it's an unstripped
+	// index. T has been in use in recoll since the beginning and
+	// all documents have a T field (possibly empty).
+	Xapian::TermIterator term = db.allterms_begin(":T:");
+	if (term == db.allterms_end()) {
 	    mstripped = true;
-	else
+        } else {
 	    mstripped = false;
+        }
+        LOGDEB("testDbDir: " << dir << " is a " <<
+               (mstripped ? "stripped" : "raw") << " index\n");
     } XCATCHERROR(aerr);
     if (!aerr.empty()) {
 	LOGERR("Db::Open: error while trying to open database from [" <<

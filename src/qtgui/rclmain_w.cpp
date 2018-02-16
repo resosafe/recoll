@@ -191,7 +191,7 @@ void RclMain::init()
     }
     curid->setChecked(true);
 
-    m_toolsTB = new QToolBar(this);
+    m_toolsTB = new QToolBar(tr("Tools"), this);
     m_toolsTB->setObjectName(QString::fromUtf8("m_toolsTB"));
     m_toolsTB->addAction(toolsAdvanced_SearchAction);
     m_toolsTB->addAction(toolsDoc_HistoryAction);
@@ -199,7 +199,7 @@ void RclMain::init()
     m_toolsTB->addAction(actionQuery_Fragments);
     this->addToolBar(int2area(prefs.toolArea), m_toolsTB);
 
-    m_resTB = new QToolBar(this);
+    m_resTB = new QToolBar(tr("Results"), this);
     m_resTB->setObjectName(QString::fromUtf8("m_resTB"));
     this->addToolBar(int2area(prefs.resArea), m_resTB);
 

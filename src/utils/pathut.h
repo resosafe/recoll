@@ -113,6 +113,10 @@ extern bool path_isabsolute(const std::string& s);
 /// Test if path is root (x:/). root is defined by root/.. == root
 extern bool path_isroot(const std::string& p);
 
+/// Test if sub is a subdirectory of top. This is a textual test,
+/// links not allowed
+extern bool path_isdesc(const std::string& top, const std::string& sub);
+
 /// Turn absolute path into file:// url
 extern std::string path_pathtofileurl(const std::string& path);
 

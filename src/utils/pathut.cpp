@@ -353,6 +353,29 @@ bool path_isroot(const string& path)
     return false;
 }
 
+bool path_isdesc(const string& _top, const string& _sub)
+{
+    string top = path_canon(_top);
+    string sub = path_canon(_sub);
+    path_catslash(top);
+    path_catslash(sub);
+    for (;;) {
+        if (sub == top) {
+            return true;
+        }
+        string::size_type l = sub.size();
+        sub = path_getfather(sub);
+        if (sub.size() == l || sub.size() < top.size()) {
+            // At root or sub shorter than top: done
+            if (sub == top) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+    }
+}
+
 bool path_isabsolute(const string& path)
 {
     if (!path.empty() && (path[0] == '/'
@@ -790,10 +813,7 @@ out:
 // alone.
 Pidfile::~Pidfile()
 {
-    if (m_fd >= 0) {
-        ::close(m_fd);
-    }
-    m_fd = -1;
+    this->close();
 }
 
 pid_t Pidfile::read_pid()
@@ -834,7 +854,7 @@ int Pidfile::flopen()
     lockdata.l_whence = SEEK_SET;
     if (fcntl(m_fd, F_SETLK,  &lockdata) != 0) {
         int serrno = errno;
-        (void)::close(m_fd);
+        this->close()
         errno = serrno;
         m_reason = "fcntl lock failed";
         return -1;
@@ -846,7 +866,7 @@ int Pidfile::flopen()
     int operation = LOCK_EX | LOCK_NB;
     if (flock(m_fd, operation) == -1) {
         int serrno = errno;
-        (void)::close(m_fd);
+        this->close();
         errno = serrno;
         m_reason = "flock failed";
         return -1;
@@ -857,7 +877,7 @@ int Pidfile::flopen()
     if (ftruncate(m_fd, 0) != 0) {
         /* can't happen [tm] */
         int serrno = errno;
-        (void)::close(m_fd);
+        this->close();
         errno = serrno;
         m_reason = "ftruncate failed";
         return -1;
@@ -892,7 +912,12 @@ int Pidfile::write_pid()
 
 int Pidfile::close()
 {
-    return ::close(m_fd);
+    int ret = -1;
+    if (m_fd >= 0) {
+        ret = ::close(m_fd);
+        m_fd = -1;
+    }
+    return ret;
 }
 
 int Pidfile::remove()

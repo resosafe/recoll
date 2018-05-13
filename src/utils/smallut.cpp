@@ -1281,7 +1281,7 @@ public:
         } else {
             ok = false;
         }
-        matches.reserve(nmatch+1);
+        matches.resize(nmatch+1);
     }
     ~Internal() {
         regfree(&expr);

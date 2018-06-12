@@ -1,96 +1,39 @@
 #!/usr/bin/make -f
+# See debhelper(7) (uncomment to enable)
+# output every command that modifies files on the build system.
+#DH_VERBOSE = 1
 
-# Uncomment this to turn on verbose mode.
-#export DH_VERBOSE=1
+# see EXAMPLES in dpkg-buildflags(1) and read /usr/share/dpkg/*
+DPKG_EXPORT_BUILDFLAGS = 1
+include /usr/share/dpkg/default.mk
 
-export DEB_BUILD_MAINT_OPTIONS = hardening=+all
+# see FEATURE AREAS in dpkg-buildflags(1)
+#export DEB_BUILD_MAINT_OPTIONS = hardening=+all
 
-DEB_HOST_GNU_TYPE   ?= $(shell dpkg-architecture -qDEB_HOST_GNU_TYPE)
-DEB_BUILD_GNU_TYPE  ?= $(shell dpkg-architecture -qDEB_BUILD_GNU_TYPE)
+# see ENVIRONMENT in dpkg-buildflags(1)
+# package maintainers to append CFLAGS
+#export DEB_CFLAGS_MAINT_APPEND  = -Wall -pedantic
+# package maintainers to append LDFLAGS
+#export DEB_LDFLAGS_MAINT_APPEND = -Wl,--as-needed
 
-CPPFLAGS:=$(shell dpkg-buildflags --get CPPFLAGS)
-CFLAGS:=$(shell dpkg-buildflags --get CFLAGS) $(CPPFLAGS)
-CXXFLAGS:=$(shell dpkg-buildflags --get CXXFLAGS) $(CPPFLAGS)
-LDFLAGS:=$(shell dpkg-buildflags --get LDFLAGS)
+# main packaging script based on dh7 syntax
+%:
+	dh $@ --parallel --with python2 --with python3 --with autotools-dev 
+
+override_dh_auto_configure:
+	dh_auto_configure -- --enable-recollq --enable-xadump
 
 build3vers := $(shell py3versions -sv)
 
-#build qt5 UI
-export QT_SELECT := qt5
-
-ifneq (,$(findstring noopt,$(DEB_BUILD_OPTIONS)))
-	CFLAGS += -O0
-else
-	CFLAGS += -O2
-endif
-
-config.status: configure
-	dh_testdir
-	./configure CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" \
-		    --host=$(DEB_HOST_GNU_TYPE) \
-		    --build=$(DEB_BUILD_GNU_TYPE) \
-		    --mandir=\$${prefix}/share/man \
-		    --prefix=/usr \
-		    --enable-recollq \
-		    --enable-xadump
-
-build: build-arch build-indep
-build-arch: build-stamp
-build-indep: build-stamp
-build-stamp: config.status
-	dh_testdir
-	$(MAKE)
-	touch $@
-
-clean:
-	dh_testdir
-	dh_testroot
-	rm -f build-stamp config.log
-	[ ! -f Makefile ] || $(MAKE) distclean
-	dh_clean Makefile
-
-install:
-	dh_testdir
-	dh_testroot
-	dh_prep
-	dh_installdirs
-	$(MAKE) STRIP=ls prefix=$(CURDIR)/debian/tmp/usr install
-	# Executable fixes
-	chmod +x $(CURDIR)/debian/tmp/usr/share/recoll/examples/rclmon.sh
-	chmod -x $(CURDIR)/debian/tmp/usr/share/recoll/filters/rclexec1.py
-	chmod -x $(CURDIR)/debian/tmp/usr/share/recoll/filters/rclxslt.py
-	find $(CURDIR) -type f -name '*.la' -exec rm -f '{}' \;
+override_dh_auto_install:
+	dh_auto_install
 	(cd python/recoll; python setup.py install \
 	                                   --install-layout=deb \
 	                                   --prefix=$(CURDIR)/debian/tmp/usr )
 	set -e && for i in $(build3vers); do \
-	  (cd python/recoll; python$$i ./setup.py install \
-	                                   --install-layout=deb \
-	                                   --prefix=$(CURDIR)/debian/tmp/usr ) ; \
+	(cd python/recoll; libdir=/usr/lib/$${DEB_BUILD_MULTIARCH} python$$i \
+					./setup.py install \
+	                                --install-layout=deb \
+	                                --prefix=$(CURDIR)/debian/tmp/usr ) ; \
 	done
-
-binary-arch: build install
-	dh_testdir
-	dh_testroot
-	dh_installchangelogs ChangeLog
-	dh_installdocs README
-	dh_installman
-	dh_install --sourcedir=debian/tmp
-	dh_makeshlibs
-	dh_python2 -p python-recoll
-	dh_python3 -p python3-recoll
-	dh_link
-	dh_strip
-	dh_compress
-	dh_fixperms
-	dh_lintian
-	dh_installdeb
-	dh_shlibdeps
-	dh_gencontrol
-	dh_md5sums
-	dh_builddeb
-
-binary-indep: build install
-
-binary: binary-indep binary-arch
-.PHONY: build build-arch build-indep clean binary-indep binary-arch binary install
+	find $(CURDIR) -type f -name '*.la' -exec rm -f '{}' \;

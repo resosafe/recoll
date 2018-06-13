@@ -27,9 +27,10 @@ build3vers := $(shell py3versions -sv)
 
 override_dh_auto_install:
 	dh_auto_install
-	(cd python/recoll; python setup.py install \
-	                                   --install-layout=deb \
-	                                   --prefix=$(CURDIR)/debian/tmp/usr )
+	(cd python/recoll; libdir=/usr/lib/$${DEB_BUILD_MULTIARCH} python \
+					./setup.py install \
+	                                --install-layout=deb \
+	                                --prefix=$(CURDIR)/debian/tmp/usr )
 	set -e && for i in $(build3vers); do \
 	(cd python/recoll; libdir=/usr/lib/$${DEB_BUILD_MULTIARCH} python$$i \
 					./setup.py install \

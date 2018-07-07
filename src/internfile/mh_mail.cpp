@@ -260,8 +260,8 @@ bool MimeHandlerMail::processAttach()
             att->m_charset << "] fn [" << att->m_filename << "]\n");
 
     // Erase current content and replace
-    m_metaData[cstr_dj_keycontent] = string();
     string& body = m_metaData[cstr_dj_keycontent];
+    body.clear();
     att->m_part->getBody(body, 0, att->m_part->bodylength);
     {
 	string decoded;
@@ -285,10 +285,15 @@ bool MimeHandlerMail::processAttach()
 
     // Special case for text/plain content. Internfile should deal
     // with this but it expects text/plain to be utf-8 already, so we
-    // handle the transcoding if needed
+    // handle the transcoding if needed. Same kind of issue for the MD5
     if (m_metaData[cstr_dj_keymt] == cstr_textplain) {
-	if (!txtdcode("MimeHandlerMail::processAttach"))
+	if (!txtdcode("MimeHandlerMail::processAttach")) {
 	    body.clear();
+        } else if (!m_forPreview) {
+            string md5, xmd5;
+            MD5String(body, md5);
+            m_metaData[cstr_dj_keymd5] = MD5HexPrint(md5, xmd5);
+        }
     }
 
     // Ipath

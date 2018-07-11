@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.1">
+<TS version="2.1" language="ru_RU">
 <context>
     <name>AdvSearch</name>
     <message>
@@ -13,11 +13,11 @@
     </message>
     <message>
         <source>texts</source>
-        <translation type="unfinished">тексты</translation>
+        <translation>тексты</translation>
     </message>
     <message>
         <source>spreadsheets</source>
-        <translation type="unfinished">таблицы</translation>
+        <translation>таблицы</translation>
     </message>
     <message>
         <source>presentations</source>
@@ -372,7 +372,7 @@ p, li { white-space: pre-wrap; }
     <name>FragButs</name>
     <message>
         <source>%1 not found.</source>
-        <translation type="unfinished"></translation>
+        <translation>%1 не найден.</translation>
     </message>
     <message>
         <source>%1:
@@ -381,7 +381,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>Query Fragments</source>
-        <translation type="unfinished"></translation>
+        <translation>Фрагменты запроса</translation>
     </message>
 </context>
 <context>
@@ -462,7 +462,7 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
     </message>
     <message>
         <source>&quot;history&quot; file is damaged, please check or remove it: </source>
-        <translation type="unfinished"></translation>
+        <translation>Файл истории (&quot;history&quot;) повреждён, проверьте или удалите его:</translation>
     </message>
 </context>
 <context>
@@ -635,7 +635,7 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
     </message>
     <message>
         <source>Default&lt;br&gt;character set</source>
-        <translation type="unfinished"></translation>
+        <translation>Кодировка&lt;br&gt;по умолчанию</translation>
     </message>
     <message>
         <source>Character set used for reading files which do not identify the character set internally, for example pure text files.&lt;br&gt;The default value is empty, and the value from the NLS environnement is used.</source>
@@ -643,12 +643,13 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
     </message>
     <message>
         <source>Ignored endings</source>
-        <translation type="unfinished"></translation>
+        <translation>Игнорируемые окончания</translation>
     </message>
     <message>
         <source>These are file name endings for files which will be indexed by name only 
 (no MIME type identification attempt, no decompression, no content indexing).</source>
-        <translation type="unfinished"></translation>
+        <translation>Окончания имен файлов для файлов, которые будут индексироваться только по имени 
+(без попыток определения MIME-типа, без распаковки, без индексирования содержимого).</translation>
     </message>
 </context>
 <context>
@@ -888,7 +889,7 @@ Please check the mimeconf file</source>
     </message>
     <message>
         <source>Indexing interrupted</source>
-        <translation type="unfinished">Индексирование прервано</translation>
+        <translation>Индексирование прервано</translation>
     </message>
     <message>
         <source>Stop &amp;Indexing</source>
@@ -1170,7 +1171,7 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>Saved Queries (*.rclq)</source>
-        <translation type="unfinished"></translation>
+        <translation>Сохраненные запросы (*.rclq)</translation>
     </message>
     <message>
         <source>Write failed</source>
@@ -1517,7 +1518,7 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>Query Fragments</source>
-        <translation type="unfinished"></translation>
+        <translation>Фрагменты запроса</translation>
     </message>
     <message>
         <source>    With failed files retrying</source>
@@ -1529,62 +1530,62 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>Indexing &amp;schedule</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Расписание индексирования</translation>
     </message>
     <message>
         <source>Enable synonyms</source>
-        <translation type="unfinished"></translation>
+        <translation>Задействовать синонимы</translation>
     </message>
     <message>
         <source>Save last query</source>
-        <translation type="unfinished"></translation>
+        <translation>Сохранить последний запрос</translation>
     </message>
     <message>
         <source>Load saved query</source>
-        <translation type="unfinished"></translation>
+        <translation>Загрузить последний запрос</translation>
     </message>
     <message>
         <source>Special Indexing</source>
-        <translation type="unfinished"></translation>
+        <translation>Особое индексирование</translation>
     </message>
     <message>
         <source>Indexing with special options</source>
-        <translation type="unfinished"></translation>
+        <translation>Индексирование с особыми параметрами</translation>
     </message>
     <message>
         <source>&amp;View</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Вид</translation>
     </message>
     <message>
         <source>Missing &amp;helpers</source>
-        <translation type="unfinished"></translation>
+        <translation>Недостающие &amp;утилиты</translation>
     </message>
     <message>
         <source>Indexed &amp;MIME types</source>
-        <translation type="unfinished"></translation>
+        <translation>Проиндексированные &amp;MIME-типы</translation>
     </message>
     <message>
         <source>Index &amp;statistics</source>
-        <translation type="unfinished"></translation>
+        <translation>&amp;Статистика индекса</translation>
     </message>
     <message>
         <source>Webcache Editor</source>
-        <translation type="unfinished"></translation>
+        <translation>Редактор веб-кэша</translation>
     </message>
     <message>
         <source>Trigger incremental pass</source>
-        <translation type="unfinished"></translation>
+        <translation>Запустить инкрементальный проход</translation>
     </message>
 </context>
 <context>
     <name>RclTrayIcon</name>
     <message>
         <source>Restore</source>
-        <translation type="unfinished"></translation>
+        <translation>Восстановить</translation>
     </message>
     <message>
         <source>Quit</source>
-        <translation type="unfinished"></translation>
+        <translation>Выход</translation>
     </message>
 </context>
 <context>
@@ -2349,7 +2350,7 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>Index: %1 documents, average length %2 terms.%3 results</source>
-        <translation type="unfinished">Индекс: %1 документ(ов), средняя длина %2 слов(о). %3 результат(ов)</translation>
+        <translation>Индекс: %1 документ(ов), средняя длина %2 слов(о). %3 результат(ов)</translation>
     </message>
     <message>
         <source>%1 results</source>
@@ -2401,31 +2402,31 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>Smallest document length (terms)</source>
-        <translation type="unfinished"></translation>
+        <translation>Наименьшая длина документа (термы)</translation>
     </message>
     <message>
         <source>Longest document length (terms)</source>
-        <translation type="unfinished"></translation>
+        <translation>Наибольшая длина документа (термы)</translation>
     </message>
     <message>
         <source>Results from last indexing:</source>
-        <translation type="unfinished"></translation>
+        <translation>Результаты последнего индексирования:</translation>
     </message>
     <message>
         <source>  Documents created/updated</source>
-        <translation type="unfinished"></translation>
+        <translation>  Создано/обновлено документов</translation>
     </message>
     <message>
         <source>  Files tested</source>
-        <translation type="unfinished"></translation>
+        <translation>  Проверено файлов</translation>
     </message>
     <message>
         <source>  Unindexed files</source>
-        <translation type="unfinished"></translation>
+        <translation>  Непроиндексированных файлов</translation>
     </message>
     <message>
         <source>List files which could not be indexed (slow)</source>
-        <translation type="unfinished"></translation>
+        <translation>Список файлов, которые не удалось проиндексировать (медленно)</translation>
     </message>
     <message>
         <source>Spell expansion error. </source>
@@ -2484,7 +2485,7 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>Default QtWebkit font</source>
-        <translation type="unfinished"></translation>
+        <translation>Шрифт QtWebkit по умолчанию</translation>
     </message>
     <message>
         <source>Any term</source>
@@ -2496,7 +2497,7 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>File name</source>
-        <translation type="unfinished"></translation>
+        <translation>Имя файла</translation>
     </message>
     <message>
         <source>Query language</source>
@@ -2504,7 +2505,7 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>Value from previous program exit</source>
-        <translation type="unfinished"></translation>
+        <translation>Значение из предыдущего запуска программы</translation>
     </message>
 </context>
 <context>
@@ -2785,30 +2786,30 @@ This should give higher precedence to the results where the search terms appear 
     </message>
     <message>
         <source>Recoll action:</source>
-        <translation type="unfinished"></translation>
+        <translation>Действие recoll:</translation>
     </message>
     <message>
         <source>current value</source>
-        <translation type="unfinished"></translation>
+        <translation>текущее значение</translation>
     </message>
     <message>
         <source>Select same</source>
-        <translation type="unfinished"></translation>
+        <translation>Выделить такие же</translation>
     </message>
     <message>
         <source>&lt;b&gt;New Values:&lt;/b&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;b&gt;Новые значения:&lt;/b&gt;</translation>
     </message>
 </context>
 <context>
     <name>Webcache</name>
     <message>
         <source>Webcache editor</source>
-        <translation type="unfinished"></translation>
+        <translation>Редактор веб-кэша</translation>
     </message>
     <message>
         <source>Search regexp</source>
-        <translation type="unfinished"></translation>
+        <translation>Поиск по рег. выражению</translation>
     </message>
 </context>
 <context>
@@ -3011,7 +3012,7 @@ This will help searching very big text  files (ie: log files).</source>
     </message>
     <message>
         <source>Only mime types</source>
-        <translation type="unfinished"></translation>
+        <translation>Только MIME-типы</translation>
     </message>
     <message>
         <source>An exclusive list of indexed mime types.&lt;br&gt;Nothing else will be indexed. Normally empty and inactive</source>
@@ -3019,7 +3020,7 @@ This will help searching very big text  files (ie: log files).</source>
     </message>
     <message>
         <source>Exclude mime types</source>
-        <translation type="unfinished"></translation>
+        <translation>Исключить MIME-типы</translation>
     </message>
     <message>
         <source>Mime types not to be indexed</source>
@@ -3138,11 +3139,11 @@ This will help searching very big text  files (ie: log files).</source>
     </message>
     <message>
         <source>Max disk occupation (%, 0 means no limit)</source>
-        <translation type="unfinished"></translation>
+        <translation>Максимальное использование диска (%, 0 - без ограничений)</translation>
     </message>
     <message>
         <source>This is the percentage of disk usage - total disk usage, not index size - at which indexing will fail and stop.&lt;br&gt;The default value of 0 removes any limit.</source>
-        <translation type="unfinished"></translation>
+        <translation>Процент занятости диска - общей занятости диска, не размер индекса - при котором индексирование завершится ошибкой и остановится.&lt;br&gt;Обычно: 0 (отключает проверку).</translation>
     </message>
 </context>
 <context>
@@ -3463,31 +3464,31 @@ The default value is 2 (percent). </source>
     </message>
     <message>
         <source>Document filter choice style:</source>
-        <translation type="unfinished"></translation>
+        <translation>Стиль выбора фильтра документов:</translation>
     </message>
     <message>
         <source>Buttons Panel</source>
-        <translation type="unfinished"></translation>
+        <translation>Панель кнопок</translation>
     </message>
     <message>
         <source>Toolbar Combobox</source>
-        <translation type="unfinished"></translation>
+        <translation>Выпадающий список</translation>
     </message>
     <message>
         <source>Menu</source>
-        <translation type="unfinished"></translation>
+        <translation>Меню</translation>
     </message>
     <message>
         <source>Show system tray icon.</source>
-        <translation type="unfinished"></translation>
+        <translation>Показывать значок в системном трее.</translation>
     </message>
     <message>
         <source>Close to tray instead of exiting.</source>
-        <translation type="unfinished"></translation>
+        <translation>Сворачиваться в трей вместо выхода.</translation>
     </message>
     <message>
         <source>Start with simple search mode</source>
-        <translation type="unfinished"></translation>
+        <translation>Начать с простого режима поиска</translation>
     </message>
     <message>
         <source>User style to apply to the snippets window.&lt;br&gt; Note: the result page header insert is also included in the snippets window header.</source>
@@ -3495,19 +3496,19 @@ The default value is 2 (percent). </source>
     </message>
     <message>
         <source>Synonyms file</source>
-        <translation type="unfinished"></translation>
+        <translation>Файл синонимов</translation>
     </message>
     <message>
         <source>Show warning when opening temporary file.</source>
-        <translation type="unfinished"></translation>
+        <translation>Показывать предупреждение при открытии временного файла.</translation>
     </message>
     <message>
         <source>Highlight CSS style for query terms</source>
-        <translation type="unfinished"></translation>
+        <translation>CSS-стиль для подсветки запросов</translation>
     </message>
     <message>
         <source>Recoll - User Preferences</source>
-        <translation type="unfinished"></translation>
+        <translation>Recoll - Пользовательские настройки</translation>
     </message>
     <message>
         <source>Set path translations for the selected index or for the main one if no selection exists.</source>
@@ -3515,7 +3516,7 @@ The default value is 2 (percent). </source>
     </message>
     <message>
         <source>Activate links in preview.</source>
-        <translation type="unfinished"></translation>
+        <translation>Активировать ссылки в предпросмотре.</translation>
     </message>
     <message>
         <source>Make links inside the preview window clickable, and start an external browser when they are clicked.</source>

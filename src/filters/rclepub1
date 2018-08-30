@@ -8,6 +8,7 @@ import re
 
 import rclexecm
 
+sys.path.append(sys.path[0]+"/recollepub.zip")
 try:
     import epub
 except:

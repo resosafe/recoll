@@ -12,6 +12,7 @@ import subprocess
 import rclexecm
 import rclconfig
 
+sys.path.append(sys.path[0]+"/recollepub.zip")
 try:
     import epub
 except:

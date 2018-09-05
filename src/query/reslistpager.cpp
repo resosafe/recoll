@@ -403,7 +403,6 @@ void ResListPager::displayPage(RclConfig *config)
 			    chunk << spelling << " ";
 			}
 			chunk << "<br />";
-                        std::cerr << chunk.str() << endl;
 		    }
 		    chunk << "</blockquote></p>";
 		}

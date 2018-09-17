@@ -362,19 +362,30 @@ QVariant RecollModel::data(const QModelIndex& index, int role) const
     LOGDEB2("RecollModel::data: row " << index.row() << " col " <<
             index.column() << " role " << role << "\n");
     if (!m_source || role != Qt::DisplayRole || !index.isValid() ||
-	index.column() >= int(m_fields.size())) {
-	return QVariant();
+        index.column() >= int(m_fields.size())) {
+        return QVariant();
     }
 
     Rcl::Doc doc;
     if (!m_source->getDoc(index.row(), doc)) {
-	return QVariant();
+        return QVariant();
     }
 
     string colname = m_fields[index.column()];
 
+    string data = m_getters[index.column()](colname, doc);
+
+    // Special case url, because it may not be utf-8. URL-encode in this case.
+    if (!colname.compare("url")) {
+        int ecnt;
+        string data1;
+        if (!transcode(data, data1, "UTF-8", "UTF-8", &ecnt) || ecnt > 0) {
+            data = url_encode(data);
+        }
+    }
+
     list<string> lr;
-    g_hiliter.plaintorich(m_getters[index.column()](colname, doc), lr, m_hdata);
+    g_hiliter.plaintorich(data, lr, m_hdata);
     return QString::fromUtf8(lr.front().c_str());
 }
 

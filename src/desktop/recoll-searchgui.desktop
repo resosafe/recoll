@@ -1,8 +1,10 @@
 [Desktop Entry]
-Categories=Utility;Filesystem;Database;
+Categories=Qt;Utility;Filesystem;Database;
 Comment=Find documents by specifying search terms
+Comment[ru]=Поиск документов по заданным условиям
 Exec=recoll
 GenericName=Local Text Search
+GenericName[ru]=Локальный текстовый поиск
 Icon=recoll
 Name=Recoll
 Terminal=false

@@ -35,10 +35,11 @@ UNRTF=c:/unrtf
 ANTIWORD=c:/recolldeps/antiword
 PYXSLT=C:/recolldeps/pyxslt
 PYEXIV2=C:/recolldeps/pyexiv2
-LIBXAPIAN=c:/temp/xapian-core-1.2.21/.libs/libxapian-22.dll
-#LIBXAPIAN=c:/temp/xapian-core-1.4.1/.libs/libxapian-30.dll
+#LIBXAPIAN=c:/temp/xapian-core-1.2.21/.libs/libxapian-22.dll
+LIBXAPIAN=c:/temp/xapian-core-1.4.5/.libs/libxapian-30.dll
 MUTAGEN=C:/temp/mutagen-1.32/
 EPUB=C:/temp/epub-0.5.2
+FUTURE=C:/temp/python2-future
 ZLIB=c:/temp/zlib-1.2.8
 POPPLER=c:/temp/poppler-0.36/
 LIBWPD=c:/temp/libwpd/libwpd-0.10.0/
@@ -177,6 +178,13 @@ copyepub()
     # chkcp to check that epub is where we think it is
     chkcp $EPUB/build/lib/epub/opf.py $FILTERS/epub
 }
+copyfuture()
+{
+    cp -rp $FUTURE/future $FILTERS/
+    cp -rp $FUTURE/builtins $FILTERS/
+    # chkcp to check that things are where we think they are
+    chkcp $FUTURE/future/builtins/newsuper.pyc $FILTERS/future/builtins
+}
 
 copypyexiv2()
 {
@@ -238,6 +246,7 @@ copypoppler
 copyantiword
 copyunrtf
 copyxslt
+copyfuture
 copymutagen
 copyepub
 copypyexiv2

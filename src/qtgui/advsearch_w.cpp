@@ -334,6 +334,19 @@ void AdvSearch::saveFileTypes()
 void AdvSearch::browsePB_clicked()
 {
     QString dir = myGetFileName(true);
+#ifdef _WIN32
+    string s = qs2utf8s(dir);
+    for (string::size_type i = 0; i < s.size(); i++) {
+        if (s[i] == '\\') {
+            s[i] = '/';
+        }
+    }
+    if (s.size() >= 2 && isalpha(s[0]) && s[1] == ':') {
+        s.erase(1,1);
+        s = string("/") + s;
+    }
+    dir = u8s2qs(s);
+#endif
     subtreeCMB->setEditText(dir);
 }
 

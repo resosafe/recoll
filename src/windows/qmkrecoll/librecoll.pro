@@ -22,7 +22,7 @@ SOURCES += \
 ../../bincimapmime/mime-parseonlyheader.cc \
 ../../bincimapmime/mime-printbody.cc \
 ../../bincimapmime/mime.cc \
-../../common/beaglequeuecache.cpp \
+../../common/webstore.cpp \
 ../../common/cstr.cpp \
 ../../common/rclconfig.cpp \
 ../../common/rclinit.cpp \
@@ -30,8 +30,8 @@ SOURCES += \
 ../../common/textsplit.cpp \
 ../../common/unacpp.cpp \
 ../../common/utf8fn.cpp \
-../../index/beaglequeue.cpp \
-../../index/bglfetcher.cpp \
+../../index/webqueue.cpp \
+../../index/webqueuefetcher.cpp \
 ../../index/checkretryfailed.cpp \
 ../../index/fetcher.cpp \
 ../../index/exefetcher.cpp \

@@ -438,7 +438,11 @@ void UIPrefsDialog::showStylesheetDialog()
 {
     qssFile = myGetFileName(false, "Select stylesheet file", true);
     string nm = path_getsimple((const char *)qssFile.toLocal8Bit());
-    stylesheetPB->setText(QString::fromLocal8Bit(nm.c_str()));
+    if (!nm.empty()) {
+        stylesheetPB->setText(QString::fromLocal8Bit(nm.c_str()));
+    } else {
+        stylesheetPB->setText(tr("Choose"));
+    }
 }
 
 void UIPrefsDialog::resetStylesheet()

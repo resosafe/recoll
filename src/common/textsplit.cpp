@@ -340,6 +340,15 @@ bool TextSplit::words_from_span(size_t bp)
     cerr << endl;
 #endif
     int spanwords = int(m_words_in_span.size());
+    // It seems that something like: tv_combo-sample_util.Po@am_quote
+    // can get the splitter to call doemit with a span of '@' and
+    // words_in_span==0, which then causes a crash when accessing
+    // words_in_span[0] if the stl assertions are active (e.g. Fedora
+    // RPM build). Not too sure what the right fix would be, but for
+    // now, just defend against it
+    if (spanwords == 0) {
+        return true;
+    }
     int pos = m_spanpos;
     // Byte position of the span start
     size_t spboffs = bp - m_span.size();

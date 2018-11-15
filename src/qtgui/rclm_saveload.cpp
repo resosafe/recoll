@@ -88,7 +88,14 @@ void RclMain::saveLastQuery()
     
     string tofile((const char *)s.toLocal8Bit());
 
-    LOGDEB("RclMain::saveLastQuery: XML: ["  << (xml) << "]\n" );
+    // Work around qt 5.9-11 bug (linux at least): defaultSuffix is
+    // not added to saved file name
+    string suff = path_suffix(tofile);
+    if (suff.compare("rclq")) {
+        tofile += ".rclq";
+    }
+
+    LOGDEB("RclMain::saveLastQuery: XML: [" << xml << "]\n");
     string reason;
     if (!stringtofile(xml, tofile.c_str(), reason)) {
         QMessageBox::warning(this, tr("Write failed"), 

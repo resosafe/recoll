@@ -75,7 +75,7 @@ application/vnd.ms-office = execm rcldoc.py
 
 application/ogg = execm rclaudio
 application/pdf = execm rclpdf.py
-application/postscript = exec pstotext;charset=iso-8859-1;mimetype=text/plain
+application/postscript = exec rclps
 application/sql = internal text/plain
 application/vnd.ms-excel = execm rclxls.py
 application/vnd.ms-powerpoint = execm rclppt.py

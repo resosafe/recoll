@@ -17,11 +17,16 @@
 # 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #
-# Extract text from a dvi file by either executing dvitops and rclps
-# or using catdvi. dvitops has given better results during tests, and is
-# chosen first if available, but the dvitops/rclps combination is much
-# slower than catdvi 
-# set variables
+# Extract text from a dvi file by either executing dvitops and
+# pstotext or using catdvi.
+#
+# pstotext does not work any more with gs 9.22-25, so catdvi is always
+# needed now.
+#    Initially dvitops had given better results during tests, and was
+#    chosen first if available, but the dvitops/pstotext combination
+#    is much slower than catdvi set variables. In any case, the
+#    program is not too good with special characters (e.g. ligatures)
+
 LANG=C ; export LANG
 LC_ALL=C ; export LC_ALL
 progname="rcldvi"
@@ -94,24 +99,33 @@ umask 77
 # !! Leave the following line unmodified !
 #ENDRECFILTCOMMONCODE
 
-# Find rclps. Note: this only works because we are always executed with a
-# full path
-rclps=`dirname $0`/rclps
-
+decoderdvips()
+{
+    dvips -f $1 2> /dev/null | pstotext | iconv -f cp1252 -t utf-8 -c -s
+}
+decodercatdvi()
+{
+    catdvi --output-encoding=UTF-8 $1
+}
 decoder=""
-if iscmd dvips -a iscmd pstotext ; then
-  decoder=dvips
-elif iscmd catdvi ; then
-  decoder=catdvi
-fi
 
+# pstotext does not work any more
+# iscmd dvips
+# isdvips=$?
+# iscmd pstotext
+# ispstotext=$?
+# if test $isdvips -eq 0 -a $ispstotext -eq 0; then
+#   decoder=decoderdvips
+# elif iscmd catdvi ; then
+#   decoder=decodercatdvi
+# fi
+
+if iscmd catdvi ; then
+    decoder=decodercatdvi
+fi
+ 
 if test X$decoder = X ; then
-   senderror HELPERNOTFOUND dvips or catdvi
-fi
-
-if test X$decoder = Xdvips ; then
-   $decoder -f < "$infile" 2> /dev/null | $rclps -
-   exit $?
+   senderror HELPERNOTFOUND catdvi
 fi
 
 # The strange 'BEGIN' setup is to prevent 'file' from thinking this file

@@ -1,29 +1,31 @@
 #!/bin/sh
-# @(#$Id: rclps,v 1.10 2007-06-08 13:51:09 dockes Exp $  (C) 2004 J.F.Dockes
-# Parts taken from Estraier:
-#================================================================
-# Estraier: a personal full-text search system
-# Copyright (C) 2003-2004 Mikio Hirabayashi
-#================================================================
-#================================================================
-# Extract text from a postscript file by executing pstotext or ps2ascii. 
 #
-# The default is to use pstotext which can deal with accents, but in a
-# partially broken way (it always outputs iso8859-1, when it should use utf.
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
 #
-# OTOH, ps2ascii is much faster, comes with ghostscript, and sometimes work
-# better (ie: on some openoffice output files).
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
 #
-#================================================================
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the
+# Free Software Foundation, Inc.,
+# 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
-# set variables
+#
+# Extract text from a postscript file
+#
+# We used to use pstotext but it does not work any more with gs 9.22-25
+# So we now go through pdf, which seems the only way to obtain non-ascii output
+# 
+
 LANG=C ; export LANG
 LC_ALL=C ; export LC_ALL
 progname="rclps"
-decoder=pstotext
-#decoder=ps2ascii
 filetype=postscript
-
 
 #RECFILTCOMMONCODE
 ##############################################################################
@@ -91,45 +93,7 @@ umask 77
 # !! Leave the following line unmodified !
 #ENDRECFILTCOMMONCODE
 
-checkcmds $decoder iconv awk
+checkcmds ps2pdf pdftotext
 
-# output the result
-# The strange 'BEGIN' setup is to prevent 'file' from thinking this file
-# is an awk program
-$decoder "$infile" |
-awk 'BEGIN'\
-' {
-  printf("<html><head><title></title>\n")
-  printf("<meta http-equiv=\"Content-Type\" content=\"text/html;charset=UTF-8\">\n")
-  printf("</head>\n<body><p>");
-  doescape = 1
-  cont = ""
-}
-{
-    $0 = cont $0
-    cont = ""
-
-    if ($0 == "\f") {
-       print "</p>\n<hr>\n\f<p>"
-       next
-    } else if ($0 ~ /­$/) {
-      # Note : soft-hyphen is iso8859 0xad
-      # Break at last whitespace
-      match($0, "[ \t][^ \t]+$")
-      line = substr($0, 0, RSTART)
-      cont = substr($0, RSTART, RLENGTH)
-      $0 = line
-      gsub("­", "", cont)
-    }
-
-    if(doescape > 0) {
-      gsub(/&/, "\\&amp;", $0)
-      gsub(/</, "\\&lt;", $0)
-      gsub(/>/, "\\&gt;", $0)
-    }
-    print $0 "<br>"
-}
-END {
-    print "</p></body></html>"
-}' | iconv -f iso-8859-1 -t UTF-8 -c -s 
-
+ps2pdf "$infile" - | pdftotext -htmlmeta -enc UTF-8 -eol unix -q - - | \
+    egrep -v '^<title>.*</title>$'

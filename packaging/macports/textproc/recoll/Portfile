@@ -38,7 +38,8 @@ depends_run         port:antiword \
 patchfiles          patch-sampleconf-mimeview.diff \
     patch-mkin-no-no-undefined.diff \
     patch-rclaspell-dylib.diff \
-    patch-netcon-traces.diff
+    patch-netcon-traces.diff \
+    patch-py2-to-27.diff
 
 # Note: this is probably not the right way to configure QMAKE
 configure.args      QMAKE=${prefix}/libexec/qt5/bin/qmake \

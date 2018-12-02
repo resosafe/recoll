@@ -69,73 +69,27 @@ static const QKeySequence printTabKS(Qt::ControlModifier+Qt::Key_P);
 
 void Preview::init()
 {
-    setObjectName("Preview");
-    QVBoxLayout* previewLayout = new QVBoxLayout(this);
+    LOGDEB("Preview::init\n");
+    // Create the first tab (the tab widget is created with one
+    // initial tab for ease of use in designer, we remove it).
+    addEditorTab();
+    pvTab->removeTab(0);
 
-    pvTab = new QTabWidget(this);
-
-    // Create the first tab. Should be possible to use addEditorTab
-    // but this causes a pb with the sizeing
-    QWidget *unnamed = new QWidget(pvTab);
-    QVBoxLayout *unnamedLayout = new QVBoxLayout(unnamed);
-    PreviewTextEdit *pvEdit = new PreviewTextEdit(unnamed, "pvEdit", this);
-    pvEdit->setReadOnly(true);
-    pvEdit->setUndoRedoEnabled(false);
-    unnamedLayout->addWidget(pvEdit);
-    pvTab->addTab(unnamed, "");
-
-    previewLayout->addWidget(pvTab);
-
-    // Create the buttons and entry field
-    QHBoxLayout *layout3 = new QHBoxLayout(0); 
-    searchLabel = new QLabel(this);
-    layout3->addWidget(searchLabel);
-
-    searchTextCMB = new QComboBox(this);
-    searchTextCMB->setEditable(true);
-    searchTextCMB->setInsertPolicy(QComboBox::NoInsert);
-    searchTextCMB->setDuplicatesEnabled(false);
-    for (unsigned int i = 0; i < m_hData.ugroups.size(); i++) {
+    for (const auto& ugroup : m_hData.ugroups) {
         QString s;
-        for (unsigned int j = 0; j < m_hData.ugroups[i].size(); j++) {
-            s.append(QString::fromUtf8(m_hData.ugroups[i][j].c_str()));
-            if (j != m_hData.ugroups[i].size()-1)
-                s.append(" ");
+        for (const auto& elt : ugroup) {
+            s.append(u8s2qs(elt));
         }
+        s = s.trimmed();
         searchTextCMB->addItem(s);
     }
-    searchTextCMB->setEditText("");
     searchTextCMB->setCompleter(0);
 
-    layout3->addWidget(searchTextCMB);
-
-    nextButton = new QPushButton(this);
-    nextButton->setEnabled(true);
-    layout3->addWidget(nextButton);
-    prevButton = new QPushButton(this);
-    prevButton->setEnabled(true);
-    layout3->addWidget(prevButton);
-    clearPB = new QPushButton(this);
-    clearPB->setEnabled(false);
-    layout3->addWidget(clearPB);
-    matchCheck = new QCheckBox(this);
-    layout3->addWidget(matchCheck);
-
-    previewLayout->addLayout(layout3);
-
-    resize(QSize(640, 480).expandedTo(minimumSizeHint()));
-
-    // buddies
-    searchLabel->setBuddy(searchTextCMB);
-
-    searchLabel->setText(tr("&Search for:"));
-    nextButton->setText(tr("&Next"));
-    prevButton->setText(tr("&Previous"));
-    clearPB->setText(tr("Clear"));
-    matchCheck->setText(tr("Match &Case"));
-
-    QPushButton * bt = new QPushButton(tr("Close Tab"), this);
-    pvTab->setCornerWidget(bt);
+    if (prefs.pvwidth > 100) {
+        resize(prefs.pvwidth, prefs.pvheight);
+    } else {
+        resize(QSize(640, 480).expandedTo(minimumSizeHint()));
+    }
 
     (void)new HelpClient(this);
     HelpClient::installMap((const char *)objectName().toUtf8(), 
@@ -146,12 +100,11 @@ void Preview::init()
             this, SLOT(searchTextFromIndex(int)));
     connect(searchTextCMB, SIGNAL(editTextChanged(const QString&)), 
             this, SLOT(searchTextChanged(const QString&)));
-    connect(nextButton, SIGNAL(clicked()), this, SLOT(nextPressed()));
-    connect(prevButton, SIGNAL(clicked()), this, SLOT(prevPressed()));
+    connect(nextPB, SIGNAL(clicked()), this, SLOT(nextPressed()));
+    connect(prevPB, SIGNAL(clicked()), this, SLOT(prevPressed()));
     connect(clearPB, SIGNAL(clicked()), searchTextCMB, SLOT(clearEditText()));
-    connect(pvTab, SIGNAL(currentChanged(int)), 
-            this, SLOT(currentChanged(int)));
-    connect(bt, SIGNAL(clicked()), this, SLOT(closeCurrentTab()));
+    connect(pvTab, SIGNAL(currentChanged(int)), this, SLOT(currentChanged(int)));
+    connect(pvTab, SIGNAL(tabCloseRequested(int)), this, SLOT(closeTab(int)));
 
     connect(new QShortcut(closeKS, this), SIGNAL (activated()), 
             this, SLOT (close()));
@@ -164,9 +117,6 @@ void Preview::init()
     connect(new QShortcut(printTabKS, this), SIGNAL (activated()), 
             this, SIGNAL (printCurrentPreviewRequest()));
 
-    if (prefs.pvwidth > 100) {
-        resize(prefs.pvwidth, prefs.pvheight);
-    }
     currentChanged(pvTab->currentIndex());
 }
 
@@ -203,13 +153,9 @@ void Preview::closeEvent(QCloseEvent *e)
 
     /* Release all temporary files (but maybe none is actually set) */
     for (int i = 0; i < pvTab->count(); i++) {
-        QWidget *tw = pvTab->widget(i);
-        if (tw) {
-            PreviewTextEdit *edit = 
-                tw->findChild<PreviewTextEdit*>("pvEdit");
-            if (edit) {
-                forgetTempFile(edit->m_tmpfilename);
-            }
+        PreviewTextEdit *edit = editor(i);
+        if (edit) {
+            forgetTempFile(edit->m_tmpfilename);
         }
     }
     emit previewExposed(this, m_searchId, -1);
@@ -295,17 +241,6 @@ void Preview::searchTextFromIndex(int idx)
     m_searchTextFromIndex = idx;
 }
 
-PreviewTextEdit *Preview::currentEditor()
-{
-    LOGDEB2("Preview::currentEditor()\n");
-    QWidget *tw = pvTab->currentWidget();
-    PreviewTextEdit *edit = 0;
-    if (tw) {
-        edit = tw->findChild<PreviewTextEdit*>("pvEdit");
-    }
-    return edit;
-}
-
 // Save current document to file
 void Preview::emitSaveDocToFile()
 {
@@ -327,7 +262,7 @@ void Preview::doSearch(const QString &_text, bool next, bool reverse,
            " word " << wordOnly << "\n");
     QString text = _text;
 
-    bool matchCase = matchCheck->isChecked();
+    bool matchCase = casematchCB->isChecked();
     PreviewTextEdit *edit = currentEditor();
     if (edit == 0) {
         // ??
@@ -419,9 +354,7 @@ void Preview::prevPressed()
 void Preview::currentChanged(int index)
 {
     LOGDEB2("PreviewTextEdit::currentChanged\n");
-    QWidget *tw = pvTab->widget(index);
-    PreviewTextEdit *edit = 
-        tw->findChild<PreviewTextEdit*>("pvEdit");
+    PreviewTextEdit *edit = editor(index);
     LOGDEB1("Preview::currentChanged(). Editor: " << edit << "\n");
     
     if (edit == 0) {
@@ -430,7 +363,7 @@ void Preview::currentChanged(int index)
     }
     edit->setFocus();
     // Disconnect the print signal and reconnect it to the current editor
-    LOGDEB("Disconnecting reconnecting print signal\n");
+    LOGDEB1("Disconnecting reconnecting print signal\n");
     disconnect(this, SIGNAL(printCurrentPreviewRequest()), 0, 0);
     connect(this, SIGNAL(printCurrentPreviewRequest()), edit, SLOT(print()));
     edit->installEventFilter(this);
@@ -446,27 +379,45 @@ void Preview::closeCurrentTab()
         CancelCheck::instance().setCancel();
         return;
     }
-    PreviewTextEdit *e = currentEditor();
-    if (e)
-        forgetTempFile(e->m_tmpfilename);
+    closeTab(pvTab->currentIndex());
+}
+
+void Preview::closeTab(int index)
+{
+    LOGDEB1("Preview::closeTab: m_loading " << m_loading << "\n");
+    if (m_loading) {
+        CancelCheck::instance().setCancel();
+        return;
+    }
+    PreviewTextEdit *edit = editor(index);
+    if (edit)
+        forgetTempFile(edit->m_tmpfilename);
     if (pvTab->count() > 1) {
-        pvTab->removeTab(pvTab->currentIndex());
+        pvTab->removeTab(index);
     } else {
         close();
     }
 }
 
+PreviewTextEdit *Preview::editor(int index)
+{
+    return dynamic_cast<PreviewTextEdit*>(pvTab->widget(index));
+}
+
+PreviewTextEdit *Preview::currentEditor()
+{
+    LOGDEB2("Preview::currentEditor()\n");
+    return editor(pvTab->currentIndex());
+}
+
 PreviewTextEdit *Preview::addEditorTab()
 {
     LOGDEB1("PreviewTextEdit::addEditorTab()\n");
-    QWidget *anon = new QWidget((QWidget *)pvTab);
-    QVBoxLayout *anonLayout = new QVBoxLayout(anon); 
-    PreviewTextEdit *editor = new PreviewTextEdit(anon, "pvEdit", this);
+    PreviewTextEdit *editor = new PreviewTextEdit(pvTab, "pvEdit", this);
     editor->setReadOnly(true);
     editor->setUndoRedoEnabled(false );
-    anonLayout->addWidget(editor);
-    pvTab->addTab(anon, "Tab");
-    pvTab->setCurrentIndex(pvTab->count() -1);
+    pvTab->addTab(editor, "Tab");
+    pvTab->setCurrentIndex(pvTab->count() - 1);
     return editor;
 }
 
@@ -523,15 +474,11 @@ bool Preview::makeDocCurrent(const Rcl::Doc& doc, int docnum, bool sametab)
 
     /* Check if we already have this page */
     for (int i = 0; i < pvTab->count(); i++) {
-        QWidget *tw = pvTab->widget(i);
-        if (tw) {
-            PreviewTextEdit *edit = 
-                tw->findChild<PreviewTextEdit*>("pvEdit");
-            if (edit && !edit->m_url.compare(doc.url) && 
-                !edit->m_ipath.compare(doc.ipath)) {
-                pvTab->setCurrentIndex(i);
-                return true;
-            }
+        PreviewTextEdit *edit =  editor(i);
+        if (edit && !edit->m_url.compare(doc.url) && 
+            !edit->m_ipath.compare(doc.ipath)) {
+            pvTab->setCurrentIndex(i);
+            return true;
         }
     }
 
@@ -547,6 +494,7 @@ bool Preview::makeDocCurrent(const Rcl::Doc& doc, int docnum, bool sametab)
     raise();
     return true;
 }
+
 void Preview::togglePlainPre()
 {
     switch (prefs.previewPlainPre) {

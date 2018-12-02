@@ -45,6 +45,8 @@
 #include "plaintorich.h"
 #include "rclmain_w.h"
 
+#include "ui_preview.h"
+
 class QTabWidget;
 class QLabel;
 class QPushButton;
@@ -106,13 +108,15 @@ private:
 };
 
 
-class Preview : public QWidget {
-    Q_OBJECT;
+class Preview : public QWidget, public Ui::Preview {
+    Q_OBJECT
+
 public:
 
     Preview(RclMain *m, int sid, // Search Id
 	    const HighlightData& hdata) // Search terms etc. for highlighting
-	: QWidget(0), m_rclmain(m), m_searchId(sid), m_hData(hdata) {
+	: m_rclmain(m), m_searchId(sid), m_hData(hdata) {
+        setupUi(this);
 	init();
     }
 
@@ -142,6 +146,7 @@ public slots:
     // Tabs management
     virtual void currentChanged(int);
     virtual void closeCurrentTab();
+    virtual void closeTab(int index);
     virtual void emitShowNext();
     virtual void emitShowPrev();
 
@@ -158,7 +163,7 @@ signals:
     void saveDocToFile(Rcl::Doc);
 
 private:
-    RclMain *m_rclmain{0};
+    RclMain *m_rclmain;
     // Identifier of search in main window. This is used to check that
     // we make sense when requesting the next document when browsing
     // successive search results in a tab.
@@ -173,16 +178,9 @@ private:
     HighlightData m_hData;
     bool          m_justCreated{true}; // First tab create is different
 
-    QTabWidget* pvTab{0};
-    QLabel* searchLabel{0};
-    QComboBox *searchTextCMB{0};
-    QPushButton* nextButton{0};
-    QPushButton* prevButton{0};
-    QPushButton* clearPB{0};
-    QCheckBox* matchCheck{0};
-
     void init();
     virtual void setCurTabProps(const Rcl::Doc& doc, int docnum);
+    virtual PreviewTextEdit *editor(int);
     virtual PreviewTextEdit *currentEditor();
     virtual PreviewTextEdit *addEditorTab();
     virtual bool loadDocInCurrentTab(const Rcl::Doc& idoc, int dnm);

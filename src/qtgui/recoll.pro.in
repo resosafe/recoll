@@ -91,21 +91,22 @@ SOURCES += \
 FORMS   = \
         advsearch.ui \
         crontool.ui \
-        widgets/editdialog.ui \
         firstidx.ui \
         idxsched.ui \
-        widgets/listdialog.ui \
+        preview.ui \
         ptrans.ui \
         rclmain.ui \
         restable.ui \
         rtitool.ui \
+        snippets.ui \
         specialindex.ui \
         spell.ui \
-        snippets.ui \
         ssearchb.ui \
         uiprefs.ui \
         viewaction.ui \
-        webcache.ui
+        webcache.ui \
+        widgets/editdialog.ui \
+        widgets/listdialog.ui 
         
 RESOURCES = recoll.qrc
 

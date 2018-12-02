@@ -4,7 +4,7 @@ PortSystem          1.0
 PortGroup           app 1.0
 
 name                recoll
-version             1.24.3
+version             1.24.4
 categories          textproc
 platforms           darwin
 license             GPL-2+
@@ -17,9 +17,9 @@ long_description    Recoll is a desktop search tool based on Xapian
 homepage            http://www.recoll.org/
 master_sites        ${homepage}
 
-checksums           rmd160  2518c8ce8cf5661985283c153c20b1caec9e5860 \
-                    sha256  f1552961dd0cfd1a12d95fab1bf4990846df2085ddeaa5e832442bbce35acad2 \
-                    size 2675171
+checksums rmd160 5ad33e308a759f588cea3cdb1646e928ad0d474f \
+    sha256 989c1ecdce36082020c0d404a6223005cd166011f9c9b28ac762af978ef9392c \
+    size 2674060
 
 depends_lib         port:xapian-core \
                     port:qt5 \
@@ -38,7 +38,6 @@ depends_run         port:antiword \
 patchfiles          patch-sampleconf-mimeview.diff \
     patch-mkin-no-no-undefined.diff \
     patch-rclaspell-dylib.diff \
-    patch-netcon-traces.diff \
     patch-py2-to-27.diff
 
 # Note: this is probably not the right way to configure QMAKE

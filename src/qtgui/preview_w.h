@@ -108,7 +108,7 @@ private:
 };
 
 
-class Preview : public QWidget, public Ui::Preview {
+class Preview : public QDialog, public Ui::Preview {
     Q_OBJECT
 
 public:

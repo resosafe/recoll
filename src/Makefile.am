@@ -436,6 +436,7 @@ qtgui/mtpics/video.png \
 qtgui/mtpics/wordprocessing.png \
 qtgui/multisave.cpp \
 qtgui/multisave.h \
+qtgui/preview.ui \
 qtgui/preview_load.cpp \
 qtgui/preview_load.h \
 qtgui/preview_plaintorich.cpp \

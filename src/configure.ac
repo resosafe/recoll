@@ -97,10 +97,8 @@ fi
 AC_DEFINE_UNQUOTED(FILE_PROG, "$fileProg", [Path to the file program])
 
 # Can't use Solaris standard 'file' command, it doesn't support -i
-if test X$sys != XSunOS -o X$fileProg != X/usr/bin/file; then
-   AC_DEFINE(USE_SYSTEM_FILE_COMMAND, 1, [Enable using the system's 'file' command to id mime if we fail internally])
-fi
-
+AC_DEFINE(USE_SYSTEM_FILE_COMMAND, 1,
+    [Enable using the system's 'file' command to id mime if we fail internally])
 
 # Use aspell to provide spelling expansions ?
 # The default is yes. If we do find an aspell installation, we use it. Else
@@ -241,14 +239,10 @@ if test X$camelcaseEnabled = Xyes ; then
 fi
 
 # Disable building the python module.
-if test X$sys != XDarwin ; then
-  AC_ARG_ENABLE(python-module,
+AC_ARG_ENABLE(python-module,
     AC_HELP_STRING([--disable-python-module],
     [Do not build the Python module.]),
         pythonEnabled=$enableval, pythonEnabled=yes)
-else
-  pythonEnabled=no
-fi
 
 AM_CONDITIONAL(MAKEPYTHON, [test X$pythonEnabled = Xyes])
 
@@ -394,15 +388,6 @@ if test X$enableQT = Xyes ; then
   qt development files and tools and/or set the QTDIR environment variable?])
   fi
   QMAKE=$QMAKEPATH
-  
-  # MAC OS X: we don't support this (the native search tool is more than
-  # good enough), but we make things work just enough so that the program can
-  # be compiled and roughly installed (not as a .app, but to /usr/local),
-  # basically to enable using a Macbook for development
-  if test X$sys = XDarwin ; then
-     # The default is xcode
-     QMAKE="${QMAKE} -spec macx-g++"
-  fi
   
   # Check Qt version
   qmakevers="`${QMAKE} --version 2>&1`"

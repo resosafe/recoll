@@ -17,10 +17,13 @@
  */
 #include <stdio.h>
 #include <stdlib.h>
+#ifdef _WIN32
+// needed for localtime_r under mingw?
+#define _POSIX_THREAD_SAFE_FUNCTIONS
+#endif
 #include <time.h>
 #include <ctype.h>
 #include <errno.h>
-#include <time.h>
 #include <string.h>
 #include <math.h>
 
@@ -477,13 +480,13 @@ void ltrimstring(string& s, const char *ws)
 }
 
 // Remove some chars and replace them with spaces
-string neutchars(const string& str, const string& chars)
+string neutchars(const string& str, const string& chars, char rep)
 {
     string out;
-    neutchars(str, out, chars);
+    neutchars(str, out, chars, rep);
     return out;
 }
-void neutchars(const string& str, string& out, const string& chars)
+void neutchars(const string& str, string& out, const string& chars, char rep)
 {
     string::size_type startPos, pos;
 
@@ -498,7 +501,7 @@ void neutchars(const string& str, string& out, const string& chars)
         if (pos == string::npos) {
             out += str.substr(startPos);
         } else {
-            out += str.substr(startPos, pos - startPos) + " ";
+            out += str.substr(startPos, pos - startPos) + rep;
         }
     }
 }
@@ -1237,9 +1240,10 @@ class SimpleRegexp::Internal {
 public:
     Internal(const string& exp, int flags, int nm)
         : expr(exp,
-               basic_regex<char>::flag_type(regex_constants::extended |
-                   ((flags&SRE_ICASE) ? regex_constants::icase : 0) |
-                   ((flags&SRE_NOSUB) ? regex_constants::nosubs : 0)
+               basic_regex<char>::flag_type(
+                   regex_constants::extended |
+                   ((flags&SRE_ICASE) ? int(regex_constants::icase) : 0) |
+                   ((flags&SRE_NOSUB) ? int(regex_constants::nosubs) : 0)
                    )), ok(true), nmatch(nm) {
     }
     std::regex expr;

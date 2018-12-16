@@ -152,9 +152,10 @@ extern std::string escapeHtml(const std::string& in);
 extern std::string makeCString(const std::string& in);
 
 /** Replace some chars with spaces (ie: newline chars). */
-extern std::string neutchars(const std::string& str, const std::string& chars);
+extern std::string neutchars(const std::string& str, const std::string& chars,
+                             char rep = ' ');
 extern void neutchars(const std::string& str, std::string& out,
-                      const std::string& chars);
+                      const std::string& chars, char rep = ' ');
 
 /** Turn string into something that won't be expanded by a shell. In practise
  *  quote with double-quotes and escape $`\ */

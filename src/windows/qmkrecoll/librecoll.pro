@@ -133,11 +133,6 @@ windows {
       c:/temp/zlib-1.2.8/zlib1.dll -liconv -lshlwapi -lpsapi -lkernel32
   INCLUDEPATH += ../../windows \
             C:/temp/xapian-core-1.4.5/include
-
-#  LIBS += c:/temp/xapian-core-1.2.21/.libs/libxapian-22.dll \
-#       c:/temp/zlib-1.2.8/zlib1.dll -liconv -lshlwapi -lpsapi -lkernel32
-#  INCLUDEPATH += ../../windows \
-            C:/temp/xapian-core-1.2.21/include
 }
 
 unix {

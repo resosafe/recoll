@@ -51,10 +51,10 @@ gccpath=`which gcc`
 MINGWBIN=`dirname $gccpath`
 
 # Where to copy the Qt Dlls from:
-QTBIN=C:/Qt/5.5/mingw492_32/bin
+QTBIN=C:/Qt/Qt5.8.0/5.8/mingw53_32/bin
 
 # Qt arch
-QTA=Desktop_Qt_5_5_0_MinGW_32bit
+QTA=Desktop_Qt_5_8_0_MinGW_32bit
 
 RCLW=$RCL/windows/
 
@@ -94,6 +94,18 @@ copyqt()
     PATH=$QTBIN:$PATH
     export PATH
     $QTBIN/windeployqt recoll.exe
+    # Apparently because the webkit part was grafted "by hand" on the
+    # Qt set, we need to copy some dll explicitely
+    addlibs="Qt5Core.dll Qt5Multimedia.dll \
+Qt5MultimediaWidgets.dll Qt5Network.dll Qt5OpenGL.dll \
+Qt5Positioning.dll Qt5PrintSupport.dll Qt5Sensors.dll \
+Qt5Sql.dll icudt57.dll \
+icuin57.dll icuuc57.dll libQt5WebKit.dll \
+libQt5WebKitWidgets.dll \
+libxml2-2.dll libxslt-1.dll"
+   for i in $addlibs;do
+       chkcp $QTBIN/$i $DESTDIR
+   done
     chkcp $QTBIN/libwinpthread-1.dll $DESTDIR
     chkcp $QTBIN/libstdc++-6.dll $DESTDIR
 }

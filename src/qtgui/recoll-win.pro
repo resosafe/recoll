@@ -91,6 +91,7 @@ FORMS   = \
         firstidx.ui \
         idxsched.ui \
         widgets/listdialog.ui \
+        preview.ui \
         ptrans.ui \
         rclmain.ui \
         restable.ui \
@@ -117,7 +118,7 @@ windows {
     contains(QMAKE_CC, cl){
         # Visual Studio
     }
-    LIBS += C:/recoll/src/windows/build-librecoll-Desktop_Qt_5_5_0_MinGW_32bit-Release/release/librecoll.dll
+    LIBS += C:/recoll/src/windows/build-librecoll-Desktop_Qt_5_8_0_MinGW_32bit-Release/release/librecoll.dll
 }
 
 TRANSLATIONS = \

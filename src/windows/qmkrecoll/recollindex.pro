@@ -31,7 +31,7 @@ windows {
         # Visual Studio
     }
   LIBS += \
-    C:/recoll/src/windows/build-librecoll-Desktop_Qt_5_5_0_MinGW_32bit-Release/release/librecoll.dll \
+    C:/recoll/src/windows/build-librecoll-Desktop_Qt_5_8_0_MinGW_32bit-Release/release/librecoll.dll \
     -lshlwapi -lpsapi -lkernel32
 
   INCLUDEPATH += ../../windows

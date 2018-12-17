@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.1" language="cs_CZ">
+<TS version="2.0" language="cs_CZ">
 <context>
     <name>AdvSearch</name>
     <message>
@@ -463,11 +463,11 @@ Klepněte na tlačítko Zrušit pro úpravu souboru s nastavením, předtím ne�
     </message>
     <message>
         <source>&quot;history&quot; file is damaged or un(read)writeable, please check or remove it: </source>
-        <translation type="vanished">Soubor &quot;history&quot; je poškozen nebo nezapisovatelný/nečitelný. Prověřte jej, prosím, anebo jej odstraňte: </translation>
+        <translation>Soubor &quot;history&quot; je poškozen nebo nezapisovatelný/nečitelný. Prověřte jej, prosím, anebo jej odstraňte: </translation>
     </message>
     <message>
         <source>&quot;history&quot; file is damaged, please check or remove it: </source>
-        <translation type="unfinished"></translation>
+        <translation>Soubor &quot;history&quot; je poškozen. Prověřte jej, prosím, anebo jej odstraňte: </translation>
     </message>
 </context>
 <context>
@@ -1040,7 +1040,7 @@ Chcete spustit dialog s nastavením?</translation>
     </message>
     <message>
         <source>Index not open</source>
-        <translation type="vanished">Rejstřík neotevřen</translation>
+        <translation>Rejstřík neotevřen</translation>
     </message>
     <message>
         <source>Index query error</source>
@@ -1265,15 +1265,15 @@ Prověřte soubor pracovní plochy</translation>
     </message>
     <message>
         <source>Viewer command line for %1 specifies parent file but URL is http[s]: unsupported</source>
-        <translation type="unfinished"></translation>
+        <translation>Příkaz pro prohlížeč pro %1 stanovuje rodičovský soubor, ale adresa (URL) je  http[s]: nepodporováno</translation>
     </message>
     <message>
         <source>Tools</source>
-        <translation type="unfinished"></translation>
+        <translation>Nástroje</translation>
     </message>
     <message>
         <source>Results</source>
-        <translation type="unfinished"></translation>
+        <translation>Výsledky</translation>
     </message>
 </context>
 <context>
@@ -1584,7 +1584,7 @@ Prověřte soubor pracovní plochy</translation>
     </message>
     <message>
         <source>Trigger incremental pass</source>
-        <translation type="unfinished"></translation>
+        <translation>Spustit přírůstkové procházení</translation>
     </message>
 </context>
 <context>
@@ -2348,11 +2348,11 @@ Použijte odkaz &lt;b&gt;Ukázat hledání&lt;/b&gt;, když máte o výsledku po
     </message>
     <message>
         <source>Aspell init failed. Aspell not installed?</source>
-        <translation type="vanished">Chyba při spuštění Aspellu. Aspell není nainstalován?</translation>
+        <translation>Chyba při spuštění Aspellu. Aspell není nainstalován?</translation>
     </message>
     <message>
         <source>Aspell expansion error. </source>
-        <translation type="vanished">Chyba rozšíření Aspell. </translation>
+        <translation>Chyba rozšíření Aspell. </translation>
     </message>
     <message>
         <source>Stem expansion</source>
@@ -3022,7 +3022,7 @@ To pomůže při prohledávání velmi velkých textových souborů (např. soub
     </message>
     <message>
         <source>These are names of directories which indexing will not enter.&lt;br&gt; May contain wildcards. Must match the paths seen by the indexer (ie: if topdirs includes &apos;/home/me&apos; and &apos;/home&apos; is actually a link to &apos;/usr/home&apos;, a correct skippedPath entry would be &apos;/home/me/tmp*&apos;, not &apos;/usr/home/me/tmp*&apos;)</source>
-        <translation type="vanished">Názvy adresářů, které se nebudou rejstříkovat.&lt;br&gt;Může obsahovat zástupné symboly (žolíky). Musí odpovídat cestám, které rejstříkovač vidí (např. pokud v počátečních adresářích stojí &apos;/home/me&apos; a &apos;/home&apos; je ve skutečnosti odkazem na &apos;/usr/home&apos;, potom by byl správným zápisem skippedPath &apos;/home/me/tmp*&apos; a ne &apos;/usr/home/me/tmp*&apos;)</translation>
+        <translation>Názvy adresářů, které se nebudou rejstříkovat.&lt;br&gt;Může obsahovat zástupné symboly (žolíky). Musí odpovídat cestám, které rejstříkovač vidí (např. pokud v počátečních adresářích stojí &apos;/home/me&apos; a &apos;/home&apos; je ve skutečnosti odkazem na &apos;/usr/home&apos;, potom by byl správným zápisem skippedPath &apos;/home/me/tmp*&apos; a ne &apos;/usr/home/me/tmp*&apos;)</translation>
     </message>
     <message>
         <source>Stemming languages</source>
@@ -3058,11 +3058,11 @@ To pomůže při prohledávání velmi velkých textových souborů (např. soub
     </message>
     <message>
         <source>Max disk occupation (%)</source>
-        <translation type="vanished">Největší obsazení disku (%)</translation>
+        <translation>Největší obsazení disku (%)</translation>
     </message>
     <message>
         <source>This is the percentage of disk occupation where indexing will fail and stop (to avoid filling up your disk).&lt;br&gt;0 means no limit (this is the default).</source>
-        <translation type="vanished">Jde o procentní podíl využívání disku, kdy rejstříkování selže a zastaví se (kvůli vyhnutí se zaplnění vašeho disku).&lt;br&gt;0 znamená žádné omezení (tato hodnota je nastavena jako výchozí).</translation>
+        <translation>Jde o procentní podíl využívání disku, kdy rejstříkování selže a zastaví se (kvůli vyhnutí se zaplnění vašeho disku).&lt;br&gt;0 znamená žádné omezení (tato hodnota je nastavena jako výchozí).</translation>
     </message>
     <message>
         <source>No aspell usage</source>
@@ -3129,7 +3129,7 @@ To pomůže při prohledávání velmi velkých textových souborů (např. soub
     <name>uiPrefsDialogBase</name>
     <message>
         <source>User preferences</source>
-        <translation type="vanished">Uživatelská nastavení</translation>
+        <translation>Uživatelská nastavení</translation>
     </message>
     <message>
         <source>User interface</source>
@@ -3149,7 +3149,7 @@ To pomůže při prohledávání velmi velkých textových souborů (např. soub
     </message>
     <message>
         <source>Highlight color for query terms</source>
-        <translation type="vanished">Zvýraznit barvu výrazů hledání</translation>
+        <translation>Zvýraznit barvu výrazů hledání</translation>
     </message>
     <message>
         <source>Result list font</source>
@@ -3495,19 +3495,19 @@ Výchozí hodnota je 2 (procenta).</translation>
     </message>
     <message>
         <source>Recoll - User Preferences</source>
-        <translation type="unfinished"></translation>
+        <translation>Recoll - Uživatelská nastavení</translation>
     </message>
     <message>
         <source>Set path translations for the selected index or for the main one if no selection exists.</source>
-        <translation type="unfinished"></translation>
+        <translation>Nastavit překlady cest pro vybraný rejstřík nebo pro hlavní, pokud žádný vybrán není.</translation>
     </message>
     <message>
         <source>Activate links in preview.</source>
-        <translation type="unfinished"></translation>
+        <translation>Zapnout odkazy v náhledu.</translation>
     </message>
     <message>
         <source>Make links inside the preview window clickable, and start an external browser when they are clicked.</source>
-        <translation type="unfinished"></translation>
+        <translation>Udělat odkazy uvnitř náhledového okna klepnutelnými a spustit vnější prohlížeč, když je na ně klepnuto.</translation>
     </message>
 </context>
 </TS>

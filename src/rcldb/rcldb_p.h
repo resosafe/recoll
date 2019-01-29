@@ -105,6 +105,10 @@ class Db::Native {
 
     void openWrite(const std::string& dir, Db::OpenMode mode);
     void openRead(const string& dir);
+
+    // Determine if an existing index is of the full-text-storing kind
+    // by looking at the index metadata. Stores the result in m_storetext
+    void storesDocText(Xapian::Database&);
     
     // Final steps of doc update, part which need to be single-threaded
     bool addOrUpdateWrite(const string& udi, const string& uniterm, 

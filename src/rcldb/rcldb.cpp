@@ -257,9 +257,8 @@ void Db::Native::openWrite(const string& dir, Db::OpenMode mode)
         Xapian::DB_CREATE_OR_OVERWRITE;
 
 #ifdef _WIN32
-    // Xapian is quite bad at erasing partial db which can
-    // occur because of open file deletion errors on
-    // Windows. 
+    // On Windows, Xapian is quite bad at erasing partial db which can
+    // occur because of open file deletion errors.
     if (mode == DbTrunc) {
         if (path_exists(path_cat(dir, "iamchert"))) {
             wipedir(dir);
@@ -268,9 +267,21 @@ void Db::Native::openWrite(const string& dir, Db::OpenMode mode)
     }
 #endif
     
-    if (::access(dir.c_str(), 0) == 0) {
-        // Existing index
+    if (path_exists(dir)) {
+        // Existing index. 
         xwdb = Xapian::WritableDatabase(dir, action);
+        if (action == Xapian::DB_CREATE_OR_OVERWRITE ||
+            xwdb.get_doccount() == 0) {
+            // New or empty index. Set the "store text" option
+            // according to configuration. The metadata record will be
+            // written further down.
+            m_storetext = o_index_storedoctext;
+            LOGDEB("Db:: index " << (m_storetext?"stores":"does not store") <<
+                   " document text\n");
+        } else {
+            // Existing non empty. Get the option from the index.
+            storesDocText(xwdb);
+        }
     } else {
         // New index. If possible, and depending on config, use a stub
         // to force using Chert. No sense in doing this if we are
@@ -301,23 +312,22 @@ void Db::Native::openWrite(const string& dir, Db::OpenMode mode)
         LOGINF("Rcl::Db::openWrite: new index will " << (m_storetext?"":"not ")
                << "store document text\n");
 #else
-        // Old Xapian (chert only) or newer (no chert). Use the
+        // Old Xapian (chert only) or much newer (no chert). Use the
         // default index backend and let the user decide of the
         // abstract generation method. The configured default is to
         // store the text.
         xwdb = Xapian::WritableDatabase(dir, action);
         m_storetext = o_index_storedoctext;
 #endif
-        // Set the storetext value inside the index descriptor (new
-        // with recoll 1.24, maybe we'll have other stuff to store in
-        // there in the future).
+    }
+
+    // If the index is empty, write the data format version, 
+    // and the storetext option value inside the index descriptor (new
+    // with recoll 1.24, maybe we'll have other stuff to store in
+    // there in the future).
+    if (xwdb.get_doccount() == 0) {
         string desc = string("storetext=") + (m_storetext ? "1" : "0") + "\n";
         xwdb.set_metadata(cstr_RCL_IDX_DESCRIPTOR_KEY, desc);
-    }
-    
-    // If the index is empty, write the data format version at once
-    // to avoid stupid error messages:
-    if (xwdb.get_doccount() == 0) {
         xwdb.set_metadata(cstr_RCL_IDX_VERSION_KEY, cstr_RCL_IDX_VERSION);
     }
 
@@ -328,19 +338,24 @@ void Db::Native::openWrite(const string& dir, Db::OpenMode mode)
 #endif
 }
 
-void Db::Native::openRead(const string& dir)
+void Db::Native::storesDocText(Xapian::Database& db)
 {
-    m_iswritable = false;
-    xrdb = Xapian::Database(dir);
-    string desc = xrdb.get_metadata(cstr_RCL_IDX_DESCRIPTOR_KEY);
+    string desc = db.get_metadata(cstr_RCL_IDX_DESCRIPTOR_KEY);
     ConfSimple cf(desc, 1);
     string val;
     m_storetext = false;
     if (cf.get("storetext", val) && stringToBool(val)) {
         m_storetext = true;
     }
-    LOGDEB("Db::openRead: index " << (m_storetext?"stores":"does not store") <<
+    LOGDEB("Db:: index " << (m_storetext?"stores":"does not store") <<
            " document text\n");
+}
+
+void Db::Native::openRead(const string& dir)
+{
+    m_iswritable = false;
+    xrdb = Xapian::Database(dir);
+    storesDocText(xrdb);
 }
 
 /* See comment in class declaration: return all subdocuments of a

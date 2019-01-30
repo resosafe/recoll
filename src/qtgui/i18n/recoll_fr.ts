@@ -911,7 +911,7 @@ Vérifier le fichier mimeconf</translation>
     </message>
     <message>
         <source>Stop &amp;Indexing</source>
-        <translation>Arrèter l&apos;&amp;Indexation</translation>
+        <translation>Arrêter l&apos;&amp;Indexation</translation>
     </message>
     <message>
         <source>All</source>
@@ -3164,7 +3164,7 @@ Ceci diminue les ressources consommées par l&apos;indexation et aide le chargem
     </message>
     <message>
         <source>This is the percentage of disk occupation where indexing will fail and stop (to avoid filling up your disk).&lt;br&gt;0 means no limit (this is the default).</source>
-        <translation type="vanished">Niveau d&apos;occupation du disque ou l&apos;indexation s&apos;arrete (pour eviter un remplissage excessif).&lt;br&gt;0 signifie pas de limite (defaut).</translation>
+        <translation type="vanished">Niveau d&apos;occupation du disque ou l&apos;indexation s&apos;arrête (pour eviter un remplissage excessif).&lt;br&gt;0 signifie pas de limite (defaut).</translation>
     </message>
     <message>
         <source>No aspell usage</source>
@@ -3224,7 +3224,7 @@ Ceci diminue les ressources consommées par l&apos;indexation et aide le chargem
     </message>
     <message>
         <source>This is the percentage of disk usage - total disk usage, not index size - at which indexing will fail and stop.&lt;br&gt;The default value of 0 removes any limit.</source>
-        <translation>C&apos;est le pourcentage d&apos;utilisation disque - utilisation totale, et non taille de l&apos;index - où l&apos;indexation s&apos;arretera en erreur.&lt;br&gt;La valeur par défaut de 0 désactive ce test.</translation>
+        <translation>C&apos;est le pourcentage d&apos;utilisation disque - utilisation totale, et non taille de l&apos;index - où l&apos;indexation s&apos;arrêtera en erreur.&lt;br&gt;La valeur par défaut de 0 désactive ce test.</translation>
     </message>
 </context>
 <context>

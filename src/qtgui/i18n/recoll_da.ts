@@ -452,7 +452,7 @@ p, li { white-space: pre-wrap; }
     <name>Preview</name>
     <message>
         <source>Close Tab</source>
-        <translation>Luk faneblad</translation>
+        <translation type="vanished">Luk faneblad</translation>
     </message>
     <message>
         <source>Cancel</source>
@@ -497,6 +497,14 @@ p, li { white-space: pre-wrap; }
     <message>
         <source>Error while loading file</source>
         <translation>Fejl ved indlæsning af filen</translation>
+    </message>
+    <message>
+        <source>Form</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Tab 1</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -972,7 +980,7 @@ Do you want to start the  preferences dialog ?</source>
     </message>
     <message>
         <source>Content has been indexed for these mime types:</source>
-        <translation>Indholdet er blevet indekseret for disse mime-typer:</translation>
+        <translation type="vanished">Indholdet er blevet indekseret for disse mime-typer:</translation>
     </message>
     <message>
         <source>Can&apos;t update index: indexer running</source>
@@ -1181,6 +1189,10 @@ Tjek venligst desktopfilen</translation>
     </message>
     <message>
         <source>Results</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Content has been indexed for these MIME types:</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

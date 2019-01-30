@@ -464,7 +464,7 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
     <name>Preview</name>
     <message>
         <source>Close Tab</source>
-        <translation>Cerrar Pestaña</translation>
+        <translation type="vanished">Cerrar Pestaña</translation>
     </message>
     <message>
         <source>Cannot create temporary directory</source>
@@ -517,6 +517,14 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
     <message>
         <source>Error while loading file</source>
         <translation>Error al cargar archivo</translation>
+    </message>
+    <message>
+        <source>Form</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Tab 1</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1040,7 +1048,7 @@ Do you want to start the  preferences dialog ?</source>
     </message>
     <message>
         <source>Content has been indexed for these mime types:</source>
-        <translation>Los contenidos han sido indexados para estos tipos MIME:</translation>
+        <translation type="vanished">Los contenidos han sido indexados para estos tipos MIME:</translation>
     </message>
     <message>
         <source>Index not up to date for this file. Refusing to risk showing the wrong entry. Click Ok to update the index for this file, then re-run the query when indexing is done. Else, Cancel.</source>
@@ -1252,6 +1260,10 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>Results</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Content has been indexed for these MIME types:</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

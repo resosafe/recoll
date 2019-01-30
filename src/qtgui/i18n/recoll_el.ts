@@ -476,7 +476,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>Close Tab</source>
-        <translation>Κλείσιμο της καρτέλας</translation>
+        <translation type="vanished">Κλείσιμο της καρτέλας</translation>
     </message>
     <message>
         <source>Cancel</source>
@@ -505,6 +505,14 @@ p, li { white-space: pre-wrap; }
     <message>
         <source>Loading preview text into editor</source>
         <translation>Φόρτωση του κειμένου προεπισκόπησης στον επεξεργαστή</translation>
+    </message>
+    <message>
+        <source>Form</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Tab 1</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -957,7 +965,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>Content has been indexed for these mime types:</source>
-        <translation>Το περιεχόμενο έχει δεικτοδοτηθεί για αυτούς τους τύπους MIME:</translation>
+        <translation type="vanished">Το περιεχόμενο έχει δεικτοδοτηθεί για αυτούς τους τύπους MIME:</translation>
     </message>
     <message>
         <source>Index not up to date for this file. Refusing to risk showing the wrong entry. Click Ok to update the index for this file, then re-run the query when indexing is done. Else, Cancel.</source>
@@ -1238,6 +1246,10 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>Results</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Content has been indexed for these MIME types:</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

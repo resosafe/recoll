@@ -44,12 +44,12 @@
         <translation>другое</translation>
     </message>
     <message>
-        <location line="+202"/>
+        <location line="+215"/>
         <source>Bad multiplier suffix in size filter</source>
         <translation>Неверный множитель в фильтре размера</translation>
     </message>
     <message>
-        <location line="-218"/>
+        <location line="-231"/>
         <source>text</source>
         <translation>текст</translation>
     </message>
@@ -563,32 +563,42 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
 <context>
     <name>Preview</name>
     <message>
-        <location filename="../preview_w.cpp" line="+131"/>
+        <location filename="../preview.ui" line="+14"/>
+        <source>Form</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+13"/>
+        <source>Tab 1</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+10"/>
         <source>&amp;Search for:</source>
         <translation>&amp;Искать:</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+20"/>
         <source>&amp;Next</source>
         <translation>&amp;Следующий</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+7"/>
         <source>&amp;Previous</source>
         <translation>&amp;Предыдущий</translation>
     </message>
     <message>
-        <location line="+2"/>
+        <location line="+17"/>
         <source>Match &amp;Case</source>
         <translation>&amp;С учётом регистра</translation>
     </message>
     <message>
-        <location line="-1"/>
+        <location line="-7"/>
         <source>Clear</source>
         <translation>Очистить</translation>
     </message>
     <message>
-        <location line="+581"/>
+        <location filename="../preview_w.cpp" line="+663"/>
         <source>Creating preview text</source>
         <translation>Создание текста для просмотра</translation>
     </message>
@@ -607,12 +617,11 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
         <translation>Отмена</translation>
     </message>
     <message>
-        <location line="-483"/>
         <source>Close Tab</source>
-        <translation>Закрыть вкладку</translation>
+        <translation type="vanished">Закрыть вкладку</translation>
     </message>
     <message>
-        <location line="+521"/>
+        <location line="+38"/>
         <source>Missing helper program: </source>
         <translation>Отсутствует вспомогательное приложение: </translation>
     </message>
@@ -1292,9 +1301,8 @@ Do you want to start the  preferences dialog ?</source>
         <translation type="obsolete">Индексируемые MIME-типы</translation>
     </message>
     <message>
-        <location line="+41"/>
         <source>Content has been indexed for these mime types:</source>
-        <translation>Проиндексировано содержание для следующих MIME-типов:</translation>
+        <translation type="vanished">Проиндексировано содержание для следующих MIME-типов:</translation>
     </message>
     <message>
         <source>Index not up to date for this file. Refusing to risk showing the wrong entry. Click Ok to update the index for this file, then re-run the query when indexing is done. Else, Cancel.</source>
@@ -1306,7 +1314,7 @@ Do you want to start the  preferences dialog ?</source>
         <translation>Невозможно обновить индекс: индексатор уже запущен</translation>
     </message>
     <message>
-        <location filename="../rclm_wins.cpp" line="-3"/>
+        <location filename="../rclm_wins.cpp" line="+38"/>
         <source>Indexed MIME Types</source>
         <translation>Проиндексированные MIME-типы</translation>
     </message>
@@ -1436,7 +1444,7 @@ Please check the desktop file</source>
     </message>
     <message>
         <location line="+1"/>
-        <location line="+29"/>
+        <location line="+36"/>
         <source>Saved Queries (*.rclq)</source>
         <translation>Сохраненные запросы (*.rclq)</translation>
     </message>
@@ -1491,6 +1499,11 @@ Please check the desktop file</source>
         <translation>Данный инструмент настройки применим только к основныму индексу.</translation>
     </message>
     <message>
+        <location line="+179"/>
+        <source>Content has been indexed for these MIME types:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <location filename="../rclmain_w.cpp" line="+490"/>
         <source>Can&apos;t set synonyms file (parse error?)</source>
         <translation>Невозможно установить файл синономов (ошибка анализа?)</translation>
@@ -1521,7 +1534,7 @@ Please check the desktop file</source>
         <translation>Индекс заблокирован</translation>
     </message>
     <message>
-        <location filename="../rclm_wins.cpp" line="-143"/>
+        <location filename="../rclm_wins.cpp" line="-322"/>
         <source>Unknown indexer state. Can&apos;t access webcache file.</source>
         <translation>Неизвестный статус индексатора. Невозможно получить доступ к файлу веб-кэша.</translation>
     </message>
@@ -2182,7 +2195,7 @@ Please check the desktop file</source>
 <context>
     <name>ResTable</name>
     <message>
-        <location filename="../restable.cpp" line="+757"/>
+        <location filename="../restable.cpp" line="+768"/>
         <source>&amp;Reset sort</source>
         <translation>&amp;Сбросить сортировку</translation>
     </message>
@@ -2337,7 +2350,7 @@ Please check the desktop file</source>
 <context>
     <name>SSearch</name>
     <message>
-        <location filename="../ssearch_w.cpp" line="+55"/>
+        <location filename="../ssearch_w.cpp" line="+56"/>
         <source>Any term</source>
         <translation>Любое слово</translation>
     </message>
@@ -2937,7 +2950,7 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
 <context>
     <name>UIPrefsDialog</name>
     <message>
-        <location filename="../uiprefs_w.cpp" line="+618"/>
+        <location filename="../uiprefs_w.cpp" line="+622"/>
         <source>The selected directory does not appear to be a Xapian index</source>
         <translation>Выбранный каталог не является каталогом индексов Xapian</translation>
     </message>
@@ -2956,7 +2969,7 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
         <translation type="obsolete">Выберите каталог индекса Xapian (например, /home/приятель/.recoll/xapiandb)</translation>
     </message>
     <message>
-        <location line="-439"/>
+        <location line="-443"/>
         <source>error retrieving stemming languages</source>
         <translation>ошибка получения списка языков</translation>
     </message>
@@ -2964,13 +2977,14 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
         <location line="-24"/>
         <location line="+8"/>
         <location line="+43"/>
-        <location line="+221"/>
+        <location line="+218"/>
+        <location line="+7"/>
         <location line="+11"/>
         <source>Choose</source>
         <translation>Выбрать</translation>
     </message>
     <message>
-        <location line="-86"/>
+        <location line="-90"/>
         <source>Result list paragraph format (erase all to reset to default)</source>
         <translation>Формат абзаца в списке результатов (очистите для сброса к значениям по умолчанию)</translation>
     </message>
@@ -2980,7 +2994,7 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
         <translation>Заголовок списка результатов (по умолчанию пуст)</translation>
     </message>
     <message>
-        <location line="+210"/>
+        <location line="+214"/>
         <source>Select recoll config directory or xapian index directory (e.g.: /home/me/.recoll or /home/me/.recoll/xapiandb)</source>
         <translation>Выберите каталог конфигурации Recoll или каталог индексов Xapian (например, /home/me/.recoll или /home/me/.recoll/xapiandb)</translation>
     </message>
@@ -3000,7 +3014,7 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
         <translation>Невозможно добавить индекс с другими настройками учёта регистра и диакритических знаков</translation>
     </message>
     <message>
-        <location line="-368"/>
+        <location line="-372"/>
         <source>Default QtWebkit font</source>
         <translation>Шрифт QtWebkit по умолчанию</translation>
     </message>

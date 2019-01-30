@@ -474,7 +474,7 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
     </message>
     <message>
         <source>Close Tab</source>
-        <translation>Закрити вкладку</translation>
+        <translation type="vanished">Закрити вкладку</translation>
     </message>
     <message>
         <source>Missing helper program: </source>
@@ -486,6 +486,14 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
     </message>
     <message>
         <source>Error while loading file</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Form</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Tab 1</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -996,10 +1004,6 @@ Do you want to start the  preferences dialog ?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Content has been indexed for these mime types:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Can&apos;t update index: indexer running</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1192,6 +1196,10 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>Results</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Content has been indexed for these MIME types:</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

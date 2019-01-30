@@ -104,7 +104,7 @@
     </message>
     <message>
         <source>Restrict results to files in subtree:</source>
-        <translation>Restreindre les résultats aux fichiers de l&apos;arborescence:</translation>
+        <translation>Restreindre les résultats aux fichiers de l&apos;arborescence :</translation>
     </message>
     <message>
         <source>Start Search</source>
@@ -112,7 +112,7 @@
     </message>
     <message>
         <source>Search for &lt;br&gt;documents&lt;br&gt;satisfying:</source>
-        <translation>Rechercher les &lt;br&gt;documents&lt;br&gt;vérifiant:</translation>
+        <translation>Rechercher les &lt;br&gt;documents&lt;br&gt;vérifiant :</translation>
     </message>
     <message>
         <source>Delete clause</source>
@@ -148,7 +148,7 @@
     </message>
     <message>
         <source>Minimum size. You can use k/K,m/M,g/G as multipliers</source>
-        <translation>Taille minimum. Vous pouvez utiliser un suffixe multiplicateur: k/K, m/M, g/G.</translation>
+        <translation>Taille minimum. Vous pouvez utiliser un suffixe multiplicateur : k/K, m/M, g/G.</translation>
     </message>
     <message>
         <source>Min. Size</source>
@@ -156,7 +156,7 @@
     </message>
     <message>
         <source>Maximum size. You can use k/K,m/M,g/G as multipliers</source>
-        <translation>Taille Maximum. Vous pouvez utiliser un suffixe multiplicateur: k/K, m/M, g/G.</translation>
+        <translation>Taille Maximum. Vous pouvez utiliser un suffixe multiplicateur : k/K, m/M, g/G.</translation>
     </message>
     <message>
         <source>Max. Size</source>
@@ -381,7 +381,7 @@ p, li { white-space: pre-wrap; }
     <message>
         <source>%1:
  %2</source>
-        <translation>%1:
+        <translation>%1 :
  %2</translation>
     </message>
     <message>
@@ -466,18 +466,18 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
     </message>
     <message>
         <source>&quot;history&quot; file is damaged or un(read)writeable, please check or remove it: </source>
-        <translation type="vanished">Le fichier d&apos;historique est illisible, le verifier ou l&apos;effacer:</translation>
+        <translation type="vanished">Le fichier d&apos;historique est illisible, le verifier ou l&apos;effacer :</translation>
     </message>
     <message>
         <source>&quot;history&quot; file is damaged, please check or remove it: </source>
-        <translation>Le fichier &quot;history&quot; est corrompu. Le detruire: </translation>
+        <translation>Le fichier &quot;history&quot; est corrompu. Le detruire : </translation>
     </message>
 </context>
 <context>
     <name>Preview</name>
     <message>
         <source>&amp;Search for:</source>
-        <translation>&amp;Rechercher:</translation>
+        <translation>&amp;Rechercher :</translation>
     </message>
     <message>
         <source>&amp;Next</source>
@@ -513,11 +513,11 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
     </message>
     <message>
         <source>Close Tab</source>
-        <translation>Fermer l&apos;onglet</translation>
+        <translation type="vanished">Fermer l&apos;onglet</translation>
     </message>
     <message>
         <source>Missing helper program: </source>
-        <translation>Programmes filtres externes manquants: </translation>
+        <translation>Programmes filtres externes manquants : </translation>
     </message>
     <message>
         <source>Can&apos;t turn doc into internal representation for </source>
@@ -530,6 +530,14 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
     <message>
         <source>Error while loading file</source>
         <translation>Erreur de chargement du fichier</translation>
+    </message>
+    <message>
+        <source>Form</source>
+        <translation>Ecran</translation>
+    </message>
+    <message>
+        <source>Tab 1</source>
+        <translation>Tab 1</translation>
     </message>
 </context>
 <context>
@@ -591,7 +599,7 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
     </message>
     <message>
         <source>The list of subdirectories in the indexed hierarchy &lt;br&gt;where some parameters need to be redefined. Default: empty.</source>
-        <translation>La liste des sous-répertoires de la zone indexée&lt;br&gt;où certains paramètres sont redéfinis. Défaut: vide.</translation>
+        <translation>La liste des sous-répertoires de la zone indexée&lt;br&gt;où certains paramètres sont redéfinis. Défaut : vide.</translation>
     </message>
     <message>
         <source>&lt;i&gt;The parameters that follow are set either at the top level, if nothing&lt;br&gt;or an empty line is selected in the listbox above, or for the selected subdirectory.&lt;br&gt;You can add or remove directories by clicking the +/- buttons.</source>
@@ -678,7 +686,7 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
     </message>
     <message>
         <source>Could not read directory: </source>
-        <translation>Impossible de lire le répertoire:</translation>
+        <translation>Impossible de lire le répertoire : </translation>
     </message>
     <message>
         <source>Unexpected file name collision, cancelling.</source>
@@ -686,7 +694,7 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
     </message>
     <message>
         <source>Cannot extract document: </source>
-        <translation>Impossible d&apos;extraire le document:</translation>
+        <translation>Impossible d&apos;extraire le document : </translation>
     </message>
     <message>
         <source>&amp;Preview</source>
@@ -778,7 +786,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>Replacing: </source>
-        <translation>Remplacement de:</translation>
+        <translation>Remplacement de : </translation>
     </message>
     <message>
         <source>Replacing file</source>
@@ -786,7 +794,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>Can&apos;t create: </source>
-        <translation>Impossible de créer:</translation>
+        <translation>Impossible de créer : </translation>
     </message>
     <message>
         <source>Warning</source>
@@ -798,7 +806,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>Deleting: </source>
-        <translation>Effacement:</translation>
+        <translation>Effacement : </translation>
     </message>
     <message>
         <source>Deleting file</source>
@@ -821,7 +829,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>Executing: [</source>
-        <translation>Exécution de: [</translation>
+        <translation>Exécution de : [</translation>
     </message>
     <message>
         <source>Cannot retrieve document info from database</source>
@@ -849,7 +857,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>Indexing in progress: </source>
-        <translation>Indexation en cours: </translation>
+        <translation>Indexation en cours : </translation>
     </message>
     <message>
         <source>Files</source>
@@ -877,12 +885,12 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>Can&apos;t start query: </source>
-        <translation type="obsolete">Impossible de démarrer la recherche:</translation>
+        <translation type="obsolete">Impossible de démarrer la recherche : </translation>
     </message>
     <message>
         <source>Bad viewer command line for %1: [%2]
 Please check the mimeconf file</source>
-        <translation type="obsolete">Mauvaise commande pour %1: [%2]
+        <translation type="obsolete">Mauvaise commande pour %1 : [%2]
 Vérifier le fichier mimeconf</translation>
     </message>
     <message>
@@ -953,7 +961,7 @@ Vérifier le fichier mimeconf</translation>
         <source>External applications/commands needed and not found for indexing your file types:
 
 </source>
-        <translation type="obsolete">Applications externes non trouvees pour indexer vos types de fichiers:
+        <translation type="obsolete">Applications externes non trouvees pour indexer vos types de fichiers :
 
 </translation>
     </message>
@@ -984,16 +992,16 @@ Vérifier le fichier mimeconf</translation>
     <message>
         <source>The viewer specified in mimeview for %1: %2 is not found.
 Do you want to start the  preferences dialog ?</source>
-        <translation>Le visualiseur spécifié dans mimeview pour %1: %2 est introuvable.
+        <translation>Le visualiseur spécifié dans mimeview pour %1 : %2 est introuvable.
 Voulez vous démarrer le dialogue de préférences ?</translation>
     </message>
     <message>
         <source>Can&apos;t access file: </source>
-        <translation>Impossible d&apos;accéder au fichier: </translation>
+        <translation>Impossible d&apos;accéder au fichier : </translation>
     </message>
     <message>
         <source>Can&apos;t uncompress file: </source>
-        <translation>Impossible de décomprimer le fichier: </translation>
+        <translation>Impossible de décomprimer le fichier : </translation>
     </message>
     <message>
         <source>Save file</source>
@@ -1068,8 +1076,8 @@ Voulez vous démarrer le dialogue de préférences ?</translation>
         <translation type="obsolete">Types MIME indexés</translation>
     </message>
     <message>
-        <source>Content has been indexed for these mime types:</source>
-        <translation>Du contenu a été indexé pour ces types MIME:</translation>
+        <source>Content has been indexed for these MIME types:</source>
+        <translation>Du contenu a été indexé pour ces types MIME :</translation>
     </message>
     <message>
         <source>Index not up to date for this file. Refusing to risk showing the wrong entry. Click Ok to update the index for this file, then re-run the query when indexing is done. Else, Cancel.</source>
@@ -1077,7 +1085,7 @@ Voulez vous démarrer le dialogue de préférences ?</translation>
     </message>
     <message>
         <source>Can&apos;t update index: indexer running</source>
-        <translation>Impossible de mettre à jour l&apos;index: un indexeur est déjà actif</translation>
+        <translation>Impossible de mettre à jour l&apos;index : un indexeur est déjà actif</translation>
     </message>
     <message>
         <source>Indexed MIME Types</source>
@@ -1086,11 +1094,12 @@ Voulez vous démarrer le dialogue de préférences ?</translation>
     <message>
         <source>Bad viewer command line for %1: [%2]
 Please check the mimeview file</source>
-        <translation>Ligne de commande incorrecte pour %1:[%2]. Vérifier le fichier mimeview.</translation>
+        <translation>Ligne de commande incorrecte pour %1 : [%2].
+Vérifier le fichier mimeview.</translation>
     </message>
     <message>
         <source>Viewer command line for %1 specifies both file and parent file value: unsupported</source>
-        <translation>La ligne de commande pour %1 spécifie à la fois le fichier et son parent: non supporté</translation>
+        <translation>La ligne de commande pour %1 spécifie à la fois le fichier et son parent : non supporté</translation>
     </message>
     <message>
         <source>Cannot find parent document</source>
@@ -1102,7 +1111,7 @@ Please check the mimeview file</source>
     </message>
     <message>
         <source>External applications/commands needed for your file types and not found, as stored by the last indexing pass in </source>
-        <translation>Applications et commandes externes nécessaires pour vos types de documents, et non trouvées, telles qu&apos;enregistrées par la dernière séquence d&apos;indexation dans</translation>
+        <translation>Applications et commandes externes nécessaires pour vos types de documents, et non trouvées, telles qu&apos;enregistrées par la dernière séquence d&apos;indexation dans.</translation>
     </message>
     <message>
         <source>Index not up to date for this file. Refusing to risk showing the wrong entry.</source>
@@ -1150,12 +1159,12 @@ Please check the mimeview file</source>
     </message>
     <message>
         <source>These Urls ( | ipath) share the same content:</source>
-        <translation>Ces URLs(| ipath) partagent le même contenu</translation>
+        <translation>Ces URLs(| ipath) partagent le même contenu : </translation>
     </message>
     <message>
         <source>Bad desktop app spec for %1: [%2]
 Please check the desktop file</source>
-        <translation>Mauvaise spécification d&apos;application pour %1: [%2]
+        <translation>Mauvaise spécification d&apos;application pour %1 : [%2]
 Merci de vérifier le fichier desktop </translation>
     </message>
     <message>
@@ -1165,7 +1174,8 @@ Merci de vérifier le fichier desktop </translation>
     <message>
         <source>Bad paths in configuration file:
 </source>
-        <translation>Chemins inexistants définis dans le fichier de configuration:</translation>
+        <translation>Chemins inexistants définis dans le fichier de configuration :
+</translation>
     </message>
     <message>
         <source>Selection patterns need topdir</source>
@@ -1205,7 +1215,7 @@ Merci de vérifier le fichier desktop </translation>
     </message>
     <message>
         <source>Could not open file: </source>
-        <translation>Impossible d&apos;ouvrir le fichier:</translation>
+        <translation>Impossible d&apos;ouvrir le fichier :</translation>
     </message>
     <message>
         <source>Load error</source>
@@ -1269,19 +1279,19 @@ Merci de vérifier le fichier desktop </translation>
     </message>
     <message>
         <source> with additional message: </source>
-        <translation>avec le message complémentaire:</translation>
+        <translation>avec le message complémentaire :</translation>
     </message>
     <message>
         <source>Non-fatal indexing message: </source>
-        <translation>Erreur d&apos;indexation non fatale:</translation>
+        <translation>Erreur d&apos;indexation non fatale :</translation>
     </message>
     <message>
         <source>Types list empty: maybe wait for indexing to progress?</source>
-        <translation>Liste vide: attendre que l&apos;indexation progresse ?</translation>
+        <translation>Liste vide : attendre que l&apos;indexation progresse ?</translation>
     </message>
     <message>
         <source>Viewer command line for %1 specifies parent file but URL is http[s]: unsupported</source>
-        <translation>La ligne de commande pour %1 specifie l&apos;utilisation du fichier parent, mais l&apos;URL est http[s]: ne peut pas marcher</translation>
+        <translation>La ligne de commande pour %1 specifie l&apos;utilisation du fichier parent, mais l&apos;URL est http[s] : ne peut pas marcher</translation>
     </message>
     <message>
         <source>Tools</source>
@@ -1600,7 +1610,7 @@ Merci de vérifier le fichier desktop </translation>
     </message>
     <message>
         <source>Trigger incremental pass</source>
-        <translation type="unfinished"></translation>
+        <translation>Déclencher une indexation incrémentale</translation>
     </message>
 </context>
 <context>
@@ -1761,7 +1771,7 @@ Merci de vérifier le fichier desktop </translation>
     </message>
     <message>
         <source>&lt;p&gt;&lt;i&gt;Alternate spellings (accents suppressed): &lt;/i&gt;</source>
-        <translation>&lt;p&gt;&lt;i&gt;Orthographes proposés (sans accents): &lt;/i&gt;</translation>
+        <translation>&lt;p&gt;&lt;i&gt;Orthographes proposés (sans accents) : &lt;/i&gt;</translation>
     </message>
     <message>
         <source>&amp;Write to File</source>
@@ -1793,7 +1803,7 @@ Merci de vérifier le fichier desktop </translation>
     </message>
     <message>
         <source>&lt;p&gt;&lt;i&gt;Alternate spellings: &lt;/i&gt;</source>
-        <translation>&lt;p&gt;&lt;i&gt;Orthographes proposés: &lt;/i&gt;</translation>
+        <translation>&lt;p&gt;&lt;i&gt;Orthographes proposés : &lt;/i&gt;</translation>
     </message>
     <message>
         <source>Open &amp;Snippets window</source>
@@ -1840,7 +1850,7 @@ Merci de vérifier le fichier desktop </translation>
     </message>
     <message>
         <source>Can&apos;t open/create file: </source>
-        <translation>Impossible d&apos;ouvrir ou créer le fichier:</translation>
+        <translation>Impossible d&apos;ouvrir ou créer le fichier : </translation>
     </message>
     <message>
         <source>&amp;Preview</source>
@@ -1993,7 +2003,7 @@ Merci de vérifier le fichier desktop </translation>
     </message>
     <message>
         <source>Select an item:</source>
-        <translation type="obsolete">Sélectionner un élément:</translation>
+        <translation type="obsolete">Sélectionner un élément :</translation>
     </message>
     <message>
         <source>Too many completions</source>
@@ -2025,7 +2035,7 @@ Merci de vérifier le fichier desktop </translation>
 &lt;i&gt;&quot;term1 term2&quot;p&lt;/i&gt; : unordered proximity search with default distance.&lt;br&gt;
 Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual (&amp;lt;F1&gt;) for more detail.
 </source>
-        <translation type="obsolete">Entrer une expression du langage de recherche. Antisèche:&lt;br&gt;
+        <translation type="obsolete">Entrer une expression du langage de recherche. Antisèche :&lt;br&gt;
 &lt;i&gt;term1 term2&lt;/i&gt; : &apos;term1&apos; ET &apos;term2&apos; champ non spécifié.&lt;br&gt;
 &lt;i&gt;field:term1&lt;/i&gt; : &apos;term1&apos; recherche dans le champ &apos;field&apos;.&lt;br&gt;
  Noms de champs standards (utiliser les mots anglais)/alias:&lt;br&gt;
@@ -2077,7 +2087,7 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>Stemming languages for stored query: </source>
-        <translation>Les langages d&apos;expansion pour la recherche sauvegardée:</translation>
+        <translation>Les langages d&apos;expansion pour la recherche sauvegardée : </translation>
     </message>
     <message>
         <source> differ from current preferences (kept)</source>
@@ -2085,11 +2095,11 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>Auto suffixes for stored query: </source>
-        <translation>L&apos;option de suffixe automatique pour la recherche sauvegardée:</translation>
+        <translation>L&apos;option de suffixe automatique pour la recherche sauvegardée : </translation>
     </message>
     <message>
         <source>External indexes for stored query: </source>
-        <translation>Les index externes pour la recherche sauvegardée:</translation>
+        <translation>Les index externes pour la recherche sauvegardée : </translation>
     </message>
     <message>
         <source>Autophrase is set but it was unset for stored query</source>
@@ -2218,7 +2228,7 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>Find:</source>
-        <translation>Trouver:</translation>
+        <translation>Trouver :</translation>
     </message>
     <message>
         <source>Next</source>
@@ -2263,7 +2273,7 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>most relevant results by:</source>
-        <translation type="obsolete">résultats les plus pertinents en fonction de:</translation>
+        <translation type="obsolete">résultats les plus pertinents en fonction de :</translation>
     </message>
     <message>
         <source>Descending</source>
@@ -2306,7 +2316,7 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>Start directory (else use regular topdirs):</source>
-        <translation>Répertoire de départ (sinon utiliser la variable normale topdirs):</translation>
+        <translation>Répertoire de départ (sinon utiliser la variable normale topdirs) :</translation>
     </message>
     <message>
         <source>Leave empty to select all files. You can use multiple space-separated shell-type patterns.&lt;br&gt;Patterns with embedded spaces should be quoted with double quotes.&lt;br&gt;Can only be used if the start target is set.</source>
@@ -2314,7 +2324,7 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>Selection patterns:</source>
-        <translation>Schémas de sélection:</translation>
+        <translation>Schémas de sélection :</translation>
     </message>
     <message>
         <source>Top indexed entity</source>
@@ -2416,11 +2426,11 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>Index: %1 documents, average length %2 terms</source>
-        <translation type="obsolete">Index: %1 documents, taille moyenne %2 termes</translation>
+        <translation type="obsolete">Index : %1 documents, taille moyenne %2 termes</translation>
     </message>
     <message>
         <source>Index: %1 documents, average length %2 terms.%3 results</source>
-        <translation>Index: %1 documents, longueur moyenne %2 termes. %3 résultats</translation>
+        <translation>Index : %1 documents, longueur moyenne %2 termes. %3 résultats</translation>
     </message>
     <message>
         <source>%1 results</source>
@@ -2460,7 +2470,7 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>MIME types:</source>
-        <translation>Types MIME</translation>
+        <translation>Types MIME :</translation>
     </message>
     <message>
         <source>Item</source>
@@ -2480,7 +2490,7 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>Results from last indexing:</source>
-        <translation>Résultats de la dernière indexation:</translation>
+        <translation>Résultats de la dernière indexation :</translation>
     </message>
     <message>
         <source>  Documents created/updated</source>
@@ -2539,7 +2549,7 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>Select recoll config directory or xapian index directory (e.g.: /home/me/.recoll or /home/me/.recoll/xapiandb)</source>
-        <translation>Selection un repertoire de configuration Recoll ou un repertoire d&apos;index Xapian (Ex: /home/moi/.recoll ou /home/moi/.recoll/xapiandb)</translation>
+        <translation>Sélection un répertoire de configuration Recoll ou un répertoire d&apos;index Xapian (Ex : /home/moi/.recoll ou /home/moi/.recoll/xapiandb)</translation>
     </message>
     <message>
         <source>The selected directory looks like a Recoll configuration directory but the configuration could not be read</source>
@@ -3553,7 +3563,7 @@ La valeur par défaut est 2%</translation>
     </message>
     <message>
         <source>Document filter choice style:</source>
-        <translation>Style de choix des filtres de documents:</translation>
+        <translation>Style de choix des filtres de documents :</translation>
     </message>
     <message>
         <source>Buttons Panel</source>
@@ -3585,7 +3595,7 @@ La valeur par défaut est 2%</translation>
     </message>
     <message>
         <source>User style to apply to the snippets window.&lt;br&gt; Note: the result page header insert is also included in the snippets window header.</source>
-        <translation>Style utilisateur à appliquer à la fenêtre &quot;snippets&quot;.&lt;br&gt;Note: l&apos;en tête de page de résultat est aussi inclus dans la fenêtre &quot;snippets&quot;.</translation>
+        <translation>Style utilisateur à appliquer à la fenêtre &quot;snippets&quot;.&lt;br&gt;Note : l&apos;en tête de page de résultat est aussi inclus dans la fenêtre &quot;snippets&quot;.</translation>
     </message>
     <message>
         <source>Synonyms file</source>
@@ -3605,11 +3615,11 @@ La valeur par défaut est 2%</translation>
     </message>
     <message>
         <source>Activate links in preview.</source>
-        <translation type="unfinished"></translation>
+        <translation>Activer les liens dans la prévisualisation.</translation>
     </message>
     <message>
         <source>Make links inside the preview window clickable, and start an external browser when they are clicked.</source>
-        <translation type="unfinished"></translation>
+        <translation>Rendre clicquables les liens dans la fenêtre de prévisualisation et démarrer un navigateur extérieur quand ils sont activés.</translation>
     </message>
 </context>
 </TS>

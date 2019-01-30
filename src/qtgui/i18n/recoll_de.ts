@@ -506,7 +506,7 @@ Drücken Sie Abbrechen, um die Konfigurationsdatei vor dem Start der Indizierung
     </message>
     <message>
         <source>Close Tab</source>
-        <translation>Tab schließen</translation>
+        <translation type="vanished">Tab schließen</translation>
     </message>
     <message>
         <source>Missing helper program: </source>
@@ -523,6 +523,14 @@ Drücken Sie Abbrechen, um die Konfigurationsdatei vor dem Start der Indizierung
     <message>
         <source>Error while loading file</source>
         <translation>Fehler beim Lesen der Datei</translation>
+    </message>
+    <message>
+        <source>Form</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Tab 1</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -1045,7 +1053,7 @@ Wollen Sie den Einstellungs-Dialog starten?</translation>
     </message>
     <message>
         <source>Content has been indexed for these mime types:</source>
-        <translation>Inhalte mit diesen Mime-Typen wurden indiziert:</translation>
+        <translation type="vanished">Inhalte mit diesen Mime-Typen wurden indiziert:</translation>
     </message>
     <message>
         <source>Index not up to date for this file. Refusing to risk showing the wrong entry. Click Ok to update the index for this file, then re-run the query when indexing is done. Else, Cancel.</source>
@@ -1262,6 +1270,10 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>Results</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Content has been indexed for these MIME types:</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

@@ -1,3 +1,9 @@
+recoll (1.24.5-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
+                
+  * Fix recollindex -z resetting index format to non-storing
+    
+ -- Jean-Francois Dockes <jf@dockes.org>  Thu, 31 Jan 2019 09:06:00 +0100
+
 recoll (1.24.3-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
                 
   * Fix a potential GUI crash and a couple of minor bugs.

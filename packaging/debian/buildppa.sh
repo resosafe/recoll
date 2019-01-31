@@ -6,7 +6,7 @@
 
 PPA_KEYID=D38B9201
 
-RCLVERS=1.24.1
+RCLVERS=1.24.5
 SCOPEVERS=1.20.2.4
 PPAVERS=2
 
@@ -46,8 +46,7 @@ debdir=debian
 # Note: no new releases for lucid: no webkit. Or use old debianrclqt4 dir.
 # No new releases for trusty either because of risk of kio compat (kio
 # wont build)
-series="xenial zesty artful bionic"
-#series=
+series="xenial bionic cosmic disco"
 
 if test "X$series" != X ; then
     check_recoll_orig

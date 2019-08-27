@@ -1,3 +1,11 @@
+recoll (1.25.22-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
+
+  * Small fixes: mbox offsets wrong in some cases, rcltex charset
+    detection, doctype action editor fixes, use xdg-open %U, fix restable
+    colwidths prefs size explosion.
+
+ -- Jean-Francois Dockes <jf@dockes.org>  Tue, 27 Aug 2019 14:57:00 +0200
+
 recoll (1.25.21-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
 
   * Windows: fix mbox cache offset which was not working at all

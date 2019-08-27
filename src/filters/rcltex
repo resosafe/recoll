@@ -77,6 +77,16 @@ umask 77
 # !! Leave the following line unmodified !
 #ENDRECFILTCOMMONCODE
 
+# Try to detect encoding
+encoding=`egrep '\usepackage\[.*\]{inputenc}' "$infile" | \
+                sed -e 's/.*\[//' -e 's/\].*//'`
+if test "X$encoding" = X ; then
+    encoding=latin1
+fi
+if test "X$encoding" = Xutf8x ; then
+    encoding=utf8
+fi
+
 if iscmd detex ; then
     checkcmds iconv
     CMD="detex -n -e ''"
@@ -93,7 +103,7 @@ cat <<EOF
 EOF
 
 $CMD "$infile" | \
-   iconv -c -f iso-8859-1 -t utf-8 | \
+   iconv -c -f "$encoding" -t utf-8 | \
    sed -e 's/</&lt;/g' -e 's/&/&amp;/g' 
 
 echo '</pre></body></html>'

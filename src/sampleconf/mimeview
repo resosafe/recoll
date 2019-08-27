@@ -25,8 +25,9 @@ xallexcepts = application/pdf application/postscript application/x-dvi \
 
 
 [view]
-# Pseudo entry used if the 'use desktop' preference is set in the GUI
-application/x-all = xdg-open %u
+# Pseudo entry used if the 'use desktop' preference is set in the GUI.
+# Note that we use %U to url-encode the parameter
+application/x-all = xdg-open %U
 
 application/epub+zip = ebook-viewer %f
 # Open the parent epub document for epub parts instead of opening them as

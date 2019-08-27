@@ -1,4 +1,4 @@
-/* Copyright (C) 2006 J.F.Dockes
+/* Copyright (C) 2006-2019 J.F.Dockes
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation; either version 2 of the License, or
@@ -17,7 +17,6 @@
 #ifndef _VIEWACTION_W_H_INCLUDED_
 #define _VIEWACTION_W_H_INCLUDED_
 
-#include <qvariant.h>
 #include <qdialog.h>
 
 #include "ui_viewaction.h"
@@ -32,18 +31,16 @@ class ViewAction : public QDialog, public Ui::ViewActionBase
 
 public:
     ViewAction(QWidget* parent = 0) 
-	: QDialog(parent) 
-    {
-	setupUi(this);
-	init();
+        : QDialog(parent) {
+        setupUi(this);
+        init();
     }
     ~ViewAction() {}
     void selectMT(const QString& mt);
 
 public slots:
     virtual void editActions();
-    virtual void onItemClicked(QTableWidgetItem *);
-    virtual void onItemDoubleClicked(QTableWidgetItem *);
+    virtual void onCurrentItemChanged(QTableWidgetItem *, QTableWidgetItem *);
     virtual void onUseDesktopCBToggled(int);
     virtual void onSetExceptCBToggled(int);
     virtual void onSelSameClicked();
@@ -51,7 +48,5 @@ private:
     virtual void init();
     virtual void fillLists();
 };
-
-
 
 #endif /* _VIEWACTION_W_H_INCLUDED_ */

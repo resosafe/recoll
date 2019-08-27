@@ -16,6 +16,8 @@
  */
 
 #include "autoconfig.h"
+#define LOGGER_LOCAL_LOGINC 3
+
 #define _FILE_OFFSET_BITS 64
 
 #include <errno.h>
@@ -132,23 +134,23 @@ public:
     ~MboxCache() {}
 
     int64_t get_offset(RclConfig *config, const string& udi, int msgnum) {
-        LOGDEB0("MboxCache::get_offsets: udi [" << udi << "] msgnum "
+        LOGDEB0("MboxCache::get_offset: udi [" << udi << "] msgnum "
                 << msgnum << "\n");
         if (!ok(config)) {
-            LOGDEB("MboxCache::get_offsets: init failed\n");
+            LOGDEB("MboxCache::get_offset: init failed\n");
             return -1;
         }
         std::unique_lock<std::mutex> locker(o_mcache_mutex);
         string fn = makefilename(udi);
         ifstream instream(fn.c_str(),  std::ifstream::binary);
         if (!instream.good()) {
-            LOGSYSERR("MboxCache::get_offsets", "open", fn);
-            return false;
+            LOGSYSERR("MboxCache::get_offset", "open", fn);
+            return -1;
         }
         char blk1[M_o_b1size];
         instream.read(blk1, M_o_b1size);
         if (!instream.good()) {
-            LOGSYSERR("MboxCache::get_offsets", "read blk1", "");
+            LOGSYSERR("MboxCache::get_offset", "read blk1", "");
             return -1;
         }
         ConfSimple cf(string(blk1, M_o_b1size));
@@ -158,21 +160,21 @@ public:
                     << udi << "], fudi [" << fudi << "]\n");
             return -1;
         }
-        LOGDEB1("MboxCache::get_offsets: reading offsets file at offs "
+        LOGDEB1("MboxCache::get_offset: reading offsets file at offs "
                 << cacheoffset(msgnum) << "\n");
         instream.seekg(cacheoffset(msgnum));
         if (!instream.good()) {
-            LOGSYSERR("MboxCache::get_offsets", "seek",
+            LOGSYSERR("MboxCache::get_offset", "seek",
                       lltodecstr(cacheoffset(msgnum)));
             return -1;
         }
         int64_t offset = -1;
         instream.read((char*)&offset, sizeof(int64_t));
         if (!instream.good()) {
-            LOGSYSERR("MboxCache::get_offsets", "read", "");
+            LOGSYSERR("MboxCache::get_offset", "read", "");
             return -1;
         }
-        LOGDEB0("MboxCache::get_offsets: ret " << offset << "\n");
+        LOGDEB0("MboxCache::get_offset: ret " << offset << "\n");
         return offset;
     }
 

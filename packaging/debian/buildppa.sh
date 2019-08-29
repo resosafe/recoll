@@ -6,16 +6,16 @@
 
 PPA_KEYID=D38B9201
 
-RCLVERS=1.25.21
+RCLVERS=1.25.22
 SCOPEVERS=1.20.2.4
 GSSPVERS=1.0.0
 PPAVERS=1
 
 # 
-RCLSRC=/y/home/dockes/projets/fulltext/recoll/src
-SCOPESRC=/y/home/dockes/projets/fulltext/unity-scope-recoll
-GSSPSRC=/y/home/dockes/projets/fulltext/gssp-recoll
-RCLDOWNLOAD=/y/home/dockes/projets/lesbonscomptes/recoll
+RCLSRC=/home/dockes/projets/fulltext/recoll/src
+SCOPESRC=/home/dockes/projets/fulltext/unity-scope-recoll
+GSSPSRC=/home/dockes/projets/fulltext/gssp-recoll
+RCLDOWNLOAD=/home/dockes/projets/lesbonscomptes/recoll
 
 case $RCLVERS in
     [23]*) PPANAME=recollexp-ppa;;
@@ -45,10 +45,8 @@ check_recoll_orig()
 
 ####### QT
 debdir=debian
-# Note: no new releases for lucid: no webkit. Or use old debianrclqt4 dir.
-# No new releases for trusty either because of risk of kio compat (kio
-# wont build)
-series="xenial bionic cosmic disco"
+# No new releases for trusty because of risk of kio compat (kio wont build)
+series="xenial bionic disco eoan"
 #series=
 
 if test "X$series" != X ; then
@@ -85,7 +83,7 @@ done
 
 ### KIO. Does not build on trusty from recoll 1.23 because of the need
 ### for c++11
-series="xenial bionic cosmic disco"
+series="xenial bionic disco eoan"
 #series=
 
 debdir=debiankio
@@ -125,8 +123,8 @@ for svers in $series ; do
 done
 
 ### GSSP
-series="bionic cosmic disco"
-series=
+series="bionic disco eoan"
+series=eoan
 
 debdir=debiangssp
 if test ! -d ${debdir}/ ; then

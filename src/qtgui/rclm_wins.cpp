@@ -328,7 +328,8 @@ void RclMain::showMissingHelpers()
 {
     string miss;
     if (!theconfig->getMissingHelperDesc(miss)) {
-	QMessageBox::information(this, "", tr("Indexing did not run yet"));
+	QMessageBox::information(
+            this, "", tr("No information: initial indexing not yet performed."));
 	return;
     }
     QString msg = QString::fromUtf8("<p>") +

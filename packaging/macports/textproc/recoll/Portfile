@@ -4,7 +4,7 @@ PortSystem          1.0
 PortGroup           app 1.0
 
 name                recoll
-version             1.25.0
+version             1.25.22
 categories          textproc
 platforms           darwin
 license             GPL-2+
@@ -17,9 +17,9 @@ long_description    Recoll is a desktop search tool based on Xapian
 homepage            http://www.recoll.org/
 master_sites        ${homepage}
 
-checksums           rmd160  2518c8ce8cf5661985283c153c20b1caec9e5860 \
-                    sha256  f1552961dd0cfd1a12d95fab1bf4990846df2085ddeaa5e832442bbce35acad2 \
-                    size 2675171
+checksums           rmd160  88aebac6074f3e6242770348ac30e405975effa6 \
+                    sha256  500d114952aa03c222847df8ecd0f9c58fc1d03b940df72de81e02e52ca905bc \
+                    size 2849390
 
 depends_lib         port:xapian-core \
                     port:qt5 \
@@ -29,8 +29,8 @@ depends_lib         port:xapian-core \
                     port:zlib
 
 depends_run         port:antiword \
-                    port:py27-libxml2 \
-                    port:py27-libxslt \
+    				port:python37 \
+                    port:py37-lxml \
                     port:poppler \
                     port:unrtf \
                     port:unzip

@@ -2,7 +2,7 @@
 
 ## ##########################################
 # External viewers, launched by the recoll GUI when you click on a result
-# 'Open' link - MAC version
+# 'edit' link
 # On the MAC, we use "open" for everything...
 
 # Mime types which we should not uncompress if they are found gzipped or
@@ -17,17 +17,23 @@
 #    search string
 #  - For pages of CHM and EPUB documents where we can choose to open the 
 #    parent document instead of a temporary html file.
+# Use xallexcepts- and xallexcepts+ in a user file to add or remove from
+# the default xallexcepts list
+
 #xallexcepts = application/pdf application/postscript application/x-dvi \
-#            text/html|gnuinfo text/html|chm text/html|epub
+# text/html|gnuinfo text/html|chm text/html|epub \
+# application/x-fsdirectory|parentopen inode/directory|parentopen
+
 
 [view]
-# Pseudo entry used if the 'use desktop' preference is set in the GUI
+# Pseudo entry used if the 'use desktop' preference is set in the GUI.
+# Note that we use %U to url-encode the parameter
 application/x-all = open %f
 
 application/epub+zip = ebook-viewer %f
-# If you want to open the parent epub document for epub parts instead of
-# opening them as html documents:
-#text/html|epub = ebook-viewer %F;ignoreipath=1
+# Open the parent epub document for epub parts instead of opening them as
+# html documents. This is almost always what we want.
+text/html|epub = ebook-viewer %F;ignoreipath=1
 
 application/x-gnote = gnote %f
 
@@ -54,6 +60,11 @@ application/vnd.ms-powerpoint = libreoffice %f
 application/vnd.oasis.opendocument.text = libreoffice %f
 application/vnd.oasis.opendocument.presentation = libreoffice %f
 application/vnd.oasis.opendocument.spreadsheet = libreoffice %f
+application/vnd.oasis.opendocument.graphics = libreoffice %f
+application/vnd.oasis.opendocument.presentation-flat-xml = libreoffice %f
+application/vnd.oasis.opendocument.spreadsheet-flat-xml = libreoffice %f
+application/vnd.oasis.opendocument.text-flat-xml = libreoffice %f
+application/vnd.oasis.opendocument.text-template = libreoffice %f
 
 application/vnd.openxmlformats-officedocument.wordprocessingml.document = \
  libreoffice %f
@@ -98,20 +109,28 @@ application/x-gnumeric = gnumeric %f
 
 application/x-flac = rhythmbox %f
 audio/mpeg = rhythmbox %f
+audio/aac = rhythmbox %f
+audio/ape = rhythmbox %f
+audio/mp4 = rhythmbox %f
+audio/x-musepack = rhythmbox %f
+audio/x-wavpack = rhythmbox %f
 application/ogg = rhythmbox %f
+
 audio/x-karaoke = kmid %f
 
-image/jpeg = gwenview %f
-image/png = gwenview %f
-image/tiff = gwenview %f
-image/gif  = gwenview %f
-image/svg+xml = inkview %f
+image/jpeg = ristretto %f
+image/jp2 = ristretto %f
+image/png = ristretto %f
+image/tiff = ristretto %f
+image/gif  = ristretto %f
 image/vnd.djvu = djview %f
+image/bmp = ristretto %f
+image/x-ms-bmp = ristretto %f
+image/x-xpmi = ristretto %f
+
 image/x-xcf = gimp %f
-image/bmp = gwenview %f
-image/x-ms-bmp = gwenview %f
-image/x-xpmi = gwenview %f
 image/x-nikon-nef = ufraw %f
+image/svg+xml = inkview %f
 
 # Opening mail messages:
 #  - Thunderbird will only open a single-message file if it has an .eml
@@ -142,14 +161,26 @@ application/x-tar = ark %f
 application/zip = ark %f
 application/x-7z-compressed = ark %f
 
+application/javascript = emacsclient  %f
 application/x-awk = emacsclient  %f
+application/x-bibtex = emacsclient  %f
+application/x-csharp = emacsclient  %f
+application/x-java = emacsclient  %f
 application/x-perl = emacsclient  %f
-text/x-perl = emacsclient  %f
+application/x-php = emacsclient  %f
 application/x-shellscript = emacsclient  %f
+text/x-bibtex = emacsclient  %f
+text/css = emacsclient  %f
+text/x-csharp = emacsclient  %f
+text/x-java = emacsclient  %f
+text/x-perl = emacsclient  %f
 text/x-shellscript = emacsclient  %f
+text/x-srt = emacsclient  %f
 
 # Or firefox -remote "openFile(%u)"
 text/html = firefox %u
+application/x-chm-html = %u
+text/x-chm-html = %u
 
 # gnu info nodes are translated to html with a "gnuinfo"
 # rclaptg. rclshowinfo knows how to start the info command on the right
@@ -158,15 +189,19 @@ text/html|gnuinfo = rclshowinfo %F %(title);ignoreipath=1
 
 application/x-webarchive = konqueror %f
 text/x-fictionbook = ebook-viewer %f
-application/x-tex = emacsclient  %f
-application/xml = emacsclient  %f
-text/xml = emacsclient  %f
-text/x-tex = emacsclient  %f
-text/plain = emacsclient  %f
-text/x-awk = emacsclient  %f
-text/x-c = emacsclient  %f
-text/x-c+ = emacsclient  %f
-text/x-c++ = emacsclient  %f
+
+application/x-javascript = emacsclient   %f
+application/sql = emacsclient   %f
+application/x-tex = emacsclient   %f
+application/xml = emacsclient   %f
+text/xml = emacsclient   %f
+text/x-tex = emacsclient   %f
+text/plain = emacsclient   %f
+text/x-awk = emacsclient   %f
+text/x-c = emacsclient   %f
+text/x-lua = emacsclient   %f
+text/x-c+ = emacsclient   %f
+text/x-c++ = emacsclient   %f
 text/x-csv = libreoffice %f
 text/x-html-sidux-man = konqueror %f
 text/x-html-aptosid-man = iceweasel %f
@@ -177,12 +212,12 @@ application/x-chm = kchmviewer %f
 # file at the right place
 text/html|chm = kchmviewer --url %i %F
 
-text/x-ini = emacsclient %f
+text/x-ini = emacsclient  %f
 text/x-man = xterm -u8 -e "groff -T ascii -man %f | more"
 text/x-python = idle %f
-text/x-gaim-log = emacsclient  %f
-text/x-purple-html-log = emacsclient  %f
-text/x-purple-log = emacsclient  %f
+text/x-gaim-log = emacsclient   %f
+text/x-purple-html-log = emacsclient   %f
+text/x-purple-log = emacsclient   %f
 
 # The video types will usually be handled by the desktop default, but they
 # need entries here to get an "Open" link
@@ -195,3 +230,4 @@ video/quicktime = open %f
 video/x-matroska = open %f
 video/x-ms-asf = open %f
 video/x-msvideo = open %f
+

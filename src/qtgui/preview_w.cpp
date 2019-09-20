@@ -894,8 +894,9 @@ bool Preview::loadDocInCurrentTab(const Rcl::Doc &idoc, int docnum)
 
     // Position the editor so that the first search term is visible
     if (searchTextCMB->currentText().length() != 0) {
-        // If there is a current search string, perform the search
-        m_canBeep = true;
+        // If there is a current search string, perform the search.
+        // Do not beep for an automatic search, this is ennoying.
+        m_canBeep = false;
         doSearch(searchTextCMB->currentText(), true, false);
     } else {
         // Position to the first query term

@@ -1,4 +1,4 @@
-/* Copyright (C) 2014 J.F.Dockes
+/* Copyright (C) 2014-2019 J.F.Dockes
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation; either version 2 of the License, or
@@ -71,22 +71,28 @@ string  PlainToRichQtPreview::PlainToRichQtPreview::header()
 
 string PlainToRichQtPreview::startMatch(unsigned int grpidx)
 {
-    LOGDEB2("startMatch, grpidx "  << (grpidx) << "\n" );
+    LOGDEB2("startMatch, grpidx " << grpidx << "\n");
     grpidx = m_hdata->grpsugidx[grpidx];
-    LOGDEB2("startMatch, ugrpidx "  << (grpidx) << "\n" );
+    LOGDEB2("startMatch, ugrpidx " << grpidx << "\n");
     m_groupanchors[grpidx].push_back(++m_lastanchor);
-    m_groupcuranchors[grpidx] = 0; 
-    return string("<span style='").
-        append(qs2utf8s(prefs.qtermstyle)).
-        append("'>").
-        append("<a name=\"").
-        append(termAnchorName(m_lastanchor)).
-        append("\">");
+    m_groupcuranchors[grpidx] = 0;
+    // We used to create the region as:
+    //     <span style="..."><a name="...">term</a></span>
+    // For some reason, this caused problems with the display of some
+    // Tamil text (qt bug?). Just inserting a space character after
+    // the opening <a tag, before the text, clears the problem, reason
+    // unknown. We also inverted the <span and <a tags to avoid
+    // highlighting the spurious space.
+    string startmarker{
+        "<a name='" + termAnchorName(m_lastanchor) + "'> " +
+            "<span style='" + qs2utf8s(prefs.qtermstyle) + "'>"
+            };
+    return startmarker;
 }
 
 string  PlainToRichQtPreview::endMatch()
 {
-    return string("</a></span>");
+    return "</span></a>";
 }
 
 string  PlainToRichQtPreview::termAnchorName(int i) const
@@ -104,7 +110,7 @@ string  PlainToRichQtPreview::startChunk()
 
 int  PlainToRichQtPreview::nextAnchorNum(int grpidx)
 {
-    LOGDEB2("nextAnchorNum: group "  << (grpidx) << "\n" );
+    LOGDEB2("nextAnchorNum: group " << grpidx << "\n");
     map<unsigned int, unsigned int>::iterator curit = 
         m_groupcuranchors.find(grpidx);
     map<unsigned int, vector<int> >::iterator vecit = 
@@ -121,7 +127,7 @@ int  PlainToRichQtPreview::nextAnchorNum(int grpidx)
         else 
             m_groupcuranchors[grpidx]++;
         m_curanchor = vecit->second[m_groupcuranchors[grpidx]];
-        LOGDEB2("nextAnchorNum: curanchor now "  << (m_curanchor) << "\n" );
+        LOGDEB2("nextAnchorNum: curanchor now " << m_curanchor << "\n");
     }
     return m_curanchor;
 }
@@ -182,4 +188,3 @@ void ToRichThread::run()
         m_output.push_back(QString::fromUtf8(it->c_str(), it->length()));
     }
 }
-

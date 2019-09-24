@@ -264,7 +264,11 @@ RclConfig::RclConfig(const string *argcnf)
     // is called from the main thread at once, by constructing a config
     // from recollinit
     if (o_localecharset.empty()) {
-#ifndef _WIN32
+#ifdef _WIN32
+        o_localecharset = winACPName();
+#elif defined(__APPLE__)
+        o_localecharset = "UTF-8";
+#else
         const char *cp;
         cp = nl_langinfo(CODESET);
         // We don't keep US-ASCII. It's better to use a superset
@@ -282,8 +286,6 @@ RclConfig::RclConfig(const string *argcnf)
             // Use cp1252 instead of iso-8859-1, it's a superset.
             o_localecharset = string(cstr_cp1252);
         }
-#else
-        o_localecharset = winACPName();
 #endif
         LOGDEB1("RclConfig::getDefCharset: localecharset ["  <<
                 o_localecharset << "]\n");

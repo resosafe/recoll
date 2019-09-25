@@ -39,7 +39,8 @@ depends_run         port:antiword \
 
 patchfiles          patch-sampleconf-mimeview.diff \
     patch-mkin-no-no-undefined.diff \
-    patch-rclinit-set-path.diff
+    patch-rclinit-set-path.diff \
+    patch-recoll-pro-stdlib.diff
 
 # Note: this is probably not the right way to configure QMAKE
 configure.args      QMAKE=${prefix}/libexec/qt5/bin/qmake \

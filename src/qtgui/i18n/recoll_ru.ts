@@ -532,7 +532,7 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>Main</name>
     <message>
-        <location filename="../main.cpp" line="+379"/>
+        <location filename="../main.cpp" line="+387"/>
         <source>No db directory in configuration</source>
         <translation>Каталог БД в конфигурации не указан</translation>
     </message>
@@ -687,7 +687,7 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
 <context>
     <name>PreviewTextEdit</name>
     <message>
-        <location line="+300"/>
+        <location line="+301"/>
         <location line="+11"/>
         <source>Show fields</source>
         <translation>Показать поля</translation>
@@ -1275,7 +1275,7 @@ Please check the mimeconf file</source>
 </translation>
     </message>
     <message>
-        <location filename="../rclm_wins.cpp" line="+19"/>
+        <location filename="../rclm_wins.cpp" line="+20"/>
         <source>No helpers found missing</source>
         <translation>Все вспомогательные приложения доступны</translation>
     </message>
@@ -1459,12 +1459,11 @@ Please check the mimeview file</source>
         <translation>Невозможно найти родительский документ</translation>
     </message>
     <message>
-        <location filename="../rclm_wins.cpp" line="-72"/>
         <source>Indexing did not run yet</source>
-        <translation>Индексирование пока не запущено</translation>
+        <translation type="vanished">Индексирование пока не запущено</translation>
     </message>
     <message>
-        <location line="+4"/>
+        <location filename="../rclm_wins.cpp" line="-68"/>
         <source>External applications/commands needed for your file types and not found, as stored by the last indexing pass in </source>
         <translation>Внешние приложения/команды, требуемые для индексирования файлов, не найдены, как указано в результатах последнего индексирования в </translation>
     </message>
@@ -1598,7 +1597,7 @@ Please check the desktop file</source>
         <translation>Не удалось загрузить сохранённый запрос</translation>
     </message>
     <message>
-        <location filename="../rclm_wins.cpp" line="-228"/>
+        <location filename="../rclm_wins.cpp" line="-229"/>
         <source>Index scheduling</source>
         <translation>Расписание индексирования</translation>
     </message>
@@ -1618,7 +1617,12 @@ Please check the desktop file</source>
         <translation>Данный инструмент настройки применим только к основныму индексу.</translation>
     </message>
     <message>
-        <location line="+179"/>
+        <location line="+105"/>
+        <source>No information: initial indexing not yet performed.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+75"/>
         <source>Content has been indexed for these MIME types:</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1652,7 +1656,7 @@ Please check the desktop file</source>
         <translation>Индекс заблокирован</translation>
     </message>
     <message>
-        <location filename="../rclm_wins.cpp" line="-322"/>
+        <location filename="../rclm_wins.cpp" line="-323"/>
         <source>Unknown indexer state. Can&apos;t access webcache file.</source>
         <translation>Неизвестный статус индексатора. Невозможно получить доступ к файлу веб-кэша.</translation>
     </message>
@@ -1672,7 +1676,7 @@ Please check the desktop file</source>
         <translation>Сообщение о некритичной ошибке индексирования: </translation>
     </message>
     <message>
-        <location filename="../rclm_wins.cpp" line="+326"/>
+        <location filename="../rclm_wins.cpp" line="+327"/>
         <source>Types list empty: maybe wait for indexing to progress?</source>
         <translation>Список типов пуст: подождать продолжения выполнения индексирования?</translation>
     </message>
@@ -2163,12 +2167,12 @@ Please check the desktop file</source>
         <translation>Дата и время</translation>
     </message>
     <message>
-        <location line="+189"/>
+        <location line="+191"/>
         <source>Can&apos;t sort by inverse relevance</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-198"/>
+        <location line="-200"/>
         <source>Ipath</source>
         <translation>Ipath</translation>
     </message>
@@ -2318,7 +2322,7 @@ Please check the desktop file</source>
 <context>
     <name>ResTable</name>
     <message>
-        <location filename="../restable.cpp" line="+783"/>
+        <location filename="../restable.cpp" line="+790"/>
         <source>&amp;Reset sort</source>
         <translation>&amp;Сбросить сортировку</translation>
     </message>
@@ -2336,7 +2340,7 @@ Please check the desktop file</source>
         <translation type="obsolete">&quot;</translation>
     </message>
     <message>
-        <location line="-312"/>
+        <location line="-317"/>
         <source>Save table to CSV file</source>
         <translation>Сохранить таблицу в CSV-файл</translation>
     </message>
@@ -2378,7 +2382,7 @@ Please check the desktop file</source>
         <translation type="obsolete">&amp;Открыть родительский документ/каталог</translation>
     </message>
     <message>
-        <location line="+300"/>
+        <location line="+305"/>
         <source>&amp;Save as CSV</source>
         <translation>&amp;Сохранить как CSV</translation>
     </message>
@@ -2636,17 +2640,12 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
         <translation>Ctrl+S</translation>
     </message>
     <message>
-        <location line="+45"/>
-        <source>Enter search terms here.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location line="+10"/>
+        <location line="+52"/>
         <source>Show query history</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location line="-61"/>
+        <location line="-58"/>
         <source>Erase search entry</source>
         <translation>Очистить поле поиска</translation>
     </message>
@@ -3394,7 +3393,7 @@ This should give higher precedence to the results where the search terms appear 
         <translation type="obsolete">Тип MIME</translation>
     </message>
     <message>
-        <location filename="../viewaction_w.cpp" line="+104"/>
+        <location filename="../viewaction_w.cpp" line="+93"/>
         <source>Command</source>
         <translation>Команда</translation>
     </message>
@@ -3409,7 +3408,7 @@ This should give higher precedence to the results where the search terms appear 
         <translation>Взять из окружения</translation>
     </message>
     <message>
-        <location line="+98"/>
+        <location line="+89"/>
         <source>Changing entries with different current values</source>
         <translation>Изменение записей с различными текущими значениями</translation>
     </message>

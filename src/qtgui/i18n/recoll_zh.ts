@@ -1157,10 +1157,6 @@ Please check the mimeview file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Indexing did not run yet</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>External applications/commands needed for your file types and not found, as stored by the last indexing pass in </source>
         <translation type="unfinished"></translation>
     </message>
@@ -1372,6 +1368,10 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>total files)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>No information: initial indexing not yet performed.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2164,10 +2164,6 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>Show query history</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Enter search terms here.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

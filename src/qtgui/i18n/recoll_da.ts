@@ -1050,7 +1050,7 @@ Kontroller venligst mimeview-filen</translation>
     </message>
     <message>
         <source>Indexing did not run yet</source>
-        <translation>Indeksering har ikke kørt endnu</translation>
+        <translation type="vanished">Indeksering har ikke kørt endnu</translation>
     </message>
     <message>
         <source>External applications/commands needed for your file types and not found, as stored by the last indexing pass in </source>
@@ -1294,6 +1294,10 @@ Tjek venligst desktopfilen</translation>
     </message>
     <message>
         <source>total files)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>No information: initial indexing not yet performed.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1964,10 +1968,6 @@ Brug &lt;b&gt;Vis Forespørgsel&lt;/b&gt; link når i tvivl om resultatet og se 
     </message>
     <message>
         <source>Show query history</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Enter search terms here.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

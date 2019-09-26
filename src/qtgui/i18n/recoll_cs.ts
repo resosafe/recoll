@@ -1134,7 +1134,7 @@ Prověřte soubor mimeconf</translation>
     </message>
     <message>
         <source>Indexing did not run yet</source>
-        <translation>Rejstříkování ještě neběželo</translation>
+        <translation type="vanished">Rejstříkování ještě neběželo</translation>
     </message>
     <message>
         <source>External applications/commands needed for your file types and not found, as stored by the last indexing pass in </source>
@@ -1386,6 +1386,10 @@ Prověřte soubor pracovní plochy</translation>
     </message>
     <message>
         <source>total files)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>No information: initial indexing not yet performed.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2225,10 +2229,6 @@ Použijte odkaz &lt;b&gt;Ukázat hledání&lt;/b&gt;, když máte o výsledku po
     </message>
     <message>
         <source>Show query history</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Enter search terms here.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

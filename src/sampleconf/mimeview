@@ -20,7 +20,7 @@
 # the default xallexcepts list
 
 xallexcepts = application/pdf application/postscript application/x-dvi \
- text/html|gnuinfo text/html|chm text/html|epub \
+ text/html|gnuinfo text/html|chm text/html|epub text/html|rclman \
  application/x-fsdirectory|parentopen inode/directory|parentopen
 
 
@@ -28,6 +28,9 @@ xallexcepts = application/pdf application/postscript application/x-dvi \
 # Pseudo entry used if the 'use desktop' preference is set in the GUI.
 # Note that we use %U to url-encode the parameter
 application/x-all = xdg-open %U
+# But do use the uncoded url for help (F1) because the fragment in there must
+# actually be processed.
+text/html|rclman = xdg-open %u
 
 application/epub+zip = ebook-viewer %f
 # Open the parent epub document for epub parts instead of opening them as

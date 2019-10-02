@@ -506,6 +506,6 @@ void RclMain::startManual(const string& index)
         doc.url = path_pathtofileurl(usermanual);
     }
     doc.mimetype = "text/html";
+    doc.addmeta(Rcl::Doc::keyapptg, "rclman");
     startNativeViewer(doc);
 }
-

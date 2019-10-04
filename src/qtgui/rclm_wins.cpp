@@ -319,8 +319,8 @@ void RclMain::showExtIdxDialog()
 void RclMain::showAboutDialog()
 {
     string vstring = Rcl::version_string() +
-        string("<br> http://www.recoll.org") +
-	string("<br> http://www.xapian.org");
+        string("<br><a href='http://www.recoll.org'>www.recoll.org</a>") +
+	string("<br><a href='http://www.xapian.org'>www.xapian.org</a>");
     QMessageBox::information(this, tr("About Recoll"), vstring.c_str());
 }
 

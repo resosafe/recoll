@@ -46,6 +46,7 @@ import rclconfig
 import glob
 import traceback
 
+_mswindows = (sys.platform == "win32")
 tmpdir = None
 
 def finalcleanup():
@@ -84,8 +85,10 @@ class PDFExtractor:
         self.pdftk = None
         self.em = em
         self.tesseract = None
-        
-        self.pdftotext = rclexecm.which("pdftotext")
+
+        # Avoid picking up a default version on Windows, we want ours
+        if not _mswindows:
+            self.pdftotext = rclexecm.which("pdftotext")
         if not self.pdftotext:
             self.pdftotext = rclexecm.which("poppler/pdftotext")
             if not self.pdftotext:
@@ -140,7 +143,8 @@ class PDFExtractor:
             self.maybemaketmpdir()
 
     def _initextrameta(self):
-        self.pdfinfo = rclexecm.which("pdfinfo")
+        if not _mswindows:
+            self.pdfinfo = rclexecm.which("pdfinfo")
         if not self.pdfinfo:
             self.pdfinfo = rclexecm.which("poppler/pdfinfo")
         if not self.pdfinfo:

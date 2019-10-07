@@ -566,6 +566,8 @@ sampleconf/fields sampleconf/fragbuts.xml sampleconf/mimeconf \
 sampleconf/mimemap sampleconf/mimeview sampleconf/mimeview.mac \
 sampleconf/recoll.conf sampleconf/recoll.qss \
 \
+testmains/Makefile.am \
+\
 unac/AUTHORS unac/COPYING unac/README unac/README.recoll unac/unac.c \
 \
 VERSION

@@ -1,3 +1,12 @@
+recoll (1.25.23-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
+
+  * Small fixes: fix problem with some mbox formats, clickable urls in
+    about dialog, Fix F1 not starting help anymore. Windows: avoid purging
+    the index if a share is disconnected while we work. Windows: avoid
+    picking up the wrong pdftotext.
+
+ -- Jean-Francois Dockes <jf@dockes.org>  Mon, 07 Oct 2019 11:08:00 +0200
+
 recoll (1.25.22-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
 
   * Small fixes: mbox offsets wrong in some cases, rcltex charset

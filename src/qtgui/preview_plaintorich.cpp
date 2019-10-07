@@ -76,15 +76,8 @@ string PlainToRichQtPreview::startMatch(unsigned int grpidx)
     LOGDEB2("startMatch, ugrpidx " << grpidx << "\n");
     m_groupanchors[grpidx].push_back(++m_lastanchor);
     m_groupcuranchors[grpidx] = 0;
-    // We used to create the region as:
-    //     <span style="..."><a name="...">term</a></span>
-    // For some reason, this caused problems with the display of some
-    // Tamil text (qt bug?). Just inserting a space character after
-    // the opening <a tag, before the text, clears the problem, reason
-    // unknown. We also inverted the <span and <a tags to avoid
-    // highlighting the spurious space.
     string startmarker{
-        "<a name='" + termAnchorName(m_lastanchor) + "'> " +
+        "<a name='" + termAnchorName(m_lastanchor) + "'>" +
             "<span style='" + qs2utf8s(prefs.qtermstyle) + "'>"
             };
     return startmarker;

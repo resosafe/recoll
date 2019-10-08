@@ -50,7 +50,7 @@ void WinSchedToolW::init()
 
     if (!path_exists(batchfile)) {
         FILE *fp = fopen(batchfile.c_str(), "w");
-        fprintf(fp, "%s -c %s\n", recollindex.c_str(),
+        fprintf(fp, "\"%s\" -c \"%s\"\n", recollindex.c_str(),
                 theconfig->getConfDir().c_str());
         fclose(fp);
     }
@@ -62,8 +62,7 @@ void WinSchedToolW::init()
         "(<i>Create task</i> in the menu on the right), or the simplified "
         "<i>Create Basic task</i> wizard. In both cases Copy/Paste the "
         "batch file path listed below as the <i>Action</i> to be performed."
-        "Once created, you will find your task in the <i>WPD</i> section "
-        "of the task library.</p>" 
+        "</p>" 
         );
 
     blurb.append("</p><p><tt>").append(u8s2qs(batchfile)).append("</tt></p>");

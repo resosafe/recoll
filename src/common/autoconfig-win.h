@@ -112,10 +112,10 @@ overriden in the c++ code by ifdefs _WIN32 anyway  */
 #define PACKAGE_NAME "Recoll"
 
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING "Recoll 1.25.21"
+#define PACKAGE_STRING "Recoll 1.25.23"
 
 /* Define to the version of this package. */
-#define PACKAGE_VERSION "1.25.21"
+#define PACKAGE_VERSION "1.25.23"
 
 /* Define to the one symbol short name of this package. */
 #define PACKAGE_TARNAME "recoll"

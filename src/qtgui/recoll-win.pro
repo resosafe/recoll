@@ -21,7 +21,7 @@ HEADERS += \
         advshist.h \
         confgui/confgui.h \
         confgui/confguiindex.h \
-        crontool.h \
+        winschedtool.h \
         widgets/editdialog.h \
         firstidx.h \
         fragbuts.h \
@@ -36,7 +36,6 @@ HEADERS += \
         rclmain_w.h \
         reslist.h \
         restable.h \
-        rtitool.h \
         searchclause_w.h \
         snippets_w.h \
         specialindex.h \
@@ -52,7 +51,7 @@ SOURCES += \
         advshist.cpp \
         confgui/confgui.cpp \
         confgui/confguiindex.cpp \
-        crontool.cpp \
+        winschedtool.cpp \
         fragbuts.cpp \
         guiutils.cpp \
         main.cpp \
@@ -72,7 +71,6 @@ SOURCES += \
         respopup.cpp \
         reslist.cpp \
         restable.cpp \
-        rtitool.cpp \
         searchclause_w.cpp \
         snippets_w.cpp \
         spell_w.cpp \
@@ -86,7 +84,7 @@ SOURCES += \
 
 FORMS   = \
         advsearch.ui \
-        crontool.ui \
+        winschedtool.ui \
         widgets/editdialog.ui \
         firstidx.ui \
         idxsched.ui \
@@ -95,7 +93,6 @@ FORMS   = \
         ptrans.ui \
         rclmain.ui \
         restable.ui \
-        rtitool.ui \
         specialindex.ui \
         spell.ui \
         snippets.ui \

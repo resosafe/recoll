@@ -1,4 +1,4 @@
-/* Copyright (C) 2005 J.F.Dockes
+/* Copyright (C) 2005-2019 J.F.Dockes
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation; either version 2 of the License, or
@@ -24,8 +24,12 @@
 #include "listdialog.h"
 #include "confgui/confguiindex.h"
 #include "idxsched.h"
+#ifdef _WIN32
+#include "winschedtool.h"
+#else
 #include "crontool.h"
 #include "rtitool.h"
+#endif
 #include "snippets_w.h"
 #include "fragbuts.h"
 #include "specialindex.h"
@@ -201,17 +205,19 @@ void RclMain::execIndexSched()
 }
 void RclMain::showIndexSched(bool modal)
 {
-#ifdef _WIN32
-    QMessageBox::information(this, tr("Index scheduling"),
-                             tr("Sorry, not available under Windows for now, use the File menu entries "
-                                "to update the index"));
-    return;
-#endif    
     LOGDEB("showIndexSched()\n" );
     if (indexSched == 0) {
 	indexSched = new IdxSchedW(this);
 	connect(new QShortcut(quitKeySeq, indexSched), SIGNAL (activated()), 
 		this, SLOT (fileExit()));
+#ifdef _WIN32
+        indexSched->cronCLB->setText(tr("Batch scheduling"));
+        indexSched->cronCLB->setDescription(
+            tr("The tool will let you decide at what time indexing should run. "
+               " It uses the Windows task scheduler."));
+        indexSched->mainExplainLBL->hide();
+        indexSched->rtidxCLB->hide();
+#endif
 	connect(indexSched->cronCLB, SIGNAL(clicked()), 
 		this, SLOT(execCronTool()));
 	if (theconfig && theconfig->isDefaultConfig()) {
@@ -246,11 +252,16 @@ void RclMain::execCronTool()
 {
     showCronTool(true);
 }
+
 void RclMain::showCronTool(bool modal)
 {
     LOGDEB("showCronTool()\n" );
     if (cronTool == 0) {
+#ifdef _WIN32
+	cronTool = new WinSchedToolW(0);
+#else
 	cronTool = new CronToolW(0);
+#endif
 	connect(new QShortcut(quitKeySeq, cronTool), SIGNAL (activated()), 
 		this, SLOT (fileExit()));
     } else {
@@ -275,6 +286,7 @@ void RclMain::execRTITool()
 }
 void RclMain::showRTITool(bool modal)
 {
+#ifndef _WIN32
     LOGDEB("showRTITool()\n" );
     if (rtiTool == 0) {
 	rtiTool = new RTIToolW(0);
@@ -290,6 +302,7 @@ void RclMain::showRTITool(bool modal)
     } else {
 	rtiTool->show();
     }
+#endif
 }
 
 void RclMain::showUIPrefs()

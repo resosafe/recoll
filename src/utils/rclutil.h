@@ -36,6 +36,10 @@ extern bool path_empty(const std::string& path);
 /// e.g. /usr/share/recoll. Depends on OS and config
 extern const std::string& path_pkgdatadir();
 
+#ifdef _WIN32
+extern std::string path_thisexecpath();
+#endif
+
 /// Transcode to utf-8 if possible or url encoding, for display.
 extern bool printableUrl(const std::string& fcharset,
                          const std::string& in, std::string& out);

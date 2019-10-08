@@ -83,7 +83,7 @@ static bool path_isdriveabs(const string& s)
 #include <Shlwapi.h>
 #pragma comment(lib, "shlwapi.lib")
 
-static string path_thisexecpath()
+string path_thisexecpath()
 {
     wchar_t text[MAX_PATH];
     GetModuleFileNameW(NULL, text, MAX_PATH);

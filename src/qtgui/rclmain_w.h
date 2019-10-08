@@ -41,6 +41,7 @@ class ExecCmd;
 class Preview;
 class ResTable;
 class CronToolW;
+class WinSchedToolW;
 class RTIToolW;
 class FragButs;
 class SpecIdxW;
@@ -184,7 +185,11 @@ private:
     UIPrefsDialog  *uiprefs{0};
     ConfIndexW     *indexConfig{0};
     IdxSchedW      *indexSched{0};
+#ifdef _WIN32
+    WinSchedToolW  *cronTool{0};
+#else
     CronToolW      *cronTool{0};
+#endif
     RTIToolW       *rtiTool{0};
     SpellW         *spellform{0};
     FragButs       *fragbuts{0};

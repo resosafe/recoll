@@ -6,7 +6,7 @@ index f69aaa27..218c89b2 100644
  
  macx {
      ICON = images/recoll.icns
-+    LIBS += -stdlib=libc++
++    LIBS += @@STDLIB@@
  }
  
  TRANSLATIONS = \

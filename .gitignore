@@ -10,6 +10,7 @@
 *.o 
 *.obj
 *.pdb
+*.pro.user*
 *.sdf
 *.tlog
 *~
@@ -18,6 +19,8 @@
 .libs
 .vs
 \#*
+build-*-Debug
+build-*-Release
 libtool
 ptrans
 src/Makefile

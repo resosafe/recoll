@@ -299,11 +299,13 @@ copypoppler
 copyantiword
 copyunrtf
 copyxslt
+# Copied into python3 and installed with it
 #copyfuture
 copymutagen
-copyepub
+# Switched to perl for lack of python3 version
 #copypyexiv2
 copywpd
+# Chm is now copied into the python tree, which is installed by copypython
 #copychm
 copypff
 copypython

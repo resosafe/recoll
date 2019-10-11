@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "Recoll"
-#define MyAppVersion "1.25.23-20191007-ab53b083"
+#define MyAppVersion "1.25.23-20191008-127a92d4"
 #define MyAppPublisher "Recoll.org"
 #define MyAppURL "http://www.recoll.org"
 #define MyAppExeName "recoll.exe"

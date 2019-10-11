@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/python3
 """Extract Html content from an EPUB file (.epub)"""
 from __future__ import print_function
 
@@ -95,7 +95,7 @@ class rclEPUB:
                                        stdout=subprocess.PIPE
                                        )
             txt,err = process.communicate(doc)
-            alltxt += txt
+            alltxt += txt.decode('utf-8')
         return alltxt
 
     def closefile(self):

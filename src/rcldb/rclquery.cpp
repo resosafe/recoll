@@ -336,7 +336,7 @@ static const int qquantum = 50;
 
 // Get estimated result count for query. Xapian actually does most of
 // the search job in there, this can be long
-int Query::getResCnt()
+int Query::getResCnt(bool noapproximation)
 {
     if (ISNULL(m_nq) || !m_nq->xenquire) {
         LOGERR("Query::getResCnt: no query opened\n");
@@ -348,17 +348,17 @@ int Query::getResCnt()
     m_resCnt = -1;
     if (m_nq->xmset.size() <= 0) {
         Chrono chron;
-
+        Xapian::doccount checkatleast = noapproximation ? m_db->docCnt() : 1000;
         XAPTRY(m_nq->xmset = 
-               m_nq->xenquire->get_mset(0, qquantum, 1000);
-               m_resCnt = m_nq->xmset.get_matches_lower_bound(),
+               m_nq->xenquire->get_mset(0, qquantum, checkatleast);
+               m_resCnt = m_nq->xmset.get_matches_estimated(),
                m_db->m_ndb->xrdb, m_reason);
 
         LOGDEB("Query::getResCnt: "<<m_resCnt<<" "<< chron.millis() << " mS\n");
         if (!m_reason.empty())
             LOGERR("xenquire->get_mset: exception: " << m_reason << "\n");
     } else {
-        m_resCnt = m_nq->xmset.get_matches_lower_bound();
+        m_resCnt = m_nq->xmset.get_matches_estimated();
     }
     return m_resCnt;
 }

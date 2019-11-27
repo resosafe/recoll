@@ -130,6 +130,7 @@ static char usage [] =
 "    see the field names. Use -F '' to output all fields, but you probably\n"
 "    also want option -N in this case.\n"
 "  -N : with -F, print the (plain text) field names before the field values.\n"
+" -E : display the exact results count instead of xapian approximation.\n"
 ;
 static void
 Usage(void)
@@ -173,6 +174,7 @@ static int     op_flags;
 #define OPT_T     0x200000
 // gui: -t use command line, us: ignored
 #define OPT_t     0x400000
+#define OPT_E     0x800000
 // gui uses -v : show version. Us: usage
 // gui uses -w : open minimized
 
@@ -207,6 +209,7 @@ int recollq(RclConfig **cfp, int argc, char **argv)
             case 'a':   op_flags |= OPT_a; break;
             case 'b':   op_flags |= OPT_b; break;
             case 'C':   op_flags |= OPT_C; break;
+            case 'E':   op_flags |= OPT_E; break;
 	    case 'c':	op_flags |= OPT_c; if (argc < 2)  Usage();
 		a_config = *(++argv);
 		argc--; goto b1;
@@ -366,7 +369,7 @@ endopts:
 	cerr << "Query setup failed: " << query.getReason() << endl;
 	return(1);
     }
-    int cnt = query.getResCnt();
+    int cnt = query.getResCnt((op_flags & OPT_E) ? true : false);
     if (!(op_flags & OPT_b)) {
 	cout << "Recoll query: " << rq->getDescription() << endl;
 	if (firstres == 0) {

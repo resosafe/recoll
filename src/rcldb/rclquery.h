@@ -91,7 +91,7 @@ public:
     bool setQuery(std::shared_ptr<SearchData> q);
 
     /** Get results count for current query */
-    int getResCnt();
+    int getResCnt(bool noapproximation = false);
 
     /** Get document at rank i in current query results. */
     bool getDoc(int i, Doc &doc, bool fetchtext = false);

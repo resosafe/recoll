@@ -1412,7 +1412,7 @@ alink="#0000FF">
           term generation</a>.</p>
           <p>Using multiple configurations implies a small level of
           command line or file manager usage. The user must
-          explicitely create additional configuration directories,
+          explicitly create additional configuration directories,
           the GUI will not do it. This is to avoid mistakenly
           creating additional directories when an argument is
           mistyped. Also, the GUI or the indexer must be launched
@@ -1956,7 +1956,7 @@ recollindex -c "$confdir"
         by a script in the old queue location. The script is
         automatically executed by the <span class=
         "application">Recoll</span> indexer versions 1.23.5 and
-        newer. It could conceivably be executed independantly to
+        newer. It could conceivably be executed independently to
         make the new browser extension compatible with an older
         <span class="application">Recoll</span> version (the script
         is named <span class=
@@ -2777,7 +2777,7 @@ fs.inotify.max_user_watches=32768
               </li>
               <li class="listitem">
                 <p>The search is insensitive to character case and
-                accents, independantly of the type of index.</p>
+                accents, independently of the type of index.</p>
               </li>
               <li class="listitem">
                 <p>An entry without any wild card character and not
@@ -3630,7 +3630,7 @@ fs.inotify.max_user_watches=32768
           spelling variations when no matching document were found.
           In some cases, both proper spellings and mispellings are
           present in the index, and it may be interesting to look
-          for them explicitely.</p>
+          for them explicitly.</p>
           <p>The term explorer tool (started from the toolbar icon
           or from the <span class="guilabel">Term explorer</span>
           entry of the <span class="guilabel">Tools</span> menu)
@@ -4091,7 +4091,7 @@ fs.inotify.max_user_watches=32768
           history, but the amount is limited: old queries will
           eventually be forgotten. Also, important queries may be
           difficult to find among others. This is why both types of
-          queries can also be explicitely saved to files, from the
+          queries can also be explicitly saved to files, from the
           GUI menus: <span class="guimenu">File</span> →
           <span class="guimenuitem">Save last query / Load last
           query</span></p>
@@ -5700,7 +5700,7 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
         <p>As in the past, capitalizing the first letter of a word
         will turn off its stem expansion and have no effect on
         case-sensitivity.</p>
-        <p>You can also explicitely activate case and diacritics
+        <p>You can also explicitly activate case and diacritics
         sensitivity by using modifiers with the query language.
         <code class="literal">C</code> will make the term
         case-sensitive, and <code class="literal">D</code> will
@@ -5752,7 +5752,7 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
               useful.</p>
             </li>
             <li class="listitem">
-              <p>There is also an independantly developed <a class=
+              <p>There is also an independently developed <a class=
               "ulink" href=
               "http://kde-apps.org/content/show.php/recollrunner?content=128203"
               target="_top">Krunner plugin</a>.</p>
@@ -8046,7 +8046,7 @@ for i in range(nres):
           build procedure (see above) installs the API package for
           the default system version (python) along with the main
           code. The package for other Python versions (e.g. python3
-          if the system default is python2) must be explicitely
+          if the system default is python2) must be explicitly
           built and installed.</p>
           <p>The <code class="filename">python/recoll/</code>
           directory contains the usual <code class=
@@ -8370,7 +8370,7 @@ for i in range(nres):
                   <p>Space-separated list of files or directories
                   to recursively index. Default to ~ (indexes
                   $HOME). You can use symbolic links in the list,
-                  they will be followed, independantly of the value
+                  they will be followed, independently of the value
                   of the followLinks variable.</p>
                 </dd>
                 <dt><a name=
@@ -8479,7 +8479,7 @@ for i in range(nres):
                   automatically be added. The expressions are
                   matched using 'fnmatch(3)' with the FNM_PATHNAME
                   flag set by default. This means that '/'
-                  characters must be matched explicitely. You can
+                  characters must be matched explicitly. You can
                   set 'skippedPathsFnmPathname' to 0 to disable the
                   use of FNM_PATHNAME (meaning that '/*/dir3' will
                   match '/dir1/dir2/dir3'). The default value
@@ -8487,7 +8487,7 @@ for i in range(nres):
                   media to remind you that it is a bad idea to have
                   Recoll work on these (esp. with the monitor:
                   media gets indexed on mount, all data gets erased
-                  on unmount). Explicitely adding '/media/xxx' to
+                  on unmount). Explicitly adding '/media/xxx' to
                   the 'topdirs' variable will override this.</p>
                 </dd>
                 <dt><a name=
@@ -9044,6 +9044,15 @@ for i in range(nres):
                   <p>Minimum mbox file size over which we cache the
                   offsets. There is really no sense in caching
                   offsets for small files. The default is 5 MB.</p>
+                </dd>
+                <dt><a name=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.MBOXMAXMSGMBS" id=
+                "RCL.INSTALL.CONFIG.RECOLLCONF.MBOXMAXMSGMBS"></a><span class="term"><code class="varname">mboxmaxmsgmbs</code></span></dt>
+                <dd>
+                  <p>Maximum mbox member message size in megabytes.
+                  Size over which we assume that the mbox format is
+                  bad or we misinterpreted it, at which point we
+                  just stop processing the file.</p>
                 </dd>
                 <dt><a name=
                 "RCL.INSTALL.CONFIG.RECOLLCONF.WEBCACHEDIR" id=

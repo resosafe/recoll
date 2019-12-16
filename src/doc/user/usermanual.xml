@@ -819,7 +819,7 @@
 
         <para>Using multiple configurations implies a small
         level of command line or file manager usage. The user must
-        explicitely create additional configuration directories, the GUI
+        explicitly create additional configuration directories, the GUI
         will not do it. This is to avoid mistakenly creating additional
         directories when an argument is mistyped. Also, the GUI or the
         indexer must be launched with a specific option or environment to
@@ -1264,7 +1264,7 @@ recollindex -c "$confdir"
       downloads location (typically <filename>$HOME/Downloads</filename> ),
       then moved by a script in the old queue location. The script is
       automatically executed by the &RCL; indexer versions 1.23.5 and
-      newer. It could conceivably be executed independantly to make the new
+      newer. It could conceivably be executed independently to make the new
       browser extension compatible with an older &RCL; version (the script
       is named <command>recoll-we-move-files.py</command>).</para>
 
@@ -1934,7 +1934,7 @@ fs.inotify.max_user_watches=32768
           space in the file name, and is not treated specially.</para>
           </listitem>
           <listitem><para>The search is insensitive to character case and
-          accents, independantly of the type of index.</para>
+          accents, independently of the type of index.</para>
           </listitem>
           <listitem><para>An entry without any wild card
           character and not capitalized will be prepended and appended
@@ -2629,7 +2629,7 @@ fs.inotify.max_user_watches=32768
         <para>The search will only propose replacement terms with
         spelling variations when no matching document were found. In some
         cases, both proper spellings and mispellings are present in the
-        index, and it may be interesting to look for them explicitely.</para>
+        index, and it may be interesting to look for them explicitly.</para>
 
         <para>The term explorer tool (started from the toolbar icon or
         from the <guilabel>Term explorer</guilabel> entry of the
@@ -3050,7 +3050,7 @@ fs.inotify.max_user_watches=32768
         history, but the amount is limited: old queries will eventually
         be forgotten. Also, important queries may be difficult to find
         among others. This is why both types of queries can also be
-        explicitely saved to files, from the GUI menus:
+        explicitly saved to files, from the GUI menus:
         <menuchoice>
           <guimenu>File</guimenu>
           <guimenuitem>Save last query / Load last query</guimenuitem>
@@ -4381,7 +4381,7 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
       turn off its stem expansion and have no effect on
       case-sensitivity.</para>
 
-      <para>You can also explicitely activate case and diacritics
+      <para>You can also explicitly activate case and diacritics
       sensitivity by using modifiers with the query
       language. <literal>C</literal> will make the term case-sensitive, and
       <literal>D</literal> will make it
@@ -4423,7 +4423,7 @@ text/html       [file:///Users/uncrypted-dockes/projets/bateaux/ilur/factEtCie/r
           Lens</ulink> module useful.</para>
         </listitem>
         <listitem>
-          <para>There is also an independantly developed
+          <para>There is also an independently developed
           <ulink
               url="http://kde-apps.org/content/show.php/recollrunner?content=128203">
           Krunner plugin</ulink>.</para>
@@ -6204,7 +6204,7 @@ for i in range(nres):
         <para>The normal &RCL; build procedure (see above) installs the API
         package for the default system version (python) along with the main
         code. The package for other Python versions (e.g. python3 if the
-        system default is python2) must be explicitely built and
+        system default is python2) must be explicitly built and
         installed.</para>
 
         <para>The <filename>python/recoll/</filename> directory contains

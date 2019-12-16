@@ -122,15 +122,15 @@ void RclMain::init()
 {
     // This is just to get the common catg strings into the message file
     static const char* catg_strings[] = {
-            QT_TR_NOOP("All"), QT_TR_NOOP("media"),  QT_TR_NOOP("message"),
-            QT_TR_NOOP("other"),  QT_TR_NOOP("presentation"),
-            QT_TR_NOOP("spreadsheet"),  QT_TR_NOOP("text"), 
-	    QT_TR_NOOP("sorted"), QT_TR_NOOP("filtered")
+        QT_TR_NOOP("All"), QT_TR_NOOP("media"),  QT_TR_NOOP("message"),
+        QT_TR_NOOP("other"),  QT_TR_NOOP("presentation"),
+        QT_TR_NOOP("spreadsheet"),  QT_TR_NOOP("text"), 
+        QT_TR_NOOP("sorted"), QT_TR_NOOP("filtered")
     };
     setWindowTitle(configToTitle());
 
     DocSequence::set_translations((const char *)tr("sorted").toUtf8(), 
-				(const char *)tr("filtered").toUtf8());
+                                  (const char *)tr("filtered").toUtf8());
 
     periodictimer = new QTimer(this);
 
@@ -174,20 +174,20 @@ void RclMain::init()
     // instead
     vector<string> langs;
     if (!getStemLangs(langs)) {
-	QMessageBox::warning(0, "Recoll", 
-			     tr("error retrieving stemming languages"));
+        QMessageBox::warning(0, "Recoll", 
+                             tr("error retrieving stemming languages"));
     }
     QAction *curid = prefs.queryStemLang == "ALL" ? m_idAllStem : m_idNoStem;
     QAction *id; 
     for (vector<string>::const_iterator it = langs.begin(); 
-	 it != langs.end(); it++) {
-	QString qlang = QString::fromUtf8(it->c_str(), it->length());
-	id = preferencesMenu->addAction(qlang);
-	id->setCheckable(true);
-	m_stemLangToId[qlang] = id;
-	if (prefs.queryStemLang == qlang) {
-	    curid = id;
-	}
+         it != langs.end(); it++) {
+        QString qlang = QString::fromUtf8(it->c_str(), it->length());
+        id = preferencesMenu->addAction(qlang);
+        id->setCheckable(true);
+        m_stemLangToId[qlang] = id;
+        if (prefs.queryStemLang == qlang) {
+            curid = id;
+        }
     }
     curid->setChecked(true);
 
@@ -246,19 +246,19 @@ void RclMain::init()
     theconfig->getGuiFilterNames(cats);
     m_catgbutvec.push_back(catg_strings[0]);
     for (vector<string>::const_iterator it = cats.begin();
-	 it != cats.end(); it++) {
-	QRadioButton *but = new QRadioButton(m_filtFRM);
-	QString catgnm = QString::fromUtf8(it->c_str(), it->length());
-	m_catgbutvec.push_back(*it);
-	// We strip text before the first colon before setting the button name.
-	// This is so that the user can decide the order of buttons by naming 
-	// the filter,ie, a:media b:messages etc.
-	QString but_txt = catgnm;
-	int colon = catgnm.indexOf(':');
-	if (colon != -1) {
-	    but_txt = catgnm.right(catgnm.size()-(colon+1));
-	}
-	but->setText(tr(but_txt.toUtf8()));
+         it != cats.end(); it++) {
+        QRadioButton *but = new QRadioButton(m_filtFRM);
+        QString catgnm = QString::fromUtf8(it->c_str(), it->length());
+        m_catgbutvec.push_back(*it);
+        // We strip text before the first colon before setting the button name.
+        // This is so that the user can decide the order of buttons by naming 
+        // the filter,ie, a:media b:messages etc.
+        QString but_txt = catgnm;
+        int colon = catgnm.indexOf(':');
+        if (colon != -1) {
+            but_txt = catgnm.right(catgnm.size()-(colon+1));
+        }
+        but->setText(tr(but_txt.toUtf8()));
         m_filtCMB->addItem(tr(but_txt.toUtf8()));
         bgrphbox->addWidget(but);
         m_filtBGRP->addButton(but, bgrpid++);
@@ -291,147 +291,149 @@ void RclMain::init()
 
     connect(sSearch,
             SIGNAL(startSearch(std::shared_ptr<Rcl::SearchData>, bool)), 
-	    this, SLOT(startSearch(std::shared_ptr<Rcl::SearchData>, bool)));
+            this, SLOT(startSearch(std::shared_ptr<Rcl::SearchData>, bool)));
     connect(sSearch, SIGNAL(setDescription(QString)), 
-	    this, SLOT(onSetDescription(QString)));
+            this, SLOT(onSetDescription(QString)));
     connect(sSearch, SIGNAL(clearSearch()), 
-	    this, SLOT(resetSearch()));
+            this, SLOT(resetSearch()));
     connect(preferencesMenu, SIGNAL(triggered(QAction*)),
-	    this, SLOT(setStemLang(QAction*)));
+            this, SLOT(setStemLang(QAction*)));
     connect(preferencesMenu, SIGNAL(aboutToShow()),
-	    this, SLOT(adjustPrefsMenu()));
+            this, SLOT(adjustPrefsMenu()));
     connect(fileExitAction, SIGNAL(triggered() ), 
-	    this, SLOT(fileExit() ) );
+            this, SLOT(fileExit() ) );
     connect(fileToggleIndexingAction, SIGNAL(triggered()), 
-	    this, SLOT(toggleIndexing()));
+            this, SLOT(toggleIndexing()));
 #ifndef _WIN32
     fileMenu->insertAction(fileRebuildIndexAction, fileBumpIndexingAction);
     connect(fileBumpIndexingAction, SIGNAL(triggered()), 
-	    this, SLOT(bumpIndexing()));
+            this, SLOT(bumpIndexing()));
 #endif
     connect(fileRebuildIndexAction, SIGNAL(triggered()), 
-	    this, SLOT(rebuildIndex()));
+            this, SLOT(rebuildIndex()));
     connect(fileEraseDocHistoryAction, SIGNAL(triggered()), 
-	    this, SLOT(eraseDocHistory()));
+            this, SLOT(eraseDocHistory()));
     connect(fileEraseSearchHistoryAction, SIGNAL(triggered()), 
-	    this, SLOT(eraseSearchHistory()));
+            this, SLOT(eraseSearchHistory()));
+    connect(fileExportSSearchHistoryAction, SIGNAL(triggered()), 
+            this, SLOT(exportSimpleSearchHistory()));
     connect(actionSave_last_query, SIGNAL(triggered()),
-	    this, SLOT(saveLastQuery()));
+            this, SLOT(saveLastQuery()));
     connect(actionLoad_saved_query, SIGNAL(triggered()),
-	    this, SLOT(loadSavedQuery()));
+            this, SLOT(loadSavedQuery()));
     connect(actionShow_index_statistics, SIGNAL(triggered()),
             this, SLOT(showIndexStatistics()));
     connect(helpAbout_RecollAction, SIGNAL(triggered()), 
-	    this, SLOT(showAboutDialog()));
+            this, SLOT(showAboutDialog()));
     connect(showMissingHelpers_Action, SIGNAL(triggered()), 
-	    this, SLOT(showMissingHelpers()));
+            this, SLOT(showMissingHelpers()));
     connect(showActiveTypes_Action, SIGNAL(triggered()), 
-	    this, SLOT(showActiveTypes()));
+            this, SLOT(showActiveTypes()));
     connect(userManualAction, SIGNAL(triggered()), 
-	    this, SLOT(startManual()));
+            this, SLOT(startManual()));
     connect(toolsDoc_HistoryAction, SIGNAL(triggered()), 
-	    this, SLOT(showDocHistory()));
+            this, SLOT(showDocHistory()));
     connect(toolsAdvanced_SearchAction, SIGNAL(triggered()), 
-	    this, SLOT(showAdvSearchDialog()));
+            this, SLOT(showAdvSearchDialog()));
     connect(toolsSpellAction, SIGNAL(triggered()), 
-	    this, SLOT(showSpellDialog()));
+            this, SLOT(showSpellDialog()));
     connect(actionWebcache_Editor, SIGNAL(triggered()),
             this, SLOT(showWebcacheDialog()));
     connect(actionQuery_Fragments, SIGNAL(triggered()), 
-	    this, SLOT(showFragButs()));
+            this, SLOT(showFragButs()));
     connect(actionSpecial_Indexing, SIGNAL(triggered()), 
-	    this, SLOT(showSpecIdx()));
+            this, SLOT(showSpecIdx()));
     connect(indexConfigAction, SIGNAL(triggered()), 
-	    this, SLOT(showIndexConfig()));
+            this, SLOT(showIndexConfig()));
     connect(indexScheduleAction, SIGNAL(triggered()), 
-	    this, SLOT(showIndexSched()));
+            this, SLOT(showIndexSched()));
     connect(queryPrefsAction, SIGNAL(triggered()), 
-	    this, SLOT(showUIPrefs()));
+            this, SLOT(showUIPrefs()));
     connect(extIdxAction, SIGNAL(triggered()), 
-	    this, SLOT(showExtIdxDialog()));
+            this, SLOT(showExtIdxDialog()));
     connect(enbSynAction, SIGNAL(toggled(bool)),
             this, SLOT(setSynEnabled(bool)));
 
     connect(toggleFullScreenAction, SIGNAL(triggered()), 
             this, SLOT(toggleFullScreen()));
     connect(actionShowQueryDetails, SIGNAL(triggered()),
-	    reslist, SLOT(showQueryDetails()));
+            reslist, SLOT(showQueryDetails()));
     connect(periodictimer, SIGNAL(timeout()), 
-	    this, SLOT(periodic100()));
+            this, SLOT(periodic100()));
 
     restable->setRclMain(this, true);
     connect(actionSaveResultsAsCSV, SIGNAL(triggered()), 
-	    restable, SLOT(saveAsCSV()));
+            restable, SLOT(saveAsCSV()));
     connect(this, SIGNAL(docSourceChanged(std::shared_ptr<DocSequence>)),
-	    restable, SLOT(setDocSource(std::shared_ptr<DocSequence>)));
+            restable, SLOT(setDocSource(std::shared_ptr<DocSequence>)));
     connect(this, SIGNAL(searchReset()), 
-	    restable, SLOT(resetSource()));
+            restable, SLOT(resetSource()));
     connect(this, SIGNAL(resultsReady()), 
-	    restable, SLOT(readDocSource()));
+            restable, SLOT(readDocSource()));
     connect(this, SIGNAL(sortDataChanged(DocSeqSortSpec)), 
-	    restable, SLOT(onSortDataChanged(DocSeqSortSpec)));
+            restable, SLOT(onSortDataChanged(DocSeqSortSpec)));
 
     connect(restable->getModel(), SIGNAL(sortDataChanged(DocSeqSortSpec)),
-	    this, SLOT(onSortDataChanged(DocSeqSortSpec)));
+            this, SLOT(onSortDataChanged(DocSeqSortSpec)));
 
     connect(restable, SIGNAL(docPreviewClicked(int, Rcl::Doc, int)), 
-	    this, SLOT(startPreview(int, Rcl::Doc, int)));
+            this, SLOT(startPreview(int, Rcl::Doc, int)));
     connect(restable, SIGNAL(docExpand(Rcl::Doc)), 
-	    this, SLOT(docExpand(Rcl::Doc)));
+            this, SLOT(docExpand(Rcl::Doc)));
     connect(restable, SIGNAL(showSubDocs(Rcl::Doc)), 
-	    this, SLOT(showSubDocs(Rcl::Doc)));
+            this, SLOT(showSubDocs(Rcl::Doc)));
     connect(restable, SIGNAL(openWithRequested(Rcl::Doc, string)), 
-	    this, SLOT(openWith(Rcl::Doc, string)));
+            this, SLOT(openWith(Rcl::Doc, string)));
 
     reslist->setRclMain(this, true);
     connect(this, SIGNAL(docSourceChanged(std::shared_ptr<DocSequence>)),
-	    reslist, SLOT(setDocSource(std::shared_ptr<DocSequence>)));
+            reslist, SLOT(setDocSource(std::shared_ptr<DocSequence>)));
     connect(firstPageAction, SIGNAL(triggered()), 
-	    reslist, SLOT(resultPageFirst()));
+            reslist, SLOT(resultPageFirst()));
     connect(prevPageAction, SIGNAL(triggered()), 
-	    reslist, SLOT(resPageUpOrBack()));
+            reslist, SLOT(resPageUpOrBack()));
     connect(nextPageAction, SIGNAL(triggered()),
-	    reslist, SLOT(resPageDownOrNext()));
+            reslist, SLOT(resPageDownOrNext()));
     connect(this, SIGNAL(searchReset()), 
-	    reslist, SLOT(resetList()));
+            reslist, SLOT(resetList()));
     connect(this, SIGNAL(resultsReady()), 
-	    reslist, SLOT(readDocSource()));
+            reslist, SLOT(readDocSource()));
 
     connect(reslist, SIGNAL(hasResults(int)), 
-	    this, SLOT(resultCount(int)));
+            this, SLOT(resultCount(int)));
     connect(reslist, SIGNAL(wordSelect(QString)),
-	    sSearch, SLOT(addTerm(QString)));
+            sSearch, SLOT(addTerm(QString)));
     connect(reslist, SIGNAL(wordReplace(const QString&, const QString&)),
-	    sSearch, SLOT(onWordReplace(const QString&, const QString&)));
+            sSearch, SLOT(onWordReplace(const QString&, const QString&)));
     connect(reslist, SIGNAL(nextPageAvailable(bool)), 
-	    this, SLOT(enableNextPage(bool)));
+            this, SLOT(enableNextPage(bool)));
     connect(reslist, SIGNAL(prevPageAvailable(bool)), 
-	    this, SLOT(enablePrevPage(bool)));
+            this, SLOT(enablePrevPage(bool)));
 
     connect(reslist, SIGNAL(docExpand(Rcl::Doc)), 
-	    this, SLOT(docExpand(Rcl::Doc)));
+            this, SLOT(docExpand(Rcl::Doc)));
     connect(reslist, SIGNAL(showSnippets(Rcl::Doc)), 
-	    this, SLOT(showSnippets(Rcl::Doc)));
+            this, SLOT(showSnippets(Rcl::Doc)));
     connect(reslist, SIGNAL(showSubDocs(Rcl::Doc)), 
-	    this, SLOT(showSubDocs(Rcl::Doc)));
+            this, SLOT(showSubDocs(Rcl::Doc)));
     connect(reslist, SIGNAL(docSaveToFileClicked(Rcl::Doc)), 
-	    this, SLOT(saveDocToFile(Rcl::Doc)));
+            this, SLOT(saveDocToFile(Rcl::Doc)));
     connect(reslist, SIGNAL(editRequested(Rcl::Doc)), 
-	    this, SLOT(startNativeViewer(Rcl::Doc)));
+            this, SLOT(startNativeViewer(Rcl::Doc)));
     connect(reslist, SIGNAL(openWithRequested(Rcl::Doc, string)), 
-	    this, SLOT(openWith(Rcl::Doc, string)));
+            this, SLOT(openWith(Rcl::Doc, string)));
     connect(reslist, SIGNAL(docPreviewClicked(int, Rcl::Doc, int)), 
-	    this, SLOT(startPreview(int, Rcl::Doc, int)));
+            this, SLOT(startPreview(int, Rcl::Doc, int)));
     connect(reslist, SIGNAL(previewRequested(Rcl::Doc)), 
-	    this, SLOT(startPreview(Rcl::Doc)));
+            this, SLOT(startPreview(Rcl::Doc)));
 
     setFilterCtlStyle(prefs.filterCtlStyle);
 
     if (prefs.keepSort && prefs.sortActive) {
-	m_sortspec.field = (const char *)prefs.sortField.toUtf8();
-	m_sortspec.desc = prefs.sortDesc;
-	onSortDataChanged(m_sortspec);
-	emit sortDataChanged(m_sortspec);
+        m_sortspec.field = (const char *)prefs.sortField.toUtf8();
+        m_sortspec.desc = prefs.sortDesc;
+        onSortDataChanged(m_sortspec);
+        emit sortDataChanged(m_sortspec);
     }
 
     enableTrayIcon(prefs.showTrayIcon);
@@ -524,32 +526,32 @@ void RclMain::initDbOpen()
     bool maindberror;
     if (!maybeOpenDb(reason, true, &maindberror)) {
         nodb = true;
-	if (maindberror) {
-	    FirstIdxDialog fidia(this);
-	    connect(fidia.idxconfCLB, SIGNAL(clicked()), 
-		    this, SLOT(execIndexConfig()));
-	    connect(fidia.idxschedCLB, SIGNAL(clicked()), 
-		    this, SLOT(execIndexSched()));
-	    connect(fidia.runidxPB, SIGNAL(clicked()), 
-		    this, SLOT(rebuildIndex()));
-	    fidia.exec();
-	    // Don't open adv search or run cmd line search in this case.
-	    return;
-	} else {
-	    QMessageBox::warning(0, "Recoll", 
-				 tr("Could not open external index. Db not open. Check external indexes list."));
-	}
+        if (maindberror) {
+            FirstIdxDialog fidia(this);
+            connect(fidia.idxconfCLB, SIGNAL(clicked()), 
+                    this, SLOT(execIndexConfig()));
+            connect(fidia.idxschedCLB, SIGNAL(clicked()), 
+                    this, SLOT(execIndexSched()));
+            connect(fidia.runidxPB, SIGNAL(clicked()), 
+                    this, SLOT(rebuildIndex()));
+            fidia.exec();
+            // Don't open adv search or run cmd line search in this case.
+            return;
+        } else {
+            QMessageBox::warning(0, "Recoll", 
+                                 tr("Could not open external index. Db not open. Check external indexes list."));
+        }
     }
 
     if (prefs.startWithAdvSearchOpen)
-	showAdvSearchDialog();
+        showAdvSearchDialog();
     // If we have something in the search entry, it comes from a
     // command line argument
     if (!nodb && sSearch->hasSearchString())
-	QTimer::singleShot(0, sSearch, SLOT(startSimpleSearch()));
+        QTimer::singleShot(0, sSearch, SLOT(startSimpleSearch()));
 
     if (!m_urltoview.isEmpty()) 
-	viewUrl();
+        viewUrl();
 }
 
 void RclMain::setStemLang(QAction *id)
@@ -559,17 +561,17 @@ void RclMain::setStemLang(QAction *id)
     // (might also be "show prefs" etc.
     bool isLangId = false;
     for (map<QString, QAction*>::const_iterator it = m_stemLangToId.begin();
-	 it != m_stemLangToId.end(); it++) {
-	if (id == it->second)
-	    isLangId = true;
+         it != m_stemLangToId.end(); it++) {
+        if (id == it->second)
+            isLangId = true;
     }
     if (!isLangId)
-	return;
+        return;
 
     // Set the "checked" item state for lang entries
     for (map<QString, QAction*>::const_iterator it = m_stemLangToId.begin();
-	 it != m_stemLangToId.end(); it++) {
-	(it->second)->setChecked(false);
+         it != m_stemLangToId.end(); it++) {
+        (it->second)->setChecked(false);
     }
     id->setChecked(true);
 
@@ -577,11 +579,11 @@ void RclMain::setStemLang(QAction *id)
     // notify that we changed
     QString lang;
     if (id == m_idNoStem) {
-	lang = "";
+        lang = "";
     } else if (id == m_idAllStem) {
-	lang = "ALL";
+        lang = "ALL";
     } else {
-	lang = id->text();
+        lang = id->text();
     }
     prefs.queryStemLang = lang;
     LOGDEB("RclMain::setStemLang(" << id << "): lang [" <<
@@ -596,18 +598,18 @@ void RclMain::setStemLang(const QString& lang)
     LOGDEB("RclMain::setStemLang(" << qs2utf8s(lang) << ")\n");
     QAction *id;
     if (lang == "") {
-	id = m_idNoStem;
+        id = m_idNoStem;
     } else if (lang == "ALL") {
-	id = m_idAllStem;
+        id = m_idAllStem;
     } else {
-	map<QString, QAction*>::iterator it = m_stemLangToId.find(lang);
-	if (it == m_stemLangToId.end()) 
-	    return;
-	id = it->second;
+        map<QString, QAction*>::iterator it = m_stemLangToId.find(lang);
+        if (it == m_stemLangToId.end()) 
+            return;
+        id = it->second;
     }
     for (map<QString, QAction*>::const_iterator it = m_stemLangToId.begin();
-	 it != m_stemLangToId.end(); it++) {
-	(it->second)->setChecked(false);
+         it != m_stemLangToId.end(); it++) {
+        (it->second)->setChecked(false);
     }
     id->setChecked(true);
 }
@@ -669,7 +671,7 @@ void RclMain::fileExit()
     restable->saveColState();
 
     if (prefs.ssearchTypSav) {
-	prefs.ssearchTyp = sSearch->searchTypCMB->currentIndex();
+        prefs.ssearchTyp = sSearch->searchTypCMB->currentIndex();
     }
 
     rwSettings(true);
@@ -689,8 +691,8 @@ void RclMain::startSearch(std::shared_ptr<Rcl::SearchData> sdata, bool issimple)
     LOGDEB("RclMain::startSearch. Indexing " << (m_idxproc?"on":"off") <<
            " Active " << m_queryActive << "\n");
     if (m_queryActive) {
-	LOGDEB("startSearch: already active\n");
-	return;
+        LOGDEB("startSearch: already active\n");
+        return;
     }
     m_queryActive = true;
     restable->setEnabled(false);
@@ -702,10 +704,10 @@ void RclMain::startSearch(std::shared_ptr<Rcl::SearchData> sdata, bool issimple)
     string reason;
     // If indexing is being performed, we reopen the db at each query.
     if (!maybeOpenDb(reason, m_idxproc != 0)) {
-	QMessageBox::critical(0, "Recoll", QString(reason.c_str()));
-	m_queryActive = false;
+        QMessageBox::critical(0, "Recoll", QString(reason.c_str()));
+        m_queryActive = false;
         restable->setEnabled(true);
-	return;
+        return;
     }
 
     if (prefs.synFileEnable && !prefs.synFile.isEmpty()) {
@@ -724,8 +726,8 @@ void RclMain::startSearch(std::shared_ptr<Rcl::SearchData> sdata, bool issimple)
 
     curPreview = 0;
     DocSequenceDb *src = 
-	new DocSequenceDb(rcldb, std::shared_ptr<Rcl::Query>(query), 
-			  string(tr("Query results").toUtf8()), sdata);
+        new DocSequenceDb(rcldb, std::shared_ptr<Rcl::Query>(query), 
+                          string(tr("Query results").toUtf8()), sdata);
     src->setAbstractParams(prefs.queryBuildAbstract, 
                            prefs.queryReplaceAbstract);
     m_source = std::shared_ptr<DocSequence>(src);
@@ -739,15 +741,15 @@ void RclMain::startSearch(std::shared_ptr<Rcl::SearchData> sdata, bool issimple)
 
 class QueryThread : public QThread {
     std::shared_ptr<DocSequence> m_source;
- public: 
+public: 
     QueryThread(std::shared_ptr<DocSequence> source)
-	: m_source(source)
+        : m_source(source)
     {
     }
     ~QueryThread() { }
     virtual void run() 
     {
-	cnt = m_source->getResCnt();
+        cnt = m_source->getResCnt();
     }
     int cnt;
 };
@@ -755,7 +757,7 @@ class QueryThread : public QThread {
 void RclMain::initiateQuery()
 {
     if (!m_source)
-	return;
+        return;
 
     QApplication::setOverrideCursor(QCursor(Qt::WaitCursor));
     QueryThread qthr(m_source);
@@ -763,8 +765,8 @@ void RclMain::initiateQuery()
 
     QProgressDialog progress(this);
     progress.setLabelText(tr("Query in progress.<br>"
-			     "Due to limitations of the indexing library,<br>"
-			     "cancelling will exit the program"));
+                             "Due to limitations of the indexing library,<br>"
+                             "cancelling will exit the program"));
     progress.setWindowModality(Qt::WindowModal);
     progress.setRange(0,0);
 
@@ -774,29 +776,29 @@ void RclMain::initiateQuery()
     // progress.setMinimumDuration(2000);
     // Also the multiple processEvents() seem to improve the responsiveness??
     for (int i = 0;;i++) {
-	qApp->processEvents();
-	if (qthr.wait(100)) {
-	    break;
-	}
-	if (i == 20)
-	    progress.show();
-	qApp->processEvents();
-	if (progress.wasCanceled()) {
-	    // Just get out of there asap. 
-	    exit(1);
-	}
+        qApp->processEvents();
+        if (qthr.wait(100)) {
+            break;
+        }
+        if (i == 20)
+            progress.show();
+        qApp->processEvents();
+        if (progress.wasCanceled()) {
+            // Just get out of there asap. 
+            exit(1);
+        }
 
-	qApp->processEvents();
+        qApp->processEvents();
     }
 
     int cnt = qthr.cnt;
     QString msg;
     if (cnt > 0) {
-	QString str;
-	msg = tr("Result count (est.)") + ": " + 
-	    str.setNum(cnt);
+        QString str;
+        msg = tr("Result count (est.)") + ": " + 
+            str.setNum(cnt);
     } else {
-	msg = tr("No results found");
+        msg = tr("No results found");
     }
 
     statusBar()->showMessage(msg, 0);
@@ -815,28 +817,28 @@ void RclMain::resetSearch()
 void RclMain::onSortCtlChanged()
 {
     if (m_sortspecnochange)
-	return;
+        return;
 
     LOGDEB("RclMain::onSortCtlChanged()\n");
     m_sortspec.reset();
     if (actionSortByDateAsc->isChecked()) {
-	m_sortspec.field = "mtime";
-	m_sortspec.desc = false;
-	prefs.sortActive = true;
-	prefs.sortDesc = false;
-	prefs.sortField = "mtime";
+        m_sortspec.field = "mtime";
+        m_sortspec.desc = false;
+        prefs.sortActive = true;
+        prefs.sortDesc = false;
+        prefs.sortField = "mtime";
     } else if (actionSortByDateDesc->isChecked()) {
-	m_sortspec.field = "mtime";
-	m_sortspec.desc = true;
-	prefs.sortActive = true;
-	prefs.sortDesc = true;
-	prefs.sortField = "mtime";
+        m_sortspec.field = "mtime";
+        m_sortspec.desc = true;
+        prefs.sortActive = true;
+        prefs.sortDesc = true;
+        prefs.sortField = "mtime";
     } else {
-	prefs.sortActive = prefs.sortDesc = false;
-	prefs.sortField = "";
+        prefs.sortActive = prefs.sortDesc = false;
+        prefs.sortField = "";
     }
     if (m_source)
-	m_source->setSortSpec(m_sortspec);
+        m_source->setSortSpec(m_sortspec);
     emit sortDataChanged(m_sortspec);
     initiateQuery();
 }
@@ -846,15 +848,15 @@ void RclMain::onSortDataChanged(DocSeqSortSpec spec)
     LOGDEB("RclMain::onSortDataChanged\n");
     m_sortspecnochange = true;
     if (spec.field.compare("mtime")) {
-	actionSortByDateDesc->setChecked(false);
-	actionSortByDateAsc->setChecked(false);
+        actionSortByDateDesc->setChecked(false);
+        actionSortByDateAsc->setChecked(false);
     } else {
-	actionSortByDateDesc->setChecked(spec.desc);
-	actionSortByDateAsc->setChecked(!spec.desc);
+        actionSortByDateDesc->setChecked(spec.desc);
+        actionSortByDateAsc->setChecked(!spec.desc);
     }
     m_sortspecnochange = false;
     if (m_source)
-	m_source->setSortSpec(spec);
+        m_source->setSortSpec(spec);
     m_sortspec = spec;
 
     prefs.sortField = QString::fromUtf8(spec.field.c_str());
@@ -874,21 +876,21 @@ void RclMain::on_actionShowResultsAsTable_toggled(bool on)
     actionSaveResultsAsCSV->setEnabled(on);
     static QShortcut tablefocseq(QKeySequence("Ctrl+r"), this);
     if (!on) {
-	int docnum = restable->getDetailDocNumOrTopRow();
-	if (docnum >= 0) {
+        int docnum = restable->getDetailDocNumOrTopRow();
+        if (docnum >= 0) {
             reslist->resultPageFor(docnum);
         }
         disconnect(&tablefocseq, SIGNAL(activated()),
                    restable, SLOT(takeFocus()));
         sSearch->takeFocus();
     } else {
-	int docnum = reslist->pageFirstDocNum();
-	if (docnum >= 0) {
-	    restable->makeRowVisible(docnum);
-	}
-	nextPageAction->setEnabled(false);
-	prevPageAction->setEnabled(false);
-	firstPageAction->setEnabled(false);
+        int docnum = reslist->pageFirstDocNum();
+        if (docnum >= 0) {
+            restable->makeRowVisible(docnum);
+        }
+        nextPageAction->setEnabled(false);
+        prevPageAction->setEnabled(false);
+        firstPageAction->setEnabled(false);
         connect(&tablefocseq, SIGNAL(activated()), 
                 restable, SLOT(takeFocus()));
     }
@@ -898,11 +900,11 @@ void RclMain::on_actionSortByDateAsc_toggled(bool on)
 {
     LOGDEB("RclMain::on_actionSortByDateAsc_toggled(" << on << ")\n");
     if (on) {
-	if (actionSortByDateDesc->isChecked()) {
-	    actionSortByDateDesc->setChecked(false);
-	    // Let our buddy work.
-	    return;
-	}
+        if (actionSortByDateDesc->isChecked()) {
+            actionSortByDateDesc->setChecked(false);
+            // Let our buddy work.
+            return;
+        }
     }
     onSortCtlChanged();
 }
@@ -911,11 +913,11 @@ void RclMain::on_actionSortByDateDesc_toggled(bool on)
 {
     LOGDEB("RclMain::on_actionSortByDateDesc_toggled(" << on << ")\n");
     if (on) {
-	if (actionSortByDateAsc->isChecked()) {
-	    actionSortByDateAsc->setChecked(false);
-	    // Let our buddy work.
-	    return;
-	}
+        if (actionSortByDateAsc->isChecked()) {
+            actionSortByDateAsc->setChecked(false);
+            // Let our buddy work.
+            return;
+        }
     }
     onSortCtlChanged();
 }
@@ -923,17 +925,17 @@ void RclMain::on_actionSortByDateDesc_toggled(bool on)
 void RclMain::saveDocToFile(Rcl::Doc doc)
 {
     QString s = 
-	QFileDialog::getSaveFileName(this, //parent
-				     tr("Save file"), 
-				     QString::fromLocal8Bit(path_home().c_str())
-	    );
+        QFileDialog::getSaveFileName(this, //parent
+                                     tr("Save file"), 
+                                     QString::fromLocal8Bit(path_home().c_str())
+            );
     string tofile((const char *)s.toLocal8Bit());
     TempFile temp; // not used because tofile is set.
     if (!FileInterner::idocToFile(temp, tofile, theconfig, doc)) {
-	QMessageBox::warning(0, "Recoll",
-			     tr("Cannot extract document or create "
-				"temporary file"));
-	return;
+        QMessageBox::warning(0, "Recoll",
+                             tr("Cannot extract document or create "
+                                "temporary file"));
+        return;
     }
 }
 
@@ -942,20 +944,20 @@ void RclMain::showSubDocs(Rcl::Doc doc)
     LOGDEB("RclMain::showSubDocs\n");
     string reason;
     if (!maybeOpenDb(reason)) {
-	QMessageBox::critical(0, "Recoll", QString(reason.c_str()));
-	return;
+        QMessageBox::critical(0, "Recoll", QString(reason.c_str()));
+        return;
     }
     vector<Rcl::Doc> docs;
     if (!rcldb->getSubDocs(doc, docs)) {
-	QMessageBox::warning(0, "Recoll", QString("Can't get subdocs"));
-	return;
-    }	
+        QMessageBox::warning(0, "Recoll", QString("Can't get subdocs"));
+        return;
+    }   
     DocSequenceDocs *src = 
-	new DocSequenceDocs(rcldb, docs,
-			    qs2utf8s(tr("Sub-documents and attachments")));
+        new DocSequenceDocs(rcldb, docs,
+                            qs2utf8s(tr("Sub-documents and attachments")));
     src->setDescription(qs2utf8s(tr("Sub-documents and attachments")));
     std::shared_ptr<DocSequence> 
-	source(new DocSource(theconfig, std::shared_ptr<DocSequence>(src)));
+        source(new DocSource(theconfig, std::shared_ptr<DocSequence>(src)));
 
     ResTable *res = new ResTable();
     res->setRclMain(this, false);
@@ -970,20 +972,20 @@ void RclMain::docExpand(Rcl::Doc doc)
 {
     LOGDEB("RclMain::docExpand()\n");
     if (!rcldb)
-	return;
+        return;
     list<string> terms;
 
     terms = m_source->expand(doc);
     if (terms.empty()) {
-	LOGDEB("RclMain::docExpand: no terms\n");
-	return;
+        LOGDEB("RclMain::docExpand: no terms\n");
+        return;
     }
     // Do we keep the original query. I think we'd better not.
     // rcldb->expand is set to keep the original query terms instead.
     QString text;// = sSearch->queryText->currentText();
     for (list<string>::iterator it = terms.begin(); it != terms.end(); it++) {
-	text += QString::fromLatin1(" \"") +
-	    QString::fromUtf8((*it).c_str()) + QString::fromLatin1("\"");
+        text += QString::fromLatin1(" \"") +
+            QString::fromUtf8((*it).c_str()) + QString::fromLatin1("\"");
     }
     // We need to insert item here, its not auto-done like when the user types
     // CR
@@ -1000,21 +1002,23 @@ void RclMain::showDocHistory()
 
     string reason;
     if (!maybeOpenDb(reason)) {
-	QMessageBox::critical(0, "Recoll", QString(reason.c_str()));
-	return;
+        QMessageBox::critical(0, "Recoll", QString(reason.c_str()));
+        return;
     }
     // Construct a bogus SearchData structure
     std::shared_ptr<Rcl::SearchData>searchdata = 
-	std::shared_ptr<Rcl::SearchData>(new Rcl::SearchData(Rcl::SCLT_AND, cstr_null));
+        std::shared_ptr<Rcl::SearchData>(new Rcl::SearchData(Rcl::SCLT_AND,
+                                                             cstr_null));
     searchdata->setDescription((const char *)tr("History data").toUtf8());
 
 
     // If you change the title, also change it in eraseDocHistory()
     DocSequenceHistory *src = 
-	new DocSequenceHistory(rcldb, g_dynconf, 
-			       string(tr("Document history").toUtf8()));
+        new DocSequenceHistory(rcldb, g_dynconf, 
+                               string(tr("Document history").toUtf8()));
     src->setDescription((const char *)tr("History data").toUtf8());
-    DocSource *source = new DocSource(theconfig, std::shared_ptr<DocSequence>(src));
+    DocSource *source = new DocSource(theconfig,
+                                      std::shared_ptr<DocSequence>(src));
     m_source = std::shared_ptr<DocSequence>(source);
     m_source->setSortSpec(m_sortspec);
     m_source->setFiltSpec(m_filtspec);
@@ -1028,27 +1032,59 @@ void RclMain::eraseDocHistory()
 {
     // Clear file storage
     if (g_dynconf)
-	g_dynconf->eraseAll(docHistSubKey);
+        g_dynconf->eraseAll(docHistSubKey);
     // Clear possibly displayed history
     if (reslist->displayingHistory()) {
-	showDocHistory();
+        showDocHistory();
     }
 }
 
 void RclMain::eraseSearchHistory()
 {
-    prefs.ssearchHistory.clear();
-    if (sSearch)
-	sSearch->clearAll();
-    if (g_advshistory)
-	g_advshistory->clear();
+    int rep = QMessageBox::warning(
+        0, tr("Confirm"), 
+        tr("Erasing simple and advanced search history lists, "
+           "please click Ok to confirm"),
+        QMessageBox::Ok, QMessageBox::Cancel, QMessageBox::NoButton);
+    if (rep == QMessageBox::Ok) {
+        prefs.ssearchHistory.clear();
+        if (sSearch)
+            sSearch->clearAll();
+        if (g_advshistory)
+            g_advshistory->clear();
+    }
+}
+
+void RclMain::exportSimpleSearchHistory()
+{
+    QFileDialog dialog(0, "Saving simple search history");
+    dialog.setFileMode(QFileDialog::AnyFile);
+    dialog.setAcceptMode(QFileDialog::AcceptSave);
+    dialog.setViewMode(QFileDialog::List);
+    QFlags<QDir::Filter> flags = QDir::NoDotAndDotDot|QDir::Files;
+    dialog.setFilter(flags);
+    if (dialog.exec() != QDialog::Accepted) {
+        return;
+    }
+    string path = qs2utf8s(dialog.selectedFiles().value(0));
+    LOGDEB("Chosen path: " << path << "\n");
+    FILE *fp = fopen(path.c_str(), "wb");
+    if (fp == 0) {
+        QMessageBox::warning(0, "Recoll", 
+                             tr("Could not open/create file"));
+        return;
+    }
+    for (int i = 0; i < prefs.ssearchHistory.count(); i++) {
+        fprintf(fp, "%s\n", qs2utf8s(prefs.ssearchHistory[i]).c_str());
+    }
+    fclose(fp);
 }
 
 // Called when the uiprefs dialog is ok'd
 void RclMain::setUIPrefs()
 {
     if (!uiprefs)
-	return;
+        return;
     LOGDEB("Recollmain::setUIPrefs\n");
     reslist->setFont();
     sSearch->setPrefs();
@@ -1059,14 +1095,14 @@ void RclMain::setUIPrefs()
 void RclMain::enableNextPage(bool yesno)
 {
     if (!displayingTable)
-	nextPageAction->setEnabled(yesno);
+        nextPageAction->setEnabled(yesno);
 }
 
 void RclMain::enablePrevPage(bool yesno)
 {
     if (!displayingTable) {
-	prevPageAction->setEnabled(yesno);
-	firstPageAction->setEnabled(yesno);
+        prevPageAction->setEnabled(yesno);
+        firstPageAction->setEnabled(yesno);
     }
 }
 
@@ -1078,7 +1114,7 @@ void RclMain::onSetDescription(QString desc)
 QString RclMain::getQueryDescription()
 {
     if (!m_source)
-	return "";
+        return "";
     return m_queryDescription.isEmpty() ?
         u8s2qs(m_source->getDescription()) : m_queryDescription;
 }
@@ -1095,7 +1131,7 @@ void RclMain::catgFilter(int id)
 {
     LOGDEB("RclMain::catgFilter: id " << id << "\n");
     if (id < 0 || id >= int(m_catgbutvec.size()))
-	return; 
+        return; 
 
     switch (prefs.filterCtlStyle) {
     case PrefsPack::FCS_MN:
@@ -1122,10 +1158,10 @@ void RclMain::setFiltSpec()
 
     // "Category" buttons
     if (m_catgbutvecidx != 0)  {
-	string catg = m_catgbutvec[m_catgbutvecidx];
-	string frag;
-	theconfig->getGuiFilter(catg, frag);
-	m_filtspec.orCrit(DocSeqFiltSpec::DSFS_QLANG, frag);
+        string catg = m_catgbutvec[m_catgbutvecidx];
+        string frag;
+        theconfig->getGuiFilter(catg, frag);
+        m_filtspec.orCrit(DocSeqFiltSpec::DSFS_QLANG, frag);
     }
 
     // Fragments from the fragbuts buttonbox tool
@@ -1139,7 +1175,7 @@ void RclMain::setFiltSpec()
     }
 
     if (m_source)
-	m_source->setFiltSpec(m_filtspec);
+        m_source->setFiltSpec(m_filtspec);
     initiateQuery();
 }
 

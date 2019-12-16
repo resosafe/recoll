@@ -79,7 +79,9 @@
     <addaction name="actionSave_last_query"/>
     <addaction name="actionLoad_saved_query"/>
     <addaction name="separator"/>
+    <addaction name="fileExportSSearchHistoryAction"/>
     <addaction name="fileEraseSearchHistoryAction"/>
+    <addaction name="separator"/>
     <addaction name="fileEraseDocHistoryAction"/>
     <addaction name="separator"/>
     <addaction name="fileExitAction"/>
@@ -203,6 +205,14 @@
    </property>
    <property name="name" stdset="0">
     <cstring>fileEraseSearchHistoryAction</cstring>
+   </property>
+  </action>
+  <action name="fileExportSSearchHistoryAction">
+   <property name="text">
+    <string>E&amp;xport simple search history</string>
+   </property>
+   <property name="name" stdset="0">
+    <cstring>fileExportSSearchHistoryAction</cstring>
    </property>
   </action>
   <action name="showMissingHelpers_Action">

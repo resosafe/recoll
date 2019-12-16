@@ -32,7 +32,6 @@
 #include "rcldb_p.h"
 #include "rclquery.h"
 #include "rclquery_p.h"
-#include "conftree.h"
 #include "smallut.h"
 #include "chrono.h"
 #include "searchdata.h"
@@ -169,15 +168,12 @@ void Query::setSortBy(const string& fld, bool ascending) {
             (m_sortAscending ? "ascending" : "descending") << "\n");
 }
 
-//#define ISNULL(X) (X).isNull()
-#define ISNULL(X) !(X)
-
 // Prepare query out of user search data
 bool Query::setQuery(std::shared_ptr<SearchData> sdata)
 {
     LOGDEB("Query::setQuery:\n");
 
-    if (!m_db || ISNULL(m_nq)) {
+    if (!m_db || !m_nq) {
         LOGERR("Query::setQuery: not initialised!\n");
         return false;
     }
@@ -247,7 +243,7 @@ bool Query::setQuery(std::shared_ptr<SearchData> sdata)
 
 bool Query::getQueryTerms(vector<string>& terms)
 {
-    if (ISNULL(m_nq))
+    if (!m_nq)
         return false;
 
     terms.clear();
@@ -336,30 +332,37 @@ static const int qquantum = 50;
 
 // Get estimated result count for query. Xapian actually does most of
 // the search job in there, this can be long
-int Query::getResCnt(bool noapproximation)
+int Query::getResCnt(int checkatleast, bool useestimate)
 {
-    if (ISNULL(m_nq) || !m_nq->xenquire) {
+    if (!m_db || !m_nq || !m_nq->xenquire) {
         LOGERR("Query::getResCnt: no query opened\n");
         return -1;
     }
+    LOGDEB0("Query::getResCnt: checkatleast " << checkatleast << " estimate " <<
+            useestimate << "\n");
+
     if (m_resCnt >= 0)
         return m_resCnt;
 
-    m_resCnt = -1;
     if (m_nq->xmset.size() <= 0) {
         Chrono chron;
-        Xapian::doccount checkatleast = noapproximation ? m_db->docCnt() : 1000;
-        XAPTRY(m_nq->xmset = 
-               m_nq->xenquire->get_mset(0, qquantum, checkatleast);
-               m_resCnt = m_nq->xmset.get_matches_estimated(),
+        XAPTRY(if (checkatleast == -1)
+                   checkatleast = m_db->docCnt();
+               m_nq->xmset = m_nq->xenquire->get_mset(0, qquantum, checkatleast),
                m_db->m_ndb->xrdb, m_reason);
-
-        LOGDEB("Query::getResCnt: "<<m_resCnt<<" "<< chron.millis() << " mS\n");
-        if (!m_reason.empty())
+        if (!m_reason.empty()) {
             LOGERR("xenquire->get_mset: exception: " << m_reason << "\n");
-    } else {
-        m_resCnt = m_nq->xmset.get_matches_estimated();
+            return -1;
+        }
+        LOGDEB("Query::getResCnt: get_mset: " << chron.millis() << " mS\n");
     }
+
+    if (useestimate) {
+        m_resCnt = m_nq->xmset.get_matches_estimated();
+    } else {
+        m_resCnt = m_nq->xmset.get_matches_lower_bound();
+    }
+    LOGDEB("Query::getResCnt: " << m_resCnt << "\n");
     return m_resCnt;
 }
 
@@ -374,7 +377,7 @@ int Query::getResCnt(bool noapproximation)
 bool Query::getDoc(int xapi, Doc &doc, bool fetchtext)
 {
     LOGDEB1("Query::getDoc: xapian enquire index " << xapi << "\n");
-    if (ISNULL(m_nq) || !m_nq->xenquire) {
+    if (!m_nq || !m_nq->xenquire) {
         LOGERR("Query::getDoc: no query opened\n");
         return false;
     }
@@ -457,7 +460,7 @@ vector<string> Query::expand(const Doc &doc)
 {
     LOGDEB("Rcl::Query::expand()\n");
     vector<string> res;
-    if (ISNULL(m_nq) || !m_nq->xenquire) {
+    if (!m_nq || !m_nq->xenquire) {
         LOGERR("Query::expand: no query opened\n");
         return res;
     }

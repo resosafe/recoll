@@ -24,16 +24,12 @@
 void readIdxStatus(RclConfig *config, DbIxStatus &status)
 {
     ConfSimple cs(config->getIdxStatusFile().c_str(), 1);
-    string val;
-    cs.get("phase", val);
-    status.phase = DbIxStatus::Phase(atoi(val.c_str()));
+    status.phase = DbIxStatus::Phase(cs.getInt("phase", 0));
     cs.get("fn", status.fn);
-    cs.get("docsdone", &status.docsdone);
-    cs.get("filesdone", &status.filesdone);
-    cs.get("fileerrors", &status.fileerrors);
-    cs.get("dbtotdocs", &status.dbtotdocs);
-    cs.get("totfiles", &status.totfiles);
-    string shm("0");
-    cs.get("hasmonitor", shm);
-    status.hasmonitor = stringToBool(shm);
+    status.docsdone = cs.getInt("docsdone", 0);
+    status.filesdone = cs.getInt("filesdone", 0);
+    status.fileerrors = cs.getInt("fileerrors", 0);
+    status.dbtotdocs = cs.getInt("dbtotdocs", 0);
+    status.totfiles = cs.getInt("totfiles", 0);
+    status.hasmonitor = cs.getBool("hasmonitor", false);
 }

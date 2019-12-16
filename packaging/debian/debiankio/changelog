@@ -1,3 +1,9 @@
+kio-recoll (1.26.3-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
+
+  * Small bug fixes and extensions
+  
+ -- Jean-Francois Dockes <jf@dockes.org>  Fri, 29 Nov 2019 10:28:00 +0200
+
 kio-recoll (1.25.19-1~ppaPPAVERS~SERIES1) SERIES; urgency=low
 
   * keep kio in sync

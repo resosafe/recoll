@@ -765,6 +765,14 @@ p, li { white-space: pre-wrap; }
         <source>Could not fetch stored text</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Previous result document</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Next result document</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>PreviewTextEdit</name>
@@ -1396,11 +1404,11 @@ Tjek venligst desktopfilen</translation>
     </message>
     <message>
         <source>Index scheduling</source>
-        <translation>Indeks skedulering</translation>
+        <translation type="vanished">Indeks skedulering</translation>
     </message>
     <message>
         <source>Sorry, not available under Windows for now, use the File menu entries to update the index</source>
-        <translation>Beklager, er endnu ikke tilgængelig for Windows, bruge Fil menuindgange for at opdatere indekset</translation>
+        <translation type="vanished">Beklager, er endnu ikke tilgængelig for Windows, bruge Fil menuindgange for at opdatere indekset</translation>
     </message>
     <message>
         <source>Can&apos;t set synonyms file (parse error?)</source>
@@ -1521,6 +1529,14 @@ Tjek venligst desktopfilen</translation>
     </message>
     <message>
         <source>No information: initial indexing not yet performed.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Batch scheduling</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The tool will let you decide at what time indexing should run.  It uses the Windows task scheduler.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2113,7 +2129,7 @@ Brug &lt;b&gt;Vis Forespørgsel&lt;/b&gt; link når i tvivl om resultatet og se 
 &lt;i&gt;&quot;term1 term2&quot;p&lt;/i&gt; : unordered proximity search with default distance.&lt;br&gt;
 Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual (&amp;lt;F1&gt;) for more detail.
 </source>
-        <translation>Indtast forespørgselssprogets udtryk. Snydeark:&lt;br&gt;
+        <translation type="vanished">Indtast forespørgselssprogets udtryk. Snydeark:&lt;br&gt;
 &lt;i&gt;ord1 ord2&lt;/i&gt; : &apos;ord1&apos; og &apos;ord2&apos; i et hvilken som helst felt.&lt;br&gt;
 &lt;i&gt;felt:ord1&lt;/i&gt; : &apos;ord1&apos; i feltet &apos;felt&apos;.&lt;br&gt;
  Standard feltnavne/synonymer:&lt;br&gt;
@@ -2152,6 +2168,134 @@ Brug &lt;b&gt;Vis Forespørgsel&lt;/b&gt; link når i tvivl om resultatet og se 
     </message>
     <message>
         <source>Enter search terms here.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;html&gt;&lt;head&gt;&lt;style&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>table, th, td {</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>border: 1px solid black;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>border-collapse: collapse;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>}</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>th,td {</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>text-align: center;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;/style&gt;&lt;/head&gt;&lt;body&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;Query language cheat-sheet. In doubt: click &lt;b&gt;Show Query&lt;/b&gt;.&amp;nbsp;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>You should really look at the manual (F1)&lt;/p&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;table border=&apos;1&apos; cellspacing=&apos;0&apos;&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;tr&gt;&lt;th&gt;What&lt;/th&gt;&lt;th&gt;Examples&lt;/th&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;tr&gt;&lt;td&gt;And&lt;/td&gt;&lt;td&gt;one two&amp;nbsp;&amp;nbsp;&amp;nbsp;one AND two&amp;nbsp;&amp;nbsp;&amp;nbsp;one &amp;&amp; two&lt;/td&gt;&lt;/tr&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;tr&gt;&lt;td&gt;Or&lt;/td&gt;&lt;td&gt;one OR two&amp;nbsp;&amp;nbsp;&amp;nbsp;one || two&lt;/td&gt;&lt;/tr&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;tr&gt;&lt;td&gt;Complex boolean. OR has priority, use parentheses&amp;nbsp;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>where needed&lt;/td&gt;&lt;td&gt;(one AND two) OR three&lt;/td&gt;&lt;/tr&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;tr&gt;&lt;td&gt;Not&lt;/td&gt;&lt;td&gt;-term&lt;/td&gt;&lt;/tr&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;tr&gt;&lt;td&gt;Phrase&lt;/td&gt;&lt;td&gt;&quot;pride and prejudice&quot;&lt;/td&gt;&lt;/tr&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;tr&gt;&lt;td&gt;Ordered proximity (slack=1)&lt;/td&gt;&lt;td&gt;&quot;pride prejudice&quot;o1&lt;/td&gt;&lt;/tr&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;tr&gt;&lt;td&gt;Unordered proximity (slack=1)&lt;/td&gt;&lt;td&gt;&quot;prejudice pride&quot;po1&lt;/td&gt;&lt;/tr&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;tr&gt;&lt;td&gt;Unordered prox. (default slack=10)&lt;/td&gt;&lt;td&gt;&quot;prejudice&amp;nbsp;pride&quot;p&lt;/td&gt;&lt;/tr&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;tr&gt;&lt;td&gt;No stem expansion: capitalize&lt;/td&gt;&lt;td&gt;Floor&lt;/td&gt;&lt;/tr&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;tr&gt;&lt;td&gt;Field-specific&lt;/td&gt;&lt;td&gt;author:austen&amp;nbsp;&amp;nbsp;title:prejudice&lt;/td&gt;&lt;/tr&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;tr&gt;&lt;td&gt;AND inside field (no order)&lt;/td&gt;&lt;td&gt;author:jane,austen&lt;/td&gt;&lt;/tr&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;tr&gt;&lt;td&gt;OR inside field&lt;/td&gt;&lt;td&gt;author:austen/bronte&lt;/td&gt;&lt;/tr&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;tr&gt;&lt;td&gt;Field names&lt;/td&gt;&lt;td&gt;title/subject/caption&amp;nbsp;&amp;nbsp;author/from&lt;br&gt;recipient/to&amp;nbsp;&amp;nbsp;filename&amp;nbsp;&amp;nbsp;ext&lt;/td&gt;&lt;/tr&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;tr&gt;&lt;td&gt;Directory path filter&lt;/td&gt;&lt;td&gt;dir:/home/me&amp;nbsp;&amp;nbsp;dir:doc&lt;/td&gt;&lt;/tr&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;tr&gt;&lt;td&gt;MIME type filter&lt;/td&gt;&lt;td&gt;mime:text/plain mime:video/*&lt;/td&gt;&lt;/tr&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;tr&gt;&lt;td&gt;Date intervals&lt;/td&gt;&lt;td&gt;date:2018-01-01/2018-31-12&lt;br&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>date:2018&amp;nbsp;&amp;nbsp;date:2018-01-01/P12M&lt;/td&gt;&lt;/tr&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;tr&gt;&lt;td&gt;Size&lt;/td&gt;&lt;td&gt;size&amp;gt;100k size&amp;lt;1M&lt;/td&gt;&lt;/tr&gt;</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;/table&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -3112,7 +3256,7 @@ Kan være langsomt for store dokumenter.</translation>
     </message>
     <message>
         <source>Style sheet</source>
-        <translation>Stilark</translation>
+        <translation type="vanished">Stilark</translation>
     </message>
     <message>
         <source>Opens a dialog to select the style sheet file</source>
@@ -3281,11 +3425,35 @@ Standardværdien er 2 (procent).</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Sort snippets by page number (default: by weigth).</source>
+        <source>Suppress all beeps.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Suppress all beeps.</source>
+        <source>Application Qt style sheet</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Limit the size of the search history. Use 0 to disable, -1 for unlimited.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Maximum size of search history (0: disable, -1: unlimited):</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Generate desktop notifications.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Sort snippets by page number (default: by weight).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Misc</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Work around QTBUG-78923 by inserting space before anchor text</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

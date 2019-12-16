@@ -170,12 +170,14 @@ application/x-csharp = emacsclient --no-wait %f
 application/x-java = emacsclient --no-wait %f
 application/x-perl = emacsclient --no-wait %f
 application/x-php = emacsclient --no-wait %f
+application/x-ruby = emacsclient --no-wait %f 
 application/x-shellscript = emacsclient --no-wait %f
 text/x-bibtex = emacsclient --no-wait %f
 text/css = emacsclient --no-wait %f
 text/x-csharp = emacsclient --no-wait %f
 text/x-java = emacsclient --no-wait %f
 text/x-perl = emacsclient --no-wait %f
+text/x-ruby = emacsclient --no-wait %f 
 text/x-shellscript = emacsclient --no-wait %f
 text/x-srt = emacsclient --no-wait %f
 

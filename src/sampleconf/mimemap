@@ -40,6 +40,7 @@
 .py  = text/x-python
 .awk = application/x-awk
 .pl = application/x-perl
+.rb = text/x-ruby
 .sh = application/x-shellscript
 .sql = application/sql
 .tcl = text/x-tcl

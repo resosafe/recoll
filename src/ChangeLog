@@ -3851,7 +3851,7 @@
 2007-11-21 09:34 +0000  dockes  <dockes>  (cca64d1bdb79)
 
 	* src/utils/conftree.cpp:
-	explicitely detect lines beginning with #
+	explicitly detect lines beginning with #
 
 2007-11-21 09:00 +0000  dockes  <dockes>  (2cb85a4bd555)
 
@@ -5720,7 +5720,7 @@
 2007-01-25 15:47 +0000  dockes  <dockes>  (31cd60d81a3a)
 
 	* src/rcldb/rcldb.cpp:
-	dont explicitely anchor regexp in termMatch
+	dont explicitly anchor regexp in termMatch
 
 2007-01-25 15:46 +0000  dockes  <dockes>  (8c7afe9df6fb)
 

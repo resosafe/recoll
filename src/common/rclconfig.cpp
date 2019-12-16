@@ -970,15 +970,10 @@ bool RclConfig::readFieldsConfig(const string& cnferrloc)
                    "]: [" << val << "]\n");
             return 0;
         }
-        string tval;
-        if (attrs.get("wdfinc", tval))
-            ft.wdfinc = atoi(tval.c_str());
-        if (attrs.get("boost", tval))
-            ft.boost = atof(tval.c_str());
-        if (attrs.get("pfxonly", tval))
-            ft.pfxonly = stringToBool(tval);
-        if (attrs.get("noterms", tval))
-            ft.noterms = stringToBool(tval);
+        ft.wdfinc = attrs.getInt("wdfinc", 1);
+        ft.boost = attrs.getFloat("boost", 1.0);
+        ft.pfxonly = attrs.getBool("pfxonly", false);
+        ft.noterms = attrs.getBool("noterms", false);
         m_fldtotraits[stringtolower(fieldname)] = ft;
         LOGDEB2("readFieldsConfig: ["  << fieldname << "] -> ["  << ft.pfx <<
                 "] " << ft.wdfinc << " " << ft.boost << "\n");
@@ -1018,11 +1013,7 @@ bool RclConfig::readFieldsConfig(const string& cnferrloc)
                 return 0;
             }
         }
-        int valuelen{0};
-        if (attrs.get("len", tval)) {
-            valuelen = atoi(tval.c_str());
-        }
-        
+        int valuelen = attrs.getInt("len", 0);
         // Find or insert traits entry
         const auto pit =
             m_fldtotraits.insert(

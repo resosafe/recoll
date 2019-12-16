@@ -337,11 +337,13 @@ desktop/recoll_index_on_ac.sh \
 desktop/recoll-searchgui.desktop \
 desktop/recoll.png desktop/recoll.svg desktop/recoll.xcf \
 \
-doc/man \
-doc/prog \
-doc/user/*.html doc/user/*.css doc/user/*.txt doc/user/*.xml doc/user/Makefile \
+doc/prog/Makefile doc/prog/Doxyfile doc/prog/filters.txt doc/prog/top.txt \
 \
-filters \
+doc/user/usermanual.html doc/user/docbook-xsl.css doc/user/docbook.css \
+doc/user/Makefile doc/user/recoll.conf.xml \
+doc/user/custom.xsl doc/user/usermanual.xml \
+\
+filters/injectcommon.sh filters/recfiltcommon filters/rcltxtlines.py \
 \
 index/rclmon.sh \
 \
@@ -391,21 +393,7 @@ qtgui/fragbuts.cpp \
 qtgui/fragbuts.h \
 qtgui/guiutils.cpp \
 qtgui/guiutils.h \
-qtgui/i18n/recoll_cs.qm qtgui/i18n/recoll_cs.ts \
-qtgui/i18n/recoll_da.qm qtgui/i18n/recoll_da.ts \
-qtgui/i18n/recoll_de.qm qtgui/i18n/recoll_de.ts \
-qtgui/i18n/recoll_el.qm qtgui/i18n/recoll_el.ts \
-qtgui/i18n/recoll_es.qm qtgui/i18n/recoll_es.ts \
-qtgui/i18n/recoll_fr.qm qtgui/i18n/recoll_fr.ts \
-qtgui/i18n/recoll_it.qm qtgui/i18n/recoll_it.ts \
-qtgui/i18n/recoll_lt.qm qtgui/i18n/recoll_lt.ts \
-qtgui/i18n/recoll_pl.qm qtgui/i18n/recoll_pl.ts \
-qtgui/i18n/recoll_ru.qm qtgui/i18n/recoll_ru.ts \
-qtgui/i18n/recoll_tr.qm qtgui/i18n/recoll_tr.ts \
-qtgui/i18n/recoll_uk.qm qtgui/i18n/recoll_uk.ts \
-qtgui/i18n/recoll_xx.qm qtgui/i18n/recoll_xx.ts \
-qtgui/i18n/recoll_zh.qm qtgui/i18n/recoll_zh.ts \
-qtgui/i18n/recoll_zh_CN.qm qtgui/i18n/recoll_zh_CN.ts \
+qtgui/i18n/*.qm qtgui/i18n/*.ts \
 qtgui/idxsched.h \
 qtgui/idxsched.ui \
 qtgui/images/asearch.png \
@@ -654,7 +642,7 @@ sampleconf/mimemap \
 sampleconf/mimeview 
 
 filterdir = $(pkgdatadir)/filters
-filter_DATA = \
+dist_filter_DATA = \
 desktop/hotrecoll.py \
 filters/abiword.xsl \
 filters/fb2.xsl \
@@ -704,6 +692,7 @@ filters/rclopxml.py \
 filters/rclpdf.py \
 filters/rclppt.py \
 filters/rclps \
+filters/rclpst.py \
 filters/rclpurple \
 filters/rclpython \
 filters/rclrar \
@@ -754,7 +743,7 @@ dist_man1_MANS = doc/man/recoll.1 doc/man/recollq.1 \
                doc/man/recollindex.1 doc/man/xadump.1
 dist_man5_MANS = doc/man/recoll.conf.5
 
-adist-hook:
+dist-hook:
 	(cd $(top_srcdir); find . \
             \( -name '*.pyc' -o -name '#*' -o -name '*~' \) -delete)
 	test -z "`git status -s | grep -v '??' | grep -v Makefile.am`"

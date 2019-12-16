@@ -90,8 +90,15 @@ public:
      */
     bool setQuery(std::shared_ptr<SearchData> q);
 
-    /** Get results count for current query */
-    int getResCnt(bool noapproximation = false);
+
+    /**  Get results count for current query.
+     *
+     * @param useestimate Use get_matches_estimated() if true, else 
+     *     get_matches_lower_bound()
+     * @param checkatleast checkatleast parameter to get_mset(). Use -1 for 
+     *     full scan.
+     */
+    int getResCnt(int checkatleast=1000, bool useestimate=false);
 
     /** Get document at rank i in current query results. */
     bool getDoc(int i, Doc &doc, bool fetchtext = false);

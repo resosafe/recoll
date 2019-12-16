@@ -52,7 +52,6 @@ PrefsPack prefs;
 
 // Using the same macro to read/write a setting. insurance against typing 
 // mistakes
-#define PARS(X) (X)
 #define SETTING_RW(var, nm, tp, def)            \
     if (writing) {                              \
         settings.setValue(nm , var);            \
@@ -73,7 +72,7 @@ static bool havereadsettings;
 
 void rwSettings(bool writing)
 {
-    LOGDEB1("rwSettings: write "  << (int(writing)) << "\n" );
+    LOGDEB1("rwSettings: write " << writing << "\n");
     if (writing && !havereadsettings)
         return;
     QSettings settings("Recoll.org", "recoll");
@@ -226,7 +225,7 @@ void rwSettings(bool writing)
     if (!writing && prefs.abssep == "")
         prefs.abssep = "&hellip;";
     SETTING_RW(prefs.snipwMaxLength, "/Recoll/prefs/snipwin/maxlen", Int, 1000);
-    SETTING_RW(prefs.snipwSortByPage,"/Recoll/prefs/snipwin/bypage", Bool, false); 
+    SETTING_RW(prefs.snipwSortByPage,"/Recoll/prefs/snipwin/bypage", Bool,false);
 
     SETTING_RW(prefs.autoSuffs, "/Recoll/prefs/query/autoSuffs", String, "");
     SETTING_RW(prefs.autoSuffsEnable, 
@@ -258,10 +257,9 @@ void rwSettings(bool writing)
         settings.setValue("/Recoll/prefs/query/asearchIgnFilTyps",
                           prefs.asearchIgnFilTyps);
     } else {
-        prefs.asearchIgnFilTyps = 
-            settings.value("/Recoll/prefs/query/asearchIgnFilTyps").toStringList();
+        prefs.asearchIgnFilTyps = settings.value(
+            "/Recoll/prefs/query/asearchIgnFilTyps").toStringList();
     }
-
 
     // Field list for the restable
     if (writing) {
@@ -282,10 +280,9 @@ void rwSettings(bool writing)
     // restable col widths
     QString rtcw;
     if (writing) {
-        for (vector<int>::iterator it = prefs.restableColWidths.begin();
-             it != prefs.restableColWidths.end(); it++) {
+        for (const auto& width : prefs.restableColWidths) {
             char buf[20];
-            sprintf(buf, "%d ", *it);
+            sprintf(buf, "%d ", width);
             rtcw += QString::fromUtf8(buf);
         }
     }
@@ -294,10 +291,9 @@ void rwSettings(bool writing)
     if (!writing) {
         prefs.restableColWidths.clear();
         vector<string> widths;
-        stringToStrings((const char *)rtcw.toUtf8(), widths);
-        for (vector<string>::iterator it = widths.begin(); 
-             it != widths.end(); it++) {
-            prefs.restableColWidths.push_back(atoi(it->c_str()));
+        stringToStrings(qs2utf8s(rtcw), widths);
+        for (const auto& width : widths) {
+            prefs.restableColWidths.push_back(atoi(width.c_str()));
         }
     }
 
@@ -327,11 +323,9 @@ void rwSettings(bool writing)
         for (const auto& dbdir : prefs.allExtraDbs) {
             g_dynconf->enterString(allEdbsSk, dbdir);
         }
-
         g_dynconf->eraseAll(actEdbsSk);
         for (const auto& dbdir : prefs.activeExtraDbs) {
             g_dynconf->enterString(actEdbsSk, dbdir);
-
         }
     } else {
         prefs.allExtraDbs = g_dynconf->getStringEntries<vector>(allEdbsSk);
@@ -339,9 +333,8 @@ void rwSettings(bool writing)
         if ((cp = getenv("RECOLL_EXTRA_DBS")) != 0) {
             vector<string> dbl;
             stringToTokens(cp, dbl, ":");
-            for (vector<string>::iterator dit = dbl.begin(); dit != dbl.end();
-                 dit++) {
-                string dbdir = path_canon(*dit);
+            for (const auto& path : dbl) {
+                string dbdir = path_canon(path);
                 path_catslash(dbdir);
                 if (std::find(prefs.allExtraDbs.begin(),
                               prefs.allExtraDbs.end(), dbdir) != 
@@ -385,9 +378,8 @@ void rwSettings(bool writing)
         if ((cp4Act = getenv("RECOLL_ACTIVE_EXTRA_DBS")) != 0) {
             vector<string> dbl;
             stringToTokens(cp4Act, dbl, ":");
-            for (vector<string>::iterator dit = dbl.begin(); dit != dbl.end();
-                 dit++) {
-                string dbdir = path_canon(*dit);
+            for (const auto& path : dbl) {
+                string dbdir = path_canon(path);
                 path_catslash(dbdir);
                 if (std::find(prefs.activeExtraDbs.begin(),
                               prefs.activeExtraDbs.end(), dbdir) !=
@@ -396,7 +388,8 @@ void rwSettings(bool writing)
                 bool strpd;
                 if (!Rcl::Db::testDbDir(dbdir, &strpd) || 
                     strpd != o_index_stripchars) {
-                    LOGERR("Not a Xapian dir or diff. char stripping: ["  << (dbdir) << "]\n" );
+                    LOGERR("Not a Xapian dir or diff. char stripping: ["  <<
+                           dbdir << "]\n");
                     continue;
                 }
                 prefs.activeExtraDbs.push_back(dbdir);
@@ -405,21 +398,13 @@ void rwSettings(bool writing)
     }
 
 #if 0
-    {
-        list<string>::const_iterator it;
-        fprintf(stderr, "All extra Dbs:\n");
-        for (it = prefs.allExtraDbs.begin(); 
-             it != prefs.allExtraDbs.end(); it++) {
-            fprintf(stderr, "    [%s]\n", it->c_str());
-        }
-        fprintf(stderr, "Active extra Dbs:\n");
-        for (it = prefs.activeExtraDbs.begin(); 
-             it != prefs.activeExtraDbs.end(); it++) {
-            fprintf(stderr, "    [%s]\n", it->c_str());
-        }
-    }
+    std::cerr << "All extra Dbs:\n";
+    for (const auto& dir : prefs.allExtraDbs)
+        std::cerr << "    [" << dir << "]\n";
+    std::cerr << "Active extra Dbs:\n";
+    for (const auto& dir : prefs.activeExtraDbs)
+        std::cerr << "    [" << dir << "]\n";
 #endif
-
 
     const string asbdSk = "asearchSbd";
     if (writing) {

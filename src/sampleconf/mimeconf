@@ -129,6 +129,7 @@ application/x-perl = internal text/plain
 # Returned by xdg-mime for .php. Future-proofing                   
 application/x-php = internal text/plain
 application/x-rar = execm rclrar;charset=default
+application/x-ruby = internal text/plain
 application/x-scribus = exec rclscribus
 application/x-shellscript = internal text/plain
 #application/x-tar = execm rcltar
@@ -183,6 +184,7 @@ text/x-perl = internal text/plain
 text/x-purple-log = exec rclpurple
 text/x-purple-html-log = internal text/html
 text/x-python = exec rclpython
+text/x-ruby = internal
 text/x-shellscript = internal text/plain
 text/x-srt = internal text/plain
 text/x-tex = exec rcltex
@@ -256,6 +258,7 @@ application/x-okular-notes = document
 application/x-perl = source
 application/x-php = source
 application/x-rar = archive
+application/x-ruby = source
 application/x-scribus = document
 application/x-scribus = wordprocessing
 application/x-shellscript = source
@@ -311,6 +314,7 @@ text/x-php = source
 text/x-purple-html-log = pidgin
 text/x-purple-log = pidgin
 text/x-python = text-x-python
+text/x-ruby = source
 text/x-shellscript = source
 text/x-srt = source
 text/x-tex = wordprocessing
@@ -361,6 +365,7 @@ text = \
       application/x-okular-notes \
       application/x-perl \
       application/x-php \
+	  application/x-ruby \
       application/x-scribus \
       application/x-shellscript \
       application/x-tex \
@@ -390,8 +395,9 @@ text = \
       text/x-perl \
       text/x-php \
       text/x-python \
+	  text/x-ruby \
       text/x-shellscript \
-      text/x-srt \
+      text/x-srt
 
 spreadsheet = \
    application/vnd.ms-excel \

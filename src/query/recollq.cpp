@@ -123,6 +123,7 @@ static char usage [] =
 " -T <synonyms file>: use the parameter (Thesaurus) for word expansion.\n"
 " -i <dbdir> : additional index, several can be given.\n"
 " -e use url encoding (%xx) for urls.\n"
+" -E use exact result count instead of lower bound estimate"
 " -F <field name list> : output exactly these fields for each result.\n"
 "    The field values are encoded in base64, output in one line and \n"
 "    separated by one space character. This is the recommended format \n"
@@ -130,7 +131,6 @@ static char usage [] =
 "    see the field names. Use -F '' to output all fields, but you probably\n"
 "    also want option -N in this case.\n"
 "  -N : with -F, print the (plain text) field names before the field values.\n"
-" -E : display the exact results count instead of xapian approximation.\n"
 ;
 static void
 Usage(void)
@@ -143,40 +143,40 @@ Usage(void)
 static int     op_flags;
 
 #define OPT_A     0x1
-// gui: -a same
+// GUI: -a same
 #define OPT_a     0x2
 #define OPT_b     0x4
 #define OPT_C     0x8
-// gui: -c same
+// GUI: -c same
 #define OPT_c     0x10 
 #define OPT_D     0x20 
 #define OPT_d     0x40 
 #define OPT_e     0x80 
 #define OPT_F     0x100
-// gui: -f same
+// GUI: -f same
 #define OPT_f     0x200
-// gui uses -h for help. us: usage
+// GUI uses -h for help. us: usage
 #define OPT_i     0x400
-// gui uses -L to set language of messages
-// gui: -l same
+// GUI uses -L to set language of messages
+// GUI: -l same
 #define OPT_l     0x800
 #define OPT_m     0x1000
 #define OPT_N     0x2000
 #define OPT_n     0x4000
-// gui: -o same
+// GUI: -o same
 #define OPT_o     0x8000
 #define OPT_P     0x10000
 #define OPT_Q     0x20000
-// gui: -q same
+// GUI: -q same
 #define OPT_q     0x40000
 #define OPT_S     0x80000
 #define OPT_s     0x100000
 #define OPT_T     0x200000
-// gui: -t use command line, us: ignored
+// GUI: -t use command line, us: ignored
 #define OPT_t     0x400000
+// GUI uses -v : show version. Us: usage
+// GUI uses -w : open minimized
 #define OPT_E     0x800000
-// gui uses -v : show version. Us: usage
-// gui uses -w : open minimized
 
 int recollq(RclConfig **cfp, int argc, char **argv)
 {
@@ -209,12 +209,12 @@ int recollq(RclConfig **cfp, int argc, char **argv)
             case 'a':   op_flags |= OPT_a; break;
             case 'b':   op_flags |= OPT_b; break;
             case 'C':   op_flags |= OPT_C; break;
-            case 'E':   op_flags |= OPT_E; break;
 	    case 'c':	op_flags |= OPT_c; if (argc < 2)  Usage();
 		a_config = *(++argv);
 		argc--; goto b1;
             case 'd':   op_flags |= OPT_d; break;
             case 'D':   op_flags |= OPT_D; break;
+            case 'E':   op_flags |= OPT_E; break;
             case 'e':   op_flags |= OPT_e; break;
             case 'f':   op_flags |= OPT_f; break;
 	    case 'F':	op_flags |= OPT_F; if (argc < 2)  Usage();
@@ -369,7 +369,12 @@ endopts:
 	cerr << "Query setup failed: " << query.getReason() << endl;
 	return(1);
     }
-    int cnt = query.getResCnt((op_flags & OPT_E) ? true : false);
+    int cnt;
+    if (op_flags & OPT_E) {
+        cnt = query.getResCnt(-1, true);
+    } else {
+        cnt = query.getResCnt();
+    }
     if (!(op_flags & OPT_b)) {
 	cout << "Recoll query: " << rq->getDescription() << endl;
 	if (firstres == 0) {

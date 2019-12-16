@@ -366,7 +366,7 @@ sub source {
 	    # We push both the case-folded version of the unaccented char
             # and the case-folded version of the original one. This
             # makes the table a little bigger, but allows
-            # independantly unaccenting, folding or both
+            # independently unaccenting, folding or both
             #print "UNACFOLD ";
 	    if(exists($decomposition->{$code_value})) {
 	      my($cv);

@@ -139,6 +139,7 @@ public slots:
     virtual void resetSearch();
     virtual void eraseDocHistory();
     virtual void eraseSearchHistory();
+    virtual void exportSimpleSearchHistory();
     virtual void saveLastQuery();
     virtual void loadSavedQuery();
     virtual void setStemLang(QAction *id);

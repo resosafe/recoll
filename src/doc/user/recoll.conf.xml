@@ -8,7 +8,7 @@
 <listitem><para>Space-separated list of files or
 directories to recursively index. Default to ~ (indexes
 $HOME). You can use symbolic links in the list, they will be followed,
-independantly of the value of the followLinks variable.</para></listitem></varlistentry>
+independently of the value of the followLinks variable.</para></listitem></varlistentry>
 <varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.MONITORDIRS">
 <term><varname>monitordirs</varname></term>
 <listitem><para>Space-separated list of files or directories to monitor for
@@ -69,12 +69,12 @@ filesystem paths. Must be defined at the top level of the configuration
 file, not in a subsection. Can contain files and directories. The database and
 configuration directories will automatically be added. The expressions
 are matched using 'fnmatch(3)' with the FNM_PATHNAME flag set by
-default. This means that '/' characters must be matched explicitely. You
+default. This means that '/' characters must be matched explicitly. You
 can set 'skippedPathsFnmPathname' to 0 to disable the use of FNM_PATHNAME
 (meaning that '/*/dir3' will match '/dir1/dir2/dir3'). The default value
 contains the usual mount point for removable media to remind you that it
 is a bad idea to have Recoll work on these (esp. with the monitor: media
-gets indexed on mount, all data gets erased on unmount). Explicitely
+gets indexed on mount, all data gets erased on unmount). Explicitly
 adding '/media/xxx' to the 'topdirs' variable will override
 this.</para></listitem></varlistentry>
 <varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.SKIPPEDPATHSFNMPATHNAME">
@@ -410,6 +410,10 @@ a directory between different configurations.</para></listitem></varlistentry>
 <term><varname>mboxcacheminmbs</varname></term>
 <listitem><para>Minimum mbox file size over which we cache the offsets. There is really no sense in caching offsets for small files. The
 default is 5 MB.</para></listitem></varlistentry>
+<varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.MBOXMAXMSGMBS">
+<term><varname>mboxmaxmsgmbs</varname></term>
+<listitem><para>Maximum mbox member message size in megabytes. Size over which we assume that the mbox format is bad or we
+misinterpreted it, at which point we just stop processing the file.</para></listitem></varlistentry>
 <varlistentry id="RCL.INSTALL.CONFIG.RECOLLCONF.WEBCACHEDIR">
 <term><varname>webcachedir</varname></term>
 <listitem><para>Directory where we store the archived web pages. This is only used by the web history indexing code

@@ -16,7 +16,6 @@
  */
 
 #include "autoconfig.h"
-#define LOGGER_LOCAL_LOGINC 3
 
 #define _FILE_OFFSET_BITS 64
 

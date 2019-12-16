@@ -548,7 +548,7 @@ Chapter 5. Installation and configuration
 
            The values in the *skippedPaths variables are matched by default
            with fnmatch(3), with the FNM_PATHNAME flag. This means that '/'
-           characters must be matched explicitely. You can set
+           characters must be matched explicitly. You can set
            skippedPathsFnmPathname to 0 to disable the use of FNM_PATHNAME
            (meaning that /*/dir3 will match /dir1/dir2/dir3).
 
@@ -557,7 +557,7 @@ Chapter 5. Installation and configuration
            A space-separated list of patterns for names of files or
            directories that should be ignored inside zip archives. This is
            used directly by the zip handler, and has a function similar to
-           skippedNames, but works independantly. Can be redefined for
+           skippedNames, but works independently. Can be redefined for
            filesystem subdirectories. For versions up to 1.19, you will need
            to update the Zip handler and install a supplementary Python
            module. The details are described on the Recoll wiki.

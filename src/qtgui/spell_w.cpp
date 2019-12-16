@@ -289,14 +289,8 @@ void SpellW::showStats()
     if (!theconfig)
 	return;
 
-    ConfSimple cs(theconfig->getIdxStatusFile().c_str(), 1);
     DbIxStatus st;
-    cs.get("fn", st.fn);
-    cs.get("docsdone", &st.docsdone);
-    cs.get("filesdone", &st.filesdone);
-    cs.get("fileerrors", &st.fileerrors);
-    cs.get("dbtotdocs", &st.dbtotdocs);
-    cs.get("totfiles", &st.totfiles);
+    readIdxStatus(theconfig, st);
 
     resTW->setRowCount(row+1);
     resTW->setItem(row, 0,

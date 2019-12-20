@@ -30,6 +30,10 @@
 #include "rclconfig.h"
 #include "readfile.h"
 
+#ifndef _WIN32
+#include "malloc.h"
+#endif
+
 using namespace std;
 
 // Do we need this? It would need to be called from recollinit
@@ -45,6 +49,9 @@ public:
     virtual ~FileScanXML() {
         if (ctxt) {
             xmlFreeParserCtxt(ctxt);
+#ifndef _WIN32
+            malloc_trim(0);
+#endif
         }
     }
 

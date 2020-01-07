@@ -1653,6 +1653,18 @@ Merci de vérifier le fichier desktop </translation>
         <source>The tool will let you decide at what time indexing should run.  It uses the Windows task scheduler.</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Confirm</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Erasing simple and advanced search history lists, please click Ok to confirm</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Could not open/create file</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>RclMainBase</name>
@@ -1963,6 +1975,10 @@ Merci de vérifier le fichier desktop </translation>
     <message>
         <source>Trigger incremental pass</source>
         <translation>Déclencher une indexation incrémentale</translation>
+    </message>
+    <message>
+        <source>E&amp;xport simple search history</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -4175,7 +4191,7 @@ La valeur par défaut est 2%</translation>
     </message>
     <message>
         <source>Sort snippets by page number (default: by weight).</source>
-        <translation type="vanished">Trier les extraits par numéro de page (défaut: par pertinence).</translation>
+        <translation>Trier les extraits par numéro de page (défaut: par pertinence).</translation>
     </message>
     <message>
         <source>Suppress all beeps.</source>
@@ -4195,10 +4211,6 @@ La valeur par défaut est 2%</translation>
     </message>
     <message>
         <source>Generate desktop notifications.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Sort snippets by page number (default: by weight).</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

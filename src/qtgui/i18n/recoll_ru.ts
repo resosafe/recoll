@@ -1317,7 +1317,7 @@ p, li { white-space: pre-wrap; }
 <context>
     <name>RclMain</name>
     <message>
-        <location filename="../rclmain_w.cpp" line="+728"/>
+        <location filename="../rclmain_w.cpp" line="+730"/>
         <source>Query results</source>
         <translation>Результаты запроса</translation>
     </message>
@@ -1373,7 +1373,7 @@ p, li { white-space: pre-wrap; }
         <translation>О программе</translation>
     </message>
     <message>
-        <location filename="../rclmain_w.cpp" line="+287"/>
+        <location filename="../rclmain_w.cpp" line="+288"/>
         <source>Document history</source>
         <translation>Просмотренные документы</translation>
     </message>
@@ -1425,12 +1425,12 @@ Please check the mimeconf file</source>
     </message>
     <message>
         <location filename="../rclm_view.cpp" line="-129"/>
-        <location filename="../rclmain_w.cpp" line="-82"/>
+        <location filename="../rclmain_w.cpp" line="-83"/>
         <source>Cannot extract document or create temporary file</source>
         <translation>Невозможно извлечь документ или создать временный файл</translation>
     </message>
     <message>
-        <location filename="../rclmain_w.cpp" line="-772"/>
+        <location filename="../rclmain_w.cpp" line="-774"/>
         <source>(no stemming)</source>
         <translation>(без однокоренных слов)</translation>
     </message>
@@ -1550,6 +1550,21 @@ Please check the mimeconf file</source>
         <translation>фильтрованные</translation>
     </message>
     <message>
+        <location line="+912"/>
+        <source>Confirm</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Erasing simple and advanced search history lists, please click Ok to confirm</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+28"/>
+        <source>Could not open/create file</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
         <source>External applications/commands needed and not found for indexing your file types:
 
 </source>
@@ -1603,7 +1618,7 @@ Do you want to start the  preferences dialog ?</source>
         <translation>Невозможно распаковать файл: </translation>
     </message>
     <message>
-        <location filename="../rclmain_w.cpp" line="+794"/>
+        <location filename="../rclmain_w.cpp" line="-145"/>
         <source>Save file</source>
         <translation>Сохранение файл</translation>
     </message>
@@ -1769,7 +1784,7 @@ Please check the mimeview file</source>
         <translation>Вложенные документы</translation>
     </message>
     <message>
-        <location line="-745"/>
+        <location line="-747"/>
         <source>Document filter</source>
         <translation>Фильтр документов</translation>
     </message>
@@ -1918,7 +1933,7 @@ Please check the desktop file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../rclmain_w.cpp" line="+504"/>
+        <location filename="../rclmain_w.cpp" line="+506"/>
         <source>Can&apos;t set synonyms file (parse error?)</source>
         <translation>Невозможно установить файл синономов (ошибка анализа?)</translation>
     </message>
@@ -1977,7 +1992,7 @@ Please check the desktop file</source>
         <translation>В командной строке программы просмотра %1 указан родительский файл, а в URL — сетевой протокол http[s]: команда не поддерживается</translation>
     </message>
     <message>
-        <location filename="../rclmain_w.cpp" line="-521"/>
+        <location filename="../rclmain_w.cpp" line="-523"/>
         <source>Tools</source>
         <translation>Инструменты</translation>
     </message>
@@ -2000,7 +2015,7 @@ Please check the desktop file</source>
         <translation>&amp;Файл</translation>
     </message>
     <message>
-        <location line="+26"/>
+        <location line="+28"/>
         <source>&amp;Tools</source>
         <translation>&amp;Инструменты</translation>
     </message>
@@ -2028,7 +2043,12 @@ Please check the desktop file</source>
         <translation>&amp;Выход</translation>
     </message>
     <message>
-        <location line="+70"/>
+        <location line="+54"/>
+        <source>E&amp;xport simple search history</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location line="+24"/>
         <source>&amp;About Recoll</source>
         <translation>&amp;О программе</translation>
     </message>
@@ -2092,7 +2112,7 @@ Please check the desktop file</source>
         <translation type="obsolete">&amp;Конфигурация</translation>
     </message>
     <message>
-        <location line="-191"/>
+        <location line="-199"/>
         <source>Ctrl+Q</source>
         <translation>Ctrl+Q</translation>
     </message>
@@ -2102,7 +2122,7 @@ Please check the desktop file</source>
         <translation>Обновить &amp;индекс</translation>
     </message>
     <message>
-        <location line="+120"/>
+        <location line="+128"/>
         <source>Term &amp;explorer</source>
         <translation variants="yes">
             <lengthvariant>Обозреватель &amp;терминов</lengthvariant>
@@ -2120,12 +2140,12 @@ Please check the desktop file</source>
         <translation>Настройка внешнего индекса</translation>
     </message>
     <message>
-        <location line="-194"/>
+        <location line="-202"/>
         <source>&amp;Erase document history</source>
         <translation>&amp;Очистить список просмотренных документов</translation>
     </message>
     <message>
-        <location line="+132"/>
+        <location line="+140"/>
         <source>First page</source>
         <translation>Первая страница</translation>
     </message>
@@ -2172,7 +2192,7 @@ Please check the desktop file</source>
         <translation>Во весь экран</translation>
     </message>
     <message>
-        <location line="-211"/>
+        <location line="-219"/>
         <source>&amp;Erase search history</source>
         <translation>Очистить историю &amp;поиска</translation>
     </message>
@@ -2181,7 +2201,7 @@ Please check the desktop file</source>
         <translation type="obsolete">sortByDateAsc</translation>
     </message>
     <message>
-        <location line="+235"/>
+        <location line="+243"/>
         <source>Sort by dates from oldest to newest</source>
         <translation>Сортировать по дате от старых к новым</translation>
     </message>
@@ -2204,7 +2224,7 @@ Please check the desktop file</source>
         <translation type="obsolete">Показать результаты в виде таблицы</translation>
     </message>
     <message>
-        <location line="-274"/>
+        <location line="-282"/>
         <source>&amp;Rebuild index</source>
         <translation>Пере&amp;строить индекс</translation>
     </message>
@@ -2213,7 +2233,7 @@ Please check the desktop file</source>
         <translation type="obsolete">Показать индексируемые &amp;типы</translation>
     </message>
     <message>
-        <location line="+146"/>
+        <location line="+154"/>
         <source>Shift+PgUp</source>
         <translation>Shift-PgUp</translation>
     </message>
@@ -2237,12 +2257,12 @@ Please check the desktop file</source>
         <translation>Настройка и&amp;нтерфейса</translation>
     </message>
     <message>
-        <location line="-244"/>
+        <location line="-252"/>
         <source>&amp;Results</source>
         <translation>Список &amp;результатов</translation>
     </message>
     <message>
-        <location line="+301"/>
+        <location line="+309"/>
         <source>Sort by date, oldest first</source>
         <translation>Сортировать по дате от старых к новым</translation>
     </message>
@@ -2333,12 +2353,12 @@ Please check the desktop file</source>
         <translation>Индексирование с особыми параметрами</translation>
     </message>
     <message>
-        <location line="-450"/>
+        <location line="-458"/>
         <source>&amp;View</source>
         <translation>&amp;Вид</translation>
     </message>
     <message>
-        <location line="+121"/>
+        <location line="+129"/>
         <source>Missing &amp;helpers</source>
         <translation>Недостающие &amp;вспомогательные приложения</translation>
     </message>
@@ -2358,7 +2378,7 @@ Please check the desktop file</source>
         <translation>Редактор веб-кэша</translation>
     </message>
     <message>
-        <location line="-374"/>
+        <location line="-382"/>
         <source>Trigger incremental pass</source>
         <translation>Запустить пошаговый проход</translation>
     </message>

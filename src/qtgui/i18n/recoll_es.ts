@@ -1580,6 +1580,18 @@ Please check the desktop file</source>
         <source>The tool will let you decide at what time indexing should run.  It uses the Windows task scheduler.</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Confirm</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Erasing simple and advanced search history lists, please click Ok to confirm</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Could not open/create file</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>RclMainBase</name>
@@ -1889,6 +1901,10 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>Trigger incremental pass</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>E&amp;xport simple search history</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

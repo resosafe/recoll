@@ -461,7 +461,7 @@ if test X$enableQT = Xyes ; then
      AC_MSG_ERROR([Bad qt/qmake version string (not 4 or 5?): $qmakevers])
   else
     if test X$v4 != X0 ; then
-       AC_MSG_NOTICE([using qt version 4 user interface])
+       AC_MSG_ERROR([Qt version (from qmake found with QMAKE/QTDIR/PATH) is 4 but Recoll now needs version 5])
     else
        AC_MSG_NOTICE([using qt version 5 user interface])
     fi

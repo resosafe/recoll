@@ -33,7 +33,7 @@ class MimeHandlerXslt : public RecollFilter {
     virtual bool is_data_input_ok(DataInput input) const override {
         return (input == DOCUMENT_FILE_NAME || input == DOCUMENT_STRING);
     }
-
+static bool m_isInit;
 protected:
     virtual bool set_document_file_impl(const std::string& mt, 
                                         const std::string& file_path) override;
@@ -42,6 +42,7 @@ protected:
 
     class Internal;
 private:
+    
     Internal *m{nullptr};
 };
 

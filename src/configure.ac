@@ -343,19 +343,39 @@ XAPIANCXXFLAGS=`$XAPIAN_CONFIG --cxxflags`
 #echo XAPIANCXXFLAGS: $XAPIANCXXFLAGS
 
 
-XSLT_CONFIG=${XSLT_CONFIG:-no}
-if test "$XSLT_CONFIG" = "no"; then 
-    AC_PATH_PROG(XSLT_CONFIG0, [xslt-config], no)
-    XSLT_CONFIG=$XSLT_CONFIG0
-fi
-if test "$XSLT_CONFIG" = "no" ; then
-   AC_MSG_ERROR([Cannot find xslt-config command in $PATH. Is
-libxslt installed ?])
-   exit 1
-fi
+ AC_ARG_WITH(xalan,
+    AC_HELP_STRING([--with-xalan],
+      [Enable the use of the xalan library instead libxml2.]),
+        withXalan=$withval, withXalan="no")
 
-XSLT_CFLAGS=`xslt-config --cflags`
-XSLT_LINKADD=`xslt-config --libs`
+  case "$withXalan" in 
+    no)  
+      XSLT_CONFIG=${XSLT_CONFIG:-no}
+      if test "$XSLT_CONFIG" = "no"; then 
+          AC_PATH_PROG(XSLT_CONFIG0, [xslt-config], no)
+          XSLT_CONFIG=$XSLT_CONFIG0
+      fi
+      if test "$XSLT_CONFIG" = "no" ; then
+        AC_MSG_ERROR([Cannot find xslt-config command in $PATH. Is
+      libxslt installed ?])
+        exit 1
+      fi
+
+      XSLT_CFLAGS=`xslt-config --cflags`
+      XSLT_LINKADD=`xslt-config --libs`
+    ;;
+    yes) 
+      AC_DEFINE(USE_XALAN, 1, [Use Xalan support])
+      XSLT_LINKADD="-lxerces-c -lxalan-c"
+    ;;
+    *)   AC_DEFINE(USE_XALAN, 1, [Use Xalan support]) 
+         LIBXALANDIR=$withXalan
+         XSLT_CFLAGS=="$LIBXALANDIR/include"
+         XSLT_LINKADD="$LIBXALANDIR/lib -lxerces-c -lxalan-c"
+    ;;
+esac	
+
+
 
 AC_ARG_ENABLE(xadump, 
     AC_HELP_STRING([--enable-xadump],

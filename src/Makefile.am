@@ -12,6 +12,7 @@ LIBXAPIAN=@LIBXAPIAN@
 XAPIANCXXFLAGS=@XAPIANCXXFLAGS@
 XSLT_CFLAGS=@XSLT_CFLAGS@
 XSLT_LINKADD=@XSLT_LINKADD@
+
 LIBICONV=@LIBICONV@
 INCICONV=@INCICONV@
 LIBFAM = @LIBFAM@
@@ -22,6 +23,7 @@ X_LIBS=@X_LIBS@
 X_EXTRA_LIBS=@X_EXTRA_LIBS@
 X_LIBX11=@X_LIBX11@
 DEFS=@DEFS@
+USE_XALAN=@USE_XALAN@
 
 COMMONCPPFLAGS = -I. \
     -I$(top_srcdir)/aspell \
@@ -746,6 +748,6 @@ dist_man5_MANS = doc/man/recoll.conf.5
 dist-hook:
 	(cd $(top_srcdir); find . \
             \( -name '*.pyc' -o -name '#*' -o -name '*~' \) -delete)
-	test -z "`git status -s | grep -v '??' | grep -v Makefile.am`"
-	vers=`echo $(VERSION) | sed -e 's/~/_/g'`;\
-	git tag -a RECOLL-$$vers -m "Release $$vers tagged"
+#	test -z "`git status -s | grep -v '??' | grep -v Makefile.am`"
+#	vers=`echo $(VERSION) | sed -e 's/~/_/g'`;\
+#	git tag -a RECOLL-$$vers -m "Release $$vers tagged"

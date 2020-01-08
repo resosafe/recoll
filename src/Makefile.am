@@ -748,6 +748,6 @@ dist_man5_MANS = doc/man/recoll.conf.5
 dist-hook:
 	(cd $(top_srcdir); find . \
             \( -name '*.pyc' -o -name '#*' -o -name '*~' \) -delete)
-#	test -z "`git status -s | grep -v '??' | grep -v Makefile.am`"
-#	vers=`echo $(VERSION) | sed -e 's/~/_/g'`;\
-#	git tag -a RECOLL-$$vers -m "Release $$vers tagged"
+	test -z "`git status -s | grep -v '??' | grep -v Makefile.am`"
+	vers=`echo $(VERSION) | sed -e 's/~/_/g'`;\
+	git tag -a RECOLL-$$vers -m "Release $$vers tagged"

@@ -221,8 +221,6 @@ MimeHandlerXslt::MimeHandlerXslt(RclConfig *cnf, const std::string& id,
                                  const std::vector<std::string>& params)
     : RecollFilter(cnf, id)
 {
-    cout<<"MimeHandlerXslt "<<stringsToString(params)<<endl;
-
 #ifdef USE_XALAN
     pthread_once(&thread_once_control, xalan_init);
 #else

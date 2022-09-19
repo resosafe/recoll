@@ -25,9 +25,9 @@ class EditDialog : public QDialog, public Ui::EditDialog {
     Q_OBJECT
     public:
     EditDialog(QWidget * parent = 0) 
-	: QDialog(parent)
+    : QDialog(parent)
     {
-	setupUi(this);
+    setupUi(this);
     }
 };
 

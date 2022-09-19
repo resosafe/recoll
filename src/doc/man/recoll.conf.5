@@ -92,6 +92,11 @@ list.
 List of name endings to add to the default skippedNames
 list. 
 .TP
+.BI "onlyNames = "string
+Regular file name filter patterns If this is set, only the file names not in skippedNames and
+matching one of the patterns will be considered for indexing. Can be
+redefined per subtree. Does not apply to directories.
+.TP
 .BI "noContentSuffixes = "string
 List of name endings (not necessarily dot-separated suffixes) for
 which we don't try MIME type identification, and don't uncompress or
@@ -143,7 +148,7 @@ not set, the daemon uses skippedPaths.
 .TP
 .BI "zipUseSkippedNames = "bool
 Use skippedNames inside Zip archives. Fetched
-directly by the rclzip handler. Skip the patterns defined by skippedNames
+directly by the rclzip.py handler. Skip the patterns defined by skippedNames
 inside Zip archives. Can be redefined for subdirectories.
 See https://www.lesbonscomptes.com/recoll/faqsandhowtos/FilteringOutZipArchiveMembers.html
 
@@ -190,7 +195,7 @@ lets you turn off md5 computation for selected types. It is global (no
 redefinition for subtrees). At the moment, it only has an effect for
 external handlers (exec and execm). The file types can be specified by
 listing either MIME types (e.g. audio/mpeg) or handler names
-(e.g. rclaudio).
+(e.g. rclaudio.py).
 .TP
 .BI "compressedfilemaxkbs = "int
 Size limit for compressed
@@ -292,13 +297,18 @@ will reduce the index size. This can only be set for a whole index, not
 for a subtree.
 .TP
 .BI "dehyphenate = "bool
-Determines if we index 'coworker' also when the input is 'co-worker'. This is new
+Determines if we index 'coworker'
+also when the input is 'co-worker'. This is new
 in version 1.22, and on by default. Setting the variable to off allows
 restoring the previous behaviour.
 .TP
 .BI "backslashasletter = "bool
-Process backslash as normal letter This may make sense for people wanting to index TeX commands as
+Process backslash as normal letter. This may make sense for people wanting to index TeX commands as
 such but is not of much general use.
+.TP
+.BI "underscoreasletter = "bool
+Process underscore as normal letter. This makes sense in so many cases that one wonders if it should
+not be the default.
 .TP
 .BI "maxtermlength = "int
 Maximum term length. Words longer than this will be discarded.
@@ -323,7 +333,8 @@ as large.
 .BI "indexstemminglanguages = "string
 Languages for which to create stemming expansion
 data. Stemmer names can be found by executing 'recollindex
--l', or this can also be set from a list in the GUI.
+-l', or this can also be set from a list in the GUI. The values are full
+language names, e.g. english, french...
 .TP
 .BI "defaultcharset = "string
 Default character
@@ -348,16 +359,24 @@ lowercase and upper-case versions of a character should be specified, as
 appartenance to the list will turn-off both standard accent and case
 processing. The value is global and affects both indexing and querying.
 Examples:
+.br
 Swedish:
+.br
 unac_except_trans = ää Ää öö Öö üü Üü ßss œoe Œoe æae Æae ﬀff ﬁfi ﬂfl åå Åå
-. German:
+.br
+German:
+.br
 unac_except_trans = ää Ää öö Öö üü Üü ßss œoe Œoe æae Æae ﬀff ﬁfi ﬂfl
-In French, you probably want to decompose oe and ae and nobody would type
+.br
+French: you probably want to decompose oe and ae and nobody would type
 a German ß
+.br
 unac_except_trans = ßss œoe Œoe æae Æae ﬀff ﬁfi ﬂfl
-. The default for all until someone protests follows. These decompositions
+.br
+The default for all until someone protests follows. These decompositions
 are not performed by unac, but it is unlikely that someone would type the
 composed forms in a search.
+.br
 unac_except_trans = ßss œoe Œoe æae Æae ﬀff ﬁfi ﬂfl
 .TP
 .BI "maildefcharset = "string
@@ -452,6 +471,10 @@ a directory between different configurations.
 Minimum mbox file size over which we cache the offsets. There is really no sense in caching offsets for small files. The
 default is 5 MB.
 .TP
+.BI "mboxmaxmsgmbs = "int
+Maximum mbox member message size in megabytes. Size over which we assume that the mbox format is bad or we
+misinterpreted it, at which point we just stop processing the file.
+.TP
 .BI "webcachedir = "dfn
 Directory where we store the archived web pages. This is only used by the web history indexing code
 Default: cachedir/webcache if cachedir is set, else
@@ -515,10 +538,11 @@ is mainly to avoid infinite loops in postscript files
 .TP
 .BI "filtermaxmbytes = "int
 Maximum virtual memory space for filter processes
-(setrlimit(RLIMIT_AS)), in megabytes. Note that this
-includes any mapped libs (there is no reliable Linux way to limit the
-data space only), so we need to be a bit generous here. Anything over
-2000 will be ignored on 32 bits machines.
+(setrlimit(RLIMIT_AS)), in megabytes. Note that this includes any mapped libs (there is no reliable
+Linux way to limit the data space only), so we need to be a bit generous
+here. Anything over 2000 will be ignored on 32 bits machines. The
+previous default value of 2000 would prevent java pdftk to work when
+executed from Python rclpdf.py.
 .TP
 .BI "thrQSizes = "string
 Stage input queues configuration. There are three
@@ -567,6 +591,12 @@ Override logfilename for the indexer in real time
 mode. The default is to use the idx... values if set, else
 the log... values.
 .TP
+.BI "pyloglevel = "int
+Override loglevel for the python module. 
+.TP
+.BI "pylogfilename = "fn
+Override logfilename for the python module. 
+.TP
 .BI "orgidxconfdir = "dfn
 Original location of the configuration directory. This is used exclusively for movable datasets. Locating the
 configuration directory inside the directory tree makes it possible to
@@ -583,8 +613,7 @@ location before copy, to allow path translation computations.  For
 example if a dataset originally indexed as '/home/me/mydata/config' has
 been mounted to '/media/me/mydata', and the GUI is running from a copied
 configuration, orgidxconfdir would be '/home/me/mydata/config', and
-curidxconfdir (as set in the copied configuration) would be
-'/media/me/mydata/config'.
+curidxconfdir (as set in the copied configuration) would be '/media/me/mydata/config'.
 .TP
 .BI "idxrundir = "dfn
 Indexing process current directory. The input
@@ -633,9 +662,9 @@ space issues.
 .BI "aspellLanguage = "string
 Language definitions to use when creating the aspell
 dictionary. The value must match a set of aspell language
-definition files. You can type "aspell dicts"  to see a list The default
-if this is not set is to use the NLS environment to guess the
-value.
+definition files. You can type "aspell dicts" to see a list The default
+if this is not set is to use the NLS environment to guess the value. The
+values are the 2-letter language codes (e.g. 'en', 'fr'...)
 .TP
 .BI "aspellAddCreateParam = "string
 Additional option and parameter to aspell dictionary creation
@@ -676,13 +705,19 @@ containing white space with double quotes (quote the whole entry, not the
 pattern). The default is empty.
 Example: mondelaypatterns = *.log:20 "*with spaces.*:30"
 .TP
+.BI "idxniceprio = "int
+"nice" process priority for the indexing processes. Default: 19
+(lowest) Appeared with 1.26.5. Prior versions were fixed at 19.
+.TP
 .BI "monioniceclass = "int
-ionice class for the real time indexing process On platforms where this is supported. The default value is
-3.
+ionice class for the indexing process. Despite the misleading name, and on platforms where this is
+supported, this affects all indexing processes,
+not only the real time/monitoring ones. The default value is 3 (use
+lowest "Idle" priority).
 .TP
 .BI "monioniceclassdata = "string
-ionice class parameter for the real time indexing process. On platforms where this is supported. The default is
-empty.
+ionice class level parameter if the class supports it. The default is empty, as the default "Idle" class has no
+levels.
 .TP
 .BI "autodiacsens = "bool
 auto-trigger diacritics sensitivity (raw index only). IF the index is not stripped, decide if we automatically trigger
@@ -719,14 +754,8 @@ insufficient for very big documents, the consequence would be snippets
 with possibly meaning-altering missing words.
 .TP
 .BI "pdfocr = "bool
-Attempt OCR of PDF files with no text content if both tesseract and
-pdftoppm are installed. The default is off because OCR is so
-very slow.
-.TP
-.BI "pdfocrlang = "string
-Language to assume for PDF OCR. This is very important for having a reasonable rate of errors
-with tesseract. This can also be set through a configuration variable
-or directory-local parameters. See the rclpdf.py script.
+Attempt OCR of PDF files with no text content. This can be defined in subdirectories. The default is off because
+OCR is so very slow.
 .TP
 .BI "pdfattach = "bool
 Enable PDF attachment extraction by executing pdftk (if
@@ -750,6 +779,42 @@ method which will be called with the qualified tag name and value of each
 selected field, for editing or erasing. A new instance is created for
 each document, so that the object can keep state for, e.g. eliminating
 duplicate values.
+.TP
+.BI "ocrprogs = "string
+OCR modules to try. The top OCR script will try to load the corresponding modules in
+order and use the first which reports being capable of performing OCR on
+the input file. Modules for tesseract (tesseract) and ABBYY FineReader
+(abbyy) are present in the standard distribution. For compatibility with
+the previous version, if this is not defined at all, the default value is
+"tesseract". Use an explicit empty value if needed. A value of "abbyy
+tesseract" will try everything.
+.TP
+.BI "ocrcachedir = "dfn
+Location for caching OCR data. The default if this is empty or undefined is to store the cached
+OCR data under $RECOLL_CONFDIR/ocrcache.
+.TP
+.BI "tesseractlang = "string
+Language to assume for tesseract OCR. Important for improving the OCR accuracy. This can also be set
+through the contents of a file in
+the currently processed directory. See the rclocrtesseract.py
+script. Example values: eng, fra... See the tesseract documentation.
+.TP
+.BI "tesseractcmd = "fn
+Path for the tesseract command. Do not quote. This is mostly useful on Windows, or for specifying a non-default
+tesseract command. E.g. on Windows.
+tesseractcmd = C:/Program&nbsp;Files&nbsp;(x86)/Tesseract-OCR/tesseract.exe
+
+.TP
+.BI "abbyylang = "string
+Language to assume for abbyy OCR. Important for improving the OCR accuracy. This can also be set
+through the contents of a file in
+the currently processed directory. See the rclocrabbyy.py
+script. Typical values: English, French... See the ABBYY documentation.
+
+.TP
+.BI "abbyycmd = "fn
+Path for the abbyy command The ABBY directory is usually not in the path, so you should set this.
+
 .TP
 .BI "mhmboxquirks = "string
 Enable thunderbird/mozilla-seamonkey mbox format quirks Set this for the directory where the email mbox files are

@@ -4,15 +4,18 @@
 if COND_TESTMAINS
   MAYBE_TESTMAINS = testmains
 endif
-SUBDIRS = . $(MAYBE_TESTMAINS)
+if COND_RCLGREP
+  MAYBE_RCLGREP = rclgrep
+endif
+SUBDIRS = . $(MAYBE_TESTMAINS) $(MAYBE_RCLGREP)
+
 DIST_SUBDIRS = .
 
 CXXFLAGS ?= @CXXFLAGS@
 LIBXAPIAN=@LIBXAPIAN@
 XAPIANCXXFLAGS=@XAPIANCXXFLAGS@
 XSLT_CFLAGS=@XSLT_CFLAGS@
-XSLT_LINKADD=@XSLT_LINKADD@
-
+XSLT_LIBS=@XSLT_LIBS@
 LIBICONV=@LIBICONV@
 INCICONV=@INCICONV@
 LIBFAM = @LIBFAM@
@@ -60,7 +63,6 @@ librcldir = $(libdir)/recoll
 librcl_LTLIBRARIES = librecoll.la
 
 librecoll_la_SOURCES = \
-aspell/aspell-local.h \
 aspell/rclaspell.cpp \
 aspell/rclaspell.h \
 bincimapmime/convert.cc \
@@ -84,14 +86,13 @@ common/rclinit.h \
 common/syngroups.cpp \
 common/syngroups.h \
 common/textsplit.cpp \
+common/textsplitko.cpp \
 common/textsplit.h \
 common/unacpp.cpp \
 common/unacpp.h \
 common/uproplist.h \
 common/utf8fn.cpp \
 common/utf8fn.h \
-index/webqueue.cpp \
-index/webqueue.h \
 index/webqueuefetcher.cpp \
 index/webqueuefetcher.h \
 index/checkretryfailed.cpp \
@@ -102,8 +103,8 @@ index/fetcher.cpp \
 index/fetcher.h \
 index/fsfetcher.cpp \
 index/fsfetcher.h \
-index/fsindexer.cpp \
-index/fsindexer.h \
+index/idxdiags.h \
+index/idxdiags.cpp \
 index/idxstatus.h \
 index/idxstatus.cpp \
 index/mimetype.cpp \
@@ -157,6 +158,8 @@ query/filtseq.cpp \
 query/filtseq.h \
 query/plaintorich.cpp \
 query/plaintorich.h \
+query/qresultstore.cpp \
+query/qresultstore.h \
 query/recollq.cpp \
 query/recollq.h \
 query/reslistpager.cpp \
@@ -212,6 +215,8 @@ utils/circache.cpp \
 utils/circache.h \
 utils/closefrom.cpp \
 utils/closefrom.h \
+utils/cmdtalk.cpp \
+utils/cmdtalk.h \
 utils/conftree.cpp \
 utils/conftree.h \
 utils/copyfile.cpp \
@@ -248,6 +253,7 @@ utils/netcon.cpp \
 utils/netcon.h \
 utils/pathut.cpp \
 utils/pathut.h \
+utils/picoxml.h \
 utils/pxattr.cpp \
 utils/pxattr.h \
 utils/rclionice.cpp \
@@ -267,6 +273,8 @@ utils/utf8iter.h \
 utils/wipedir.cpp \
 utils/wipedir.h \
 utils/workqueue.h \
+utils/x11mon.cpp \
+utils/x11mon.h \
 utils/zlibut.cpp \
 utils/zlibut.h \
 xaposix/safefcntl.h \
@@ -278,12 +286,13 @@ BUILT_SOURCES = query/wasaparse.cpp
 AM_YFLAGS = -d
 
 # We use -release: the lib is only shared
-# between recoll programs from the same release.
-# -version-info $(VERSION_INFO)
-librecoll_la_LDFLAGS = -release $(VERSION) \
-    -Wl,--no-undefined -Wl,--warn-unresolved-symbols
+# between recoll programs from the same release. So the lib is just named
+# after the recoll version (e.g librecoll-1.27.1.so)
+# -version-info $(VERSION_INFO) would handle ABI compat issues, we don't
+# need it
+librecoll_la_LDFLAGS = -release $(VERSION) -no-undefined @NO_UNDEF_LINK_FLAG@
 
-librecoll_la_LIBADD = $(XSLT_LINKADD) $(LIBXAPIAN) $(LIBICONV) $(LIBTHREADS)
+librecoll_la_LIBADD = $(XSLT_LIBS) $(LIBXAPIAN) $(LIBICONV) $(X_LIBX11) $(LIBTHREADS)
 
 # There is probably a better way to do this. The KIO needs to be linked
 # with librecoll, but librecoll is installed into a non-standard place
@@ -312,14 +321,19 @@ if MAKEXADUMP
 endif
 
 recollindex_SOURCES = \
-                    index/recollindex.cpp \
-                    index/indexer.cpp \
-                    index/indexer.h \
-                    index/rclmonprc.cpp \
-                    index/rclmonrcv.cpp \
-                    utils/x11mon.cpp \
-                    utils/x11mon.h 
-recollindex_LDADD = librecoll.la $(X_LIBX11)
+    index/checkindexed.cpp \
+    index/checkindexed.h \
+    index/fsindexer.cpp \
+    index/fsindexer.h \
+    index/indexer.cpp \
+    index/indexer.h \
+    index/rclmonprc.cpp \
+    index/rclmonrcv.cpp \
+    index/recollindex.cpp \
+    index/webqueue.cpp \
+    index/webqueue.h
+
+recollindex_LDADD = librecoll.la 
 
 recollq_SOURCES = query/recollqmain.cpp
 recollq_LDADD = librecoll.la
@@ -327,8 +341,6 @@ recollq_LDADD = librecoll.la
 xadump_SOURCES = query/xadump.cpp
 xadump_LDADD = librecoll.la $(LIBXAPIAN) $(LIBICONV)
 
-# Note: I'd prefer the generated query parser files not to be distributed
-# at all, but failed to achieve this
 EXTRA_DIST = \
 bincimapmime/00README.recoll bincimapmime/AUTHORS bincimapmime/COPYING \
 \
@@ -348,6 +360,8 @@ doc/user/custom.xsl doc/user/usermanual.xml \
 filters/injectcommon.sh filters/recfiltcommon filters/rcltxtlines.py \
 \
 index/rclmon.sh \
+index/recollindex@.service \
+index/recollindex.service \
 \
 kde/kioslave/kio_recoll/00README.txt \
 kde/kioslave/kio_recoll/CMakeLists.txt \
@@ -358,9 +372,10 @@ kde/kioslave/kio_recoll/dirif.cpp \
 kde/kioslave/kio_recoll/htmlif.cpp \
 kde/kioslave/kio_recoll/kio_recoll.cpp \
 kde/kioslave/kio_recoll/kio_recoll.h \
+kde/kioslave/kio_recoll/recoll.json \
+kde/kioslave/kio_recoll/recoll.protocol \
 kde/kioslave/kio_recoll/recollf.protocol \
 kde/kioslave/kio_recoll/recollnolist.protocol \
-kde/kioslave/kio_recoll/recoll.protocol \
 \
 kde/kioslave/kio_recoll-kde4/00README.txt \
 kde/kioslave/kio_recoll-kde4/CMakeLists.txt \
@@ -377,6 +392,9 @@ kde/kioslave/kio_recoll-kde4/recoll.protocol \
 \
 query/location.hh  query/position.hh  query/stack.hh \
 \
+qtgui/actsearch.ui \
+qtgui/actsearch_w.cpp \
+qtgui/actsearch_w.h \
 qtgui/advsearch.ui \
 qtgui/advsearch_w.cpp \
 qtgui/advsearch_w.h \
@@ -396,12 +414,15 @@ qtgui/fragbuts.h \
 qtgui/guiutils.cpp \
 qtgui/guiutils.h \
 qtgui/i18n/*.qm qtgui/i18n/*.ts \
+qtgui/idxmodel.cpp \
+qtgui/idxmodel.h \
 qtgui/idxsched.h \
 qtgui/idxsched.ui \
 qtgui/images/asearch.png \
 qtgui/images/cancel.png \
 qtgui/images/close.png \
 qtgui/images/clock.png \
+qtgui/images/menu.png \
 qtgui/images/code-block.png \
 qtgui/images/down.png \
 qtgui/images/firstpage.png \
@@ -460,8 +481,10 @@ qtgui/ptrans_w.h \
 qtgui/rclhelp.cpp \
 qtgui/rclhelp.h \
 qtgui/rclm_idx.cpp \
+qtgui/rclm_menus.cpp \
 qtgui/rclm_preview.cpp \
 qtgui/rclm_saveload.cpp \
+qtgui/rclm_sidefilters.cpp \
 qtgui/rclm_view.cpp \
 qtgui/rclm_wins.cpp \
 qtgui/rclmain.ui \
@@ -482,6 +505,8 @@ qtgui/restable.ui \
 qtgui/rtitool.cpp \
 qtgui/rtitool.h \
 qtgui/rtitool.ui \
+qtgui/scbase.cpp \
+qtgui/scbase.h \
 qtgui/searchclause_w.cpp \
 qtgui/searchclause_w.h \
 qtgui/snippets.ui \
@@ -497,7 +522,6 @@ qtgui/ssearch_w.h \
 qtgui/ssearchb.ui \
 qtgui/systray.cpp \
 qtgui/systray.h \
-qtgui/ui_rclmain.h-4.5 \
 qtgui/uiprefs.ui \
 qtgui/uiprefs_w.cpp \
 qtgui/uiprefs_w.h \
@@ -514,6 +538,9 @@ qtgui/widgets/listdialog.ui \
 qtgui/widgets/qxtconfirmationmessage.cpp \
 qtgui/widgets/qxtconfirmationmessage.h \
 qtgui/widgets/qxtglobal.h \
+qtgui/winschedtool.cpp \
+qtgui/winschedtool.h \
+qtgui/winschedtool.ui \
 qtgui/xmltosd.cpp \
 qtgui/xmltosd.h \
 \
@@ -530,13 +557,15 @@ python/pychm/recollchm/extra.c \
 python/pychm/recollchm/swig_chm.c \
 python/pychm/recollchm/swig_chm.i \
 python/pychm/setup.py.in \
-python/recoll/Makefile \
 python/recoll/pyrclextract.cpp \
 python/recoll/pyrecoll.cpp \
 python/recoll/pyrecoll.h \
+python/recoll/pyresultstore.cpp \
 python/recoll/recoll/__init__.py \
 python/recoll/recoll/conftree.py \
 python/recoll/recoll/rclconfig.py \
+python/recoll/recoll/rclextract.py \
+python/recoll/recoll/recoll.py \
 python/recoll/setup.py.in \
 python/samples/docdups.py \
 python/samples/mutt-recoll.py \
@@ -548,16 +577,17 @@ python/samples/recollgui/rclmain.ui \
 python/samples/recollq.py \
 python/samples/recollqsd.py \
 \
- \
-sampleconf/fields sampleconf/fragbuts.xml sampleconf/mimeconf \
-sampleconf/mimemap sampleconf/mimeview sampleconf/mimeview.mac \
+sampleconf/fields sampleconf/fragment-buttons.xml sampleconf/mimeconf \
+sampleconf/mimemap sampleconf/mimeview sampleconf/macos/mimeview \
 sampleconf/recoll.conf sampleconf/recoll.qss \
+sampleconf/recoll-common.css sampleconf/recoll-common.qss \
+sampleconf/recoll-dark.qss sampleconf/recoll-dark.css \
 \
 testmains/Makefile.am \
 \
 unac/AUTHORS unac/COPYING unac/README unac/README.recoll unac/unac.c \
 \
-VERSION
+RECOLL-VERSION.txt
 
 # EXTRA_DIST: The Php Code does not build anymore. No need to ship it until
 # someone fixes it:
@@ -635,20 +665,28 @@ defconfdir = $(pkgdatadir)/examples
 defconf_DATA = \
 desktop/recollindex.desktop \
 index/rclmon.sh \
-sampleconf/fragbuts.xml \
+index/recollindex.service \
+index/recollindex@.service \
 sampleconf/fields \
-sampleconf/recoll.conf \
+sampleconf/fragment-buttons.xml \
 sampleconf/mimeconf \
-sampleconf/recoll.qss \
 sampleconf/mimemap \
-sampleconf/mimeview 
+sampleconf/mimeview \
+sampleconf/recoll-common.css \
+sampleconf/recoll-common.qss \
+sampleconf/recoll-dark.css \
+sampleconf/recoll-dark.qss \
+sampleconf/recoll.conf \
+sampleconf/recoll.qss
 
 filterdir = $(pkgdatadir)/filters
 dist_filter_DATA = \
 desktop/hotrecoll.py \
 filters/abiword.xsl \
+filters/cmdtalk.py \
 filters/fb2.xsl \
 filters/gnumeric.xsl \
+filters/kosplitter.py \
 filters/msodump.zip \
 filters/okular-note.xsl \
 filters/opendoc-body.xsl \
@@ -658,63 +696,64 @@ filters/openxml-xls-body.xsl \
 filters/openxml-word-body.xsl \
 filters/openxml-meta.xsl \
 filters/ppt-dump.py \
-filters/rcl7z \
-filters/rclabw.py \
+filters/rcl7z.py \
 filters/rclaptosidman \
-filters/rclaudio \
+filters/rclaudio.py \
 filters/rclbasehandler.py \
 filters/rclbibtex.sh \
 filters/rclcheckneedretry.sh \
-filters/rclchm \
-filters/rcldia \
+filters/rclchm.py \
+filters/rcldia.py \
 filters/rcldjvu.py \
 filters/rcldoc.py \
 filters/rcldvi \
-filters/rclepub \
-filters/rclepub1 \
+filters/rclepub.py \
+filters/rclepub1.py \
 filters/rclexec1.py \
 filters/rclexecm.py \
 filters/rclfb2.py \
 filters/rclgaim \
 filters/rclgenxslt.py \
-filters/rclgnm.py \
-filters/rclics \
+filters/rclhwp.py \
+filters/rclics.py \
 filters/rclimg \
 filters/rclimg.py \
-filters/rclinfo \
-filters/rclkar \
+filters/rclinfo.py \
+filters/rclipynb.py \
+filters/rclkar.py \
 filters/rclkwd \
 filters/rcllatinclass.py \
 filters/rcllatinstops.zip \
 filters/rcllyx \
 filters/rclman \
 filters/rclmidi.py \
-filters/rclokulnote.py \
+filters/rclocrcache.py \
+filters/rclocr.py \
+filters/rclocrabbyy.py \
+filters/rclocrtesseract.py \
 filters/rclopxml.py \
+filters/rclorgmode.py \
 filters/rclpdf.py \
 filters/rclppt.py \
 filters/rclps \
 filters/rclpst.py \
 filters/rclpurple \
-filters/rclpython \
-filters/rclrar \
+filters/rclpython.py \
+filters/rclrar.py \
 filters/rclrtf.py \
 filters/rclscribus \
 filters/rclshowinfo \
-filters/rclsoff-flat.py \
-filters/rclsoff.py \
-filters/rclsvg.py \
-filters/rcltar \
+filters/rcltar.py \
 filters/rcltex \
 filters/rcltext.py \
 filters/rcluncomp \
 filters/rcluncomp.py \
-filters/rclwar \
+filters/rclwar.py \
 filters/rclxls.py \
 filters/rclxml.py \
 filters/rclxmp.py \
 filters/rclxslt.py \
-filters/rclzip \
+filters/rclzip.py \
 filters/recoll-we-move-files.py \
 filters/recollepub.zip \
 filters/svg.xsl \
@@ -724,10 +763,17 @@ filters/xml.xsl \
 python/recoll/recoll/conftree.py \
 python/recoll/recoll/rclconfig.py 
 
+if INSTALL_SYSTEMD_UNITS
+systemd_system_unitdir = @SYSTEMD_SYSTEM_UNIT_DIR@
+systemd_user_unitdir = @SYSTEMD_USER_UNIT_DIR@
+systemd_system_unit_DATA = index/recollindex@.service
+systemd_user_unit_DATA = index/recollindex.service
+endif
+
 install-data-hook: 
 	(cd $(DESTDIR)/$(filterdir); \
 	chmod a+x rcl* ppt-dump.py xls-dump.py xlsxmltocsv.py hotrecoll.py; \
-	chmod a+x recoll-we-move-files.py ../examples/rclmon.sh; \
+	chmod a+x recoll-we-move-files.py ../examples/rclmon.sh kosplitter.py; \
 	chmod 0644 msodump.zip recollepub.zip rclexecm.py rcllatinstops.zip \
         rclconfig.py conftree.py rclmidi.py rclexec1.py rcluncomp.py rclxslt.py)
 
@@ -748,6 +794,8 @@ dist_man5_MANS = doc/man/recoll.conf.5
 dist-hook:
 	(cd $(top_srcdir); find . \
             \( -name '*.pyc' -o -name '#*' -o -name '*~' \) -delete)
-	test -z "`git status -s | grep -v '??' | grep -v Makefile.am`"
-	vers=`echo $(VERSION) | sed -e 's/~/_/g'`;\
-	git tag -a RECOLL-$$vers -m "Release $$vers tagged"
+	if test -z "$(NOTAG)";then \
+	  test -z "`git status -s|grep -v recoll-$(RECOLL-VERSION.txt)`"||exit 1; \
+	  vers=`echo $(VERSION) | sed -e 's/~/_/g'`;\
+	  git tag -a RECOLL-$$vers -m "Release $$vers tagged"; \
+	fi

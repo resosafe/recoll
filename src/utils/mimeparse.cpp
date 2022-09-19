@@ -516,7 +516,7 @@ bool rfc2047_decode(const std::string& in, std::string &out)
                 state = rfc2047charset; 
             }
             break;
-            default: state = rfc2047ready; out += '='; out += ch;break;
+            default: state = rfc2047ready; value += '='; value += ch;break;
             }
         } 
         break;

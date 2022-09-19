@@ -172,7 +172,7 @@ awk '
        s=substr($0, RSTART+5, RLENGTH-5)
        printf("%s", s)
        # Note: No way to know if this ends a paragraph, so no "<br>"
-       #  but it migth be good to have one in some instances
+       #  but it might be good to have one in some instances
     }
     else if (match($0, "<para+")) {
        printf("<br>")

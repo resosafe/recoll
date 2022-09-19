@@ -21,7 +21,6 @@
 #include <stdlib.h>
 #include "safewindows.h"
 #include "pathut.h"
-#include "transcode.h"
 
 using namespace std;
 
@@ -52,17 +51,17 @@ int main(int argc, char *argv[])
     argc--; argv++;
     int imode = 0;
     while (argc > 0 && **argv == '-') {
-	(*argv)++;
-	if (!(**argv))
-	    Usage();
-	while (**argv)
-	    switch (*(*argv)++) {
-	    case 'm':	op_flags |= OPT_m; if (argc < 2)  Usage();
-		if ((sscanf(*(++argv), "%d", &imode)) != 1) 
-		    Usage(); 
-		argc--; goto b1;
-	    default: Usage(); break;
-	    }
+    (*argv)++;
+    if (!(**argv))
+        Usage();
+    while (**argv)
+        switch (*(*argv)++) {
+        case 'm':    op_flags |= OPT_m; if (argc < 2)  Usage();
+        if ((sscanf(*(++argv), "%d", &imode)) != 1) 
+            Usage(); 
+        argc--; goto b1;
+        default: Usage(); break;
+        }
     b1: argc--; argv++;
     }
 

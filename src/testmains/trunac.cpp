@@ -53,8 +53,8 @@ Usage(void)
 }
 
 static int     op_flags;
-#define OPT_c	  0x2 
-#define OPT_C	  0x4 
+#define OPT_c      0x2 
+#define OPT_C      0x4 
 #define OPT_t     0x8
 
 int main(int argc, char **argv)
@@ -65,81 +65,81 @@ int main(int argc, char **argv)
     argc--; argv++;
 
     while (argc > 0 && **argv == '-') {
-	(*argv)++;
-	if (!(**argv))
-	    /* Cas du "adb - core" */
-	    Usage();
-	while (**argv)
-	    switch (*(*argv)++) {
-	    case 'c':	op_flags |= OPT_c; break;
-	    case 'C':	op_flags |= OPT_C; break;
-	    case 't':	op_flags |= OPT_t; break;
-	    default: Usage();	break;
-	    }
-	argc--; argv++;
+    (*argv)++;
+    if (!(**argv))
+        /* Cas du "adb - core" */
+        Usage();
+    while (**argv)
+        switch (*(*argv)++) {
+        case 'c':    op_flags |= OPT_c; break;
+        case 'C':    op_flags |= OPT_C; break;
+        case 't':    op_flags |= OPT_t; break;
+        default: Usage();    break;
+        }
+    argc--; argv++;
     }
 
     if (op_flags & OPT_t) {
-	if (argc != 1)
-	    Usage();
-	string in = *argv++;argc--;
-	bool capital, upper, accent;
-	capital = unaciscapital(in);
-	upper = unachasuppercase(in);
-	accent = unachasaccents(in);
-	cout << "[" << in << "] : " << 
-	    "capitalized: " << (capital ? "Yes. " : "No. ") <<
-	    "has uppercase: " << (upper ? "Yes. " : "No. ") <<
-	    "has accents: " << (accent ? "Yes. " : "No. ") << 
-	    endl;
-	return 0;
+    if (argc != 1)
+        Usage();
+    string in = *argv++;argc--;
+    bool capital, upper, accent;
+    capital = unaciscapital(in);
+    upper = unachasuppercase(in);
+    accent = unachasaccents(in);
+    cout << "[" << in << "] : " << 
+        "capitalized: " << (capital ? "Yes. " : "No. ") <<
+        "has uppercase: " << (upper ? "Yes. " : "No. ") <<
+        "has accents: " << (accent ? "Yes. " : "No. ") << 
+        endl;
+    return 0;
     } else {
-	if (argc != 3)
-	    Usage();
-	if (op_flags & OPT_c) {
-	    op = UNACOP_UNACFOLD;
-	} else if (op_flags & OPT_C) {
-	    op = UNACOP_FOLD;
-	}
+    if (argc != 3)
+        Usage();
+    if (op_flags & OPT_c) {
+        op = UNACOP_UNACFOLD;
+    } else if (op_flags & OPT_C) {
+        op = UNACOP_FOLD;
+    }
 
-	const char *encoding = *argv++; argc--;
-	string ifn = *argv++; argc--;
-	if (!ifn.compare("stdin") || !ifn.compare("-")) {
+    const char *encoding = *argv++; argc--;
+    string ifn = *argv++; argc--;
+    if (!ifn.compare("stdin") || !ifn.compare("-")) {
             // file_read interprets an empty fn as "use stdin"
-	    ifn.clear();
+        ifn.clear();
         }
-	const char *ofn = *argv++; argc--;
+    const char *ofn = *argv++; argc--;
 
-	string reason;
-	(void)recollinit(RCLINIT_NONE, 0, 0, reason, 0);
+    string reason;
+    (void)recollinit(RCLINIT_NONE, 0, 0, reason, 0);
 
-	string odata;
-	if (!file_to_string(ifn, odata)) {
-	    cerr << "file_to_string " << ifn << " : " << odata << endl;
-	    return 1;
-	}
-	string ndata;
-	if (!unacmaybefold(odata, ndata, encoding, op)) {
-	    cerr << "unac: " << ndata << endl;
-	    return 1;
-	}
+    string odata;
+    if (!file_to_string(ifn, odata)) {
+        cerr << "file_to_string " << ifn << " : " << odata << endl;
+        return 1;
+    }
+    string ndata;
+    if (!unacmaybefold(odata, ndata, encoding, op)) {
+        cerr << "unac: " << ndata << endl;
+        return 1;
+    }
     
-	int fd;
-	if (strcmp(ofn, "stdout") && strcmp(ofn, "-")) {
-	    fd = open(ofn, O_CREAT|O_EXCL|O_WRONLY, 0666);
-	} else {
-	    fd = 1;
-	}
-	if (fd < 0) {
-	    cerr << "Open/Create " << ofn << " failed: " << strerror(errno) 
-		 << endl;
-	    return 1;
-	}
-	if (write(fd, ndata.c_str(), ndata.length()) != (int)ndata.length()) {
-	    cerr << "Write(2) failed: " << strerror(errno)  << endl;
-	    return 1;
-	}
-	close(fd);
-	return 0;
+    int fd;
+    if (strcmp(ofn, "stdout") && strcmp(ofn, "-")) {
+        fd = open(ofn, O_CREAT|O_EXCL|O_WRONLY, 0666);
+    } else {
+        fd = 1;
+    }
+    if (fd < 0) {
+        cerr << "Open/Create " << ofn << " failed: " << strerror(errno) 
+         << endl;
+        return 1;
+    }
+    if (write(fd, ndata.c_str(), ndata.length()) != (int)ndata.length()) {
+        cerr << "Write(2) failed: " << strerror(errno)  << endl;
+        return 1;
+    }
+    close(fd);
+    return 0;
     }
 }

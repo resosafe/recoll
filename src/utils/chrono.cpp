@@ -17,10 +17,10 @@
 #ifndef TEST_CHRONO
 #include "autoconfig.h"
 
+#include "chrono.h"
+
 #include <time.h>
 #include <iostream>
-
-#include "chrono.h"
 
 using namespace std;
 
@@ -31,19 +31,19 @@ typedef int clockid_t;
 
 
 #define SECONDS(TS1, TS2)                             \
-    (float((TS2).tv_sec - (TS1).tv_sec) +             \
-     float((TS2).tv_nsec - (TS1).tv_nsec) * 1e-9)
+    (double((TS2).tv_sec - (TS1).tv_sec) +             \
+     double((TS2).tv_nsec - (TS1).tv_nsec) * 1e-9)
 
 #define MILLIS(TS1, TS2)                                        \
-    ((long long)((TS2).tv_sec - (TS1).tv_sec) * 1000LL +        \
+    ((int64_t)((TS2).tv_sec - (TS1).tv_sec) * 1000LL +        \
      ((TS2).tv_nsec - (TS1).tv_nsec) / 1000000)
 
 #define MICROS(TS1, TS2)                                          \
-    ((long long)((TS2).tv_sec - (TS1).tv_sec) * 1000000LL +       \
+    ((int64_t)((TS2).tv_sec - (TS1).tv_sec) * 1000000LL +       \
      ((TS2).tv_nsec - (TS1).tv_nsec) / 1000)
 
 #define NANOS(TS1, TS2)                                           \
-    ((long long)((TS2).tv_sec - (TS1).tv_sec) * 1000000000LL +    \
+    ((int64_t)((TS2).tv_sec - (TS1).tv_sec) * 1000000000LL +    \
      ((TS2).tv_nsec - (TS1).tv_nsec))
 
 
@@ -69,7 +69,7 @@ typedef struct timeval {
     long tv_usec;
 } timeval;
 
-int gettimeofday(struct timeval * tp, struct timezone * tzp)
+int gettimeofday(struct timeval * tp, struct timezone * /*tzp*/)
 {
     // Note: some broken versions only have 8 trailing zero's, the
     // correct epoch has 9 trailing zero's
@@ -136,26 +136,26 @@ Chrono::Chrono()
 }
 
 // Reset and return value before rest in milliseconds
-long Chrono::restart()
+int64_t Chrono::restart()
 {
     TimeSpec now;
     gettime(CLOCK_REALTIME, &now);
-    long ret = MILLIS(m_orig, now);
+    int64_t ret = MILLIS(m_orig, now);
     m_orig = now;
     return ret;
 }
 
-long Chrono::urestart()
+int64_t Chrono::urestart()
 {
     TimeSpec now;
     gettime(CLOCK_REALTIME, &now);
-    long ret = MICROS(m_orig, now);
+    int64_t ret = MICROS(m_orig, now);
     m_orig = now;
     return ret;
 }
 
 // Get current timer value, milliseconds
-long Chrono::millis(bool frozen)
+int64_t Chrono::millis(bool frozen)
 {
     if (frozen) {
         return MILLIS(m_orig, o_now);
@@ -167,7 +167,7 @@ long Chrono::millis(bool frozen)
 }
 
 //
-long Chrono::micros(bool frozen)
+int64_t Chrono::micros(bool frozen)
 {
     if (frozen) {
         return MICROS(m_orig, o_now);
@@ -178,7 +178,7 @@ long Chrono::micros(bool frozen)
     }
 }
 
-long long Chrono::amicros() const
+int64_t Chrono::amicros() const
 {
     TimeSpec ts;
     ts.tv_sec = 0;
@@ -187,7 +187,7 @@ long long Chrono::amicros() const
 }
 
 //
-long long Chrono::nanos(bool frozen)
+int64_t Chrono::nanos(bool frozen)
 {
     if (frozen) {
         return NANOS(m_orig, o_now);
@@ -198,7 +198,7 @@ long long Chrono::nanos(bool frozen)
     }
 }
 
-float Chrono::secs(bool frozen)
+double Chrono::secs(bool frozen)
 {
     if (frozen) {
         return SECONDS(m_orig, o_now);

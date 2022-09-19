@@ -39,6 +39,7 @@
 #include <vector>
 #include <string>
 #include <stdexcept>
+#include <sstream>
 #ifdef HAVE_SPAWN_H
 #ifndef __USE_GNU
 #define __USE_GNU
@@ -994,7 +995,8 @@ int ExecCmd::wait()
             LOGERR("ExecCmd::waitpid: returned -1 errno " << errno << "\n");
             status = -1;
         }
-        LOGDEB("ExecCmd::wait: got status 0x" << (status) << "\n");
+        LOGDEB("ExecCmd::wait: got status 0x" << std::hex << status << std::dec << ": " <<
+               waitStatusAsString(status) << "\n");
         m->m_pid = -1;
     }
     // Let the ExecCmdRsrc cleanup, it will do the killing/waiting if needed
@@ -1021,7 +1023,8 @@ bool ExecCmd::maybereap(int *status)
         e.inactivate();
         return false;
     } else {
-        LOGDEB("ExecCmd::maybereap: got status 0x" << (status) << "\n");
+        if (*status)
+            LOGDEB("ExecCmd::maybereap: got status 0x" << *status << "\n");
         m->m_pid = -1;
         return true;
     }
@@ -1042,13 +1045,25 @@ bool ExecCmd::backtick(const vector<string> cmd, string& out)
     return status == 0;
 }
 
-/// ReExec class methods ///////////////////////////////////////////////////
-ReExec::ReExec(int argc, char *args[])
+std::string ExecCmd::waitStatusAsString(int wstatus)
 {
-    init(argc, args);
+    std::ostringstream oss;
+    if (WIFEXITED(wstatus)) {
+        oss << "Exit status: " << WEXITSTATUS(wstatus);
+    } else {
+        if (WIFSIGNALED(wstatus)) {
+            oss << strsignal(WTERMSIG(wstatus)) << " ";
+        }
+        if (WCOREDUMP(wstatus)) {
+            oss << "(core dumped)";
+        }
+    }
+    return oss.str();
 }
 
-void ReExec::init(int argc, char *args[])
+
+/// ReExec class methods ///////////////////////////////////////////////////
+ReExec::ReExec(int argc, char *args[])
 {
     for (int i = 0; i < argc; i++) {
         m_argv.push_back(args[i]);
@@ -1061,9 +1076,20 @@ void ReExec::init(int argc, char *args[])
     free(cd);
 }
 
+ReExec::ReExec(const std::vector<std::string>& args)
+    : m_argv(args)
+{
+    m_cfd = open(".", 0);
+    char *cd = getcwd(0, 0);
+    if (cd) {
+        m_curdir = cd;
+    }
+    free(cd);
+}
+
 void ReExec::insertArgs(const vector<string>& args, int idx)
 {
-    vector<string>::iterator it, cit;
+    vector<string>::iterator it;
     unsigned int cmpoffset = (unsigned int) - 1;
 
     if (idx == -1 || string::size_type(idx) >= m_argv.size()) {

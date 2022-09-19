@@ -60,7 +60,7 @@ int yylex(yy::parser::semantic_type *, yy::parser::location_type *,
 void yyerror(char const *);
 static void qualify(Rcl::SearchDataClauseDist *, const string &);
 
-static void addSubQuery(WasaParserDriver *d,
+static void addSubQuery(WasaParserDriver *,
                         Rcl::SearchData *sd, Rcl::SearchData *sq)
 {
     if (sd && sq)
@@ -1465,7 +1465,7 @@ static void qualify(Rcl::SearchDataClauseDist *cl, const string& quals)
         case 's': 
             cl->addModifier(Rcl::SearchDataClause::SDCM_NOSYNS);
             break;
-	case 'S':
+    case 'S':
             break;
         case '.':case '0':case '1':case '2':case '3':case '4':
         case '5':case '6':case '7':case '8':case '9':
@@ -1528,7 +1528,7 @@ out:
 
 
 int yylex(yy::parser::semantic_type *yylval, yy::parser::location_type *, 
-		  WasaParserDriver *d)
+          WasaParserDriver *d)
 {
     if (!d->qualifiers().empty()) {
         yylval->str = new string();

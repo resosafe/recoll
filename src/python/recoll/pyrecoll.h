@@ -1,4 +1,4 @@
-/* Copyright (C) 2012 J.F.Dockes
+/* Copyright (C) 2012-2020 J.F.Dockes
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation; either version 2 of the License, or
@@ -17,11 +17,18 @@
 #ifndef _PYRECOLL_H_INCLUDED_
 #define _PYRECOLL_H_INCLUDED_
 
+/* Shared definitions for pyrecoll.cpp and pyrclextract.cpp */
+
 #include <Python.h>
 
 #include <memory>
+#include <string>
 
 class RclConfig;
+namespace Rcl {
+class Doc;
+class Query;
+};
 
 typedef struct {
     PyObject_HEAD
@@ -31,6 +38,27 @@ typedef struct {
     std::shared_ptr<RclConfig> rclconfig; 
 } recoll_DocObject;
 
-#define PYRECOLL_PACKAGE "recoll."
+struct recoll_DbObject;
+
+typedef struct {
+    PyObject_HEAD
+    /* Type-specific fields go here. */
+    Rcl::Query *query;
+    int         next; // Index of result to be fetched next or -1 if uninit
+    int         rowcount; // Number of records returned by last execute
+    std::string      *sortfield; // Need to allocate in here, main program is C.
+    int         ascending;
+    int         arraysize; // Default size for fetchmany
+    recoll_DbObject* connection;
+    bool        fetchtext;
+} recoll_QueryObject;
+
+extern PyTypeObject recoll_DocType;
+extern PyTypeObject recoll_QueryType;
+extern PyTypeObject rclx_ExtractorType;
+extern PyTypeObject recoll_QResultStoreType;
+extern PyTypeObject recoll_QRSDocType;
+
+extern int pys2cpps(PyObject *pyval, std::string& out);
 
 #endif // _PYRECOLL_H_INCLUDED_

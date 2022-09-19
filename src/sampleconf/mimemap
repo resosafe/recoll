@@ -15,18 +15,31 @@
 .rst = text/plain
 .md = text/plain
 .gv = text/plain
+.desktop = text/plain
+.json = text/plain
+
+# .log is in the default noContentSuffixes, so this will also need a recoll.conf setting to do
+# anything
+.log = text/plain
+
 .srt = text/x-srt
 .ini = text/x-ini
 .csv = text/x-csv
 .bib = text/x-bibtex
+
+.org = text/x-orgmode
 
 # Source files. 
 # Defining them with specific types allows using a specific ext viewer (in 
 # mimeview). You can in general use rcltext to wrap them in html for
 # indexing the contents (and rough preview). You could also just set them
 # as text/plain (index as text, use text viewer)
+
+# It seems that basic source files have no specific MIME?
+.bas = text/plain 
 .cpp = text/x-c
 .h   = text/x-c
+.hpp = text/x-c++
 .c   = text/x-c
 .cc  = text/x-c
 .cxx = text/x-c
@@ -45,7 +58,10 @@
 .sql = application/sql
 .tcl = text/x-tcl
 
+.ipynb = application/x-ipynb+json
+
 .xml = text/xml
+.opf = text/xml
 
 .note = application/x-gnote
 
@@ -78,17 +94,21 @@
 .svg = image/svg+xml
 .dia = application/x-dia-diagram
 
+# Compressed files
 .gz = application/x-gzip
 .Z = application/x-gzip
 .bz2 = application/x-bzip2
-.rar = application/x-rar
-#.Z  = application/x-compress
-.zip = application/zip
-.7z = application/x-7z-compressed
-.maff = application/zip
+.lzma = application/x-lzma
+.xz = application/x-xz
 .zst = application/x-zstd
 
-# The rcltar module can handle compressed tar formats internally so we
+# Archives
+.rar = application/x-rar
+.zip = application/zip
+.maff = application/zip
+.7z = application/x-7z-compressed
+
+# The rcltar.py module can handle compressed tar formats internally so we
 # use application/x-tar for all tar files compressed or not. Note that tar
 # file indexing is disabled by default, you'll need to copy and uncomment
 # the application/x-tar commented line from mimeconf into your personal config
@@ -97,6 +117,8 @@
 .tgz = application/x-tar
 .tbz = application/x-tar
 .tar.bz2 = application/x-tar
+
+.hwp = application/x-hwp
 
 .doc = application/msword
 .dot = application/msword
@@ -109,7 +131,9 @@
 .chm = application/x-chm
 
 .epub = application/epub+zip
+.kepub = application/epub+zip
 .mobi = application/x-mobipocket-ebook 
+.lit = application/x-ms-reader
 
 # OpenOffice / opendocument. We handle opendocument as old openoffice files
 # for now
@@ -132,22 +156,31 @@
 .fodt = application/vnd.oasis.opendocument.text-flat-xml
 .fods = application/vnd.oasis.opendocument.spreadsheet-flat-xml
 
-# ms openxml 
-.docm = application/vnd.ms-word.document.macroEnabled.12
+# ms openxml
+# .docm = application/vnd.ms-word.document.macroEnabled.12
+.docm = application/vnd.openxmlformats-officedocument.wordprocessingml.document
 .docx = application/vnd.openxmlformats-officedocument.wordprocessingml.document
-.dotm = application/vnd.ms-word.template.macroEnabled.12
+# .dotm = application/vnd.ms-word.template.macroEnabled.12
+.dotm = application/vnd.openxmlformats-officedocument.wordprocessingml.template 
 .dotx = application/vnd.openxmlformats-officedocument.wordprocessingml.template
-.potm = application/vnd.ms-powerpoint.template.macroEnabled.12
+# .potm = application/vnd.ms-powerpoint.template.macroEnabled.12
+.potm = application/vnd.openxmlformats-officedocument.presentationml.template
 .potx = application/vnd.openxmlformats-officedocument.presentationml.template
-.ppam = application/vnd.ms-powerpoint.addin.macroEnabled.12
-.ppsm = application/vnd.ms-powerpoint.slideshow.macroEnabled.12
-.ppsx = application/vnd.openxmlformats-officedocument.presentationml.slideshow
-.pptm = application/vnd.ms-powerpoint.presentation.macroEnabled.12
+# .ppam = application/vnd.ms-powerpoint.addin.macroEnabled.12
+.ppam = application/vnd.openxmlformats-officedocument.presentationml.presentation
+# .ppsm = application/vnd.ms-powerpoint.slideshow.macroEnabled.12
+.ppsm = application/vnd.openxmlformats-officedocument.presentationml.presentation
+# .ppsx = application/vnd.openxmlformats-officedocument.presentationml.slideshow
+.ppsx = application/vnd.openxmlformats-officedocument.presentationml.presentation
+# .pptm = application/vnd.ms-powerpoint.presentation.macroEnabled.12
+.pptm = application/vnd.openxmlformats-officedocument.presentationml.presentation
 .pptx = application/vnd.openxmlformats-officedocument.presentationml.presentation
+.vsdx = application/vnd.ms-visio.drawing
 .xlam = application/vnd.ms-excel.addin.macroEnabled.12
 .xlsb = application/vnd.ms-excel.sheet.binary.macroEnabled.12
 .xlsm = application/vnd.ms-excel.sheet.macroEnabled.12
 .xlsx = application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
+.xlsm = application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
 .xltm = application/vnd.ms-excel.template.macroEnabled.12
 .xltx = application/vnd.openxmlformats-officedocument.spreadsheetml.template
  
@@ -162,12 +195,10 @@
 
 .wpd = application/vnd.wordperfect
 
-.rtf = text/rtf
-
 # Note: file -i says audio/x-midi, but soft karaoke files are special.
 .aac = audio/aac
 .ape = audio/ape
-.flac = application/x-flac
+.flac = audio/flac
 .kar = audio/x-karaoke
 .m4a = audio/mp4
 .mid = audio/x-karaoke
@@ -175,6 +206,9 @@
 .mpc = audio/x-musepack
 .oga = application/ogg
 .ogg = application/ogg
+.ogx = audio/ogg
+.opus = audio/ogg
+.wav = audio/x-wav
 .wv = audio/x-wavpack
 
 .mkv = video/x-matroska

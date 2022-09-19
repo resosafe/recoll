@@ -44,8 +44,7 @@ using namespace std;
 // groups anyway
 class SynGroups::Internal {
 public:
-    Internal() : ok(false) {
-    }
+    Internal() {}
     void setpath(const string& fn) {
         path = path_canon(fn);
         stat(path.c_str(), &st);
@@ -61,16 +60,34 @@ public:
         }
         return st.st_mtime == st1.st_mtime && st.st_size == st1.st_size;
     }
-    bool ok;
+
+    void clear() {
+        ok = false;
+        terms.clear();
+        groups.clear();
+        multiwords.clear();
+        multiwords_maxlen = 0;
+        path.clear();
+        st.st_mtime = 0;
+        st.st_size = 0;
+    }
+    
+    bool ok{false};
     // Term to group num 
     std::unordered_map<string, unsigned int> terms;
     // Group num to group
     vector<vector<string> > groups;
+
+    // Aux: set of multiword synonyms used for generating multiword
+    // terms while indexing
+    std::set<std::string> multiwords;
+    size_t multiwords_maxlen{0};
+    
     std::string path;
     struct stat st;
 };
 
-bool SynGroups::ok() 
+bool SynGroups::ok() const
 {
     return m && m->ok;
 }
@@ -89,17 +106,12 @@ bool SynGroups::setfile(const string& fn)
 {
     LOGDEB("SynGroups::setfile(" << fn << ")\n");
     if (!m) {
-        m = new Internal;
-        if (!m) {
-            LOGERR("SynGroups:setfile:: new Internal failed: no mem ?\n");
-            return false;
-        }
+        return false;
     }
 
     if (fn.empty()) {
-        delete m;
-        m = 0;
-	return true;
+        m->clear();
+        return true;
     }
 
     if (m->samefile(fn)) {
@@ -111,30 +123,30 @@ bool SynGroups::setfile(const string& fn)
     ifstream input;
     input.open(fn.c_str(), ios::in);
     if (!input.is_open()) {
-	LOGSYSERR("SynGroups:setfile", "open", fn);
-	return false;
-    }	    
+        LOGSYSERR("SynGroups:setfile", "open", fn);
+        return false;
+    }        
 
     string cline;
     bool appending = false;
     string line;
     bool eof = false;
     int lnum = 0;
-
+    m->clear();
     for (;;) {
         cline.clear();
-	getline(input, cline);
-	if (!input.good()) {
-	    if (input.bad()) {
+        getline(input, cline);
+        if (!input.good()) {
+            if (input.bad()) {
                 LOGERR("Syngroup::setfile(" << fn << "):Parse: input.bad()\n");
-		return false;
-	    }
-	    // Must be eof ? But maybe we have a partial line which
-	    // must be processed. This happens if the last line before
-	    // eof ends with a backslash, or there is no final \n
+                return false;
+            }
+            // Must be eof ? But maybe we have a partial line which
+            // must be processed. This happens if the last line before
+            // eof ends with a backslash, or there is no final \n
             eof = true;
-	}
-	lnum++;
+        }
+        lnum++;
 
         {
             string::size_type pos = cline.find_last_not_of("\n\r");
@@ -145,65 +157,85 @@ bool SynGroups::setfile(const string& fn)
             }
         }
 
-	if (appending)
-	    line += cline;
-	else
-	    line = cline;
+        if (appending)
+            line += cline;
+        else
+            line = cline;
 
-	// Note that we trim whitespace before checking for backslash-eol
-	// This avoids invisible whitespace problems.
-	trimstring(line);
-	if (line.empty() || line.at(0) == '#') {
+        // Note that we trim whitespace before checking for backslash-eol
+        // This avoids invisible whitespace problems.
+        trimstring(line);
+        if (line.empty() || line.at(0) == '#') {
             if (eof)
                 break;
-	    continue;
-	}
-	if (line[line.length() - 1] == '\\') {
-	    line.erase(line.length() - 1);
-	    appending = true;
-	    continue;
-	}
-	appending = false;
+            continue;
+        }
+        if (line[line.length() - 1] == '\\') {
+            line.erase(line.length() - 1);
+            appending = true;
+            continue;
+        }
+        appending = false;
 
-	vector<string> words;
-	if (!stringToStrings(line, words)) {
-	    LOGERR("SynGroups:setfile: " << fn << ": bad line " << lnum <<
+        vector<string> words;
+        if (!stringToStrings(line, words)) {
+            LOGERR("SynGroups:setfile: " << fn << ": bad line " << lnum <<
                    ": " << line << "\n");
-	    continue;
-	}
+            continue;
+        }
 
-	if (words.empty())
-	    continue;
-	if (words.size() == 1) {
-	    LOGERR("Syngroup::setfile(" << fn << "):single term group at line "
+        if (words.empty())
+            continue;
+        if (words.size() == 1) {
+            LOGERR("Syngroup::setfile(" << fn << "):single term group at line "
                    << lnum << " ??\n");
-	    continue;
-	}
+            continue;
+        }
 
-	m->groups.push_back(words);
-	for (const auto& word : words) {
-	    m->terms[word] = m->groups.size()-1;
-	}
-	LOGDEB1("SynGroups::setfile: group: [" <<
+        m->groups.push_back(words);
+        for (const auto& word : words) {
+            m->terms[word] = m->groups.size()-1;
+        }
+        LOGDEB1("SynGroups::setfile: group: [" <<
                 stringsToString(m->groups.back()) << "]\n");
     }
-    LOGDEB("SynGroups::setfile: got " << m->groups.size() <<
-           " distinct terms." << endl);
+
+    for (const auto& group : m->groups) {
+        for (const auto& term : group) {
+            std::vector<std::string> words;
+            stringToTokens(term, words);
+            if (words.size() > 1) {
+                std::string multiword;
+                for (const auto& word : words) {
+                    if (!multiword.empty()) {
+                        multiword += " ";
+                    }
+                    multiword += word;
+                }
+                m->multiwords.insert(multiword);
+                if (m->multiwords_maxlen < words.size()) {
+                    m->multiwords_maxlen = words.size();
+                }
+            }
+        }
+    }
+    LOGDEB("SynGroups::setfile: got " << m->groups.size() << " distinct terms. "
+           "Multiwords: " << stringsToString(m->multiwords) <<"\n");
     m->ok = true;
     m->setpath(fn);
     return true;
 }
 
-vector<string> SynGroups::getgroup(const string& term)
+vector<string> SynGroups::getgroup(const string& term) const
 {
     vector<string> ret;
     if (!ok())
-	return ret;
+        return ret;
 
     const auto it1 = m->terms.find(term);
     if (it1 == m->terms.end()) {
-	LOGDEB0("SynGroups::getgroup: [" << term << "] not found in map\n");
-	return ret;
+        LOGDEB0("SynGroups::getgroup: [" << term << "] not found in map\n");
+        return ret;
     }
 
     unsigned int idx = it1->second;
@@ -214,4 +246,20 @@ vector<string> SynGroups::getgroup(const string& term)
     LOGDEB0("SynGroups::getgroup: result: " << stringsToString(m->groups[idx])
             << endl);
     return m->groups[idx];
+}
+
+const std::set<std::string>& SynGroups::getmultiwords() const
+{
+    return m->multiwords;
+}
+
+size_t SynGroups::getmultiwordsmaxlength() const
+{
+    return m->multiwords_maxlen;
+}
+
+const std::string& SynGroups::getpath() const
+{
+    static string empty;
+    return m ? m->path : empty;
 }

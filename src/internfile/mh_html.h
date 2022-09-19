@@ -25,24 +25,26 @@
  * Convert html to utf-8 text and extract whatever metadata we can find.
  */
 class MimeHandlerHtml : public RecollFilter {
- public:
+public:
     MimeHandlerHtml(RclConfig *cnf, const std::string& id) 
-	: RecollFilter(cnf, id) {
+        : RecollFilter(cnf, id) {
     }
     virtual ~MimeHandlerHtml() {}
+    MimeHandlerHtml(const MimeHandlerHtml&) = delete;
+    MimeHandlerHtml& operator=(const MimeHandlerHtml&) = delete;
 
     virtual bool is_data_input_ok(DataInput input) const override {
-	if (input == DOCUMENT_FILE_NAME || input == DOCUMENT_STRING)
-	    return true;
-	return false;
+        if (input == DOCUMENT_FILE_NAME || input == DOCUMENT_STRING)
+            return true;
+        return false;
     }
     virtual bool next_document() override;
     const std::string& get_html() {
-	return m_html;
+        return m_html;
     }
     virtual void clear_impl() override {
-	m_filename.erase();
-	m_html.erase();
+        m_filename.erase();
+        m_html.erase();
     }
 protected:
     virtual bool set_document_file_impl(const std::string& mt,

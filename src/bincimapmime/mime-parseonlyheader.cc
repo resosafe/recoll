@@ -23,6 +23,8 @@
  *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *  --------------------------------------------------------------------
  */
+#include "autoconfig.h"
+
 #include "mime.h"
 #include "mime-utils.h"
 #include "mime-inputsource.h"
@@ -38,9 +40,7 @@
 #include <stdio.h>
 #include <errno.h>
 
-#ifndef NO_NAMESPACES
-using namespace ::std;
-#endif /* NO_NAMESPACES */
+using namespace std;
 
 //------------------------------------------------------------------------
 void Binc::MimeDocument::parseOnlyHeader(int fd)
@@ -63,7 +63,7 @@ void Binc::MimeDocument::parseOnlyHeader(int fd)
   nlines = 0;
   nbodylines = 0;
 
-  doParseOnlyHeader(doc_mimeSource, "");
+  doParseOnlyHeader(doc_mimeSource);
 }
 
 void Binc::MimeDocument::parseOnlyHeader(istream& s)
@@ -86,12 +86,11 @@ void Binc::MimeDocument::parseOnlyHeader(istream& s)
   nlines = 0;
   nbodylines = 0;
 
-  doParseOnlyHeader(doc_mimeSource, "");
+  doParseOnlyHeader(doc_mimeSource);
 }
 
 //------------------------------------------------------------------------
-int Binc::MimePart::doParseOnlyHeader(MimeInputSource *ms, 
-				      const string &toboundary)
+int Binc::MimePart::doParseOnlyHeader(MimeInputSource *ms)
 {
   mimeSource = ms;
   string name;
@@ -108,27 +107,27 @@ int Binc::MimePart::doParseOnlyHeader(MimeInputSource *ms,
     // read name
     while (1) {
       if (!mimeSource->getChar(&c)) {
-	quit = true;
-	break;
+    quit = true;
+    break;
       }
 
       if (c == '\n') ++nlines;
       if (c == ':') break;
       if (c == '\n') {
     for (int i = int(name.length()) - 1; i >= 0; --i)
-	  mimeSource->ungetChar();
+      mimeSource->ungetChar();
 
-	quit = true;
-	name.clear();
-	break;
+    quit = true;
+    name.clear();
+    break;
       }
 
       name += c;
 
       if (name.length() == 2 && name.substr(0, 2) == "\r\n") {
-	name.clear();
-	quit = true;
-	break;
+    name.clear();
+    quit = true;
+    break;
       }
     }
 
@@ -141,36 +140,36 @@ int Binc::MimePart::doParseOnlyHeader(MimeInputSource *ms,
 
     while (!quit) {
       if (!mimeSource->getChar(&c)) {
-	quit = true;
-	break;
+    quit = true;
+    break;
       }
 
       if (c == '\n') ++nlines;
 
       for (int i = 0; i < 3; ++i)
-	cqueue[i] = cqueue[i + 1];
+    cqueue[i] = cqueue[i + 1];
       cqueue[3] = c;
 
       if (strncmp(cqueue, "\r\n\r\n", 4) == 0) {
-	quit = true;
-	break;
+    quit = true;
+    break;
       }
 
       if (cqueue[2] == '\n') {
 
-	// guess the mime rfc says what can not appear on the beginning
-	// of a line.
-	if (!isspace(cqueue[3])) {
-	  if (content.length() > 2)
-	    content.resize(content.length() - 2);
+    // guess the mime rfc says what can not appear on the beginning
+    // of a line.
+    if (!isspace(cqueue[3])) {
+      if (content.length() > 2)
+        content.resize(content.length() - 2);
 
-	  trim(content);
-	  h.add(name, content);
+      trim(content);
+      h.add(name, content);
 
-	  name = c;
-	  content.clear();
-	  break;
-	}
+      name = c;
+      content.clear();
+      break;
+    }
       }
 
       content += c;

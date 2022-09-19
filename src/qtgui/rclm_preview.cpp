@@ -68,7 +68,7 @@ bool RclMain::containerUpToDate(Rcl::Doc& doc)
     string sig;
     if (!FileInterner::makesig(theconfig, doc, sig)) {
         QMessageBox::warning(0, "Recoll", tr("Can't access file: ") + 
-                             QString::fromLocal8Bit(doc.url.c_str()));
+                             path2qs(doc.url));
         // Let's try the preview anyway...
         return true;
     }

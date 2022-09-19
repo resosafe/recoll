@@ -1,43 +1,41 @@
 #include "qxtconfirmationmessage.h"
 /****************************************************************************
-** Copyright (c) 2006 - 2011, the LibQxt project.
-** See the Qxt AUTHORS file for a list of authors and copyright holders.
-** All rights reserved.
-**
-** Redistribution and use in source and binary forms, with or without
-** modification, are permitted provided that the following conditions are met:
-**     * Redistributions of source code must retain the above copyright
-**       notice, this list of conditions and the following disclaimer.
-**     * Redistributions in binary form must reproduce the above copyright
-**       notice, this list of conditions and the following disclaimer in the
-**       documentation and/or other materials provided with the distribution.
-**     * Neither the name of the LibQxt project nor the
-**       names of its contributors may be used to endorse or promote products
-**       derived from this software without specific prior written permission.
-**
-** THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-** ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-** WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-** DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT HOLDER> BE LIABLE FOR ANY
-** DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-** (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-** LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
-** ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-** (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-** SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-**
-** <http://libqxt.org>  <foundation@libqxt.org>
-*****************************************************************************/
-
+* Copyright (c) 2006 - 2011, the LibQxt project.
+* See the Qxt AUTHORS file for a list of authors and copyright holders.
+* All rights reserved.
+*
+* Redistribution and use in source and binary forms, with or without
+* modification, are permitted provided that the following conditions are met:
+*     * Redistributions of source code must retain the above copyright
+*       notice, this list of conditions and the following disclaimer.
+*     * Redistributions in binary form must reproduce the above copyright
+*       notice, this list of conditions and the following disclaimer in the
+*       documentation and/or other materials provided with the distribution.
+*     * Neither the name of the LibQxt project nor the
+*       names of its contributors may be used to endorse or promote products
+*       derived from this software without specific prior written permission.
+*
+* THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+*   "AS IS" AND
+* ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+* WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+* DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT HOLDER> BE LIABLE FOR ANY
+* DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+* (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+* LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+* ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+* (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+* SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*
+* <http://libqxt.org>  <foundation@libqxt.org>
+****************************************************************************/
 
 #include <QCoreApplication>
 #include <QDialogButtonBox>
 #include <QPushButton>
 #include <QGridLayout>
 #include <QCheckBox>
-
-static const QLatin1String DEFAULT_ORGANIZATION("QxtWidgets");
-static const QLatin1String DEFAULT_APPLICATION("QxtConfirmationMessage");
+#include <QSettings>
 
 class QxtConfirmationMessagePrivate : public QxtPrivate<QxtConfirmationMessage>
 {
@@ -46,8 +44,6 @@ public:
     void init(const QString& message = QString());
 
     QString key() const;
-    QString applicationName() const;
-    QString organizationName() const;
 
     int showAgain();
     void doNotShowAgain(int result);
@@ -55,18 +51,8 @@ public:
 
     bool remember;
     QCheckBox* confirm;
-    QString overrideApp;
     QString overrideKey;
-    QString overrideOrg;
-
-    static QString path;
-    static QSettings::Scope scope;
-    static QSettings::Format format;
 };
-
-QString QxtConfirmationMessagePrivate::path;
-QSettings::Scope QxtConfirmationMessagePrivate::scope = QSettings::UserScope;
-QSettings::Format QxtConfirmationMessagePrivate::format = QSettings::NativeFormat;
 
 void QxtConfirmationMessagePrivate::init(const QString& message)
 {
@@ -79,13 +65,13 @@ void QxtConfirmationMessagePrivate::init(const QString& message)
 
     QGridLayout* grid = qobject_cast<QGridLayout*>(qxt_p().layout());
     QDialogButtonBox* buttons = qxt_p().findChild<QDialogButtonBox*>();
-    if (grid && buttons)
-    {
+    if (grid && buttons) {
         const int idx = grid->indexOf(buttons);
         int row, column, rowSpan, columnSpan = 0;
         grid->getItemPosition(idx, &row, &column, &rowSpan, &columnSpan);
         QLayoutItem* buttonsItem = grid->takeAt(idx);
-        grid->addWidget(confirm, row, column, rowSpan, columnSpan, Qt::AlignLeft | Qt::AlignTop);
+        grid->addWidget(confirm, row, column, rowSpan, columnSpan,
+                        Qt::AlignLeft | Qt::AlignTop);
         grid->addItem(buttonsItem, ++row, column, rowSpan, columnSpan);
     }
 }
@@ -93,137 +79,125 @@ void QxtConfirmationMessagePrivate::init(const QString& message)
 QString QxtConfirmationMessagePrivate::key() const
 {
     QString value = overrideKey;
-    if (value.isEmpty())
-    {
+    if (value.isEmpty()) {
         const QString all = qxt_p().windowTitle() + qxt_p().text() + qxt_p().informativeText();
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+        value = QString::number(qChecksum(all.toLocal8Bit()));
+#else
         const QByteArray data = all.toLocal8Bit();
         value = QString::number(qChecksum(data.constData(), data.length()));
+#endif
     }
     return value;
 }
 
-QString QxtConfirmationMessagePrivate::applicationName() const
-{
-    QString name = overrideApp;
-    if (name.isEmpty())
-        name = QCoreApplication::applicationName();
-    if (name.isEmpty())
-        name = DEFAULT_APPLICATION;
-    return name;
-}
-
-QString QxtConfirmationMessagePrivate::organizationName() const
-{
-    QString name = overrideOrg;
-    if (name.isEmpty())
-        name = QCoreApplication::organizationName();
-    if (name.isEmpty())
-        name = DEFAULT_ORGANIZATION;
-    return name;
-}
-
 int QxtConfirmationMessagePrivate::showAgain()
 {
-    QSettings settings(format, scope, organizationName(), applicationName());
-    if (!path.isEmpty())
-        settings.beginGroup(path);
+    QSettings settings;
     return settings.value(key(), -1).toInt();
 }
 
 void QxtConfirmationMessagePrivate::doNotShowAgain(int result)
 {
-    QSettings settings(format, scope, organizationName(), applicationName());
-    if (!path.isEmpty())
-        settings.beginGroup(path);
+    QSettings settings;
     settings.setValue(key(), result);
 }
 
 void QxtConfirmationMessagePrivate::reset()
 {
-    QSettings settings(format, scope, organizationName(), applicationName());
-    if (!path.isEmpty())
-        settings.beginGroup(path);
+    QSettings settings;
     settings.remove(key());
 }
 
 /*!
-    \class QxtConfirmationMessage
-    \inmodule QxtWidgets
-    \brief The QxtConfirmationMessage class provides a confirmation message.
+  \class QxtConfirmationMessage
+  \inmodule QxtWidgets
+  \brief The QxtConfirmationMessage class provides a confirmation message.
 
-    QxtConfirmationMessage is a confirmation message with checkable
-    \bold {"Do not show again."} option. A checked and accepted confirmation
-    message is no more shown until reseted.
+  QxtConfirmationMessage is a confirmation message with checkable
+  \bold {"Do not show again."} option. A checked and accepted confirmation
+  message is no more shown until reseted.
 
-    Example usage:
-    \code
-    void MainWindow::closeEvent(QCloseEvent* event)
-    {
-        static const QString text(tr("Are you sure you want to quit?"));
-        if (QxtConfirmationMessage::confirm(this, tr("Confirm"), text) == QMessageBox::No)
-            event->ignore();
-    }
-    \endcode
+  Example usage:
+  \code
+  void MainWindow::closeEvent(QCloseEvent* event)
+  {
+  static const QString text(tr("Are you sure you want to quit?"));
+  if (QxtConfirmationMessage::confirm(this, tr("Confirm"), text) == QMessageBox::No)
+  event->ignore();
+  }
+  \endcode
 
-    \image qxtconfirmationmessage.png "QxtConfirmationMessage in action."
+  \image qxtconfirmationmessage.png "QxtConfirmationMessage in action."
 
-    \bold {Note:} QCoreApplication::organizationName and QCoreApplication::applicationName
-    are used for storing settings. In case these properties are empty, \bold "QxtWidgets" and
-    \bold "QxtConfirmationMessage" are used, respectively.
- */
+  \bold {Note:} QCoreApplication::organizationName and
+  QCoreApplication::applicationName are used for storing
+  settings. In case these properties are empty, \bold "QxtWidgets"
+  and \bold "QxtConfirmationMessage" are used, respectively.
+*/
 
 /*!
-    Constructs a new QxtConfirmationMessage with \a parent.
- */
+  Constructs a new QxtConfirmationMessage with \a parent.
+*/
 QxtConfirmationMessage::QxtConfirmationMessage(QWidget* parent)
-        : QMessageBox(parent)
+    : QMessageBox(parent)
 {
     QXT_INIT_PRIVATE(QxtConfirmationMessage);
     qxt_d().init();
+    connect(this, SIGNAL(buttonClicked(QAbstractButton*)),
+            this, SLOT(onButtonClicked(QAbstractButton*)));
 }
 
 /*!
-    Constructs a new QxtConfirmationMessage with \a icon, \a title, \a text, \a confirmation, \a buttons, \a parent and \a flags.
- */
-QxtConfirmationMessage::QxtConfirmationMessage(QMessageBox::Icon icon, const QString& title, const QString& text, const QString& confirmation,
-        QMessageBox::StandardButtons buttons, QWidget* parent, Qt::WindowFlags flags)
-        : QMessageBox(icon, title, text, buttons, parent, flags)
+  Constructs a new QxtConfirmationMessage with \a icon, \a title, \a
+  text, \a confirmation, \a buttons, \a parent and \a flags.
+*/
+QxtConfirmationMessage::QxtConfirmationMessage(
+    QMessageBox::Icon icon, const QString& title, const QString& text,
+    const QString& confirmation, QMessageBox::StandardButtons buttons,
+    QWidget* parent, Qt::WindowFlags flags)
+    : QMessageBox(icon, title, text, buttons, parent, flags)
 {
     QXT_INIT_PRIVATE(QxtConfirmationMessage);
     qxt_d().init(confirmation);
+    connect(this, SIGNAL(buttonClicked(QAbstractButton*)),
+            this, SLOT(onButtonClicked(QAbstractButton*)));
 }
 
 /*!
-    Destructs the confirmation message.
- */
+  Destructs the confirmation message.
+*/
 QxtConfirmationMessage::~QxtConfirmationMessage()
 {
 }
 
 /*!
-    Opens an confirmation message box with the specified \a title, \a text and \a confirmation.
-    The standard \a buttons are added to the message box. \a defaultButton specifies 
-    the button used when Enter is pressed. \a defaultButton must refer to a button that
-    was given in \a buttons. If \a defaultButton is QMessageBox::NoButton, QMessageBox
-    chooses a suitable default automatically.
+  Opens an confirmation message box with the specified \a title, \a
+  text and \a confirmation.  The standard \a buttons are added to
+  the message box. \a defaultButton specifies the button used when
+  Enter is pressed. \a defaultButton must refer to a button that was
+  given in \a buttons. If \a defaultButton is QMessageBox::NoButton,
+  QMessageBox chooses a suitable default automatically.
 
-    Returns the identity of the standard button that was clicked.
-    If Esc was pressed instead, the escape button is returned.
+  Returns the identity of the standard button that was clicked.
+  If Esc was pressed instead, the escape button is returned.
 
-    If \a parent is \c 0, the message box is an application modal dialog box.
-    If \a parent is a widget, the message box is window modal relative to \a parent.
- */
-QMessageBox::StandardButton QxtConfirmationMessage::confirm(QWidget* parent,
-        const QString& title, const QString& text, const QString& confirmation,
-        QMessageBox::StandardButtons buttons, QMessageBox::StandardButton defaultButton)
+  If \a parent is \c 0, the message box is an application modal
+  dialog box. If \a parent is a widget, the message box is window
+  modal relative to \a parent.
+*/
+QMessageBox::StandardButton QxtConfirmationMessage::confirm(
+    QWidget* parent, const QString& title, const QString& text,
+    const QString& confirmation, QMessageBox::StandardButtons buttons,
+    QMessageBox::StandardButton defaultButton)
 {
-    QxtConfirmationMessage msgBox(QMessageBox::NoIcon, title, text, confirmation, QMessageBox::NoButton, parent);
+    QxtConfirmationMessage msgBox(QMessageBox::NoIcon, title, text,
+                                  confirmation, QMessageBox::NoButton, parent);
     QDialogButtonBox* buttonBox = msgBox.findChild<QDialogButtonBox*>();
     Q_ASSERT(buttonBox != 0);
 
     uint mask = QMessageBox::FirstButton;
-    while (mask <= QMessageBox::LastButton)
-    {
+    while (mask <= QMessageBox::LastButton) {
         uint sb = buttons & mask;
         mask <<= 1;
         if (!sb)
@@ -232,8 +206,10 @@ QMessageBox::StandardButton QxtConfirmationMessage::confirm(QWidget* parent,
         // Choose the first accept role as the default
         if (msgBox.defaultButton())
             continue;
-        if ((defaultButton == QMessageBox::NoButton && buttonBox->buttonRole(button) == QDialogButtonBox::AcceptRole)
-                || (defaultButton != QMessageBox::NoButton && sb == uint(defaultButton)))
+        if ((defaultButton == QMessageBox::NoButton &&
+             buttonBox->buttonRole(button) == QDialogButtonBox::AcceptRole)
+            || (defaultButton != QMessageBox::NoButton &&
+                sb == uint(defaultButton)))
             msgBox.setDefaultButton(button);
     }
     if (msgBox.exec() == -1)
@@ -242,11 +218,11 @@ QMessageBox::StandardButton QxtConfirmationMessage::confirm(QWidget* parent,
 }
 
 /*!
-    \property QxtConfirmationMessage::confirmationText
-    \brief the confirmation text
+  \property QxtConfirmationMessage::confirmationText
+  \brief the confirmation text
 
-    The default value is \bold {"Do not show again."}
- */
+  The default value is \bold {"Do not show again."}
+*/
 QString QxtConfirmationMessage::confirmationText() const
 {
     return qxt_d().confirm->text();
@@ -258,34 +234,14 @@ void QxtConfirmationMessage::setConfirmationText(const QString& confirmation)
 }
 
 /*!
-    \property QxtConfirmationMessage::overrideSettingsApplication
-    \brief the override application name used for settings
+  \property QxtConfirmationMessage::overrideSettingsKey
+  \brief the override key used for settings
 
-    QCoreApplication::applicationName is used when no \bold overrideSettingsApplication
-    has been set. The application name falls back to \bold "QxtConfirmationMessage"
-    when no QCoreApplication::applicationName has been set.
+  When no \bold overrideSettingsKey has been set, the key is calculated with
+  qChecksum() based on title, text and confirmation message.
 
-    The default value is an empty string.
- */
-QString QxtConfirmationMessage::overrideSettingsApplication() const
-{
-    return qxt_d().overrideApp;
-}
-
-void QxtConfirmationMessage::setOverrideSettingsApplication(const QString& application)
-{
-    qxt_d().overrideApp = application;
-}
-
-/*!
-    \property QxtConfirmationMessage::overrideSettingsKey
-    \brief the override key used for settings
-
-    When no \bold overrideSettingsKey has been set, the key is calculated with
-    qChecksum() based on title, text and confirmation message.
-
-    The default value is an empty string.
- */
+  The default value is an empty string.
+*/
 QString QxtConfirmationMessage::overrideSettingsKey() const
 {
     return qxt_d().overrideKey;
@@ -297,32 +253,12 @@ void QxtConfirmationMessage::setOverrideSettingsKey(const QString& key)
 }
 
 /*!
-    \property QxtConfirmationMessage::overrideSettingsOrganization
-    \brief the override organization name used for settings
+  \property QxtConfirmationMessage::rememberOnReject
+  \brief whether \bold {"Do not show again."} option is stored even
+  if the message box is rejected (eg. user presses Cancel).
 
-    QCoreApplication::organizationName is used when no \bold overrideSettingsOrganization
-    has been set. The organization name falls back to \bold "QxtWidgets" when no
-    QCoreApplication::organizationName has been set.
-
-    The default value is an empty string.
- */
-QString QxtConfirmationMessage::overrideSettingsOrganization() const
-{
-    return qxt_d().overrideOrg;
-}
-
-void QxtConfirmationMessage::setOverrideSettingsOrganization(const QString& organization)
-{
-    qxt_d().overrideOrg = organization;
-}
-
-/*!
-    \property QxtConfirmationMessage::rememberOnReject
-    \brief whether \bold {"Do not show again."} option is stored even
-    if the message box is rejected (eg. user presses Cancel).
-
-    The default value is \c false.
- */
+  The default value is \c false.
+*/
 bool QxtConfirmationMessage::rememberOnReject() const
 {
     return qxt_d().remember;
@@ -334,74 +270,20 @@ void QxtConfirmationMessage::setRememberOnReject(bool remember)
 }
 
 /*!
-    Returns The format used for storing settings.
+  Shows the confirmation message if necessary. The confirmation message is not
+  shown in case \bold {"Do not show again."} has been checked while the same
+  confirmation message was earlierly accepted.
 
-    The default value is QSettings::NativeFormat.
- */
-QSettings::Format QxtConfirmationMessage::settingsFormat()
-{
-    return QxtConfirmationMessagePrivate::format;
-}
+  A confirmation message is identified by the combination of title,
+  QMessageBox::text and optional QMessageBox::informativeText.
 
-/*!
-    Sets the \a format used for storing settings.
- */
-void QxtConfirmationMessage::setSettingsFormat(QSettings::Format format)
-{
-    QxtConfirmationMessagePrivate::format = format;
-}
+  A clicked button with role QDialogButtonBox::AcceptRole or
+  QDialogButtonBox::YesRole is considered as "accepted".
 
-/*!
-    Returns The scope used for storing settings.
+  \warning This function does not reimplement but shadows QMessageBox::exec().
 
-    The default value is QSettings::UserScope.
- */
-QSettings::Scope QxtConfirmationMessage::settingsScope()
-{
-    return QxtConfirmationMessagePrivate::scope;
-}
-
-/*!
-    Sets the \a scope used for storing settings.
- */
-void QxtConfirmationMessage::setSettingsScope(QSettings::Scope scope)
-{
-    QxtConfirmationMessagePrivate::scope = scope;
-}
-
-/*!
-    Returns the path used for storing settings.
-
-    The default value is an empty string.
- */
-QString QxtConfirmationMessage::settingsPath()
-{
-    return QxtConfirmationMessagePrivate::path;
-}
-
-/*!
-    Sets the \a path used for storing settings.
- */
-void QxtConfirmationMessage::setSettingsPath(const QString& path)
-{
-    QxtConfirmationMessagePrivate::path = path;
-}
-
-/*!
-    Shows the confirmation message if necessary. The confirmation message is not
-    shown in case \bold {"Do not show again."} has been checked while the same
-    confirmation message was earlierly accepted.
-
-    A confirmation message is identified by the combination of title,
-    QMessageBox::text and optional QMessageBox::informativeText.
-
-    A clicked button with role QDialogButtonBox::AcceptRole or
-    QDialogButtonBox::YesRole is considered as "accepted".
-
-    \warning This function does not reimplement but shadows QMessageBox::exec().
-
-    \sa QWidget::windowTitle, QMessageBox::text, QMessageBox::informativeText
- */
+  \sa QWidget::windowTitle, QMessageBox::text, QMessageBox::informativeText
+*/
 int QxtConfirmationMessage::exec()
 {
     int res = qxt_d().showAgain();
@@ -410,28 +292,24 @@ int QxtConfirmationMessage::exec()
     return res;
 }
 
-/*!
-    \reimp
- */
-void QxtConfirmationMessage::done(int result)
+void QxtConfirmationMessage::onButtonClicked(QAbstractButton *button)
 {
     QDialogButtonBox* buttons = this->findChild<QDialogButtonBox*>();
     Q_ASSERT(buttons != 0);
 
-    int role = buttons->buttonRole(clickedButton());
+    int role = buttons->buttonRole(button);
     if (qxt_d().confirm->isChecked() &&
-            (qxt_d().remember || role != QDialogButtonBox::RejectRole))
+        (qxt_d().remember || role != QDialogButtonBox::RejectRole))
     {
-        qxt_d().doNotShowAgain(result);
+        qxt_d().doNotShowAgain(0);
     }
-    QMessageBox::done(result);
 }
 
 /*!
-    Resets this instance of QxtConfirmationMessage. A reseted confirmation
-    message is shown again until user checks \bold {"Do not show again."} and
-    accepts the confirmation message.
- */
+  Resets this instance of QxtConfirmationMessage. A reseted confirmation
+  message is shown again until user checks \bold {"Do not show again."} and
+  accepts the confirmation message.
+*/
 void QxtConfirmationMessage::reset()
 {
     qxt_d().reset();

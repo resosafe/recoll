@@ -19,6 +19,7 @@
 #define _CHRONO_H_INCLUDED_
 
 #include <time.h>
+#include <cstdint>
 
 /** Easy interface to measuring time intervals */
 class Chrono {
@@ -27,9 +28,9 @@ public:
     Chrono();
 
     /** Re-store current time and return mS since init or last call */
-    long restart();
+    int64_t restart();
     /** Re-store current time and return uS since init or last call */
-    long urestart();
+    int64_t urestart();
 
     /** Snapshot current time to static storage */
     static void refnow();
@@ -41,13 +42,13 @@ public:
        values from many chrono objects, like when examining timeouts
        in a queue
      */
-    long long nanos(bool frozen = false);
-    long micros(bool frozen = false);
-    long millis(bool frozen = false);
-    float secs(bool frozen = false);
+    int64_t nanos(bool frozen = false);
+    int64_t micros(bool frozen = false);
+    int64_t millis(bool frozen = false);
+    double secs(bool frozen = false);
 
     /** Return the absolute value of the current origin */
-    long long amicros() const;
+    int64_t amicros() const;
 
     struct TimeSpec {
         time_t tv_sec; /* Time in seconds */

@@ -18,6 +18,8 @@
 #define _STRMATCHER_H_INCLUDED_
 
 #include <string>
+#include <memory>
+
 #include "smallut.h"
 
 // Encapsulating simple wildcard/regexp string matching.
@@ -28,21 +30,23 @@ public:
     StrMatcher(const std::string& exp) 
         : m_sexp(exp) {}
     virtual ~StrMatcher() {};
+    StrMatcher(const StrMatcher&) = delete;
+    StrMatcher& operator=(const StrMatcher&) = delete;
     virtual bool match(const std::string &val) const = 0;
     virtual std::string::size_type baseprefixlen() const = 0;
     virtual bool setExp(const std::string& newexp) {
-	m_sexp = newexp;
-	return true;
+        m_sexp = newexp;
+        return true;
     }
     virtual bool ok() const {
-	return true;
+        return true;
     }
     virtual const std::string& exp() const {
-	return m_sexp;
+        return m_sexp;
     }
     virtual StrMatcher *clone() const = 0;
     const std::string& getreason() const {
-	return m_reason;
+        return m_reason;
     }
 protected:
     std::string m_sexp;
@@ -54,10 +58,12 @@ public:
     StrWildMatcher(const std::string& exp)
         : StrMatcher(exp) {}
     virtual ~StrWildMatcher() {}
+    StrWildMatcher(const StrWildMatcher&) = delete;
+    StrWildMatcher& operator=(const StrWildMatcher&) = delete;
     virtual bool match(const std::string& val) const override;
     virtual std::string::size_type baseprefixlen() const override;
     virtual StrWildMatcher *clone() const override {
-	return new StrWildMatcher(m_sexp);
+        return new StrWildMatcher(m_sexp);
     }
 };
 
@@ -66,14 +72,16 @@ public:
     StrRegexpMatcher(const std::string& exp);
     virtual bool setExp(const std::string& newexp) override;
     virtual ~StrRegexpMatcher() {};
+    StrRegexpMatcher(const StrRegexpMatcher&) = delete;
+    StrRegexpMatcher& operator=(const StrRegexpMatcher&) = delete;
     virtual bool match(const std::string& val) const override;
     virtual std::string::size_type baseprefixlen() const override;
     virtual bool ok() const override;
     virtual StrRegexpMatcher *clone() const override {
-	return new StrRegexpMatcher(m_sexp);
+        return new StrRegexpMatcher(m_sexp);
     }
 private:
-    SimpleRegexp m_re;
+    std::unique_ptr<SimpleRegexp> m_re;
 };
 
 #endif /* _STRMATCHER_H_INCLUDED_ */

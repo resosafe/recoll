@@ -35,6 +35,7 @@ class ConfSimple(object):
 
     def __init__(self, confname, tildexp = False, readonly = True):
         self.submaps = {}
+        self.subkeys_unsorted = []
         self.dotildexpand = tildexp
         self.readonly = readonly
         self.confname = confname
@@ -49,6 +50,7 @@ class ConfSimple(object):
             return
 
         self._parseinput(f)
+        f.close()
         
     def _parseinput(self, f):
         appending = False
@@ -80,6 +82,7 @@ class ConfSimple(object):
                 else:
                     submapkey = line
                 #_debug("Submapkey: [%s]" % submapkey)
+                self.subkeys_unsorted.append(submapkey)
                 continue
 
             nm, sep, value = line.partition(b'=')
@@ -94,6 +97,9 @@ class ConfSimple(object):
                 self.submaps[submapkey] = {}
             self.submaps[submapkey][nm] = value
 
+    def getSubKeys_unsorted(self):
+        return [k.decode('utf-8') for k in self.subkeys_unsorted]
+    
     def getbin(self, nm, sk = b''):
         '''Returns None if not found, empty string if found empty'''
         if type(nm) != type(b'') or type(sk) != type(b''):
@@ -114,7 +120,7 @@ class ConfSimple(object):
             sk = sk.encode('utf-8')
         #v = ConfSimple.getbin(self, nm, sk)
         v = self.getbin(nm, sk)
-        if v and dodecode:
+        if v is not None and dodecode:
             v = v.decode('utf-8')
         return v
 
@@ -195,22 +201,22 @@ class ConfTree(ConfSimple):
             raise TypeError("getbin: parameters must be binary not unicode")
         #_debug("ConfTree::getbin: nm [%s] sk [%s]" % (nm, sk))
         
-        if sk == b'' or sk[0] != b'/'[0]:
+        # Note the test for root. There does not seem to be a direct
+        # way to do this in os.path
+        if not sk:
             return ConfSimple.getbin(self, nm, sk)
 
-        if sk[len(sk)-1] == b'/'[0]:
-             sk = sk[:len(sk)-1]
-
         # Try all sk ancestors as submaps (/a/b/c-> /a/b/c, /a/b, /a, b'')
-        while sk:
+        while True:
             if sk in self.submaps:
                 return ConfSimple.getbin(self, nm, sk)
             if sk + b'/' in self.submaps:
-                return ConfSimple.getbin(self, nm, sk+b'/')
-            i = sk.rfind(b'/')
-            if i == -1:
-                break
-            sk = sk[:i]
+                return ConfSimple.getbin(self, nm, sk + b'/')
+            nsk = os.path.dirname(sk)
+            if nsk == sk:
+                # sk was already root, we're done. 
+                break;
+            sk = nsk
 
         return ConfSimple.getbin(self, nm)
 
@@ -218,7 +224,7 @@ class ConfTree(ConfSimple):
 class ConfStack(object):
     """ A ConfStack manages the superposition of a list of Configuration
     objects. Values are looked for in each object from the list until found.
-    This typically provides for defaults overriden by sparse values in the
+    This typically provides for defaults overridden by sparse values in the
     topmost file."""
 
     def __init__(self, nm, dirs, tp = 'simple'):
@@ -256,7 +262,7 @@ class ConfStack(object):
             sk = sk.encode('utf-8')
         #v = ConfSimple.getbin(self, nm, sk)
         v = self.getbin(nm, sk)
-        if v and dodecode:
+        if v is not None and dodecode:
             v = v.decode('utf-8')
         return v
 
@@ -298,3 +304,14 @@ def stringsToString(vs):
             out.append(s)
     return " ".join(out)
 
+def valToBool(s):
+    if not s:
+        return False
+    try:
+        val = int(s)
+        return val != 0
+    except:
+        pass
+    if type(s) == type(b''):
+        s = s.decode("UTF-8")
+    return s[0] in "tTyY"

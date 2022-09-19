@@ -42,6 +42,8 @@ class AdvSearchHist {
 public:
     AdvSearchHist();
     ~AdvSearchHist();
+    AdvSearchHist(const AdvSearchHist&) = delete;
+    AdvSearchHist& operator=(const AdvSearchHist&) = delete;
 
     // Add entry
     bool push(std::shared_ptr<Rcl::SearchData>);

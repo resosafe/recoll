@@ -6,7 +6,6 @@
 #
 # Uses pyexiv2. Also tried Pillow, found it useless for tags.
 #
-from __future__ import print_function
 
 import sys
 import os
@@ -63,7 +62,7 @@ class ImgTagExtractor(RclBaseHandler):
         ttdata = set()
         for k in pyexiv2_titles:
             if k in mdic:
-                ttdata.add(self.em.htmlescape(mdic[k]))
+                ttdata.add(rclexecm.htmlescape(mdic[k]))
         if ttdata:
             title = ""
             for v in ttdata:
@@ -83,13 +82,13 @@ class ImgTagExtractor(RclBaseHandler):
         for k,v in mdic.items():
             if k ==  'Xmp.digiKam.TagsList':
                 docdata += b'<meta name="keywords" content="' + \
-                           rclexecm.makebytes(self.em.htmlescape(mdic[k])) + \
+                           rclexecm.makebytes(rclexecm.htmlescape(mdic[k])) + \
                            b'">\n'
 
         docdata += b'</head><body>\n'
         for k,v in mdic.items():
             docdata += rclexecm.makebytes(k + " : " + \
-                                     self.em.htmlescape(mdic[k]) + "<br />\n")
+                                     rclexecm.htmlescape(mdic[k]) + "<br />\n")
         docdata += b'</body></html>'
 
         return docdata

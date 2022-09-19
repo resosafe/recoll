@@ -1,4 +1,4 @@
-/* Copyright (C) 2005 J.F.Dockes
+/* Copyright (C) 2005-2020 J.F.Dockes
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation; either version 2 of the License, or
@@ -28,7 +28,6 @@
 #include <QRadioButton>
 #include <QButtonGroup>
 #include <QMessageBox>
-#include <QXmlDefaultHandler>
 
 #include "fragbuts.h"
 #include "pathut.h"
@@ -37,44 +36,75 @@
 #include "log.h"
 #include "readfile.h"
 #include "copyfile.h"
+#include "picoxml.h"
 
 using namespace std;
 
-class FragButsParser : public QXmlDefaultHandler {
+class FragButsParser : public PicoXMLParser {
 public:
-    FragButsParser(FragButs *_parent, vector<FragButs::ButFrag>& _buttons)
-    : parent(_parent), vlw(new QVBoxLayout(parent)), 
-      vl(new QVBoxLayout()), buttons(_buttons),
-      hl(0), bg(0), radio(false)
-    {
+    FragButsParser(
+        const std::string& in, FragButs *_p, vector<FragButs::ButFrag>& _bts)
+        : PicoXMLParser(in), parent(_p), vlw(new QVBoxLayout(parent)),
+        vl(new QVBoxLayout()), buttons(_bts) {}
+
+    void startElement(const std::string &nm,
+                      const std::map<std::string, std::string>&) override {
+        //std::cerr << "startElement [" << nm << "]\n";
+        currentText.clear();
+        if (nm == "buttons") {
+            radio = false;
+            hl = new QHBoxLayout();
+        } else if (nm == "radiobuttons") {
+            radio = true;
+            bg = new QButtonGroup(parent);
+            hl = new QHBoxLayout();
+        } else if (nm == "label" || nm == "frag" || nm == "fragbuts" || nm == "fragbuttons" ||
+                   nm == "fragbut" || nm == "fragbutton") {
+        } else {
+            QMessageBox::warning(
+                0, "Recoll", QString("Bad element name: [%1]").arg(nm.c_str()));
+        }
+    }        
+    void endElement(const std::string& nm) override {
+        //std::cerr << "endElement [" << nm << "]\n";
+
+        if (nm == "label") {
+            label = u8s2qs(currentText);
+        } else if (nm == "frag") {
+            frag = currentText;
+        } else if (nm == "fragbut" || nm == "fragbutton") {
+            string slab = qs2utf8s(label);
+            trimstring(slab, " \t\n\t");
+            label = u8s2qs(slab.c_str());
+            QAbstractButton *abut;
+            if (radio) {
+                QRadioButton *but = new QRadioButton(label, parent);
+                bg->addButton(but);
+                if (bg->buttons().length() == 1)
+                    but->setChecked(true);
+                abut = but;
+            } else {
+                QCheckBox *but = new QCheckBox(label, parent);
+                abut = but;
+            }
+            abut->setToolTip(u8s2qs(currentText));
+            buttons.push_back(FragButs::ButFrag(abut, frag));
+            hl->addWidget(abut);
+        } else if (nm == "buttons" || nm == "radiobuttons") {
+            vl->addLayout(hl);
+            hl = 0;
+        } else if (nm == "fragbuts" || nm == "fragbuttons") {
+            vlw->addLayout(vl);
+        } else {
+            QMessageBox::warning(
+                0, "Recoll", QString("Bad element name: [%1]").arg(nm.c_str()));
+        }
+    }
+    void characterData(const std::string &str) override {
+        //std::cerr << "characterData [" << str << "]\n";
+        currentText += str;
     }
 
-    bool startElement(const QString & /* namespaceURI */,
-		      const QString & /* localName */,
-		      const QString &qName,
-		      const QXmlAttributes &attributes);
-    bool endElement(const QString & /* namespaceURI */,
-		    const QString & /* localName */,
-		    const QString &qName);
-    bool characters(const QString &str)
-    {
-	currentText += str;
-	return true;
-    }
-
-    bool error(const QXmlParseException& exception) {
-        fatalError(exception);
-        return false;
-    }
-    bool fatalError(const QXmlParseException& x) {
-        errorMessage = QString("%2 at line %3 column %4")
-            .arg(x.message())
-            .arg(x.lineNumber())
-            .arg(x.columnNumber());
-        return false;
-    }
-
-    QString errorMessage;
 private:
     QWidget *parent;
     QVBoxLayout *vlw;
@@ -82,101 +112,44 @@ private:
     vector<FragButs::ButFrag>& buttons;
 
     // Temporary data while parsing.
-    QHBoxLayout *hl;
-    QButtonGroup *bg;
-    QString currentText;
+    QHBoxLayout *hl{nullptr};
+    QButtonGroup *bg{nullptr};
     QString label;
-    string frag;
-    bool radio;
+    std::string currentText;
+    std::string frag;
+    bool radio{false};
 };
 
-bool FragButsParser::startElement(const QString & /* namespaceURI */,
-                                  const QString & /* localName */,
-                                  const QString &qName,
-                                  const QXmlAttributes &/*attributes*/)
-{
-    currentText = "";
-    if (qName == "buttons") {
-        radio = false;
-        hl = new QHBoxLayout();
-    } else if (qName == "radiobuttons") {
-        radio = true;
-        bg = new QButtonGroup(parent);
-        hl = new QHBoxLayout();
-    }
-    return true;
-}
-
-bool FragButsParser::endElement(const QString & /* namespaceURI */,
-                                const QString & /* localName */,
-                                const QString &qName)
-{
-    if (qName == "label") {
-        label = currentText;
-    } else if (qName == "frag") {
-        frag = qs2utf8s(currentText);
-    } else if (qName == "fragbut") {
-        string slab = qs2utf8s(label);
-        trimstring(slab, " \t\n\t");
-        label = QString::fromUtf8(slab.c_str());
-        QAbstractButton *abut;
-        if (radio) {
-            QRadioButton *but = new QRadioButton(label, parent);
-            bg->addButton(but);
-            if (bg->buttons().length() == 1)
-                but->setChecked(true);
-            abut = but;
-        } else {
-            QCheckBox *but = new QCheckBox(label, parent);
-            abut = but;
-        }
-	abut->setToolTip(currentText);
-        buttons.push_back(FragButs::ButFrag(abut, frag));
-        hl->addWidget(abut);
-    } else if (qName == "buttons" || qName == "radiobuttons") {
-        vl->addLayout(hl);
-        hl = 0;
-    } else if (qName == "fragbuts") {
-        vlw->addLayout(vl);
-    }
-    return true;
-}
 
 FragButs::FragButs(QWidget* parent)
     : QWidget(parent), m_reftime(0), m_ok(false)
 {
-    m_fn = path_cat(theconfig->getConfDir(), "fragbuts.xml");
-
+    m_fn = path_cat(theconfig->getConfDir(), "fragment-buttons.xml");
     string data, reason;
     if (!path_exists(m_fn)) {
-        // config does not exist: try to create it from sample
-        string src = path_cat(theconfig->getDatadir(), "examples");
-        src = path_cat(src, "fragbuts.xml");
-        copyfile(src.c_str(), m_fn.c_str(), reason);
+        // Try the older name
+        m_fn = path_cat(theconfig->getConfDir(), "fragbuts.xml");
+        if (!path_exists(m_fn)) {
+            // No configuration file yet: create it from the sample file
+            string src = path_cat(theconfig->getDatadir(), "examples");
+            src = path_cat(src, "fragment-buttons.xml");
+            m_fn = path_cat(theconfig->getConfDir(), "fragment-buttons.xml");
+            copyfile(src.c_str(), m_fn.c_str(), reason);
+        }
     }
     if (!file_to_string(m_fn, data, &reason)) {
-	QMessageBox::warning(0, "Recoll", 
-			     tr("%1 not found.").arg(
-                                 QString::fromLocal8Bit(m_fn.c_str())));
-        LOGERR("Fragbuts:: can't read ["  << (m_fn) << "]\n" );
+        QMessageBox::warning(0, "Recoll", tr("%1 not found.").arg(path2qs(m_fn)));
+        LOGERR("Fragbuts:: can't read [" << m_fn << "]\n");
         return;
     }
-    FragButsParser parser(this, m_buttons);
-    QXmlSimpleReader reader;
-    reader.setContentHandler(&parser);
-    reader.setErrorHandler(&parser);
-    QXmlInputSource xmlInputSource;
-    xmlInputSource.setData(QString::fromUtf8(data.c_str()));
-    if (!reader.parse(xmlInputSource)) {
-	QMessageBox::warning(0, "Recoll", tr("%1:\n %2")
-                             .arg(QString::fromLocal8Bit(m_fn.c_str()))
-                             .arg(parser.errorMessage));
+    FragButsParser parser(data, this, m_buttons);
+    if (!parser.Parse()) {
+        QMessageBox::warning(0, "Recoll", tr("%1:\n %2").arg(path2qs(m_fn))
+                             .arg(u8s2qs(parser.getReason())));
         return;
     }
-    for (vector<ButFrag>::iterator it = m_buttons.begin(); 
-         it != m_buttons.end(); it++) {
-        connect(it->button, SIGNAL(clicked(bool)), 
-                this, SLOT(onButtonClicked(bool)));
+    for (auto& entry : m_buttons) {
+        connect(entry.button, SIGNAL(clicked(bool)), this, SLOT(onButtonClicked(bool)));
     }
     setWindowTitle(tr("Query Fragments"));
     isStale(&m_reftime);
@@ -205,11 +178,10 @@ void FragButs::onButtonClicked(bool on)
 
 void FragButs::getfrags(std::vector<std::string>& frags)
 {
-    for (vector<ButFrag>::iterator it = m_buttons.begin(); 
-         it != m_buttons.end(); it++) {
-        if (it->button->isChecked() && !it->fragment.empty()) {
-            LOGDEB("FragButs: fragment ["  << (it->fragment) << "]\n" );
-            frags.push_back(it->fragment);
+    for (auto &entry : m_buttons) {
+        if (entry.button->isChecked() && !entry.fragment.empty()) {
+            LOGDEB("FragButs: fragment [" << entry.fragment << "]\n" );
+            frags.push_back(entry.fragment);
         }
     }
 }

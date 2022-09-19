@@ -1,5 +1,5 @@
 [Protocol]
-exec=kio_recoll
+exec=kf5/kio/kio_recoll
 protocol=recollf
 input=none
 output=filesystem

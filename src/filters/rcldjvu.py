@@ -17,8 +17,6 @@
 
 # Recoll DJVU extractor
 
-from __future__ import print_function
-
 import os
 import sys
 import re
@@ -39,7 +37,7 @@ class DJVUExtractor(RclBaseHandler):
 
     def html_text(self, fn):
         self.em.setmimetype('text/html')
-
+        fn = rclexecm.subprocfile(fn)
         # Extract metadata
         metadata = b""
         if self.djvused:
@@ -66,15 +64,15 @@ class DJVUExtractor(RclBaseHandler):
         txtdata = txtdata.decode('UTF-8', 'replace')
 
         data = '''<html><head>'''
-        data += '''<title>''' + self.em.htmlescape(title) + '''</title>'''
+        data += '''<title>''' + rclexecm.htmlescape(title) + '''</title>'''
         data += '''<meta http-equiv="Content-Type" '''
         data += '''content="text/html;charset=UTF-8">'''
         if author:
             data += '''<meta name="author" content="''' + \
-                    self.em.htmlescape(author) + '''">'''
+                    rclexecm.htmlescape(author) + '''">'''
         data += '''</head><body><pre>'''
 
-        data += self.em.htmlescape(txtdata)
+        data += rclexecm.htmlescape(txtdata)
         data += '''</pre></body></html>'''
         return data
 

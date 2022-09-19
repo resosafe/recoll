@@ -7,7 +7,7 @@ TEMPLATE = app
 DEFINES += BUILDING_RECOLL
 DEFINES += UNICODE
 DEFINES += PSAPI_VERSION=1
-
+DEFINES += __WIN32__
 
 SOURCES += \
 ../rclstartw.cpp
@@ -24,8 +24,7 @@ windows {
     contains(QMAKE_CC, cl){
         # Visual Studio
     }
-  LIBS += \
-    -liconv -lshlwapi -lpsapi -lkernel32
+  LIBS += -lshlwapi -lpsapi -lkernel32
 
   INCLUDEPATH += ../../windows
 }

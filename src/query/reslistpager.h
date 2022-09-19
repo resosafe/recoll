@@ -33,8 +33,10 @@ class PlainToRich;
  */
 class ResListPager {
 public:
-    ResListPager(int pagesize=10);
+    ResListPager(int pagesize=10, bool alwaysSnippets = false);
     virtual ~ResListPager() {}
+    ResListPager(const ResListPager&) = delete;
+    ResListPager& operator=(const ResListPager&) = delete;
 
     void setHighLighter(PlainToRich *ptr) {
             m_hiliter = ptr;
@@ -79,9 +81,16 @@ public:
     }
     void resultPageNext();
     void resultPageFor(int docnum);
+
+    /* Display page of results */
     void displayPage(RclConfig *);
+    /* Display page with single document */
+    void displaySingleDoc(RclConfig *config, int idx,
+                          Rcl::Doc& doc, const HighlightData& hdata);
+    /* Generate HTML for single document inside page */
     void displayDoc(RclConfig *, int idx, Rcl::Doc& doc, 
                     const HighlightData& hdata, const string& sh = "");
+
     bool pageEmpty() {return m_respage.size() == 0;}
 
     string queryDescription() {
@@ -95,6 +104,9 @@ public:
     virtual bool append(const string& data, int, const Rcl::Doc&) {
             return append(data);
     }
+    /* Implementing this allows accumulating the text and setting the HTML 
+       at once */
+    virtual bool flush() {return true;}
     // Translation function. This is reimplemented in the qt reslist
     // object For this to work, the strings must be duplicated inside
     // reslist.cpp (see the QT_TR_NOOP in there). Very very unwieldy.
@@ -116,8 +128,10 @@ public:
     }
     virtual string absSep() {return "&hellip;";}
     virtual string linkPrefix() {return "";}
+    virtual string bodyAttrs() {return string();}
 private:
     int                  m_pagesize;
+    bool                 m_alwaysSnippets;
     int                  m_newpagesize;
     int                  m_resultsInCurrentPage;
     // First docnum (from docseq) in current page

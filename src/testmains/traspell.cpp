@@ -37,11 +37,10 @@ static char *thisprog;
 RclConfig *rclconfig;
 
 static char usage [] =
-" -b : build dictionary\n"
-" -s <term>: suggestions for term\n"
-" -c <term>: check term\n"
-"\n"
-;
+    " -b : build dictionary\n"
+    " -s <term>: suggestions for term\n"
+    "\n"
+    ;
 static void
 Usage(void)
 {
@@ -51,8 +50,8 @@ Usage(void)
 
 static int     op_flags;
 #define OPT_MOINS 0x1
-#define OPT_s	  0x2 
-#define OPT_b	  0x4 
+#define OPT_s      0x2 
+#define OPT_b      0x4 
 #define OPT_c     0x8
 
 int main(int argc, char **argv)
@@ -63,83 +62,71 @@ int main(int argc, char **argv)
     argc--; argv++;
 
     while (argc > 0 && **argv == '-') {
-	(*argv)++;
-	if (!(**argv))
-	    /* Cas du "adb - core" */
-	    Usage();
-	while (**argv)
-	    switch (*(*argv)++) {
-	    case 'b':	op_flags |= OPT_b; break;
-	    case 'c':	op_flags |= OPT_c; if (argc < 2)  Usage();
-		word = *(++argv);
-		argc--; 
-		goto b1;
-	    case 's':	op_flags |= OPT_s; if (argc < 2)  Usage();
-		word = *(++argv);
-		argc--; 
-		goto b1;
-	    default: Usage();	break;
-	    }
+        (*argv)++;
+        if (!(**argv))
+            /* Cas du "adb - core" */
+            Usage();
+        while (**argv)
+            switch (*(*argv)++) {
+            case 'b':    op_flags |= OPT_b; break;
+            case 'c':    op_flags |= OPT_c; if (argc < 2)  Usage();
+                word = *(++argv);
+                argc--; 
+                goto b1;
+            case 's':    op_flags |= OPT_s; if (argc < 2)  Usage();
+                word = *(++argv);
+                argc--; 
+                goto b1;
+            default: Usage();    break;
+            }
     b1: argc--; argv++;
     }
 
     if (argc != 0 || op_flags == 0)
-	Usage();
+        Usage();
 
     string reason;
     rclconfig = recollinit(0, 0, 0, reason);
     if (!rclconfig || !rclconfig->ok()) {
-	fprintf(stderr, "Configuration problem: %s\n", reason.c_str());
-	exit(1);
+        fprintf(stderr, "Configuration problem: %s\n", reason.c_str());
+        exit(1);
     }
 
     string dbdir = rclconfig->getDbDir();
     if (dbdir.empty()) {
-	fprintf(stderr, "No db directory in configuration");
-	exit(1);
+        fprintf(stderr, "No db directory in configuration");
+        exit(1);
     }
 
     Rcl::Db rcldb(rclconfig);
 
     if (!rcldb.open(Rcl::Db::DbRO, 0)) {
-	fprintf(stderr, "Could not open database in %s\n", dbdir.c_str());
-	exit(1);
+        fprintf(stderr, "Could not open database in %s\n", dbdir.c_str());
+        exit(1);
     }
 
     Aspell aspell(rclconfig);
 
     if (!aspell.init(reason)) {
-	cerr << "Init failed: " << reason << endl;
-	exit(1);
+        cerr << "Init failed: " << reason << endl;
+        exit(1);
     }
     if (op_flags & OPT_b) {
-	if (!aspell.buildDict(rcldb, reason)) {
-	    cerr << "buildDict failed: " << reason << endl;
-	    exit(1);
-	}
-    } else if (op_flags & OPT_c) {
-	bool ret = aspell.check(word, reason);
-	if (!ret && reason.size()) {
-	    cerr << "Aspell error: " << reason << endl;
-	    return 1;
-	}
-	cout << word;
-	if (ret) {
-	    cout << " is in dictionary" << endl;
-	} else {
-	    cout << " not in dictionary" << endl;
-	}
+        if (!aspell.buildDict(rcldb, reason)) {
+            cerr << "buildDict failed: " << reason << endl;
+            exit(1);
+        }
     } else {
-	list<string> suggs;
-	if (!aspell.suggest(rcldb, word, suggs, reason)) {
-	    cerr << "suggest failed: " << reason << endl;
-	    exit(1);
-	}
-	cout << "Suggestions for " << word << ":" << endl;
-	for (list<string>::iterator it = suggs.begin(); 
-	     it != suggs.end(); it++) {
-	    cout << *it << endl;
-	}
+        list<string> suggs;
+        if (!aspell.suggest(rcldb, word, suggs, reason)) {
+            cerr << "suggest failed: " << reason << endl;
+            exit(1);
+        }
+        cout << "Suggestions for " << word << ":" << endl;
+        for (list<string>::iterator it = suggs.begin(); 
+             it != suggs.end(); it++) {
+            cout << *it << endl;
+        }
     }
     exit(0);
 }

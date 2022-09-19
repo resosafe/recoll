@@ -154,23 +154,23 @@ static RecollFilter *mhFactory(RclConfig *config, const string &mimeOrParams,
     string lmime(lparams[0]);
     stringtolower(lmime);
     if (cstr_textplain == lmime) {
-        LOGDEB2("mhFactory(" << mime << "): returning MimeHandlerText\n");
+        LOGDEB2("mhFactory(" << lmime << "): returning MimeHandlerText\n");
         MD5String("MimeHandlerText", id);
         return nobuild ? 0 : new MimeHandlerText(config, id);
     } else if (cstr_texthtml == lmime) {
-        LOGDEB2("mhFactory(" << mime << "): returning MimeHandlerHtml\n");
+        LOGDEB2("mhFactory(" << lmime << "): returning MimeHandlerHtml\n");
         MD5String("MimeHandlerHtml", id);
         return nobuild ? 0 : new MimeHandlerHtml(config, id);
     } else if ("text/x-mail" == lmime) {
-        LOGDEB2("mhFactory(" << mime << "): returning MimeHandlerMbox\n");
+        LOGDEB2("mhFactory(" << lmime << "): returning MimeHandlerMbox\n");
         MD5String("MimeHandlerMbox", id);
         return nobuild ? 0 : new MimeHandlerMbox(config, id);
     } else if ("message/rfc822" == lmime) {
-        LOGDEB2("mhFactory(" << mime << "): returning MimeHandlerMail\n");
+        LOGDEB2("mhFactory(" << lmime << "): returning MimeHandlerMail\n");
         MD5String("MimeHandlerMail", id);
         return nobuild ? 0 : new MimeHandlerMail(config, id);
     } else if ("inode/symlink" == lmime) {
-        LOGDEB2("mhFactory(" << mime << "): returning MimeHandlerSymlink\n");
+        LOGDEB2("mhFactory(" << lmime << "): returning MimeHandlerSymlink\n");
         MD5String("MimeHandlerSymlink", id);
         return nobuild ? 0 : new MimeHandlerSymlink(config, id);
     } else if ("application/x-zerosize" == lmime) {
@@ -178,12 +178,13 @@ static RecollFilter *mhFactory(RclConfig *config, const string &mimeOrParams,
         MD5String("MimeHandlerNull", id);
         return nobuild ? 0 : new MimeHandlerNull(config, id);
     } else if (lmime.find("text/") == 0) {
-        // Try to handle unknown text/xx as text/plain. This
-        // only happen if the text/xx was defined as "internal" in
-        // mimeconf, not at random. For programs, for example this
-        // allows indexing and previewing as text/plain (no filter
-        // exec) but still opening with a specific editor.
-        LOGDEB2("mhFactory(" << mime << "): returning MimeHandlerText(x)\n");
+        // Try to handle unknown text/xx as text/plain. This only happen if the text/xx was defined
+        // as "internal" in mimeconf.
+        // This is historic, because the natural way with the current code would be to specify
+        // "internal text/plain" instead of just "internal"...
+        // Also see rclconfig for the textunknownisplain configuration variable which allows
+        // processing all unknown text/* as text/plain.
+        LOGDEB2("mhFactory(" << lmime << "): returning MimeHandlerText(x)\n");
         MD5String("MimeHandlerText", id);
         return nobuild ? 0 : new MimeHandlerText(config, id);
     } else if ("xsltproc" == lmime) {
@@ -202,6 +203,7 @@ static RecollFilter *mhFactory(RclConfig *config, const string &mimeOrParams,
 }
 
 static const string cstr_mh_charset("charset");
+static const string cstr_mh_maxseconds("maxseconds");
 /**
  * Create a filter that executes an external program or script
  * A filter def can look like:
@@ -231,27 +233,12 @@ MimeHandlerExec *mhExecFactory(RclConfig *cfg, const string& mtype, string& hs,
                "]: [" << hs << "]\n");
         return 0;
     }
-    MimeHandlerExec *h = multiple ? 
-        new MimeHandlerExecMultiple(cfg, id) :
-        new MimeHandlerExec(cfg, id);
-    vector<string>::iterator it = cmdtoks.begin();
-
-    // Special-case python and perl on windows: we need to also locate the
-    // first argument which is the script name "python somescript.py". 
-    // On Unix, thanks to #!, we usually just run "somescript.py", but need
-    // the same change if we ever want to use the same cmdling as windows
-    if (!stringlowercmp("python", *it) || !stringlowercmp("perl", *it)) {
-        if (cmdtoks.size() < 2) {
-            LOGERR("mhExecFactory: python/perl cmd: no script?. [" <<
-                   mtype << "]: [" << hs << "]\n");
-        }
-        vector<string>::iterator it1(it);
-        it1++;
-        *it1 = cfg->findFilter(*it1);
+    if (!cfg->processFilterCmd(cmdtoks)) {
+        return nullptr;
     }
-            
-    h->params.push_back(cfg->findFilter(*it++));
-    h->params.insert(h->params.end(), it, cmdtoks.end());
+    MimeHandlerExec *h = multiple ? new MimeHandlerExecMultiple(cfg, id) :
+        new MimeHandlerExec(cfg, id);
+    h->params = cmdtoks;
 
     // Handle additional attributes. We substitute the semi-colons
     // with newlines and use a ConfSimple
@@ -260,23 +247,18 @@ MimeHandlerExec *mhExecFactory(RclConfig *cfg, const string& mtype, string& hs,
         h->cfgFilterOutputCharset = stringtolower((const string&)value);
     if (attrs.get(cstr_dj_keymt, value))
         h->cfgFilterOutputMtype = stringtolower((const string&)value);
-
-#if 0
-    string scmd;
-    for (it = h->params.begin(); it != h->params.end(); it++) {
-        scmd += string("[") + *it + "] ";
+    if (attrs.get(cstr_mh_maxseconds, value)) {
+        h->setmaxseconds(atoi(value.c_str()));
     }
-    LOGDEB("mhExecFactory:mt [" << mtype << "] cfgmt [" <<
-           h->cfgFilterOutputMtype << "] cfgcs [" <<
-           h->cfgFilterOutputCharset << "] cmd: [" << scmd << "]\n");
-#endif
-
+    LOGDEB2("mhExecFactory:mt [" << mtype << "] cfgmt [" <<
+            h->cfgFilterOutputMtype << "] cfgcs ["<<h->cfgFilterOutputCharset <<
+            "] cmd: [" << stringsToString(h->params) << "]\n");
     return h;
 }
 
 /* Get handler/filter object for given mime type: */
-RecollFilter *getMimeHandler(const string &mtype, RclConfig *cfg, 
-                             bool filtertypes)
+RecollFilter *getMimeHandler(const string &mtype, RclConfig *cfg,
+                             bool filtertypes, const std::string& fn)
 {
     LOGDEB("getMimeHandler: mtype [" << mtype << "] filtertypes " <<
            filtertypes << "\n");
@@ -289,7 +271,7 @@ RecollFilter *getMimeHandler(const string &mtype, RclConfig *cfg,
     // indexedmimetypes but an html handler could still be in the
     // cache because it was needed by some other interning stack).
     string hs;
-    hs = cfg->getMimeHandlerDef(mtype, filtertypes);
+    hs = cfg->getMimeHandlerDef(mtype, filtertypes, fn);
     string id;
 
     if (!hs.empty()) { 

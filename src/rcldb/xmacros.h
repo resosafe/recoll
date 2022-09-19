@@ -21,31 +21,33 @@
 // Generic Xapian exception catching code. We do this quite often,
 // and I have no idea how to do this except for a macro
 #define XCATCHERROR(MSG) \
- catch (const Xapian::Error &e) {		   \
-    MSG = e.get_msg();				   \
-    if (MSG.empty()) MSG = "Empty error message";  \
- } catch (const std::string &s) {		   \
-    MSG = s;					   \
-    if (MSG.empty()) MSG = "Empty error message";  \
- } catch (const char *s) {			   \
-    MSG = s;					   \
-    if (MSG.empty()) MSG = "Empty error message";  \
- } catch (...) {				   \
-    MSG = "Caught unknown xapian exception";	   \
- } 
+    catch (const Xapian::Error &e) {                                    \
+        MSG = e.get_msg();                                              \
+        if (MSG.empty()) MSG = "Empty error message";                   \
+    } catch (const std::string &s) {                                    \
+        MSG = s;                                                        \
+        if (MSG.empty()) MSG = "Empty error message";                   \
+    } catch (const char *s) {                                           \
+        MSG = s;                                                        \
+        if (MSG.empty()) MSG = "Empty error message";                   \
+    } catch (std::exception& ex) {                                      \
+        MSG = std::string("Caught std::exception: ") + ex.what();       \
+    } catch (...) {                                                     \
+        MSG = std::string("Caught unknown exception??");                \
+    }
 
-#define XAPTRY(STMTTOTRY, XAPDB, ERSTR)       \
-    for (int tries = 0; tries < 2; tries++) { \
-	try {                                 \
-            STMTTOTRY;                        \
-            ERSTR.erase();                    \
-            break;                            \
-	} catch (const Xapian::DatabaseModifiedError &e) { \
-            ERSTR = e.get_msg();                           \
-	    XAPDB.reopen();                                \
-            continue;                                      \
-	} XCATCHERROR(ERSTR);                              \
-        break;                                             \
+#define XAPTRY(STMTTOTRY, XAPDB, ERSTR)                 \
+    for (int tries = 0; tries < 2; tries++) {           \
+    try {                                               \
+            STMTTOTRY;                                  \
+            ERSTR.erase();                              \
+            break;                                      \
+    } catch (const Xapian::DatabaseModifiedError &e) {  \
+            ERSTR = e.get_msg();                        \
+        XAPDB.reopen();                                 \
+            continue;                                   \
+    } XCATCHERROR(ERSTR);                               \
+        break;                                          \
     }
 
 #endif

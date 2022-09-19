@@ -48,27 +48,33 @@ public:
     };
     
     TextSplit(Flags flags = Flags(TXTS_NONE))
-	: m_flags(flags) {}
+        : m_flags(flags) {}
     virtual ~TextSplit() {}
+    TextSplit(const TextSplit&) = delete;
+    TextSplit& operator=(const TextSplit&) = delete;
 
     /** Call at program initialization to read non default values from the 
         configuration */
     static void staticConfInit(RclConfig *config);
+    static void koStaticConfInit(RclConfig *config, const std::string& tagger);
     
     /** Split text, emit words and positions. */
     virtual bool text_to_words(const std::string &in);
 
     /** Process one output word: to be implemented by the actual user class */
     virtual bool takeword(const std::string& term, 
-			  int pos,  // term pos
-			  int bts,  // byte offset of first char in term
-			  int bte   // byte offset of first char after term
-			  ) = 0; 
+                          int pos,  // term pos
+                          int bts,  // byte offset of first char in term
+                          int bte   // byte offset of first char after term
+        ) = 0; 
 
     /** Called when we encounter formfeed \f 0x0c. Override to use the event.
      * Mostly or exclusively used with pdftoxx output. Other filters mostly 
      * just don't know about pages. */
     virtual void newpage(int /*pos*/) {}
+
+    /** Called when we encounter newline \n 0x0a. Override to use the event. */
+    virtual void newline(int /*pos*/) {}
 
     // Static utility functions:
 
@@ -88,11 +94,13 @@ public:
     static bool stringToStrings(const std::string &s,
                                 std::vector<std::string> &tokens);
 
-    /** Is char CJK ? (excluding Katakana) */
+    /** Is char CJK ? */
     static bool isCJK(int c);
     static bool isKATAKANA(int c);
     static bool isHANGUL(int c);
-
+    /* Not split in words */
+    static bool isNGRAMMED(int c);
+    
     /** Statistics about word length (average and dispersion) can
      * detect bad data like undecoded base64 or other mis-identified
      * pieces of data taken as text. In practise, this keeps some junk out 
@@ -108,49 +116,43 @@ public:
 #ifdef TEXTSPLIT_STATS
     class Stats {
     public:
-	Stats()
-	{
-	    reset();
-	}
-	void reset()
-	{
-	    count = 0;
-	    totlen = 0;
-	    sigma_acc = 0;
-	}
-	void newsamp(unsigned int len)
-	{
-	    ++count;
-	    totlen += len;
-	    double avglen = double(totlen) / double(count);
-	    sigma_acc += (avglen - len) * (avglen - len);
-	}
-	struct Values {
-	    int count;
-	    double avglen;
-	    double sigma;
-	};
-	Values get()
-	{
-	    Values v;
-	    v.count = count;
-	    v.avglen = double(totlen) / double(count);
-	    v.sigma = sqrt(sigma_acc / count);
-	    return v;
-	}
+        Stats() {
+            reset();
+        }
+        void reset() {
+            count = 0;
+            totlen = 0;
+            sigma_acc = 0;
+        }
+        void newsamp(unsigned int len) {
+            ++count;
+            totlen += len;
+            double avglen = double(totlen) / double(count);
+            sigma_acc += (avglen - len) * (avglen - len);
+        }
+        struct Values {
+            int count;
+            double avglen;
+            double sigma;
+        };
+        Values get() {
+            Values v;
+            v.count = count;
+            v.avglen = double(totlen) / double(count);
+            v.sigma = sqrt(sigma_acc / count);
+            return v;
+        }
     private:
-	int count;
-	int totlen;
-	double sigma_acc;
+        int count;
+        int totlen;
+        double sigma_acc;
     };
 
-    Stats::Values getStats()
-    {
-	return m_stats.get();
+    Stats::Values getStats() {
+        return m_stats.get();
     }
-    void resetStats()
-    {
-	m_stats.reset();
+    void resetStats() {
+        m_stats.reset();
     }
 #endif // TEXTSPLIT_STATS
 
@@ -160,12 +162,16 @@ private:
     static bool o_deHyphenate; // false
     static unsigned int o_CJKNgramLen; // 2
     static int o_maxWordLength; // 40
+    static int o_maxWordsInSpan; // 6
 
     Flags         m_flags;
 
     // Current span. Might be jf.dockes@wanadoo.f
     std::string        m_span; 
 
+    // Words in span: byte positions of start and end of words in m_span. For example:
+    // 0   4    9
+    // bill@some.com -> (0,4) (5,9) (10,13)
     std::vector <std::pair<int, int> > m_words_in_span;
 
     // Current word: no punctuation at all in there. Byte offset
@@ -203,8 +209,11 @@ private:
     }
 
     // This processes cjk text:
-    bool cjk_to_words(Utf8Iter *it, unsigned int *cp);
+    bool cjk_to_words(Utf8Iter& it, unsigned int *cp);
 
+    // Experimental Korean splitter. This uses an external Python tokenizer
+    bool ko_to_words(Utf8Iter *it, unsigned int *cp);
+    
     bool emitterm(bool isspan, std::string &term, int pos, size_t bs,size_t be);
     bool doemit(bool spanerase, size_t bp);
     void discardspan();

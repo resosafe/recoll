@@ -33,8 +33,10 @@ class RclDHistoryEntry : public DynConfEntry {
  public:
     RclDHistoryEntry() : unixtime(0) {}
     RclDHistoryEntry(time_t t, const std::string& u, const std::string& d) 
-	: unixtime(t), udi(u), dbdir(d) {}
+    : unixtime(t), udi(u), dbdir(d) {}
     virtual ~RclDHistoryEntry() {}
+    RclDHistoryEntry(const RclDHistoryEntry&) = default;
+    RclDHistoryEntry& operator=(const RclDHistoryEntry&) = default;
     virtual bool decode(const std::string &value);
     virtual bool encode(std::string& value);
     virtual bool equal(const DynConfEntry& other);
@@ -50,8 +52,10 @@ class DocSequenceHistory : public DocSequence {
  public:
     DocSequenceHistory(std::shared_ptr<Rcl::Db> db, RclDynConf *h,
                        const std::string &t) 
-	: DocSequence(t), m_db(db), m_hist(h) {}
+    : DocSequence(t), m_db(db), m_hist(h) {}
     virtual ~DocSequenceHistory() {}
+    DocSequenceHistory(const DocSequenceHistory&) = delete;
+    DocSequenceHistory& operator=(const DocSequenceHistory&) = delete;
 
     virtual bool getDoc(int num, Rcl::Doc &doc, std::string *sh = 0);
     virtual int getResCnt();

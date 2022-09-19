@@ -4,3 +4,5 @@ application/x-perl	[file:///home/dockes/projets/fulltext/testrecoll/program/rcli
 application/x-shellscript	[file:///home/dockes/projets/fulltext/testrecoll/program/run_program_with_counters.sh]	[run_program_with_counters.sh]	2632	bytes	
 1 results
 application/x-shellscript	[file:///home/dockes/projets/fulltext/testrecoll/program/nosuffixshell]	[nosuffixshell]	34	bytes	
+1 results
+text/x-python	[file:///home/dockes/projets/fulltext/testrecoll/program/query.py]	[query.py]	32748	bytes	

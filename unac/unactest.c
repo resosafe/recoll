@@ -43,7 +43,7 @@ int main() {
       int i;
       printf(" => ");
       for(i = 0; i < l; i++) {
-	printf("%04X ", p[i]);
+    printf("%04X ", p[i]);
       }
       printf("\n");
     }

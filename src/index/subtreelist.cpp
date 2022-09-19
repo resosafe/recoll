@@ -15,7 +15,6 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#ifndef TEST_SUBTREELIST
 #include "autoconfig.h"
 
 #include <memory>
@@ -27,14 +26,20 @@
 #include "subtreelist.h"
 #include "log.h"
 
-bool subtreelist(RclConfig *config, const string& top, 
-		 vector<string>& paths)
+bool subtreelist(RclConfig *config, const string& _top, vector<string>& paths)
 {
-    LOGDEB("subtreelist: top: ["  << (top) << "]\n" );
+    std::string top(_top);
+#ifdef _WIN32
+    // Need to convert c:path to /c/path because this is how paths are indexed
+    top = path_slashdrive(top);
+#endif
+
+    LOGDEB("subtreelist: top: [" << top << "]\n");
     Rcl::Db rcldb(config);
     if (!rcldb.open(Rcl::Db::DbRO)) {
-	LOGERR("subtreelist: can't open database in ["  << (config->getDbDir()) << "]: "  << (rcldb.getReason()) << "\n" );
-	return false;
+        LOGERR("subtreelist: can't open index in [" << config->getDbDir() <<
+               "]: " << rcldb.getReason() << "\n");
+        return false;
     }
 
     Rcl::SearchData *sd = new Rcl::SearchData(Rcl::SCLT_OR, cstr_null);
@@ -47,85 +52,12 @@ bool subtreelist(RclConfig *config, const string& top,
     int cnt = query.getResCnt();
 
     for (int i = 0; i < cnt; i++) {
-	Rcl::Doc doc;
-	if (!query.getDoc(i, doc))
-	    break;
-	string path = fileurltolocalpath(doc.url);
-	if (!path.empty())
-	    paths.push_back(path);
+        Rcl::Doc doc;
+        if (!query.getDoc(i, doc))
+            break;
+        string path = fileurltolocalpath(doc.url);
+        if (!path.empty())
+            paths.push_back(path);
     }
     return true;
 }
-
-#else // TEST
-
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <errno.h>
-#include <string.h>
-
-#include <iostream>
-#include <vector>
-#include <string>
-using namespace std;
-
-#include "subtreelist.h"
-#include "rclconfig.h"
-#include "rclinit.h"
-
-static char *thisprog;
-static char usage [] =
-" <path> : list document paths in this tree\n"
-;
-static void
-Usage(void)
-{
-    cerr << thisprog <<  ": usage:" << endl << usage;
-    exit(1);
-}
-
-static int     op_flags;
-#define OPT_o     0x2 
-
-int main(int argc, char **argv)
-{
-    string top;
-
-    thisprog = argv[0];
-    argc--; argv++;
-
-    while (argc > 0 && **argv == '-') {
-        (*argv)++;
-        if (!(**argv))
-            /* Cas du "adb - core" */
-            Usage();
-        while (**argv)
-            switch (*(*argv)++) {
-            default: Usage();   break;
-            }
-	argc--; argv++;
-    }
-    if (argc < 1)
-	Usage();
-    top = *argv++;argc--;
-    string reason;
-    RclConfig *config = recollinit(0, 0, 0, reason, 0);
-    if (!config || !config->ok()) {
-	fprintf(stderr, "Recoll init failed: %s\n", reason.c_str());
-	exit(1);
-    }
-
-    vector<string> paths;
-    if (!subtreelist(config, top, paths)) {
-	cerr << "subtreelist failed" << endl;
-	exit(1);
-    }
-    for (vector<string>::const_iterator it = paths.begin(); 
-	 it != paths.end(); it++) {
-	cout << *it << endl;
-    }
-    exit(0);
-}
-#endif
-

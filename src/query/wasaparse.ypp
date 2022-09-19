@@ -25,7 +25,7 @@ int yylex(yy::parser::semantic_type *, yy::parser::location_type *,
 void yyerror(char const *);
 static void qualify(Rcl::SearchDataClauseDist *, const string &);
 
-static void addSubQuery(WasaParserDriver *d,
+static void addSubQuery(WasaParserDriver *,
                         Rcl::SearchData *sd, Rcl::SearchData *sq)
 {
     if (sd && sq)

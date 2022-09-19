@@ -18,6 +18,14 @@
 
 #include <algorithm>
 #include <cstdio>
+#include <sstream>
+
+// Programs built with gcc 4.8.4 (e.g.: Ubuntu Trusty), crash at startup while initializing stdc++
+// regular expression objects (and also crash if we make them non-static).
+#if defined(__clang__) || defined(_WIN32) || __GNUC__ > 4
+#define USE_REGEX
+#include <regex>
+#endif
 
 #include "recoll.h"
 #include "log.h"
@@ -26,13 +34,24 @@
 #include "pathut.h"
 #include "base64.h"
 #include "advshist.h"
+#include "readfile.h"
 
 #include <QSettings>
 #include <QStringList>
+#ifdef BUILDING_RECOLLGUI
+#include <QWidget>
+#include <QFont>
+#endif
 
 RclDynConf *g_dynconf;
 AdvSearchHist *g_advshistory;
 RclConfig *theconfig;
+
+#ifdef _WIN32
+static const std::string dirlistsep{";"};
+#else
+static const std::string dirlistsep{":"};
+#endif
 
 // The table should not be necessary, but I found no css way to get
 // qt 4.6 qtextedit to clear the margins after the float img without 
@@ -70,26 +89,44 @@ PrefsPack prefs;
  * the qt/recoll settings to defaults) */
 static bool havereadsettings;
 
+#ifdef _WIN32
+static void maybeCopyFromRegistry();
+#else /* ! _WIN32 */
+static void maybeRenameGUISettings();
+#endif /* ! _WIN32 */
+
 void rwSettings(bool writing)
 {
+#ifdef _WIN32
+    {
+        static int once = 1;
+        // Once conversion registry -> file. Only happens once ever, and
+        // also we only call the function at program startup (the once
+        // above).
+        if (once) {
+            maybeCopyFromRegistry();
+            once = 0;
+        }
+    }
+#else
+    maybeRenameGUISettings();
+#endif /* !_WIN32 */
+    // Keep this AFTER maybecopy...()
+    QSettings::setDefaultFormat(QSettings::IniFormat);
+
     LOGDEB1("rwSettings: write " << writing << "\n");
     if (writing && !havereadsettings)
         return;
-    QSettings settings("Recoll.org", "recoll");
-    SETTING_RW(prefs.mainwidth, "/Recoll/geometry/width", Int, 0);
-    SETTING_RW(prefs.mainheight, "/Recoll/geometry/height", Int, 0);
+    QSettings settings;
     SETTING_RW(prefs.showmode, "/Recoll/geometry/showmode", Int, 0);
     SETTING_RW(prefs.pvwidth, "/Recoll/geometry/pvwidth", Int, 0);
     SETTING_RW(prefs.pvheight, "/Recoll/geometry/pvheight", Int, 0);
-    SETTING_RW(prefs.toolArea, "/Recoll/geometry/toolArea", Int, 0);
-    SETTING_RW(prefs.resArea, "/Recoll/geometry/resArea", Int, 0);
     SETTING_RW(prefs.ssearchTypSav, "/Recoll/prefs/ssearchTypSav", Bool, 0);
     SETTING_RW(prefs.ssearchTyp, "/Recoll/prefs/simpleSearchTyp", Int, 3);
-    SETTING_RW(prefs.startWithAdvSearchOpen, 
-               "/Recoll/prefs/startWithAdvSearchOpen", Bool, false);
+    SETTING_RW(prefs.startWithAdvSearchOpen, "/Recoll/prefs/startWithAdvSearchOpen", Bool, false);
     SETTING_RW(prefs.previewHtml, "/Recoll/prefs/previewHtml", Bool, true);
-    SETTING_RW(prefs.previewActiveLinks,
-               "/Recoll/prefs/previewActiveLinks", Bool, false);
+    SETTING_RW(prefs.previewActiveLinks, "/Recoll/prefs/previewActiveLinks", Bool, false);
+    SETTING_RW(prefs.idxFilterTreeDepth, "/Recoll/prefs/ssearch/idxfiltertreedepth", Int, 2);
 
     QString advSearchClauses;
     const int maxclauselistsize = 20;
@@ -126,31 +163,31 @@ void rwSettings(bool writing)
         }
     }
 
-    SETTING_RW(prefs.ssearchNoComplete, 
-               "/Recoll/prefs/ssearch/noComplete", Bool, false);
-    SETTING_RW(prefs.ssearchStartOnComplete, 
-               "/Recoll/prefs/ssearch/startOnComplete", Bool, true);
+    SETTING_RW(prefs.ssearchNoComplete, "/Recoll/prefs/ssearch/noComplete", Bool, false);
+    SETTING_RW(prefs.ssearchStartOnComplete, "/Recoll/prefs/ssearch/startOnComplete", Bool, true);
     SETTING_RW(prefs.filterCtlStyle, "/Recoll/prefs/filterCtlStyle", Int, 0);
-    SETTING_RW(prefs.ssearchAutoPhrase, 
-               "/Recoll/prefs/ssearchAutoPhrase", Bool, true);
-    SETTING_RW(prefs.ssearchAutoPhraseThreshPC, 
+    SETTING_RW(prefs.ssearchAutoPhrase, "/Recoll/prefs/ssearchAutoPhrase", Bool, true);
+    SETTING_RW(prefs.ssearchAutoPhraseThreshPC,
                "/Recoll/prefs/ssearchAutoPhraseThreshPC", Double, 2.0);
     SETTING_RW(prefs.respagesize, "/Recoll/prefs/reslist/pagelen", Int, 8);
     SETTING_RW(prefs.historysize, "/Recoll/prefs/historysize", Int, -1);
-    SETTING_RW(prefs.collapseDuplicates, 
-               "/Recoll/prefs/reslist/collapseDuplicates", Bool, false);
-    SETTING_RW(prefs.showResultsAsTable, 
-               "/Recoll/prefs/showResultsAsTable", Bool, false);
-    SETTING_RW(prefs.maxhltextmbs, "/Recoll/prefs/preview/maxhltextmbs", Int, 3);
+    SETTING_RW(prefs.collapseDuplicates, "/Recoll/prefs/reslist/collapseDuplicates", Bool, false);
+    SETTING_RW(prefs.showResultsAsTable, "/Recoll/prefs/showResultsAsTable", Bool, false);
 
-    SETTING_RW(prefs.previewPlainPre, 
-               "/Recoll/prefs/preview/plainPre", Int, PrefsPack::PP_PREWRAP);
+    SETTING_RW(prefs.maxhltextkbs, "/Recoll/prefs/preview/maxhltextkbs", Int, 3000);
+    // Compat: if maxhltextkbs is not set but old maxhltextmbs is set use it
+    if (!writing && !settings.contains("/Recoll/prefs/preview/maxhltextkbs") &&
+        settings.contains("/Recoll/prefs/preview/maxhltextmbs")) {
+        prefs.maxhltextkbs = settings.value(
+            "/Recoll/prefs/preview/maxhltextmbs").toInt() * 1024;
+    }
+
+    SETTING_RW(prefs.previewPlainPre, "/Recoll/prefs/preview/plainPre", Int, PrefsPack::PP_PREWRAP);
 
     // History: used to be able to only set a bare color name. Can now
     // set any CSS style. Hack on ':' presence to keep compat with old
     // values
-    SETTING_RW(prefs.qtermstyle, "/Recoll/prefs/qtermcolor", String,
-               "color: blue");
+    SETTING_RW(prefs.qtermstyle, "/Recoll/prefs/qtermcolor", String, "color: blue");
     if (!writing && prefs.qtermstyle == "")
         prefs.qtermstyle = "color: blue";
     { // histo compatibility hack
@@ -164,17 +201,22 @@ void rwSettings(bool writing)
         }
     }
 
-    SETTING_RW(prefs.reslistdateformat, "/Recoll/prefs/reslist/dateformat", 
-               String,"&nbsp;%Y-%m-%d&nbsp;%H:%M:%S&nbsp;%z");
+    SETTING_RW(u8s2qs(prefs.reslistdateformat), "/Recoll/prefs/reslist/dateformat", 
+               String, "&nbsp;%Y-%m-%d&nbsp;%H:%M:%S&nbsp;%z");
     if (!writing && prefs.reslistdateformat == "")
         prefs.reslistdateformat = "&nbsp;%Y-%m-%d&nbsp;%H:%M:%S&nbsp;%z";
-    prefs.creslistdateformat = (const char*)prefs.reslistdateformat.toUtf8();
 
     SETTING_RW(prefs.reslistfontfamily, "/Recoll/prefs/reslist/fontFamily", 
                String, "");
-    SETTING_RW(prefs.reslistfontsize, "/Recoll/prefs/reslist/fontSize", Int, 
-               10);
 
+    // While building the kio, we don't really care about QT Gui
+    // defaults and referencing QFont introduces a useless dependency
+#ifdef BUILDING_RECOLLGUI
+    SETTING_RW(prefs.reslistfontsize, "/Recoll/prefs/reslist/fontSize", Int, QFont().pointSize());
+#else
+    SETTING_RW(prefs.reslistfontsize, "/Recoll/prefs/reslist/fontSize", Int, 12);
+#endif
+    
     QString rlfDflt = QString::fromUtf8(prefs.dfltResListFormat);
     if (writing) {
         if (prefs.reslistformat.compare(rlfDflt)) {
@@ -189,22 +231,17 @@ void rwSettings(bool writing)
         prefs.creslistformat = qs2utf8s(prefs.reslistformat);
     }
 
-    SETTING_RW(prefs.reslistheadertext, "/Recoll/prefs/reslist/headertext", 
-               String, "");
+    SETTING_RW(prefs.reslistheadertext, "/Recoll/prefs/reslist/headertext", String, "");
+    SETTING_RW(prefs.darkMode, "/Recoll/prefs/darkMode", Bool, 0);
     SETTING_RW(prefs.qssFile, "/Recoll/prefs/stylesheet", String, "");
     SETTING_RW(prefs.snipCssFile, "/Recoll/prefs/snippets/cssfile", String, "");
-    SETTING_RW(prefs.queryStemLang, "/Recoll/prefs/query/stemLang", String,
-               "english");
-    SETTING_RW(prefs.useDesktopOpen, "/Recoll/prefs/useDesktopOpen", 
-               Bool, true);
+    SETTING_RW(prefs.queryStemLang, "/Recoll/prefs/query/stemLang", String, "english");
+    SETTING_RW(prefs.useDesktopOpen, "/Recoll/prefs/useDesktopOpen", Bool, true);
 
-    SETTING_RW(prefs.keepSort, 
-               "/Recoll/prefs/keepSort", Bool, false);
+    SETTING_RW(prefs.keepSort, "/Recoll/prefs/keepSort", Bool, false);
     SETTING_RW(prefs.sortField, "/Recoll/prefs/sortField", String, "");
-    SETTING_RW(prefs.sortActive, 
-               "/Recoll/prefs/sortActive", Bool, false);
-    SETTING_RW(prefs.sortDesc, 
-               "/Recoll/prefs/query/sortDesc", Bool, 0);
+    SETTING_RW(prefs.sortActive, "/Recoll/prefs/sortActive", Bool, false);
+    SETTING_RW(prefs.sortDesc, "/Recoll/prefs/query/sortDesc", Bool, 0);
     if (!writing) {
         // Handle transition from older prefs which did not store sortColumn
         // (Active always meant sort by date).
@@ -212,27 +249,22 @@ void rwSettings(bool writing)
             prefs.sortField = "mtime";
     }
 
-    SETTING_RW(prefs.queryBuildAbstract, 
-               "/Recoll/prefs/query/buildAbstract", Bool, true);
-    SETTING_RW(prefs.queryReplaceAbstract, 
-               "/Recoll/prefs/query/replaceAbstract", Bool, false);
-    SETTING_RW(prefs.syntAbsLen, "/Recoll/prefs/query/syntAbsLen", 
-               Int, 250);
-    SETTING_RW(prefs.syntAbsCtx, "/Recoll/prefs/query/syntAbsCtx", 
-               Int, 4);
+    SETTING_RW(prefs.queryBuildAbstract, "/Recoll/prefs/query/buildAbstract", Bool, true);
+    SETTING_RW(prefs.queryReplaceAbstract, "/Recoll/prefs/query/replaceAbstract", Bool, false);
+    SETTING_RW(prefs.syntAbsLen, "/Recoll/prefs/query/syntAbsLen", Int, 250);
+    SETTING_RW(prefs.syntAbsCtx, "/Recoll/prefs/query/syntAbsCtx", Int, 4);
     // Abstract snippet separator
     SETTING_RW(prefs.abssep, "/Recoll/prefs/reslist/abssep", String,"&hellip;");
     if (!writing && prefs.abssep == "")
         prefs.abssep = "&hellip;";
     SETTING_RW(prefs.snipwMaxLength, "/Recoll/prefs/snipwin/maxlen", Int, 1000);
     SETTING_RW(prefs.snipwSortByPage,"/Recoll/prefs/snipwin/bypage", Bool,false);
+    SETTING_RW(prefs.alwaysSnippets, "/Recoll/prefs/reslist/alwaysSnippets", Bool,false);
 
     SETTING_RW(prefs.autoSuffs, "/Recoll/prefs/query/autoSuffs", String, "");
-    SETTING_RW(prefs.autoSuffsEnable, 
-               "/Recoll/prefs/query/autoSuffsEnable", Bool, false);
+    SETTING_RW(prefs.autoSuffsEnable, "/Recoll/prefs/query/autoSuffsEnable", Bool, false);
 
-    SETTING_RW(prefs.synFileEnable, 
-               "/Recoll/prefs/query/synFileEnable", Bool, false);
+    SETTING_RW(prefs.synFileEnable, "/Recoll/prefs/query/synFileEnable", Bool, false);
     SETTING_RW(prefs.synFile, "/Recoll/prefs/query/synfile", String, "");
     
     SETTING_RW(prefs.termMatchType, "/Recoll/prefs/query/termMatchType", 
@@ -245,66 +277,38 @@ void rwSettings(bool writing)
 
     // Ssearch combobox history list
     if (writing) {
-        settings.setValue("/Recoll/prefs/query/ssearchHistory",
-                          prefs.ssearchHistory);
+        settings.setValue("/Recoll/prefs/query/ssearchHistory",prefs.ssearchHistory);
     } else {
-        prefs.ssearchHistory = 
-            settings.value("/Recoll/prefs/query/ssearchHistory").toStringList();
+        prefs.ssearchHistory = settings.value("/Recoll/prefs/query/ssearchHistory").toStringList();
     }
 
     // Ignored file types (advanced search)
     if (writing) {
-        settings.setValue("/Recoll/prefs/query/asearchIgnFilTyps",
-                          prefs.asearchIgnFilTyps);
+        settings.setValue("/Recoll/prefs/query/asearchIgnFilTyps", prefs.asearchIgnFilTyps);
     } else {
-        prefs.asearchIgnFilTyps = settings.value(
-            "/Recoll/prefs/query/asearchIgnFilTyps").toStringList();
+        prefs.asearchIgnFilTyps =
+            settings.value("/Recoll/prefs/query/asearchIgnFilTyps").toStringList();
     }
 
-    // Field list for the restable
-    if (writing) {
-        settings.setValue("/Recoll/prefs/query/restableFields",
-                          prefs.restableFields);
-    } else {
-        prefs.restableFields = 
-            settings.value("/Recoll/prefs/query/restableFields").toStringList();
-        if (prefs.restableFields.empty()) {
-            prefs.restableFields.push_back("date");
-            prefs.restableFields.push_back("title");
-            prefs.restableFields.push_back("filename");
-            prefs.restableFields.push_back("author");
-            prefs.restableFields.push_back("url");
-        }
-    }
-
-    // restable col widths
-    QString rtcw;
-    if (writing) {
-        for (const auto& width : prefs.restableColWidths) {
-            char buf[20];
-            sprintf(buf, "%d ", width);
-            rtcw += QString::fromUtf8(buf);
-        }
-    }
-    SETTING_RW(rtcw, "/Recoll/prefs/query/restableWidths", String, 
-               "83 253 132 172 130 ");
-    if (!writing) {
-        prefs.restableColWidths.clear();
-        vector<string> widths;
-        stringToStrings(qs2utf8s(rtcw), widths);
-        for (const auto& width : widths) {
-            prefs.restableColWidths.push_back(atoi(width.c_str()));
-        }
-    }
-
-    SETTING_RW(prefs.fileTypesByCats, "/Recoll/prefs/query/asearchFilTypByCat",
-               Bool, false);
+    SETTING_RW(prefs.fileTypesByCats, "/Recoll/prefs/query/asearchFilTypByCat", Bool, false);
+    SETTING_RW(prefs.noClearSearch, "/Recoll/prefs/noClearSearch", Bool, false);
+    SETTING_RW(prefs.noToolbars, "/Recoll/prefs/noToolbars", Bool, false);
+    SETTING_RW(prefs.noStatusBar, "/Recoll/prefs/noStatusBar", Bool, false);
+    SETTING_RW(prefs.noMenuBar, "/Recoll/prefs/noMenuBar", Bool, false);
+    SETTING_RW(prefs.noSSTypCMB, "/Recoll/prefs/noSSTypCMB", Bool, false);
+    SETTING_RW(prefs.resTableTextNoShift, "/Recoll/prefs/resTableTextNoShift", Bool, false);
+    SETTING_RW(prefs.resTableNoHoverMeta, "/Recoll/prefs/resTableNoHoverMeta", Bool, false);
+    SETTING_RW(prefs.noResTableHeader, "/Recoll/prefs/noResTableHeader", Bool, false);
+    SETTING_RW(prefs.showResTableVHeader, "/Recoll/prefs/showResTableVHeader", Bool, false);
+    SETTING_RW(prefs.noResTableRowJumpSC, "/Recoll/prefs/noResTableRowJumpSC", Bool, false);
     SETTING_RW(prefs.showTrayIcon, "/Recoll/prefs/showTrayIcon", Bool, false);
     SETTING_RW(prefs.closeToTray, "/Recoll/prefs/closeToTray", Bool, false);
     SETTING_RW(prefs.trayMessages, "/Recoll/prefs/trayMessages", Bool, false);
+    SETTING_RW(prefs.wholeuiscale, "/Recoll/ui/wholeuiscale", Double, 1.0);
+    /*INSERTHERE*/
+    
     // See qxtconfirmationmessage. Needs to be -1 for the dialog to show.
-    SETTING_RW(prefs.showTempFileWarning, "Recoll/prefs/showTempFileWarning",
-               Int, -1);
+    SETTING_RW(prefs.showTempFileWarning, "Recoll/prefs/showTempFileWarning", Int, -1);
 
     if (g_dynconf == 0) {
         // Happens
@@ -316,7 +320,7 @@ void rwSettings(bool writing)
     // known dbs and active (searched) ones.
     // When starting up, we also add from the RECOLL_EXTRA_DBS environment
     // variable.
-    // This are stored inside the dynamic configuration file (aka: history), 
+    // These are stored inside the dynamic configuration file (aka: history), 
     // as they are likely to depend on RECOLL_CONFDIR.
     if (writing) {
         g_dynconf->eraseAll(allEdbsSk);
@@ -332,12 +336,11 @@ void rwSettings(bool writing)
         const char *cp;
         if ((cp = getenv("RECOLL_EXTRA_DBS")) != 0) {
             vector<string> dbl;
-            stringToTokens(cp, dbl, ":");
+            stringToTokens(cp, dbl, dirlistsep);
             for (const auto& path : dbl) {
                 string dbdir = path_canon(path);
                 path_catslash(dbdir);
-                if (std::find(prefs.allExtraDbs.begin(),
-                              prefs.allExtraDbs.end(), dbdir) != 
+                if (std::find(prefs.allExtraDbs.begin(), prefs.allExtraDbs.end(), dbdir) != 
                     prefs.allExtraDbs.end())
                     continue;
                 bool stripped;
@@ -346,14 +349,12 @@ void rwSettings(bool writing)
                     continue;
                 }
                 if (stripped != o_index_stripchars) {
-                    LOGERR("Incompatible character stripping: [" << dbdir <<
-                           "]\n");
+                    LOGERR("Incompatible character stripping: [" << dbdir << "]\n");
                     continue;
                 }
                 prefs.allExtraDbs.push_back(dbdir);
             }
         }
-
         // Get the remembered "active external indexes":
         prefs.activeExtraDbs = g_dynconf->getStringEntries<vector>(actEdbsSk);
 
@@ -377,19 +378,17 @@ void rwSettings(bool writing)
         const char *cp4Act;
         if ((cp4Act = getenv("RECOLL_ACTIVE_EXTRA_DBS")) != 0) {
             vector<string> dbl;
-            stringToTokens(cp4Act, dbl, ":");
+            stringToTokens(cp4Act, dbl, dirlistsep);
             for (const auto& path : dbl) {
                 string dbdir = path_canon(path);
                 path_catslash(dbdir);
-                if (std::find(prefs.activeExtraDbs.begin(),
-                              prefs.activeExtraDbs.end(), dbdir) !=
+                if (std::find(prefs.activeExtraDbs.begin(), prefs.activeExtraDbs.end(), dbdir) !=
                     prefs.activeExtraDbs.end())
                     continue;
                 bool strpd;
                 if (!Rcl::Db::testDbDir(dbdir, &strpd) || 
                     strpd != o_index_stripchars) {
-                    LOGERR("Not a Xapian dir or diff. char stripping: ["  <<
-                           dbdir << "]\n");
+                    LOGERR("Not a Xapian dir or diff. char stripping: ["  << dbdir << "]\n");
                     continue;
                 }
                 prefs.activeExtraDbs.push_back(dbdir);
@@ -417,11 +416,88 @@ void rwSettings(bool writing)
     } else {
         vector<string> tl = g_dynconf->getStringEntries<vector>(asbdSk);
         for (const auto& dbd: tl) {
-            prefs.asearchSubdirHist.push_back(u8s2qs(dbd.c_str()));
+            prefs.asearchSubdirHist.push_back(u8s2qs(dbd));
         }
+    }
+    if (!writing) {
+        prefs.setupDarkCSS();
     }
     if (!writing)
         havereadsettings = true;
+}
+
+#ifdef USE_REGEX
+/* font-size: 10px; */
+static const std::string fntsz_exp(
+    R"((\s*font-size\s*:\s*)([0-9]+)(p[tx]\s*;\s*))"
+    );
+
+static std::regex fntsz_regex(fntsz_exp);
+#endif // USE_REGEX
+
+std::string PrefsPack::scaleFonts(const std::string& style, float multiplier)
+{
+    //cerr << "scale_fonts: multiplier: " << multiplier << "\n";
+    std::vector<std::string> lines;
+    stringToTokens(style, lines, "\n");
+#ifdef USE_REGEX
+    for (unsigned int ln = 0; ln < lines.size(); ln++) {
+        const string& line = lines[ln];
+        std::smatch m;
+        //std::cerr << "LINE: " << line << "\n";
+        if (regex_match(line, m, fntsz_regex) && m.size() == 4) {
+            //std::cerr << "Got match (sz " << m.size() << ") for " << line << "\n";
+            int fs = atoi(m[2].str().c_str());
+            int nfs = round(fs * multiplier);
+            char buf[20];
+            snprintf(buf, 20, "%d", nfs);
+            lines[ln] = m[1].str() + buf + m[3].str();
+            //std::cerr << "New line: [" << lines[ln] << "]\n";
+        }
+    }
+#endif    
+    string nstyle = string();
+    for (auto& ln : lines) {
+        nstyle += ln + "\n";
+    }
+    return nstyle;
+}
+
+std::string PrefsPack::htmlHeaderContents()
+{
+    auto comfn = path_cat(path_cat(theconfig->getDatadir(), "examples"), "recoll-common.css");
+    std::string comcss;
+    file_to_string(comfn, comcss);
+    std::ostringstream oss;
+    oss << comcss << "\n";
+    oss << "<style type=\"text/css\">\nhtml,body,form, fieldset,table,tr,td,img,select,input {\n";
+    if (!prefs.reslistfontfamily.isEmpty()) {
+        oss << "font-family: \"" << qs2utf8s(prefs.reslistfontfamily) << "\";\n";
+    }
+    oss << "font-size: " <<  round(prefs.reslistfontsize * 1.1) << "px;\n";
+    oss << "}\n</style>\n";
+    oss << qs2utf8s(prefs.darkreslistheadertext) << qs2utf8s(prefs.reslistheadertext);
+
+    auto css = PrefsPack::scaleFonts(oss.str(), prefs.wholeuiscale);
+    return css;
+}
+
+void PrefsPack::setupDarkCSS()
+{
+    if (!darkMode) {
+        darkreslistheadertext.clear();
+        return;
+    }
+    if (nullptr == theconfig) {
+        return;
+    }
+    string fn = path_cat(path_cat(theconfig->getDatadir(), "examples"), "recoll-dark.css");
+    string data;
+    string reason;
+    if (!file_to_string(fn, data, &reason)) {
+        std::cerr << "Recoll: Could not read: " << fn << "\n";
+    }
+    darkreslistheadertext = u8s2qs(data);
 }
 
 string PrefsPack::stemlang()
@@ -435,6 +511,56 @@ string PrefsPack::stemlang()
     }
     return stemLang;
 }
+
+#ifdef _WIN32
+// Once conversion of registry storage to file. If the file-specific
+// key does not exist, copy from registry to file and create the
+// file-specific key.
+void maybeCopyFromRegistry()
+{
+    const char* markerkey = "registryToFileDone";
+    std::map<QString, QVariant> settingsmap;
+    {
+        QSettings settings;
+        QStringList keys = settings.allKeys();
+        for (int ki = 0; ki < keys.count(); ki++) {
+            QString key = keys[ki];
+            settingsmap[keys[ki]] = settings.value(keys[ki]);
+        }
+    }
+    QSettings::setDefaultFormat(QSettings::IniFormat);
+    QSettings settings;
+    if (settings.value(markerkey) != QVariant()) {
+        // Already done;
+        return;
+    }
+    for (const auto& entry : settingsmap) {
+        LOGDEB("maybeCopyFromRegistry: KEY [" <<
+               qs2utf8s(entry.first) << "] VALUE [" <<
+               qs2utf8s(entry.second.toString()) << "]\n");
+        settings.setValue(entry.first, entry.second);
+    }
+    settings.setValue(markerkey, 1);
+}
+
+#else /* ! _WIN32 -> */
+
+// The Linux settings name unvontarily changed from
+// ~/.config/Recoll.org/recoll.conf to ~/.config/Recoll.org/recoll.ini
+// when the Windows version switched from registry to ini storage. Too
+// late to really fix as 1.26.6 was released (at least in the
+// lesbonscomptes repo and Debian unstable). For the lucky guys who
+// did not run 1.26.6, the following was added in 1.26.7 to rename the
+// file if the .ini target does not exist.
+static void maybeRenameGUISettings()
+{
+    string opath = path_cat(path_home(), ".config/Recoll.org/recoll.conf");
+    string npath = path_cat(path_home(), ".config/Recoll.org/recoll.ini");
+    if (path_exists(opath) && !path_exists(npath)) {
+        rename(opath.c_str(), npath.c_str());
+    }
+}
+#endif /* ! _WIN32 */
 
 #ifdef SHOWEVENTS
 const char *eventTypeToStr(int tp)

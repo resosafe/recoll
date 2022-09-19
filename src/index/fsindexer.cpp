@@ -1,4 +1,4 @@
-/* Copyright (C) 2009 J.F.Dockes
+/* Copyright (C) 2009-2020 J.F.Dockes
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation; either version 2 of the License, or
@@ -21,7 +21,6 @@
 #include <stdio.h>
 #include <errno.h>
 #include <cstring>
-#include "safesysstat.h"
 
 #include <iostream>
 #include <list>
@@ -48,6 +47,12 @@
 #include "rclinit.h"
 #include "extrameta.h"
 #include "utf8fn.h"
+#include "idxdiags.h"
+#include "fsfetcher.h"
+#if defined(HAVE_POSIX_FADVISE)
+#include <unistd.h>
+#include <fcntl.h>
+#endif
 
 using namespace std;
 
@@ -69,14 +74,14 @@ extern void *FsIndexerDbUpdWorker(void*);
 class InternfileTask {
 public:
     // Take some care to avoid sharing string data (if string impl is cow)
-    InternfileTask(const std::string &f, const struct stat *i_stp,
+    InternfileTask(const std::string &f, const struct PathStat *i_stp,
                    map<string,string> lfields)
         : fn(f.begin(), f.end()), statbuf(*i_stp)
         {
             map_ss_cp_noshr(lfields, &localfields);
         }
     string fn;
-    struct stat statbuf;
+    struct PathStat statbuf;
     map<string,string> localfields;
 };
 extern void *FsIndexerInternfileWorker(void*);
@@ -99,8 +104,8 @@ public:
         }
 };
 
-FsIndexer::FsIndexer(RclConfig *cnf, Rcl::Db *db, DbIxStatusUpdater *updfunc) 
-    : m_config(cnf), m_db(db), m_updater(updfunc), 
+FsIndexer::FsIndexer(RclConfig *cnf, Rcl::Db *db) 
+    : m_config(cnf), m_db(db),
       m_missing(new FSIFIMissingStore), m_detectxattronly(false),
       m_noretryfailed(false)
 #ifdef IDX_THREADS
@@ -177,16 +182,12 @@ bool FsIndexer::index(int flags)
 {
     bool quickshallow = (flags & ConfIndexer::IxFQuickShallow) != 0;
     m_noretryfailed = (flags & ConfIndexer::IxFNoRetryFailed) != 0;
+    m_cleancache = (flags & ConfIndexer::IxFCleanCache) != 0;
     Chrono chron;
     if (!init())
         return false;
 
-    if (m_updater) {
-#ifdef IDX_THREADS
-        std::unique_lock<std::mutex> locker(m_updater->m_mutex);
-#endif
-        m_updater->status.dbtotdocs = m_db->docCnt();
-    }
+    statusUpdater()->setDbTotDocs(m_db->docCnt());
 
     m_walker.setSkippedPaths(m_config->getSkippedPaths());
     if (quickshallow) {
@@ -194,6 +195,7 @@ bool FsIndexer::index(int flags)
         m_walker.setMaxDepth(2);
     }
 
+    bool walkok(true);
     for (const auto& topdir : m_tdl) {
         LOGDEB("FsIndexer::index: Indexing " << topdir << " into " <<
                getDbDir() << "\n");
@@ -228,34 +230,50 @@ bool FsIndexer::index(int flags)
         if (m_walker.walk(topdir, *this) != FsTreeWalker::FtwOk) {
             LOGERR("FsIndexer::index: error while indexing " << topdir <<
                    ": " << m_walker.getReason() << "\n");
-            return false;
+            // DO NOT return: we need to flush the queues before the Db can be closed !
+            walkok = false;
+            break;
         }
     }
 
-#ifdef IDX_THREADS
-    if (m_haveInternQ) 
-        m_iwqueue.waitIdle();
-    if (m_haveSplitQ)
-        m_dwqueue.waitIdle();
-    m_db->waitUpdIdle();
-#endif // IDX_THREADS
-
+    shutdownQueues(walkok);
     if (m_missing) {
         string missing;
         m_missing->getMissingDescription(missing);
         if (!missing.empty()) {
-            LOGINFO("FsIndexer::index missing helper program(s):\n" <<
-                    missing << "\n");
+            LOGINFO("FsIndexer::index missing helper program(s):\n" << missing << "\n");
         }
         m_config->storeMissingHelperDesc(missing);
     }
-    LOGINFO("fsindexer index time:  " << chron.millis() << " mS\n");
-    return true;
+    LOGINFO("fsindexer: status: " << walkok << " index time:  " << chron.millis() << " mS\n");
+    return walkok;
 }
 
-static bool matchesSkipped(const vector<string>& tdl,
-                           FsTreeWalker& walker,
-                           const string& path)
+void FsIndexer::shutdownQueues(bool ok)
+{
+#ifdef IDX_THREADS
+    if (!ok) {
+        // Error or more probably interrupt. Discard everything for fast shutdown
+        if (m_haveInternQ)  {
+            m_iwqueue.closeShop();
+        }
+        if (m_haveSplitQ) {
+            m_dwqueue.closeShop();
+        }
+        m_db->closeQueue();
+    }
+    if (m_haveInternQ)  {
+        m_iwqueue.waitIdle();
+    }
+    if (m_haveSplitQ) {
+        m_dwqueue.waitIdle();
+    }
+    m_db->waitUpdIdle();
+#endif // IDX_THREADS
+}
+
+static bool matchesSkipped(
+    const vector<string>& tdl, FsTreeWalker& walker, const string& path)
 {
     // Check path against topdirs and skippedPaths. We go up the
     // ancestors until we find either a topdirs or a skippedPaths
@@ -264,16 +282,17 @@ static bool matchesSkipped(const vector<string>& tdl,
     // config). This matches what happens during the normal fs tree
     // walk.
     string canonpath = path_canon(path);
+
     string mpath = canonpath;
     string topdir;
-    while (!path_isroot(mpath)) { // we assume root not in skipped paths.
-        for (vector<string>::const_iterator it = tdl.begin();  
-             it != tdl.end(); it++) {
+    for (;;) { // Used to test not root here, but root may be in topdirs !
+
+        for (const auto& tdlent : tdl) {
             // the topdirs members are already canonized.
-            LOGDEB2("matchesSkipped: comparing ancestor [" << mpath <<
-                    "] to topdir [" << it << "]\n");
-            if (!mpath.compare(*it)) {
-                topdir = *it;
+            LOGDEB1("matchesSkipped: comparing ancestor [" << mpath <<
+                    "] to topdir [" << tdlent << "]\n");
+            if (mpath == tdlent) {
+                topdir = tdlent;
                 goto goodpath;
             }
         }
@@ -283,6 +302,11 @@ static bool matchesSkipped(const vector<string>& tdl,
             return true;
         }
 
+        if (path_isroot(mpath)) {
+            break;
+        }
+
+        // Compute father
         string::size_type len = mpath.length();
         mpath = path_getfather(mpath);
         // getfather normally returns a path ending with /, canonic
@@ -297,7 +321,9 @@ static bool matchesSkipped(const vector<string>& tdl,
                    "] did not shorten\n");
             return true;
         }
+
     }
+
     // We get there if neither topdirs nor skippedPaths tests matched
     LOGDEB("FsIndexer::indexFiles: skipping [" << path << "] (ntd)\n");
     return true;
@@ -335,6 +361,7 @@ bool FsIndexer::indexFiles(list<string>& files, int flags)
 {
     LOGDEB("FsIndexer::indexFiles\n");
     m_noretryfailed = (flags & ConfIndexer::IxFNoRetryFailed) != 0;
+    m_cleancache = (flags & ConfIndexer::IxFCleanCache) != 0;
     bool ret = false;
 
     if (!init())
@@ -350,8 +377,8 @@ bool FsIndexer::indexFiles(list<string>& files, int flags)
     FsTreeWalker walker;
     walker.setSkippedPaths(m_config->getSkippedPaths());
 
-    for (list<string>::iterator it = files.begin(); it != files.end(); ) {
-        LOGDEB2("FsIndexer::indexFiles: [" << it << "]\n");
+    for (auto it = files.begin(); it != files.end(); ) {
+        LOGDEB2("FsIndexer::indexFiles: [" << *it << "]\n");
 
         m_config->setKeyDir(path_getfather(*it));
         if (m_havelocalfields)
@@ -369,7 +396,7 @@ bool FsIndexer::indexFiles(list<string>& files, int flags)
             continue;
         }
 
-        struct stat stb;
+        struct PathStat stb;
         int ststat = path_fileprops(*it, &stb, follow);
         if (ststat != 0) {
             LOGERR("FsIndexer::indexFiles: (l)stat " << *it << ": " <<
@@ -378,14 +405,14 @@ bool FsIndexer::indexFiles(list<string>& files, int flags)
             continue;
         }
         if (!(flags & ConfIndexer::IxFIgnoreSkip) &&
-            (S_ISREG(stb.st_mode) || S_ISLNK(stb.st_mode))) {
+            (stb.pst_type == PathStat::PST_REGULAR ||
+             stb.pst_type == PathStat::PST_SYMLINK)) {
             if (!walker.inOnlyNames(path_getsimple(*it))) {
                 it++;
                 continue;
             }
         }
-        if (processone(*it, &stb, FsTreeWalker::FtwRegular) != 
-            FsTreeWalker::FtwOk) {
+        if (processone(*it, &stb, FsTreeWalker::FtwRegular) != FsTreeWalker::FtwOk) {
             LOGERR("FsIndexer::indexFiles: processone failed\n");
             goto out;
         }
@@ -394,22 +421,14 @@ bool FsIndexer::indexFiles(list<string>& files, int flags)
 
     ret = true;
 out:
-#ifdef IDX_THREADS
-    if (m_haveInternQ) 
-        m_iwqueue.waitIdle();
-    if (m_haveSplitQ)
-        m_dwqueue.waitIdle();
-    m_db->waitUpdIdle();
-#endif // IDX_THREADS
+    shutdownQueues(ret);
 
     // Purge possible orphan documents
     if (ret == true) {
         LOGDEB("Indexfiles: purging orphans\n");
-        const vector<string>& purgecandidates = m_purgeCandidates.getCandidates();
-        for (vector<string>::const_iterator it = purgecandidates.begin();
-             it != purgecandidates.end(); it++) {
-            LOGDEB("Indexfiles: purging orphans for " << *it << "\n");
-            m_db->purgeOrphans(*it);
+        for (const auto& udi : m_purgeCandidates.getCandidates()) {
+            LOGDEB("Indexfiles: purging orphans for " << udi << "\n");
+            m_db->purgeOrphans(udi);
         }
 #ifdef IDX_THREADS
         m_db->waitUpdIdle();
@@ -449,13 +468,7 @@ bool FsIndexer::purgeFiles(list<string>& files)
 
     ret = true;
 out:
-#ifdef IDX_THREADS
-    if (m_haveInternQ) 
-        m_iwqueue.waitIdle();
-    if (m_haveSplitQ)
-        m_dwqueue.waitIdle();
-    m_db->waitUpdIdle();
-#endif // IDX_THREADS
+    shutdownQueues(ret);
     LOGDEB("FsIndexer::purgeFiles: done\n");
     return ret;
 }
@@ -479,10 +492,9 @@ void FsIndexer::localfieldsfromconf()
     ConfSimple attrs;
     m_config->valueSplitAttributes(sfields, value, attrs);
     vector<string> nmlst = attrs.getNames(cstr_null);
-    for (vector<string>::const_iterator it = nmlst.begin();
-         it != nmlst.end(); it++) {
-        string nm = m_config->fieldCanon(*it);
-        attrs.get(*it, m_localfields[nm]);
+    for (const auto& anm : nmlst) {
+        string nm = m_config->fieldCanon(anm);
+        attrs.get(anm, m_localfields[nm]);
         LOGDEB2("FsIndexer::localfieldsfromconf: [" << nm << "]->[" <<
                 m_localfields[nm] << "]\n");
     }
@@ -490,19 +502,12 @@ void FsIndexer::localfieldsfromconf()
 
 void FsIndexer::setlocalfields(const map<string, string>& fields, Rcl::Doc& doc)
 {
-    for (map<string, string>::const_iterator it = fields.begin();
-         it != fields.end(); it++) {
+    for (const auto& field : fields) {
         // Being chosen by the user, localfields override values from
         // the filter. The key is already canonic (see
         // localfieldsfromconf())
-        doc.meta[it->first] = it->second;
+        doc.meta[field.first] = field.second;
     }
-}
-
-void FsIndexer::makesig(const struct stat *stp, string& out)
-{
-    out = lltodecstr(stp->st_size) + 
-        lltodecstr(o_uptodate_test_use_mtime ? stp->st_mtime : stp->st_ctime);
 }
 
 #ifdef IDX_THREADS
@@ -547,9 +552,8 @@ void *FsIndexerInternfileWorker(void * fsp)
             return (void*)1;
         }
         LOGDEB0("FsIndexerInternfileWorker: task fn " << tsk->fn << "\n");
-        if (fip->processonefile(&myconf, tsk->fn, &tsk->statbuf,
-                                tsk->localfields) !=
-            FsTreeWalker::FtwOk) {
+        if (fip->processonefile(
+                &myconf, tsk->fn, &tsk->statbuf, tsk->localfields) != FsTreeWalker::FtwOk) {
             LOGERR("FsIndexerInternfileWorker: processone failed\n");
             tqp->workerExit();
             return (void*)0;
@@ -571,17 +575,11 @@ void *FsIndexerInternfileWorker(void * fsp)
 /// Accent and majuscule handling are performed by the db module when doing
 /// the actual indexing work. The Rcl::Doc created by internfile()
 /// mostly contains pretty raw utf8 data.
-FsTreeWalker::Status 
-FsIndexer::processone(const std::string &fn, const struct stat *stp, 
-                      FsTreeWalker::CbFlag flg)
+FsTreeWalker::Status FsIndexer::processone(
+    const std::string &fn, const struct PathStat *stp, FsTreeWalker::CbFlag flg)
 {
-    if (m_updater) {
-#ifdef IDX_THREADS
-        std::unique_lock<std::mutex> locker(m_updater->m_mutex);
-#endif
-        if (!m_updater->update()) {
-            return FsTreeWalker::FtwStop;
-        }
+    if (!statusUpdater()->update(DbIxStatus::DBIXS_FILES, fn)) {
+        return FsTreeWalker::FtwStop;
     }
 
     // If we're changing directories, possibly adjust parameters (set
@@ -597,7 +595,10 @@ FsIndexer::processone(const std::string &fn, const struct stat *stp,
         if (flg == FsTreeWalker::FtwDirReturn)
             return FsTreeWalker::FtwOk;
     }
-
+    if (flg == FsTreeWalker::FtwSkipped) {
+        IdxDiags::theDiags().record(IdxDiags::Skipped, fn);
+        return FsTreeWalker::FtwOk;
+    }
 #ifdef IDX_THREADS
     if (m_haveInternQ) {
         InternfileTask *tp = new InternfileTask(fn, stp, m_localfields);
@@ -631,10 +632,9 @@ bool FsIndexer::launchAddOrUpdate(const string& udi, const string& parent_udi,
     return m_db->addOrUpdate(udi, parent_udi, doc);
 }
 
-FsTreeWalker::Status 
-FsIndexer::processonefile(RclConfig *config, 
-                          const std::string &fn, const struct stat *stp,
-                          const map<string, string>& localfields)
+FsTreeWalker::Status FsIndexer::processonefile(
+    RclConfig *config, const std::string &fn, const struct PathStat *stp,
+    const map<string, string>& localfields)
 {
     ////////////////////
     // Check db up to date ? Doing this before file type
@@ -652,7 +652,7 @@ FsIndexer::processonefile(RclConfig *config,
     // m/ctime and size and the possibly new value is checked against
     // the stored one.
     string sig;
-    makesig(stp, sig);
+    fsmakesig(stp, sig);
     string udi;
     make_udi(fn, cstr_null, udi);
     unsigned int existingDoc;
@@ -671,7 +671,7 @@ FsIndexer::processonefile(RclConfig *config,
     // miss the data update. We would have to store both the mtime and
     // the ctime to avoid this
     bool xattronly = m_detectxattronly && !m_db->inFullReset() && 
-        existingDoc && needupdate && (stp->st_mtime < stp->st_ctime);
+        existingDoc && needupdate && (stp->pst_mtime < stp->pst_ctime);
 
     LOGDEB("processone: needupdate " << needupdate << " noretry " <<
            m_noretryfailed << " existing " << existingDoc << " oldsig [" <<
@@ -680,7 +680,7 @@ FsIndexer::processonefile(RclConfig *config,
     // If noretryfailed is set, check for a file which previously
     // failed to index, and avoid re-processing it
     if (needupdate && m_noretryfailed && existingDoc && 
-        !oldsig.empty() && *oldsig.rbegin() == '+') {
+        !oldsig.empty() && oldsig.back() == '+') {
         // Check that the sigs are the same except for the '+'. If the file
         // actually changed, we always retry (maybe it was fixed)
         string nold = oldsig.substr(0, oldsig.size()-1);
@@ -693,22 +693,14 @@ FsIndexer::processonefile(RclConfig *config,
 
     if (!needupdate) {
         LOGDEB0("processone: up to date: " << fn << "\n");
-        if (m_updater) {
-#ifdef IDX_THREADS
-            std::unique_lock<std::mutex> locker(m_updater->m_mutex);
-#endif
-            // Status bar update, abort request etc.
-            m_updater->status.fn = fn;
-            ++(m_updater->status.filesdone);
-            if (!m_updater->update()) {
-                return FsTreeWalker::FtwStop;
-            }
+        if (!statusUpdater()->update(
+                DbIxStatus::DBIXS_FILES, fn, DbIxStatusUpdater::IncrFilesDone)) {
+            return FsTreeWalker::FtwStop;
         }
         return FsTreeWalker::FtwOk;
     }
 
-    LOGDEB0("processone: processing: [" <<
-            displayableBytes(stp->st_size) << "] " << fn << "\n");
+    LOGDEB0("processone: processing: [" << displayableBytes(stp->pst_size) << "] " << fn << "\n");
 
     // Note that we used to do the full path here, but I ended up
     // believing that it made more sense to use only the file name
@@ -720,7 +712,7 @@ FsIndexer::processonefile(RclConfig *config,
 
     Rcl::Doc doc;
     char ascdate[30];
-    sprintf(ascdate, "%ld", long(stp->st_mtime));
+    sprintf(ascdate, "%ld", long(stp->pst_mtime));
 
     bool hadNullIpath = false;
     string mimetype;
@@ -787,9 +779,9 @@ FsIndexer::processonefile(RclConfig *config,
                     doc.meta[Rcl::Doc::keyfn] = utf8fn;
             } 
             // Set container file name for all docs, top or subdoc
-            doc.meta[Rcl::Doc::keytcfn] = utf8fn;
+            doc.meta[Rcl::Doc::keyctfn] = utf8fn;
 
-            doc.pcbytes = lltodecstr(stp->st_size);
+            doc.pcbytes = lltodecstr(stp->pst_size);
             // Document signature for up to date checks. All subdocs inherit the
             // file's.
             doc.sig = sig;
@@ -800,6 +792,7 @@ FsIndexer::processonefile(RclConfig *config,
             // myriads of such files, the ext script is executed for them
             // and fails every time)
             if (fis == FileInterner::FIError) {
+                IdxDiags::theDiags().record(IdxDiags::Error, fn, doc.ipath);
                 doc.sig += cstr_plus;
             }
 
@@ -809,32 +802,25 @@ FsIndexer::processonefile(RclConfig *config,
 
             // Add document to database. If there is an ipath, add it
             // as a child of the file document.
-            if (!launchAddOrUpdate(udi, doc.ipath.empty() ? 
-                                   cstr_null : parent_udi, doc)) {
+            if (!launchAddOrUpdate(udi, doc.ipath.empty() ? cstr_null : parent_udi, doc)) {
                 return FsTreeWalker::FtwError;
             } 
 
             // Tell what we are doing and check for interrupt request
-            if (m_updater) {
-#ifdef IDX_THREADS
-                std::unique_lock<std::mutex> locker(m_updater->m_mutex);
-#endif
-                ++(m_updater->status.docsdone);
-                if (m_updater->status.dbtotdocs < m_updater->status.docsdone)
-                    m_updater->status.dbtotdocs = m_updater->status.docsdone;
-                m_updater->status.fn = fn;
-                if (!doc.ipath.empty()) {
-                    m_updater->status.fn += "|" + doc.ipath;
-                } else {
-                    if (fis == FileInterner::FIError) {
-                        ++(m_updater->status.fileerrors);
-                    }
-                    ++(m_updater->status.filesdone);
+            int incr = DbIxStatusUpdater::IncrDocsDone;
+            std::string sfn(fn);
+            if (!doc.ipath.empty()) {
+                sfn += "|" + doc.ipath;
+            } else {
+                if (fis == FileInterner::FIError) {
+                    incr |= DbIxStatusUpdater::IncrFileErrors;
                 }
-                if (!m_updater->update()) {
-                    return FsTreeWalker::FtwStop;
-                }
+                incr |= DbIxStatusUpdater::IncrFilesDone;
             }
+            if (!statusUpdater()->update(DbIxStatus::DBIXS_FILES, sfn, incr)) {
+                return FsTreeWalker::FtwStop;
+            }
+
         }
 
         if (fis == FileInterner::FIError) {
@@ -855,6 +841,18 @@ FsIndexer::processonefile(RclConfig *config,
                 m_purgeCandidates.record(parent_udi);
             }
         }
+#if defined(HAVE_POSIX_FADVISE) && defined(POSIX_FADV_DONTNEED)
+        // See framagit issue 26. This is off by default and controlled by a command line switch.
+        if (m_cleancache) {
+            int fd = open(fn.c_str(), O_RDONLY);
+            if (fd >= 0) {
+                if (posix_fadvise(fd, 0, 0, POSIX_FADV_DONTNEED)) {
+                    LOGSYSERR("processonefile", "posix_fadvise", fn);
+                }
+                close(fd);
+            }
+        }
+#endif
     }
 
     // If we had no instance with a null ipath, we create an empty
@@ -873,14 +871,13 @@ FsIndexer::processonefile(RclConfig *config,
             fileDoc.onlyxattr = true;
         } else {
             fileDoc.fmtime = ascdate;
-            fileDoc.meta[Rcl::Doc::keyfn] = 
-                fileDoc.meta[Rcl::Doc::keytcfn] = utf8fn;
+            fileDoc.meta[Rcl::Doc::keyfn] = fileDoc.meta[Rcl::Doc::keyctfn] = utf8fn;
             fileDoc.haschildren = true;
             fileDoc.mimetype = mimetype;
             fileDoc.url = path_pathtofileurl(fn);
             if (m_havelocalfields) 
                 setlocalfields(localfields, fileDoc);
-            fileDoc.pcbytes = lltodecstr(stp->st_size);
+            fileDoc.pcbytes = lltodecstr(stp->pst_size);
         }
 
         fileDoc.sig = sig;

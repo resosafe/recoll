@@ -120,7 +120,7 @@
 	src/mk/localdefs.in, src/php/00README.txt, src/python/README.txt,
 	src/python/recoll/setup.py:
 	Implemented configure --enable-pic flag to build the main lib with
-	position-independant objects. This avoids having to edit localdefs
+	position-independent objects. This avoids having to edit localdefs
 	by hand to build the new php extension, and voids the need for the
 	Python module to recompile Recoll source files.
 
@@ -314,7 +314,7 @@
 2009-12-17 20:23 +0000  dockes  <dockes>  (95eb8a010525)
 
 	* src/doc/user/usermanual.sgml:
-	There was an error in the mimemap format in the config exemple
+	There was an error in the mimemap format in the config example
 
 2009-12-14 10:33 +0000  dockes  <dockes>  (1e774739395e)
 
@@ -697,7 +697,7 @@
 
 	* src/kde/kioslave/recoll/CMakeLists.txt:
 	added beaglequeue/circache to kio build because of internfile
-	dependancy
+	dependency
 
 2009-11-18 14:27 +0000  dockes  <dockes>  (d1587dd98290)
 
@@ -1865,7 +1865,7 @@
 2009-01-26 13:27 +0000  dockes  <dockes>  (61567bc09eab)
 
 	* src/utils/transcode.cpp:
-	tested and decided against cacheing iconv_open
+	tested and decided against caching iconv_open
 
 2009-01-23 15:56 +0000  dockes  <dockes>  (1998b1608eb0)
 
@@ -6601,7 +6601,7 @@
 
 	* src/qtgui/plaintorich.cpp, src/qtgui/plaintorich.h,
 	src/qtgui/preview_w.cpp, src/qtgui/reslist.cpp:
-	improve positionning on term groups by storing/passing an occurrence
+	improve positioning on term groups by storing/passing an occurrence
 	index
 
 2006-11-18 12:30 +0000  dockes  <dockes>  (f065c8063ff3)
@@ -6763,7 +6763,7 @@
 
 	* src/common/textsplit.cpp, src/common/textsplit.h,
 	src/rcldb/rcldb.cpp:
-	phrase queries with bot spans and words must be splitted as words
+	phrase queries with bot spans and words must be split as words
 	only
 
 2006-11-11 15:30 +0000  dockes  <dockes>  (25647c7c5aac)
@@ -8815,7 +8815,7 @@
 	* src/excludefile, src/index/indexer.cpp, src/index/indexer.h,
 	src/index/recollindex.cpp, src/rcldb/rcldb.cpp, src/rcldb/rcldb.h,
 	src/utils/Makefile, src/utils/pathut.cpp, src/utils/pathut.h:
-	allow independant creation / deletion of stem dbs
+	allow independent creation / deletion of stem dbs
 
 2006-01-06 13:55 +0000  dockes  <dockes>  (8831260252d9)
 

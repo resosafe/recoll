@@ -36,7 +36,7 @@
 
 using namespace std;
 
-// #define DEBUGABSTRACT  
+#undef DEBUGABSTRACT  
 #ifdef DEBUGABSTRACT
 #define LOGABS LOGDEB
 #else
@@ -52,6 +52,7 @@ using namespace std;
 
 namespace Rcl {
 
+#ifndef NO_STD_REGEX
 //// Fragment cleanup
 // Chars we turn to spaces in the Snippets
 static const string cstr_nc("\n\r\x0c\\");
@@ -65,6 +66,12 @@ static string fixfrag(const string& infrag)
 {
     return std::regex_replace(neutchars(infrag, cstr_nc), fixfrag_re, punctRep);
 }
+#else
+static string fixfrag(const string& infrag)
+{
+    return infrag;
+}
+#endif
 
 
 // Fragment descriptor. A fragment is a text area with one or several
@@ -87,13 +94,14 @@ struct MatchFragment {
     unsigned int hitpos;
     // "best term" for this match (e.g. for use as ext app search term)
     string term;
-        
+    int line;
+    
     MatchFragment(int sta, int sto, double c,
 #ifdef COMPUTE_HLZONES
                   vector<pair<int,int>>& hl,
 #endif
-                  unsigned int pos, string& trm) 
-        : start(sta), stop(sto), coef(c), hitpos(pos) {
+                  unsigned int pos, string& trm, int ln) 
+        : start(sta), stop(sto), coef(c), hitpos(pos), line(ln) {
 #ifdef COMPUTE_HLZONES
         hlzones.swap(hl);
 #endif
@@ -106,13 +114,14 @@ struct MatchFragment {
 class TextSplitABS : public TextSplit {
 public:
 
-    TextSplitABS(const vector<string>& matchTerms,
+    TextSplitABS(const string& rawtext, const vector<string>& matchTerms,
                  const HighlightData& hdata,
                  unordered_map<string, double>& wordcoefs,
                  unsigned int ctxwords,
                  Flags flags,
                  unsigned int maxterms)
-        :  TextSplit(flags), m_terms(matchTerms.begin(), matchTerms.end()),
+        :  TextSplit(flags), m_rawtext(rawtext),
+           m_terms(matchTerms.begin(), matchTerms.end()),
            m_hdata(hdata), m_wordcoefs(wordcoefs), m_ctxwords(ctxwords),
            maxtermcount(maxterms) {
 
@@ -129,15 +138,17 @@ public:
         }
     }
 
+    virtual void newline(int) override {
+        m_line++;
+    }
+
     // Accept a word and its position. If the word is a matched term,
     // add/update fragment definition.
-    virtual bool takeword(const std::string& term, int pos, int bts, int bte) {
-        LOGDEB2("takeword: " << term << endl);
-        // Limit time taken with monster documents. The resulting
-        // abstract will be incorrect or inexistant, but this is
-        // better than taking forever (the default cutoff value comes
-        // from the snippetMaxPosWalk configuration parameter, and is
-        // 10E6)
+    virtual bool takeword(const std::string& term, int pos, int bts, int bte) override {
+        LOGDEB1("takeword: [" << term << "] bytepos: "<<bts<<":"<<bte<<endl);
+        // Limit time taken with monster documents. The resulting abstract will be incorrect or
+        // inexistent, but this is better than taking forever (the default cutoff value comes from
+        // the snippetMaxPosWalk configuration parameter, and is 10E6)
         if (maxtermcount && termcount++ > maxtermcount) {
             LOGINF("Rclabsfromtext: stopping because maxtermcount reached: "<<
                    maxtermcount << endl);
@@ -146,8 +157,7 @@ public:
         }
         // Also limit the number of fragments (just in case safety)
         if (m_fragments.size() > maxtermcount / 100) {
-            LOGINF("Rclabsfromtext: stopping because maxfragments reached: "<<
-                   maxtermcount/100 << endl);
+            LOGINF("Rclabsfromtext: stopping: max fragments count: " << maxtermcount/100 << "\n");
             retflags |= ABSRES_TRUNC;
             return false;
         }
@@ -168,10 +178,11 @@ public:
         }
 
         if (m_terms.find(dumb) != m_terms.end()) {
+            PRETEND_USE(m_rawtext);
             // This word is a search term. Extend or create fragment
-            LOGDEB2("match: [" << dumb << "] current: " << m_curfrag.first <<
-                    ", " << m_curfrag.second << " remain " <<
-                    m_remainingWords << endl);
+            LOGDEB1("match: [" << dumb << "] pos " << pos << " bpos " << bts <<
+                   ":" << bte << " remainingWords " << m_remainingWords << endl);
+            LOGDEB1("Match text " << m_rawtext.substr(bts, bte - bts) << endl);
             double coef = m_wordcoefs[dumb];
             if (!m_remainingWords) {
                 // No current fragment. Start one
@@ -183,9 +194,9 @@ public:
 #endif
                 m_curterm = term;
                 m_curtermcoef = coef;
+                m_curfragline = m_line;
             } else {
-                LOGDEB2("Extending current fragment: " << m_remainingWords <<
-                        " -> " << m_ctxwords << endl);
+                LOGDEB2("Extending current fragment: "<<m_remainingWords<<" -> "<<m_ctxwords<< "\n");
                 m_extcount++;
 #ifdef COMPUTE_HLZONES
                 if (m_prevwordhit) {
@@ -206,9 +217,8 @@ public:
             m_curfragcoef += coef;
             m_remainingWords = m_ctxwords + 1;
             if (m_extcount > 5) {
-                // Limit expansion of contiguous fragments (this is to
-                // avoid common terms in search causing long
-                // heavyweight meaningless fragments. Also, limit length).
+                // Limit expansion of contiguous fragments (this is to avoid common terms in search
+                // causing long heavyweight meaningless fragments. Also, limit length).
                 m_remainingWords = 1;
                 m_extcount = 0;
             }
@@ -219,8 +229,7 @@ public:
                 // Term group (phrase/near) handling
                 m_plists[dumb].push_back(pos);
                 m_gpostobytes[pos] = pair<int,int>(bts, bte);
-                LOGDEB2("Recorded bpos for " << pos << ": " << bts << " " <<
-                        bte << "\n");
+                LOGDEB1("Recorded bpos for pos " << pos << ": " << bts << " " << bte << "\n");
             }
         }
 #ifdef COMPUTE_HLZONES
@@ -236,16 +245,17 @@ public:
             m_remainingWords--;
             m_curfrag.second = bte;
             if (m_remainingWords == 0) {
-                // We used to not push weak fragments if we had a lot
-                // already. This can cause problems if the fragments
-                // we drop are actually group fragments (which have
-                // not got their boost yet). The right cut value is
-                // difficult to determine, because the absolute values
-                // of the coefs depend on many things (index size,
-                // etc.) The old test was if (m_totalcoef < 5.0 ||
-                // m_curfragcoef >= 1.0) We now just avoid creating a
-                // monster by testing the current fragments count at
-                // the top of the function
+                LOGDEB1("FRAGMENT: from byte " << m_curfrag.first <<
+                        " to  byte " << m_curfrag.second << endl);
+                LOGDEB1("FRAGMENT TEXT [" << m_rawtext.substr(
+                            m_curfrag.first, m_curfrag.second-m_curfrag.first) << "]\n");
+                // We used to not push weak fragments if we had a lot already. This can cause
+                // problems if the fragments we drop are actually group fragments (which have not
+                // got their boost yet). The right cut value is difficult to determine, because the
+                // absolute values of the coefs depend on many things (index size, etc.) The old
+                // test was if (m_totalcoef < 5.0 || m_curfragcoef >= 1.0) We now just avoid
+                // creating a monster by testing the current fragments count at the top of the
+                // function
                 m_fragments.push_back(MatchFragment(m_curfrag.first,
                                                     m_curfrag.second,
                                                     m_curfragcoef,
@@ -253,7 +263,8 @@ public:
                                                     m_curhlzones,
 #endif
                                                     m_curhitpos,
-                                                    m_curterm
+                                                    m_curterm,
+                                                    m_curfragline
                                           ));
                 m_totalcoef += m_curfragcoef;
                 m_curfragcoef = 0.0;
@@ -271,8 +282,21 @@ public:
     // After the text is split: use the group terms positions lists to
     // find the group matches.
     void updgroups() {
-        LOGDEB("TextSplitABS: stored total " << m_fragments.size() <<
-               " fragments" << endl);
+        // Possibly store current incomplete fragment (if match was
+        // close to the end of the text, so we did not close it):
+        if (m_curtermcoef != 0.0) {
+            m_fragments.push_back(
+                MatchFragment(m_curfrag.first, m_curfrag.second, m_curfragcoef,
+#ifdef COMPUTE_HLZONES
+                              m_curhlzones,
+#endif
+                              m_curhitpos, m_curterm, m_curfragline));
+                m_totalcoef += m_curfragcoef;
+                m_curfragcoef = 0.0;
+                m_curtermcoef = 0.0;
+        }
+
+        LOGDEB("TextSplitABS: stored total " << m_fragments.size() << " fragments" << endl);
         vector<GroupMatchEntry> tboffs;
 
         // Look for matches to PHRASE and NEAR term groups and finalize
@@ -313,9 +337,8 @@ public:
         }
         auto fragit = m_fragments.begin();
         for (const auto& grpmatch : tboffs) {
-            LOGDEB2("LOOKING FOR FRAGMENT: group: " << grpmatch.offs.first <<
-                    "-" << grpmatch.offs.second << " curfrag " <<
-                    fragit->start << "-" << fragit->stop << endl);
+            LOGDEB2("LOOKING FOR FRAGMENT: group: " << grpmatch.offs.first << "-" <<
+                    grpmatch.offs.second<<" curfrag "<<fragit->start<<"-"<<fragit->stop<<"\n");
             while (fragit->stop < grpmatch.offs.first) {
                 fragit++;
                 if (fragit == m_fragments.end()) {
@@ -337,10 +360,12 @@ public:
     }
     
 private:
+    const string& m_rawtext;
     // Past terms because we need to go back for context before a hit
     deque<pair<int,int>>  m_prevterms;
     // Data about the fragment we are building
     pair<int,int> m_curfrag{0,0};
+    int m_curfragline{0};
     double m_curfragcoef{0.0};
     unsigned int m_remainingWords{0};
     unsigned int m_extcount{0};
@@ -355,6 +380,7 @@ private:
     // "best" term
     string m_curterm;
     double m_curtermcoef{0.0};
+    int m_line{1};
 
     // Group terms, extracted from m_hdata 
     unordered_set<string> m_gterms;
@@ -381,7 +407,7 @@ int Query::Native::abstractFromText(
     Xapian::docid docid,
     const vector<string>& matchTerms,
     const multimap<double, vector<string>> byQ,
-    double totalweight,
+    double,
     int ctxwords,
     unsigned int maxtotaloccs,
     vector<Snippet>& vabs,
@@ -389,21 +415,19 @@ int Query::Native::abstractFromText(
     bool sortbypage
     )
 {
-    (void)chron;
+    PRETEND_USE(chron);
     LOGABS("abstractFromText: entry: " << chron.millis() << "mS\n");
     string rawtext;
     if (!ndb->getRawText(docid, rawtext)) {
         LOGDEB0("abstractFromText: can't fetch text\n");
         return ABSRES_ERROR;
     }
-    LOGABS("abstractFromText: got raw text: size " << rawtext.size() << " " <<
-           chron.millis() << "mS\n");
+    LOGABS("abstractFromText: got raw text: size "<<rawtext.size()<<" "<<chron.millis()<<"mS\n");
 
-#if 0 && ! (XAPIAN_MAJOR_VERSION <= 1 && XAPIAN_MINOR_VERSION <= 2)  && \
-    (defined(RAWTEXT_IN_DATA))
+#if 0 && XAPIAN_AT_LEAST(1,3,5)
     // Tryout the Xapian internal method.
-    string snippet = xmset.snippet(rawtext);
-    LOGDEB("SNIPPET: [" << snippet << "] END SNIPPET\n");
+    string snippet = xmset.snippet(rawtext, 60);
+    std::cerr << "XAPIAN SNIPPET: [" << snippet << "] END SNIPPET\n";
 #endif
 
     // We need the q coefs for individual terms
@@ -424,8 +448,7 @@ int Query::Native::abstractFromText(
     }
     LOGABS("abstractFromText: getterms: " << chron.millis() << "mS\n");
 
-    TextSplitABS splitter(matchTerms, hld, wordcoefs, ctxwords,
-                          TextSplit::TXTS_ONLYSPANS,
+    TextSplitABS splitter(rawtext, matchTerms, hld, wordcoefs, ctxwords, TextSplit::TXTS_NONE,
                           m_q->m_snipMaxPosWalk);
     splitter.text_to_words(rawtext);
     LOGABS("abstractFromText: text_to_words: " << chron.millis() << "mS\n");
@@ -456,8 +479,7 @@ int Query::Native::abstractFromText(
     // main term and the page positions. 
     unsigned int count = 0;
     for (const auto& entry : result) {
-        string frag(
-            fixfrag(rawtext.substr(entry.start, entry.stop - entry.start)));
+        string frag(fixfrag(rawtext.substr(entry.start, entry.stop - entry.start)));
 
 #ifdef COMPUTE_HLZONES
         // This would need to be modified to take tag parameters
@@ -478,13 +500,53 @@ int Query::Native::abstractFromText(
             if (page < 0)
                 page = 0;
         }
-        LOGDEB0("=== FRAGMENT: p. " << page << " Coef: " << entry.coef <<
-                ": " << frag << endl);
-        vabs.push_back(Snippet(page, frag).setTerm(entry.term));
+        LOGDEB0("=== FRAGMENT: p. " << page << " Coef: " << entry.coef << ": " << frag << endl);
+        vabs.push_back(Snippet(page, frag, entry.line).setTerm(entry.term));
         if (count++ >= maxtotaloccs)
             break;
     }
     return ABSRES_OK | splitter.getretflags();
+}
+
+class TermLineSplitter : public TextSplit {
+public:
+    TermLineSplitter(const std::string& term)
+        : TextSplit(TextSplit::TXTS_NOSPANS), m_term(term) {
+    }
+    bool takeword(const std::string& _term, int, int, int) override {
+        std::string term;
+        if (o_index_stripchars) {
+            if (!unacmaybefold(_term, term, "UTF-8", UNACOP_UNACFOLD)) {
+                LOGINFO("PlainToRich::takeword: unac failed for [" << term << "]\n");
+                return true;
+            }
+        }
+        if (term == m_term) {
+            return false;
+        }
+        return true;
+    }
+    void newline(int) override {
+        m_line++;
+    }
+    int getline() {
+        return m_line;
+    }
+private:
+    int m_line{1};
+    std::string m_term;
+};
+
+int Query::getFirstMatchLine(const Doc &doc, const std::string& term)
+{
+    int line = 1;
+    TermLineSplitter splitter(term);
+    bool ret = splitter.text_to_words(doc.text);
+    // The splitter takeword() breaks by returning false as soon as the term is found
+    if (ret == false) {
+        line = splitter.getline();
+    }
+    return line;
 }
 
 }

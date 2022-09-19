@@ -1,7 +1,4 @@
-#!/usr/bin/python2
-#
-# wnck does not have a python3 binding as far as I can see (or at
-# least it's not packaged by, e.g. Debian. So python2 only for now.
+#!/usr/bin/python3
 #
 # This script should be linked to a keyboard shortcut. Under gnome,
 # you can do this from the main preferences menu, or directly execute
@@ -11,13 +8,22 @@
 # path ("echo $PATH" to check what's in there), and then just enter
 # its name as the action to perform, or copy it anywhere and copy the
 # full path as the action.
+#
+# The script will start recoll if there is currently no instance
+# running, or else toggle between minimized/shown
 
-import gtk
-import wnck
+import gi
+gi.require_version('Wnck', '3.0')
+from gi.repository import Wnck
+from gi.repository import Gtk
+
 import os
 import sys
 from optparse import OptionParser
 
+def deb(s):
+    print("%s"%s, file=sys.stderr)
+    
 def main():
     parser = OptionParser()
     parser.add_option("-m", "--move-away", action="store_true", default=False,
@@ -25,19 +31,23 @@ def main():
                       help="iconify to other workspace to avoid crowding panel")
     (options, args) = parser.parse_args()
 
-    screen = wnck.screen_get_default()
-    while gtk.events_pending():
-        gtk.main_iteration()
+    screen = Wnck.Screen.get_default()
+    
+    while Gtk.events_pending():
+        Gtk.main_iteration()
 
     recollMain = ""
     recollwins = [];
     for window in screen.get_windows():
-        if window.get_class_group().get_name() == "Recoll":
-            if window.get_name() == "Recoll":
+        #deb("Got window class name: [%s] name [%s]" %
+        #    (window.get_class_group().get_name(), window.get_name()))
+        if window.get_class_group().get_name().lower() == "recoll":
+            if window.get_name().lower().startswith("recoll - "):
                 recollMain = window
             recollwins.append(window)
 
     if not recollMain:
+        deb("No Recoll window found, starting program")
         os.system("recoll&")
         sys.exit(0)
 
@@ -48,8 +58,8 @@ def main():
         for win in recollwins:
             win.move_to_workspace(workspace)
             if win != recollMain:
-                win.unminimize(gtk.get_current_event_time())
-        recollMain.activate(gtk.get_current_event_time())
+                win.unminimize(Gtk.get_current_event_time())
+        recollMain.activate(Gtk.get_current_event_time())
     else:
         otherworkspace = None
         if options.clear_workspace:

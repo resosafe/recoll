@@ -26,6 +26,8 @@ class MimeHandlerXslt : public RecollFilter {
     MimeHandlerXslt(RclConfig *cnf, const std::string& id,
                     const std::vector<std::string>& params);
     virtual ~MimeHandlerXslt();
+    MimeHandlerXslt(const MimeHandlerXslt&) = delete;
+    MimeHandlerXslt& operator=(const MimeHandlerXslt&) = delete;
 
     virtual bool next_document() override;
     virtual void clear_impl() override;

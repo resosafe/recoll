@@ -1,0 +1,9 @@
+# External viewers, launched by the recoll GUI when you click on a result
+# 'Open' link - MAC version
+# On the MAC, we use "open" for everything, no exceptions at the moment.
+
+xallexcepts = 
+
+[view]
+# Pseudo entry used if the 'use desktop' preference is set in the GUI
+application/x-all = open %f

@@ -3,9 +3,6 @@
 /* Define if building universal (internal helper macro) */
 #undef AC_APPLE_UNIVERSAL_BUILD
 
-/* Path to the aspell api include file */
-#undef ASPELL_INCLUDE
-
 /* Path to the aspell program */
 #undef ASPELL_PROG
 
@@ -17,9 +14,6 @@
 
 /* Path to the file program */
 #undef FILE_PROG
-
-/* "Have C++0x" */
-#undef HAVE_CXX0X_UNORDERED
 
 /* Define to 1 if you have the <dlfcn.h> header file. */
 #undef HAVE_DLFCN_H
@@ -45,11 +39,20 @@
 /* Define to 1 if you have the `z' library (-lz). */
 #undef HAVE_LIBZ
 
-/* Define to 1 if you have the <memory.h> header file. */
-#undef HAVE_MEMORY_H
+/* Define to 1 if you have the <malloc.h> header file. */
+#undef HAVE_MALLOC_H
+
+/* Define to 1 if you have the <malloc/malloc.h> header file. */
+#undef HAVE_MALLOC_MALLOC_H
+
+/* Define to 1 if you have the `malloc_trim' function. */
+#undef HAVE_MALLOC_TRIM
 
 /* Define to 1 if you have the `mkdtemp' function. */
 #undef HAVE_MKDTEMP
+
+/* Define to 1 if you have the `posix_fadvise' function. */
+#undef HAVE_POSIX_FADVISE
 
 /* Define to 1 if you have the `posix_spawn' function. */
 #undef HAVE_POSIX_SPAWN
@@ -57,17 +60,14 @@
 /* Define to 1 if you have the `setrlimit' function. */
 #undef HAVE_SETRLIMIT
 
-/* Has std::shared_ptr */
-#undef HAVE_SHARED_PTR_STD
-
-/* Has std::tr1::shared_ptr */
-#undef HAVE_SHARED_PTR_TR1
-
 /* Define to 1 if you have the <spawn.h> header file. */
 #undef HAVE_SPAWN_H
 
 /* Define to 1 if you have the <stdint.h> header file. */
 #undef HAVE_STDINT_H
+
+/* Define to 1 if you have the <stdio.h> header file. */
+#undef HAVE_STDIO_H
 
 /* Define to 1 if you have the <stdlib.h> header file. */
 #undef HAVE_STDLIB_H
@@ -98,9 +98,6 @@
 
 /* Define to 1 if you have the <sys/vfs.h> header file. */
 #undef HAVE_SYS_VFS_H
-
-/* "Have tr1" */
-#undef HAVE_TR1_UNORDERED
 
 /* Define to 1 if you have the <unistd.h> header file. */
 #undef HAVE_UNISTD_H
@@ -153,7 +150,9 @@
 /* Compile the inotify interface */
 #undef RCL_USE_INOTIFY
 
-/* Define to 1 if you have the ANSI C header files. */
+/* Define to 1 if all of the C90 standard headers exist (not just the ones
+   required in a freestanding environment). This macro is provided for
+   backward compatibility; new code need not use it. */
 #undef STDC_HEADERS
 
 /* Use posix_spawn() */
@@ -162,9 +161,6 @@
 /* Enable using the system's 'file' command to id mime if we fail internally
    */
 #undef USE_SYSTEM_FILE_COMMAND
-
-/* Use Xalan support */
-#undef USE_XALAN
 
 /* Define WORDS_BIGENDIAN to 1 if your processor stores words with the most
    significant byte first (like Motorola and SPARC, unlike Intel). */
@@ -180,11 +176,6 @@
 
 /* Define to 1 if the X Window System is missing or not being used. */
 #undef X_DISPLAY_MISSING
-
-/* Enable large inode numbers on Mac OS X 10.5.  */
-#ifndef _DARWIN_USE_64_BIT_INODE
-# define _DARWIN_USE_64_BIT_INODE 1
-#endif
 
 /* Number of bits in a file offset, on hosts where this is settable. */
 #undef _FILE_OFFSET_BITS

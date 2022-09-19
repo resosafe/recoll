@@ -1,5 +1,5 @@
 #################################
-# Copyright (C) 2014 J.F.Dockes
+# Copyright (C) 2014-2020 J.F.Dockes
 #   This program is free software; you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
 #   the Free Software Foundation; either version 2 of the License, or
@@ -20,56 +20,86 @@
 # All data is binary. This is important for Python3
 # All parameter names are converted to and processed as str/unicode
 
-from __future__ import print_function
-
 import sys
 import os
 import tempfile
 import shutil
 import getopt
 import rclconfig
+import cmdtalk
 
-PY3 = (sys.version > '3')
-_mswindows = (sys.platform == "win32")
+_g_mswindows = (sys.platform == "win32")
+_g_execdir = os.path.dirname(sys.argv[0])
 
+_g_config = rclconfig.RclConfig()
+_g_debugfile = _g_config.getConfParam("filterdebuglog")
+_g_errfout = None
+
+
+def logmsg(msg):
+    global _g_debugfile, _g_errfout
+    if _g_debugfile and not _g_errfout:
+        try:
+            _g_errfout = open(_g_debugfile, "a")
+        except:
+            pass
+    if _g_errfout:
+        print("%s" % msg, file=_g_errfout)
+    elif not _g_mswindows:
+        print("%s" % msg, file=sys.stderr)
+
+
+# Convert to bytes if not already such.
 def makebytes(data):
     if type(data) == type(u''):
         return data.encode("UTF-8")
     return data
 
+
+# Possibly decode binary file name for use as subprocess argument,
+# depending on platform.
 def subprocfile(fn):
-    # On Windows PY3 the list2cmdline() method in subprocess assumes that
-    # all args are str, and we receive file names as UTF-8. So we need
-    # to convert.
-    # On Unix all list elements get converted to bytes in the C
-    # _posixsubprocess module, nothing to do
-    if PY3 and _mswindows:
+    # On Windows Python 3 the list2cmdline() method in subprocess assumes that all args are str, and
+    # we receive file names as UTF-8. So we need to convert.
+    # On Unix all list elements get converted to bytes in the C _posixsubprocess module, nothing to
+    # do.
+    if _g_mswindows and type(fn) != type(''):
         return fn.decode('UTF-8')
     else:
         return fn
 
+
+# Check for truthness of rclconfig value.
 def configparamtrue(value):
     if not value:
         return False
     try:
         ivalue = int(value)
-        if ivalue:
-            return True
-        else:
-            return False
+        return True if ivalue else False
     except:
-        pass
-    if value[0] in 'tT':
-        return True
-    return False
+        return True if value[0] in 'tT' else False
 
-my_config = rclconfig.RclConfig()
+
+# Escape special characters in plain text for inclusion in HTML doc.
+# Note: tried replacing this with a multiple replacer according to
+# http://stackoverflow.com/a/15221068, which was **10 times** slower
+def htmlescape(txt):
+    # &amp must stay first (it somehow had managed to skip
+    # after the next replace, with rather interesting results)
+    try:
+        txt = txt.replace(b'&', b'&amp;').replace(b'<', b'&lt;').\
+              replace(b'>', b'&gt;').replace(b'"', b'&quot;')
+    except:
+        txt = txt.replace("&", "&amp;").replace("<", "&lt;").\
+              replace(">", "&gt;").replace("\"", "&quot;")
+    return txt
+
 
 ############################################
-# RclExecM implements the
-# communication protocol with the recollindex process. It calls the
-# object specific of the document type to actually get the data.
-class RclExecM:
+# RclExecM implements the communication protocol with the recollindex
+# process. It calls the object specific of the document type to
+# actually get the data.
+class RclExecM(cmdtalk.CmdTalk):
     noteof = 0
     eofnext = 1
     eofnow = 2
@@ -79,72 +109,27 @@ class RclExecM:
     fileerror = 2
     
     def __init__(self):
-        try:
-            self.myname = os.path.basename(sys.argv[0])
-        except:
-            self.myname = "???"
         self.mimetype = b""
-
         self.fields = {}
-        
-        if os.environ.get("RECOLL_FILTER_MAXMEMBERKB"):
-            self.maxmembersize = \
-            int(os.environ.get("RECOLL_FILTER_MAXMEMBERKB"))
-        else:
+        try:
+            self.maxmembersize = int(os.environ["RECOLL_FILTER_MAXMEMBERKB"])
+        except:
             self.maxmembersize = 50 * 1024
         self.maxmembersize = self.maxmembersize * 1024
-        if sys.platform == "win32":
-            import msvcrt
-            msvcrt.setmode(sys.stdout.fileno(), os.O_BINARY)
-            msvcrt.setmode(sys.stdin.fileno(), os.O_BINARY)
-        self.debugfile = my_config.getConfParam("filterdebuglog")
-        if self.debugfile:
-            self.errfout = open(self.debugfile, "a")
-        else:
-            self.errfout = sys.stderr
-    
-    def rclog(self, s, doexit = 0, exitvalue = 1):
-        # On windows, and I think that it changed quite recently (Qt change?)
-        # we get stdout as stderr. So don't write at all
-        if self.debugfile or sys.platform != "win32":
-            print("RCLMFILT: %s: %s" % (self.myname, s), file=self.errfout)
-            self.errfout.flush()
-        if doexit:
-            sys.exit(exitvalue)
 
-    def breakwrite(self, outfile, data):
-        if sys.platform != "win32":
-            outfile.write(data)
-        else:
-            # On windows, writing big chunks can fail with a "not enough space"
-            # error. Seems a combined windows/python bug, depending on versions.
-            # See https://bugs.python.org/issue11395
-            # In any case, just break it up
-            total = len(data)
-            bs = 4*1024
-            offset = 0
-            while total > 0:
-                if total < bs:
-                    tow = total
-                else:
-                    tow = bs
-                #self.rclog("Total %d Writing %d to stdout: %s" % (total,tow,data[offset:offset+tow]))
-                outfile.write(data[offset:offset+tow])
-                offset += tow
-                total -= tow
-                
-    # Note: tried replacing this with a multiple replacer according to
-    #  http://stackoverflow.com/a/15221068, which was **10 times** slower
-    def htmlescape(self, txt):
-        # &amp must stay first (it somehow had managed to skip
-        # after the next replace, with rather interesting results)
-        try:
-            txt = txt.replace(b'&', b'&amp;').replace(b'<', b'&lt;').\
-                  replace(b'>', b'&gt;').replace(b'"', b'&quot;')
-        except:
-            txt = txt.replace("&", "&amp;").replace("<", "&lt;").\
-                  replace(">", "&gt;").replace("\"", "&quot;")
-        return txt
+        # Tell cmdtalk where to log
+        self.debugfile = _g_config.getConfParam("filterdebuglog")
+        # Some of our params are binary, cmdtalk should not decode them
+        self.nodecodeinput = True
+
+        super().__init__()
+        
+    def rclog(self, s, doexit = 0, exitvalue = 1):
+        # On windows, and I think that it changed quite recently (Qt
+        # change?), we get stdout as stderr?? So don't write at all if
+        # output not a file until this mystery is solved
+        if self.debugfile or sys.platform != "win32":
+            super().log(s, doexit, exitvalue)
 
     # Our worker sometimes knows the mime types of the data it sends
     def setmimetype(self, mt):
@@ -153,94 +138,36 @@ class RclExecM:
     def setfield(self, nm, value):
         self.fields[nm] = value
 
-    # Read single parameter from process input: line with param name and size
-    # followed by data. The param name is returned as str/unicode, the data
-    # as bytes
-    def readparam(self):
-        if PY3:
-            inf = sys.stdin.buffer
-        else:
-            inf = sys.stdin
-        s = inf.readline()
-        if s == b'':
-            sys.exit(0)
-
-        s = s.rstrip(b'\n')
-
-        if s == b'':
-            return ('', b'')
-        l = s.split()
-        if len(l) != 2:
-            self.rclog(b'bad line: [' + s + b']', 1, 1)
-
-        paramname = l[0].decode('ASCII').lower()
-        paramsize = int(l[1])
-        if paramsize > 0:
-            paramdata = inf.read(paramsize)
-            if len(paramdata) != paramsize:
-                self.rclog("Bad read: wanted %d, got %d" %
-                      (paramsize, len(paramdata)), 1, 1)
-        else:
-            paramdata = b''
-    
-        #self.rclog("paramname [%s] paramsize %d value [%s]" %
-        #          (paramname, paramsize, paramdata))
-        return (paramname, paramdata)
-
-    if PY3:
-        def senditem(self, nm, data):
-            data = makebytes(data)
-            l = len(data)
-            sys.stdout.buffer.write(makebytes("%s: %d\n" % (nm, l)))
-            self.breakwrite(sys.stdout.buffer, data)
-    else:
-        def senditem(self, nm, data):
-            data = makebytes(data)
-            l = len(data)
-            sys.stdout.write(makebytes("%s: %d\n" % (nm, l)))
-            self.breakwrite(sys.stdout, data)
-        
     # Send answer: document, ipath, possible eof.
     def answer(self, docdata, ipath, iseof = noteof, iserror = noerror):
-
         if iserror != RclExecM.fileerror and iseof != RclExecM.eofnow:
-            self.senditem("Document", docdata)
-
+            self.fields["Document"] = docdata
             if len(ipath):
-                self.senditem("Ipath", ipath)
-
+                self.fields["Ipath"] = ipath
             if len(self.mimetype):
-                self.senditem("Mimetype", self.mimetype)
-
-            for nm,value in self.fields.items():
-                #self.rclog("Senditem: [%s] -> [%s]" % (nm, value))
-                self.senditem("%s:"%nm, value)
-            self.fields = {}
-            
+                self.fields["Mimetype"] = self.mimetype
+      
         # If we're at the end of the contents, say so
         if iseof == RclExecM.eofnow:
-            self.senditem("Eofnow", b'')
+            self.fields["Eofnow"] =  b''
         elif iseof == RclExecM.eofnext:
-            self.senditem("Eofnext", b'')
+            self.fields["Eofnext"] = b''
         if iserror == RclExecM.subdocerror:
-            self.senditem("Subdocerror", b'')
+            self.fields["Subdocerror"] = b''
         elif iserror == RclExecM.fileerror:
-            self.senditem("Fileerror", b'')
+            self.fields["Fileerror"] = b''
+
+        super().answer(self.fields)
+        self.fields = {}
   
-        # End of message
-        print()
-        sys.stdout.flush()
-        #self.rclog("done writing data")
 
     def processmessage(self, processor, params):
-
         # We must have a filename entry (even empty). Else exit
-        if "filename:" not in params:
+        if "filename" not in params:
             print("%s" % params, file=sys.stderr)
             self.rclog("no filename ??", 1, 1)
 
-        # If we're given a file name, open it. 
-        if len(params["filename:"]) != 0:
+        if len(params["filename"]) != 0:
             try:
                 if not processor.openfile(params):
                     self.answer("", "", iserror = RclExecM.fileerror)
@@ -255,7 +182,7 @@ class RclExecM:
         eof = True
         self.mimetype = ""
         try:
-            if "ipath:" in params and len(params["ipath:"]):
+            if "ipath" in params and len(params["ipath"]):
                 ok, data, ipath, eof = processor.getipath(params)
             else:
                 ok, data, ipath, eof = processor.getnext(params)
@@ -270,13 +197,10 @@ class RclExecM:
         else:
             self.answer("", "", eof, RclExecM.subdocerror)
 
-    # Loop on messages from our master
+    # Main routine: loop on messages from our master
     def mainloop(self, processor):
         while 1:
-            #self.rclog("waiting for command")
-
             params = dict()
-
             # Read at most 10 parameters (normally 1 or 2), stop at empty line
             # End of message is signalled by empty paramname
             for i in range(10):
@@ -284,7 +208,6 @@ class RclExecM:
                 if paramname == "":
                     break
                 params[paramname] = paramdata
-
             # Got message, act on it
             self.processmessage(processor, params)
 
@@ -308,7 +231,7 @@ def which(program):
 
     def path_candidates():
         yield os.path.dirname(sys.argv[0])
-        rclpath = my_config.getConfParam("recollhelperpath")
+        rclpath = _g_config.getConfParam("recollhelperpath")
         if rclpath:
             for path in rclpath.split(os.pathsep):
                 yield path
@@ -326,21 +249,42 @@ def which(program):
                     return candidate
     return None
 
+# Execute Python script. cmd is a list with the script name as first elt.
+def execPythonScript(icmd):
+    import subprocess
+    cmd = list(icmd)
+    if _g_mswindows:
+        if not os.path.isabs(cmd[0]):
+            cmd[0] = os.path.join(_g_execdir, cmd[0])
+        cmd = [sys.executable] + cmd
+    return subprocess.check_output(cmd)
+    
 # Temp dir helper
 class SafeTmpDir:
-    def __init__(self, em):
+    def __init__(self, tag, em=None):
+        self.tag = tag
         self.em = em
-        self.toptmp = ""
-        self.tmpdir = ""
+        self.toptmp = None
+        self.tmpdir = None
 
     def __del__(self):
-        try:
-            if self.toptmp:
-                shutil.rmtree(self.tmpdir, True)
+        if self.toptmp:
+            try:
+                if self.tmpdir:
+                    shutil.rmtree(self.tmpdir, True)
                 os.rmdir(self.toptmp)
-        except Exception as err:
-            self.em.rclog("delete dir failed for " + self.toptmp)
+            except Exception as err:
+                if self.em:
+                    self.em.rclog("delete dir failed for " + self.toptmp)
 
+    def vacuumdir(self):
+        if self.tmpdir:
+            for fn in os.listdir(self.tmpdir):
+                path = os.path.join(self.tmpdir, fn)
+                if os.path.isfile(path):
+                    os.unlink(path)
+        return True
+    
     def getpath(self):
         if not self.tmpdir:
             envrcltmp = os.getenv('RECOLL_TMPDIR')
@@ -349,11 +293,12 @@ class SafeTmpDir:
             else:
                 self.toptmp = tempfile.mkdtemp(prefix='rcltmp')
 
-            self.tmpdir = os.path.join(self.toptmp, 'rclsofftmp')
+            self.tmpdir = os.path.join(self.toptmp, self.tag)
             os.makedirs(self.tmpdir)
 
         return self.tmpdir
    
+
 
 # Common main routine for all python execm filters: either run the
 # normal protocol engine or a local loop to test without recollindex
@@ -367,23 +312,24 @@ def main(proto, extract):
     # Not running the main loop: either acting as single filter (when called
     # from other filter for example), or debugging
     def usage():
-        print("Usage: rclexecm.py [-d] [-s] [-i ipath] <filename>",
-              file=sys.stderr)
-        print("       rclexecm.py -w <prog>",
-              file=sys.stderr)
+        print("Usage: rclexecm.py [-d] [-f] [-h] [-i ipath] [-s] <filename>", file=sys.stderr)
+        print("       rclexecm.py -w <prog>", file=sys.stderr)
         sys.exit(1)
         
     actAsSingle = False
     debugDumpData = False
+    debugDumpFields = False
     ipath = b""
 
     args = sys.argv[1:]
-    opts, args = getopt.getopt(args, "hdsi:w:")
+    opts, args = getopt.getopt(args, "dfhi:sw:")
     for opt, arg in opts:
-        if opt in ['-h']:
+        if opt in ['-d']:
+            debugDumpData = True
+        elif opt in ['-f']:
+            debugDumpFields = True
+        elif opt in ['-h']:
             usage()
-        elif opt in ['-s']:
-            actAsSingle = True
         elif opt in ['-i']:
             ipath = makebytes(arg)
         elif opt in ['-w']:
@@ -393,8 +339,8 @@ def main(proto, extract):
                 sys.exit(0)
             else:
                 sys.exit(1)
-        elif opt in ['-d']:
-            debugDumpData = True
+        elif opt in ['-s']:
+            actAsSingle = True
         else:
             print("unknown option %s\n"%opt, file=sys.stderr)
             usage()
@@ -419,26 +365,23 @@ def main(proto, extract):
         if not actAsSingle:
             proto.breakwrite(out, makebytes(s+'\n'))
 
-    params = {'filename:': makebytes(path)}
+    params = {'filename' : makebytes(path)}
 
-    # Some filters (e.g. rclaudio) need/get a MIME type from the indexer.
+    # Some filters (e.g. rclaudio.py) need/get a MIME type from the indexer.
     # We make a half-assed attempt to emulate:
-    mimetype = my_config.mimeType(path)
-    if not mimetype and not _mswindows:
+    mimetype = _g_config.mimeType(path)
+    if not mimetype and not _g_mswindows:
         mimetype = mimetype_with_file(path)
     if mimetype:
-        params['mimetype:'] = mimetype
+        params['mimetype'] = mimetype
 
     if not extract.openfile(params):
         print("Open error", file=sys.stderr)
         sys.exit(1)
 
-    if PY3:
-        ioout = sys.stdout.buffer
-    else:
-        ioout = sys.stdout
+    ioout = sys.stdout.buffer
     if ipath != b"" or actAsSingle:
-        params['ipath:'] = ipath
+        params['ipath'] = ipath
         ok, data, ipath, eof = extract.getipath(params)
         if ok:
             debprint(ioout, "== Found entry for ipath %s (mimetype [%s]):" % \
@@ -460,6 +403,10 @@ def main(proto, extract):
             bdata = makebytes(data)
             debprint(ioout, "== Entry %d dlen %d ipath %s (mimetype [%s]):" % \
                   (ecnt, len(data), ipath, proto.mimetype.decode('cp1252')))
+            if debugDumpFields:
+                for k,v in proto.fields.items():
+                    debprint(ioout, "  %s -> %s" % (k,v))
+            proto.fields = {}
             if debugDumpData:
                 proto.breakwrite(ioout, bdata)
                 ioout.write(b'\n')

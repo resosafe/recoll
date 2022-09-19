@@ -1,4 +1,4 @@
-/* Copyright (C) 2004 J.F.Dockes
+/* Copyright (C) 2004-2021 J.F.Dockes
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation; either version 2 of the License, or
@@ -25,11 +25,13 @@
 
 /** A DocSequence from a Db query */
 class DocSequenceDb : public DocSequence {
- public:
+public:
     DocSequenceDb(std::shared_ptr<Rcl::Db> db,
                   std::shared_ptr<Rcl::Query> q, const std::string &t, 
-		  std::shared_ptr<Rcl::SearchData> sdata);
+                  std::shared_ptr<Rcl::SearchData> sdata);
     virtual ~DocSequenceDb() {}
+    DocSequenceDb(const DocSequenceDb&) = delete;
+    DocSequenceDb& operator=(const DocSequenceDb&) = delete;
     virtual bool getDoc(int num, Rcl::Doc &doc, std::string * = 0) override;
     virtual int getResCnt() override;
     virtual void getTerms(HighlightData& hld) override;
@@ -41,6 +43,7 @@ class DocSequenceDb : public DocSequence {
 
     virtual bool getAbstract(Rcl::Doc &doc, std::vector<std::string>&) override;
     virtual int getFirstMatchPage(Rcl::Doc&, std::string& term) override;
+    virtual int getFirstMatchLine(const Rcl::Doc&, const std::string& term) override;
     virtual bool docDups(const Rcl::Doc& doc, std::vector<Rcl::Doc>& dups)
         override;
     virtual std::string getDescription() override;
@@ -55,7 +58,7 @@ class DocSequenceDb : public DocSequence {
     }
 
     virtual bool snippetsCapable() override {
-	return true;
+        return true;
     }
     virtual std::string title() override;
 
@@ -68,13 +71,13 @@ private:
     std::shared_ptr<Rcl::Query>      m_q;
     std::shared_ptr<Rcl::SearchData> m_sdata;
     std::shared_ptr<Rcl::SearchData> m_fsdata; // Filtered 
-    int                      m_rescnt;
-    bool                     m_queryBuildAbstract;
-    bool                     m_queryReplaceAbstract;
-    bool                     m_isFiltered;
-    bool                     m_isSorted;
-    bool   m_needSetQuery; // search data changed, need to reapply before fetch
-    bool   m_lastSQStatus;
+    int  m_rescnt{-1};
+    bool m_queryBuildAbstract{true};
+    bool m_queryReplaceAbstract{false};
+    bool m_isFiltered{false};
+    bool m_isSorted{false};
+    bool m_needSetQuery{false}; // search data changed, need to reapply before fetch
+    bool m_lastSQStatus{true};
     bool setQuery();
 };
 

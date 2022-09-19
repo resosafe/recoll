@@ -1,4 +1,3 @@
-/* -*- mode:c++;c-basic-offset:2 -*- */
 /*  --------------------------------------------------------------------
  *  Filename:
  *    src/parsers/mime/mime.h
@@ -25,6 +24,7 @@
  */
 #ifndef mime_h_included
 #define mime_h_included
+
 #include <string>
 #include <vector>
 #include <map>
@@ -32,46 +32,47 @@
 
 namespace Binc {
 
-  class MimeInputSource;
+class MimeInputSource;
 
 
-  //---------------------------------------------------------------------- 
-  class HeaderItem {
-  private:
+//---------------------------------------------------------------------- 
+class HeaderItem {
+private:
     mutable std::string key;
     mutable std::string value;
 
-  public:
+public:
     inline const std::string &getKey(void) const { return key; }
     inline const std::string &getValue(void) const { return value; }
 
     //--
     HeaderItem(void);
     HeaderItem(const std::string &key, const std::string &value);
-  };
+};
 
-  //---------------------------------------------------------------------- 
-  class Header {
-  private:
+//---------------------------------------------------------------------- 
+class Header {
+private:
     mutable std::vector<HeaderItem> content;
 
-  public:
+public:
     bool getFirstHeader(const std::string &key, HeaderItem &dest) const;
-    bool getAllHeaders(const std::string &key, std::vector<HeaderItem> &dest) const;
+    bool getAllHeaders(const std::string &key, std::vector<HeaderItem> &dest)
+        const;
     void add(const std::string &name, const std::string &content);
     void clear(void);
 
     //--
     Header(void);
     ~Header(void);
-  };
+};
 
-  //----------------------------------------------------------------------
-  class IODevice;
-  class MimeDocument;
-  class MimePart {
-  protected:
-  public:
+//----------------------------------------------------------------------
+class IODevice;
+class MimeDocument;
+class MimePart {
+protected:
+public:
     mutable bool multipart;
     mutable bool messagerfc822;
     mutable std::string subtype;
@@ -86,11 +87,11 @@ namespace Binc {
     mutable unsigned int nbodylines;
     mutable unsigned int size;
 
-  public:
+public:
     enum FetchType {
-      FetchBody,
-      FetchHeader,
-      FetchMime
+        FetchBody,
+        FetchHeader,
+        FetchMime
     };
 
     mutable Header h;
@@ -104,59 +105,61 @@ namespace Binc {
     inline unsigned int getNofLines(void) const { return nlines; }
     inline unsigned int getNofBodyLines(void) const { return nbodylines; }
     inline unsigned int getBodyLength(void) const { return bodylength; }
-    inline unsigned int getBodyStartOffset(void) const { return bodystartoffsetcrlf; }
+    inline unsigned int getBodyStartOffset(void) const {
+        return bodystartoffsetcrlf; }
 
-    void printBody(Binc::IODevice &output, unsigned int startoffset, unsigned int length) const;
-      void getBody(std::string& s, unsigned int startoffset, unsigned int length) const;
+    void printBody(Binc::IODevice &output, unsigned int startoffset,
+                   unsigned int length) const;
+    void getBody(std::string& s, unsigned int startoffset, unsigned int length)
+        const;
     virtual void clear(void);
 
-    virtual int doParseOnlyHeader(MimeInputSource *ms, 
-				  const std::string &toboundary);
+    virtual int doParseOnlyHeader(MimeInputSource *ms);
     virtual int doParseFull(MimeInputSource *ms, 
-			    const std::string &toboundary, int &boundarysize);
+                            const std::string &toboundary, int &boundarysize);
 
     MimePart(void);
     virtual ~MimePart(void);
 
-  private:
+private:
     MimeInputSource *mimeSource;
 
     bool parseOneHeaderLine(Binc::Header *header, unsigned int *nlines);
 
     bool skipUntilBoundary(const std::string &delimiter,
-			   unsigned int *nlines, bool *eof);
+                           unsigned int *nlines, bool *eof);
     inline void postBoundaryProcessing(bool *eof,
-				       unsigned int *nlines,
-				       int *boundarysize,
-				       bool *foundendofpart);
-      void parseMultipart(const std::string &boundary,
-			   const std::string &toboundary,
-			   bool *eof,
-			   unsigned int *nlines,
-			   int *boundarysize,
-			   bool *foundendofpart,
-			   unsigned int *bodylength,
-			  std::vector<Binc::MimePart> *members);
-      void parseSinglePart(const std::string &toboundary,
-			    int *boundarysize,
-			    unsigned int *nbodylines,
-			    unsigned int *nlines,
-			    bool *eof, bool *foundendofpart,
-			   unsigned int *bodylength);
+                                       unsigned int *nlines,
+                                       int *boundarysize,
+                                       bool *foundendofpart);
+    void parseMultipart(const std::string &boundary,
+                        const std::string &toboundary,
+                        bool *eof,
+                        unsigned int *nlines,
+                        int *boundarysize,
+                        bool *foundendofpart,
+                        unsigned int *bodylength,
+                        std::vector<Binc::MimePart> *members);
+    void parseSinglePart(const std::string &toboundary,
+                         int *boundarysize,
+                         unsigned int *nbodylines,
+                         unsigned int *nlines,
+                         bool *eof, bool *foundendofpart,
+                         unsigned int *bodylength);
     void parseHeader(Binc::Header *header, unsigned int *nlines);
     void analyzeHeader(Binc::Header *header, bool *multipart,
-		       bool *messagerfc822, std::string *subtype,
-		       std::string *boundary);
+                       bool *messagerfc822, std::string *subtype,
+                       std::string *boundary);
     void parseMessageRFC822(std::vector<Binc::MimePart> *members,
-			    bool *foundendofpart,
-			    unsigned int *bodylength,
-			    unsigned int *nbodylines,
-			    const std::string &toboundary);
-  };
+                            bool *foundendofpart,
+                            unsigned int *bodylength,
+                            unsigned int *nbodylines,
+                            const std::string &toboundary);
+};
 
-  //----------------------------------------------------------------------
-  class MimeDocument : public MimePart {
-  public:
+//----------------------------------------------------------------------
+class MimeDocument : public MimePart {
+public:
     MimeDocument(void);
     ~MimeDocument(void);
 
@@ -167,20 +170,18 @@ namespace Binc {
 
     void clear(void);
     
-    bool isHeaderParsed(void) const 
-    {
-      return headerIsParsed; 
-    }
-    bool isAllParsed(void) const 
-    { 
-      return allIsParsed; 
-    }
+    bool isHeaderParsed(void) const {
+            return headerIsParsed; 
+        }
+    bool isAllParsed(void) const { 
+            return allIsParsed; 
+        }
 
-  private:
+private:
     bool headerIsParsed;
     bool allIsParsed;
     MimeInputSource *doc_mimeSource;
-  };
+};
 
 };
 

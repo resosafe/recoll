@@ -83,7 +83,7 @@ Misc build problems:
 
 KUBUNTU 8.10 (updated to 2008-27-11)
 ------------------------------------
-cmake generates a bad dependancy on
+cmake generates a bad dependency on
       /build/buildd/kde4libs-4.1.2/obj-i486-linux-gnu/lib/libkdecore.so 
 inside CMakeFiles/kio_recoll.dir/build.make 
 

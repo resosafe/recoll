@@ -14,11 +14,14 @@
  *   Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
+
 #include "autoconfig.h"
+
 #include "winschedtool.h"
 
 #include <stdio.h>
 #include <string>
+#include <fstream>
 
 #include <QPushButton>
 #include <QMessageBox>
@@ -34,25 +37,34 @@ using namespace std;
 void WinSchedToolW::init()
 {
     if (!theconfig) {
-	QMessageBox::warning(0, tr("Error"), 
-			     tr("Configuration not initialized"));
-	return;
+        QMessageBox::warning(0, tr("Error"), 
+                             tr("Configuration not initialized"));
+        return;
     }
 
     connect(startPB, SIGNAL(clicked()), this, SLOT(startWinScheduler()));
 
-    // thisexecpath returns the directory
+    // Use a short path on Windows if possible to avoid issues with
+    // accented characters
+    string confdir = path_shortpath(theconfig->getConfDir());
+    
+    // path_thisexecpath() returns the directory
     string recollindex = path_cat(path_thisexecpath(), "recollindex.exe");
     LOGDEB("WinSchedTool: recollindex: " << recollindex << endl);
 
-    string batchfile = path_cat(theconfig->getConfDir(), "winsched.bat");
+    string batchfile = path_cat(confdir, "winsched.bat");
     LOGDEB("WinSchedTool: batch file " << batchfile << endl);
 
     if (!path_exists(batchfile)) {
-        FILE *fp = fopen(batchfile.c_str(), "w");
-        fprintf(fp, "\"%s\" -c \"%s\"\n", recollindex.c_str(),
-                theconfig->getConfDir().c_str());
-        fclose(fp);
+        std::fstream fp;
+        if (path_streamopen(batchfile, ios::out|ios::trunc, fp)) {
+            fp << "\"" << recollindex << "\" -c \"" << confdir << "\"\n";
+            fp.close();
+        } else {
+            QMessageBox::warning(0, tr("Error"), 
+                                 tr("Could not create batch file"));
+            return;
+        }
     }
     QString blurb = tr(
         "<h3>Recoll indexing batch scheduling</h3>"

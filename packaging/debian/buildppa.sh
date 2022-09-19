@@ -4,25 +4,32 @@
 # For the kio: (and kdesdk?)
 # sudo apt-get install pkg-kde-tools  cdbs
 
-PPA_KEYID=D38B9201
+# Active series:
+# 18.04LTS bionic 2023-04
+# 20.04LTS focal  2025-04
+# 22.04LTS jammy  2027-04
+SERIES="bionic focal jammy kinetic"
 
-RCLVERS=1.26.4
+
+PPA_KEYID=7808CE96D38B9201
+
+RCLVERS=1.33.0
 SCOPEVERS=1.20.2.4
-GSSPVERS=1.0.0
+GSSPVERS=1.1.1
 PPAVERS=1
 
-# 
-RCLSRC=/y/home/dockes/projets/fulltext/recoll/src
-SCOPESRC=/y/home/dockes/projets/fulltext/unity-scope-recoll
-GSSPSRC=/y/home/dockes/projets/fulltext/gssp-recoll
-RCLDOWNLOAD=/y/home/dockes/projets/lesbonscomptes/recoll
+#
+#Y=/y
+Y=
+RCLSRC=${Y}/home/dockes/projets/fulltext/recoll/src
+SCOPESRC=${Y}/home/dockes/projets/fulltext/unity-scope-recoll
+GSSPSRC=${Y}/home/dockes/projets/fulltext/gssp-recoll
+RCLDOWNLOAD=${Y}/home/dockes/projets/lesbonscomptes/recoll
 
-case $RCLVERS in
-    [23]*) PPANAME=recollexp-ppa;;
-    1.14*) PPANAME=recoll-ppa;;
-    *)     PPANAME=recoll15-ppa;;
-esac
-#PPANAME=recollexp-ppa
+PPANAME=recoll15-ppa;;
+#PPANAME=recollexp1-ppa
+#PPANAME=recoll-webengine-ppa
+
 echo "PPA: $PPANAME. Type CR if Ok, else ^C"
 read rep
 
@@ -41,20 +48,10 @@ check_recoll_orig()
     fi
 }
 
-# Note: recoll 1.22+ builds on precise fail. precise stays at 1.21
-
 ####### QT
 debdir=debian
-# Note: no new releases for lucid: no webkit. Or use old debianrclqt4 dir.
-# No new releases for trusty either because of risk of kio compat (kio
-# wont build)
-# Active series:
-# 16.04LTS xenial 2021-04
-# 18.04LTS bionic 2023-04
-# 19.04    disco  2020-01
-# 19.10    eoan   2020-07
-series="xenial bionic disco eoan"
-series=
+series=$SERIES
+#series=bionic
 
 if test "X$series" != X ; then
     check_recoll_orig
@@ -81,25 +78,16 @@ for series in $series ; do
       -e s/PPAVERS/${PPAVERS}/g \
       < ${debdir}/changelog > recoll-${RCLVERS}/debian/changelog
 
-  (cd recoll-${RCLVERS};debuild -k$PPA_KEYID -S -sa)  || break
+  (cd recoll-${RCLVERS};debuild -d -k$PPA_KEYID -S -sa)  || break
 
   dput $PPANAME recoll_${RCLVERS}-1~ppa${PPAVERS}~${series}1_source.changes
 done
 
 
 
-### KIO. Does not build on trusty from recoll 1.23 because of the need
-### for c++11
-# Note: no new releases for lucid: no webkit. Or use old debianrclqt4 dir.
-# No new releases for trusty either because of risk of kio compat (kio
-# wont build)
-# Active series:
-# 16.04LTS xenial 2021-04
-# 18.04LTS bionic 2023-04
-# 19.04    disco  2020-01
-# 19.10    eoan   2020-07
-series="xenial bionic disco eoan"
-#series=
+### KIO.
+series=$SERIES
+series=
 
 debdir=debiankio
 topdir=kio-recoll-${RCLVERS}
@@ -138,15 +126,7 @@ for svers in $series ; do
 done
 
 ### GSSP
-# Note: no new releases for lucid: no webkit. Or use old debianrclqt4 dir.
-# No new releases for trusty either because of risk of kio compat (kio
-# wont build)
-# Active series:
-# 16.04LTS xenial 2021-04
-# 18.04LTS bionic 2023-04
-# 19.04    disco  2020-01
-# 19.10    eoan   2020-07
-series="xenial bionic disco eoan"
+series=$SERIES
 series=
 
 debdir=debiangssp
@@ -191,7 +171,7 @@ done
 
 
 ### Unity Scope
-series="trusty xenial  zesty artful bionic"
+series="bionic"
 series=
 
 debdir=debianunityscope

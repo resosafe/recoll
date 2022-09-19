@@ -20,15 +20,15 @@ else:
 	
 extra_compile_args = ['-std=c++11']
 
+VERSION = open(os.path.join(top, "RECOLL-VERSION.txt")).read().strip()
+
 if 'libdir' in os.environ and os.environ['libdir'] != "":
     runtime_library_dirs = [os.path.join(os.environ['libdir'], 'recoll')]
 else:
     runtime_library_dirs = [os.path.join('@prefix@', 'lib', 'recoll')]
 
-module1 = Extension('recoll',
-                    define_macros = [('MAJOR_VERSION', '1'),
-                                     ('MINOR_VERSION', '0'),
-                                     ('UNAC_VERSION', '"1.0.7"'),
+module1 = Extension('_recoll',
+                    define_macros = [
                                      ('RECOLL_DATADIR', '"@RECOLL_DATADIR@"')
                                      ],
                     include_dirs = ['/usr/local/include',
@@ -36,6 +36,7 @@ module1 = Extension('recoll',
                                     os.path.join(top, 'common'),
                                     os.path.join(localtop, 'common'),
                                     os.path.join(top, 'common'), 
+                                    os.path.join(top, 'internfile'), 
                                     os.path.join(top, 'rcldb'), 
                                     os.path.join(top, 'query'), 
                                     os.path.join(top, 'unac')
@@ -44,29 +45,13 @@ module1 = Extension('recoll',
                     libraries = libraries,
                     library_dirs = library_dirs,
                     runtime_library_dirs = runtime_library_dirs,
-                    sources = [os.path.join(pytop, 'pyrecoll.cpp')])
-
-module2 = Extension('rclextract',
-                    define_macros = [('MAJOR_VERSION', '1'),
-                                     ('MINOR_VERSION', '0'),
-                                     ('UNAC_VERSION', '"1.0.7"'),
-                                     ('RECOLL_DATADIR', '"@RECOLL_DATADIR@"')
-                                     ],
-                    include_dirs = ['/usr/local/include',
-                                    os.path.join(top, 'utils'), 
-                                    os.path.join(top, 'common'), 
-                                    os.path.join(localtop, 'common'),
-                                    os.path.join(top, 'internfile'), 
-                                    os.path.join(top, 'rcldb'), 
-                                    ],
-                    extra_compile_args = extra_compile_args,
-                    libraries = libraries,
-                    library_dirs = library_dirs,
-                    runtime_library_dirs = runtime_library_dirs,
-                    sources = [os.path.join(pytop, 'pyrclextract.cpp')])
+                    sources = [os.path.join(pytop, 'pyrecoll.cpp'),
+                               os.path.join(pytop, 'pyresultstore.cpp'),
+                               os.path.join(pytop, 'pyrclextract.cpp')
+                               ])
 
 setup (name = 'Recoll',
-       version = '1.0',
+       version = VERSION,
        description = 'Query/Augment a Recoll full text index',
        author = 'J.F. Dockes',
        author_email = 'jfd@recoll.org',
@@ -77,4 +62,4 @@ setup (name = 'Recoll',
 ''',
     packages = ['recoll'],
     ext_package = 'recoll',
-       ext_modules = [module1, module2])
+    ext_modules = [module1])

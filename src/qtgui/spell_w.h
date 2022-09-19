@@ -28,15 +28,15 @@ class SpellW : public QWidget, public Ui::SpellBase
     Q_OBJECT;
 public:
     SpellW(QWidget* parent = 0) 
-	: QWidget(parent), m_prevmode(TYPECMB_NONE) {
-	setupUi(this);
-	init();
+        : QWidget(parent), m_prevmode(TYPECMB_NONE) {
+        setupUi(this);
+        init();
     }
-	
+    
     virtual bool eventFilter(QObject *target, QEvent *event );
 
     enum comboboxchoice {TYPECMB_NONE, TYPECMB_WILD, TYPECMB_REG, TYPECMB_STEM, 
-			 TYPECMB_SPELL, TYPECMB_STATS, TYPECMB_FAILED};
+                         TYPECMB_SPELL, TYPECMB_STATS, TYPECMB_FAILED};
 public slots:
     virtual void doExpand();
     virtual void wordChanged(const QString&);

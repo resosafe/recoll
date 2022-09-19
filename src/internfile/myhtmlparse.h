@@ -33,7 +33,7 @@ using std::map;
 #define WHITESPACE " \t\n\r"
 
 class MyHtmlParser : public HtmlParser {
- public:
+public:
     bool in_script_tag;
     bool in_style_tag;
     bool in_pre_tag;
@@ -60,10 +60,9 @@ class MyHtmlParser : public HtmlParser {
     void do_eof();
     void decode_entities(string &s);
     void reset_charsets() {fromcharset = tocharset = "";}
-    void set_charsets(const string& f, const string& t) 
-    {
-	fromcharset = f;
-	tocharset = t;
+    void set_charsets(const string& f, const string& t) {
+        fromcharset = f;
+        tocharset = t;
     }
     // Return charset as determined from html
     const string& get_charset() {return charset;}

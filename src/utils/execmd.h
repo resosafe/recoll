@@ -22,6 +22,10 @@
 #include <stack>
 #include <sys/types.h>
 
+#ifdef _MSC_VER
+typedef int pid_t;
+#endif
+
 /**
  * Callback function object to advise of new data arrival, or just periodic
  * heartbeat if cnt is 0.
@@ -33,7 +37,10 @@
  */
 class ExecCmdAdvise {
 public:
+    ExecCmdAdvise() {}
     virtual ~ExecCmdAdvise() {}
+    ExecCmdAdvise(const ExecCmdAdvise&) = delete;
+    ExecCmdAdvise &operator=(const ExecCmdAdvise &) = delete;
     virtual void newData(int cnt) = 0;
 };
 
@@ -43,7 +50,10 @@ public:
  */
 class ExecCmdProvide {
 public:
+    ExecCmdProvide() {}
     virtual ~ExecCmdProvide() {}
+    ExecCmdProvide(const ExecCmdProvide&) = delete;
+    ExecCmdProvide &operator=(const ExecCmdProvide &) = delete;
     virtual void newData() = 0;
 };
 
@@ -216,6 +226,8 @@ public:
                  };
     ExecCmd(int flags = 0);
     ~ExecCmd();
+    ExecCmd(const ExecCmd&) = delete;
+    ExecCmd &operator=(const ExecCmd &) = delete;
 
     /**
      * Utility routine: check if/where a command is found according to the
@@ -235,14 +247,11 @@ public:
      */
     static bool backtick(const std::vector<std::string> cmd, std::string& out);
 
+    static std::string waitStatusAsString(int wstatus);
+
     class Internal;
 private:
     Internal *m;
-    /* Copyconst and assignment are private and forbidden */
-    ExecCmd(const ExecCmd&) {}
-    ExecCmd& operator=(const ExecCmd&) {
-        return *this;
-    };
 };
 
 
@@ -275,7 +284,8 @@ class ReExec {
 public:
     ReExec() {}
     ReExec(int argc, char *argv[]);
-    void init(int argc, char *argv[]);
+    // Mostly useful with Windows and wmain: args must be utf-8
+    ReExec(const std::vector<std::string>& args);
     int atexit(void (*function)(void)) {
         m_atexitfuncs.push(function);
         return 0;
@@ -293,7 +303,7 @@ public:
 private:
     std::vector<std::string> m_argv;
     std::string m_curdir;
-    int    m_cfd;
+    int    m_cfd{-1};
     std::string m_reason;
     std::stack<void (*)(void)> m_atexitfuncs;
 };

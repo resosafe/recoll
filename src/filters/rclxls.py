@@ -40,7 +40,7 @@ class XLSProcessData:
             return b'\n'.join(self.out)
         handler =  xlsxmltocsv.XlsXmlHandler()
         xml.sax.parseString(b'\n'.join(self.xmldata), handler)
-        self.out.append(self.em.htmlescape(b'\n'.join(handler.output)))
+        self.out.append(rclexecm.htmlescape(b'\n'.join(handler.output)))
         return b'\n'.join(self.out) + b'</pre></body></html>'
 
 class XLSFilter:

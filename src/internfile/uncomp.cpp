@@ -36,36 +36,36 @@ using std::vector;
 Uncomp::UncompCache Uncomp::o_cache;
 
 Uncomp::Uncomp(bool docache)
-	: m_docache(docache)
+    : m_docache(docache)
 {
     LOGDEB0("Uncomp::Uncomp: m_docache: " << m_docache << "\n");
 }
 
 bool Uncomp::uncompressfile(const string& ifn, 
-			    const vector<string>& cmdv, string& tfile)
+                            const vector<string>& cmdv, string& tfile)
 {
     if (m_docache) {
         std::unique_lock<std::mutex> lock(o_cache.m_lock);
-	if (!o_cache.m_srcpath.compare(ifn)) {
-	    m_dir = o_cache.m_dir;
-	    m_tfile = tfile = o_cache.m_tfile;
-	    m_srcpath = ifn;
-	    o_cache.m_dir = 0;
-	    o_cache.m_srcpath.clear();
-	    return true;
-	}
+        if (!o_cache.m_srcpath.compare(ifn)) {
+            m_dir = o_cache.m_dir;
+            m_tfile = tfile = o_cache.m_tfile;
+            m_srcpath = ifn;
+            o_cache.m_dir = 0;
+            o_cache.m_srcpath.clear();
+            return true;
+        }
     }
 
     m_srcpath.clear();
     m_tfile.clear();
     if (m_dir == 0) {
-	m_dir = new TempDir;
+        m_dir = new TempDir;
     }
     // Make sure tmp dir is empty. we guarantee this to filters
     if (!m_dir || !m_dir->ok() || !m_dir->wipe()) {
-	LOGERR("uncompressfile: can't clear temp dir " << m_dir->dirname() <<
+        LOGERR("uncompressfile: can't clear temp dir " << m_dir->dirname() <<
                "\n");
-	return false;
+        return false;
     }
 
     // Check that we have enough available space to have some hope of
@@ -77,7 +77,7 @@ bool Uncomp::uncompressfile(const string& ifn,
                m_dir->dirname() << "\n");
         // Hope for the best
     } else {
-	long long fsize = path_filesize(ifn);
+        long long fsize = path_filesize(ifn);
         if (fsize < 0) {
             LOGERR("uncompressfile: stat input file " << ifn << " errno " <<
                    errno << "\n");
@@ -109,22 +109,22 @@ bool Uncomp::uncompressfile(const string& ifn,
     subs['f'] = ifn;
     subs['t'] = m_dir->dirname();
     for (; it != cmdv.end(); it++) {
-	string ns;
-	pcSubst(*it, ns, subs);
-	args.push_back(ns);
+        string ns;
+        pcSubst(*it, ns, subs);
+        args.push_back(ns);
     }
 
     // Execute command and retrieve output file name, check that it exists
     ExecCmd ex;
     int status = ex.doexec(cmd, args, 0, &tfile);
     if (status || tfile.empty()) {
-	LOGERR("uncompressfile: doexec: " << cmd << " " <<
+        LOGERR("uncompressfile: doexec: " << cmd << " " <<
                stringsToString(args) << " failed for [" <<
                ifn << "] status 0x" << status << "\n");
-	if (!m_dir->wipe()) {
-	    LOGERR("uncompressfile: wipedir failed\n");
-	}
-	return false;
+        if (!m_dir->wipe()) {
+            LOGERR("uncompressfile: wipedir failed\n");
+        }
+        return false;
     }
     rtrimstring(tfile, "\n\r");
     m_tfile = tfile;
@@ -138,12 +138,12 @@ Uncomp::~Uncomp()
             (m_dir?m_dir->dirname():"(null)") << "\n");
     if (m_docache) {
         std::unique_lock<std::mutex> lock(o_cache.m_lock);
-	delete o_cache.m_dir;
-	o_cache.m_dir = m_dir;
-	o_cache.m_tfile = m_tfile;
-	o_cache.m_srcpath = m_srcpath;
+        delete o_cache.m_dir;
+        o_cache.m_dir = m_dir;
+        o_cache.m_tfile = m_tfile;
+        o_cache.m_srcpath = m_srcpath;
     } else {
-	delete m_dir;
+        delete m_dir;
     }
 }
 

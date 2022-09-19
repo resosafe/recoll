@@ -28,6 +28,6 @@ class RclConfig;
 // the real time indexer to purge entries when a top directory is
 // renamed. This is really convoluted, I'd like a better way.
 extern bool subtreelist(RclConfig *config, const string& top, 
-			std::vector<std::string>& paths); 
+                        std::vector<std::string>& paths); 
 
 #endif /* _SUBTREELIST_H_INCLUDED_ */

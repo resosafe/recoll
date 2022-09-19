@@ -14,14 +14,15 @@
 
   <xsl:template match="/">
     <div>
-      <xsl:apply-templates/> 
+    <xsl:for-each select="//w:p"> 
+      <p>
+      <xsl:for-each select=".//w:t"> 
+        <xsl:text> </xsl:text>
+        <xsl:value-of select="." />
+      </xsl:for-each>
+      </p>
+    </xsl:for-each>
     </div>
-  </xsl:template>
-
-  <xsl:template match="w:p">
-    <p>
-      <xsl:value-of select="."/>
-    </p>
   </xsl:template>
 
 </xsl:stylesheet>

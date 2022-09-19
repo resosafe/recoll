@@ -31,22 +31,21 @@ using std::string;
 using std::map;
 
 class HtmlParser {
-	map<string, string> parameters;
+    map<string, string> parameters;
     protected:
         virtual void decode_entities(string &s);
         bool in_script;
         string charset;
-	static map<string, unsigned int> named_ents;
+    static map<string, unsigned int> named_ents;
 
-	bool get_parameter(const string & param, string & value) const;
+    bool get_parameter(const string & param, string & value) const;
     public:
-	virtual void process_text(const string &/*text*/) { }
-	virtual bool opening_tag(const string &/*tag*/) { return true; }
+    virtual void process_text(const string &/*text*/) { }
+    virtual bool opening_tag(const string &/*tag*/) { return true; }
         virtual bool closing_tag(const string &/*tag*/) { return true; }
-	virtual void parse_html(const string &text);
-	virtual void do_eof() {}
-	HtmlParser();
-	virtual ~HtmlParser() { }
+    virtual void parse_html(const string &text);
+    virtual void do_eof() {}
+    HtmlParser();
 };
 
 #endif

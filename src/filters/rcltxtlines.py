@@ -2,7 +2,6 @@
 """Index text lines as document (execm handler sample). This exists
 to demonstrate the execm interface and is not meant to be useful or
 efficient"""
-from __future__ import print_function
 
 import sys
 import os
@@ -39,7 +38,7 @@ class rclTXTLINES:
         """Open the text file, create a contents array"""
         self.currentindex = -1
         try:
-            f = open(params["filename:"].decode('UTF-8'), "r")
+            f = open(params["filename"].decode('UTF-8'), "r")
         except Exception as err:
             self.em.rclog("openfile: open failed: [%s]" % err)
             return False
@@ -80,7 +79,7 @@ class rclTXTLINES:
     # numbers, but they could be tar archive paths or whatever we
     # returned during indexing.
     def getipath(self, params):
-        return self.extractone(int(params["ipath:"]))
+        return self.extractone(int(params["ipath"]))
 
     # Most handlers factorize common code from getipath() and
     # getnext() in an extractone() method, but this is not part of the

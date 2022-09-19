@@ -46,7 +46,7 @@
         <string>Clear</string>
        </property>
        <property name="shortcut">
-        <string>Ctrl+S</string>
+        <string/>
        </property>
       </widget>
      </item>
@@ -106,6 +106,24 @@
        <property name="icon">
         <iconset>
          <normalon>:/images/clock.png</normalon>
+        </iconset>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="menuPB">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
+       <property name="toolTip">
+        <string>Main menu</string>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset>
+         <normalon>:/images/menu.png</normalon>
         </iconset>
        </property>
       </widget>

@@ -599,7 +599,7 @@ chm_get_lcid (struct chmFile *chmfile) {
   uint32_t lang;
   int i;
 
-  for (i=0; i<LANG_FILES_SIZE; i++) {
+  for (i=0; i<(int)LANG_FILES_SIZE; i++) {
 
     if (chm_resolve_object (chmfile, lang_files[i].file, &ui) ==
         CHM_RESOLVE_SUCCESS) {

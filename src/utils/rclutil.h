@@ -33,6 +33,9 @@ extern std::string path_defaultrecollconfsubdir();
 // Check if path is either non-existing or an empty directory.
 extern bool path_empty(const std::string& path);
 
+/// Where we create the user data subdirs
+extern std::string path_homedata();
+
 /// e.g. /usr/share/recoll. Depends on OS and config
 extern const std::string& path_pkgdatadir();
 
@@ -40,12 +43,35 @@ extern const std::string& path_pkgdatadir();
 extern std::string path_thisexecpath();
 #endif
 
+/// Encode according to rfc 1738
+extern std::string url_encode(const std::string& url, std::string::size_type offs = 0);
+extern std::string url_decode(const std::string& encoded);
+//// Convert to file path if url is like file://. This modifies the
+//// input (and returns a copy for convenience)
+extern std::string fileurltolocalpath(std::string url);
+/// Test for file:/// url
+extern bool urlisfileurl(const std::string& url);
+///
+extern std::string url_parentfolder(const std::string& url);
+/// Return the host+path part of an url. This is not a general
+/// routine, it does the right thing only in the recoll context
+extern std::string url_gpath(const std::string& url);
+/// Turn absolute path into file:// url
+extern std::string path_pathtofileurl(const std::string& path);
+
 /// Transcode to utf-8 if possible or url encoding, for display.
 extern bool printableUrl(const std::string& fcharset,
                          const std::string& in, std::string& out);
 /// Same but, in the case of a Windows local path, also turn "c:/" into
 /// "/c/" This should be used only for splitting the path in rcldb.
+#ifdef _WIN32
+extern std::string path_slashdrive(const std::string& path);
+#endif
 extern std::string url_gpathS(const std::string& url);
+
+/// Like strftime but guaranteed utf-8 output (esp. useful on Windows)
+struct tm;
+extern std::string utf8datestring(const std::string& format, struct tm *tm);
 
 /// Retrieve the temp dir location: $RECOLL_TMPDIR else $TMPDIR else /tmp
 extern const std::string& tmplocation();
@@ -81,6 +107,8 @@ class TempDir {
 public:
     TempDir();
     ~TempDir();
+    TempDir(const TempDir&) = delete;
+    TempDir& operator=(const TempDir&) = delete;
     const char *dirname() {
         return m_dirname.c_str();
     }
@@ -95,10 +123,6 @@ public:
 private:
     std::string m_dirname;
     std::string m_reason;
-    TempDir(const TempDir&) {}
-    TempDir& operator=(const TempDir&) {
-        return *this;
-    };
 };
 
 // Freedesktop thumbnail standard path routine
@@ -111,5 +135,15 @@ extern bool thumbPathForUrl(const std::string& url, int size,
 // string data (to pass to other thread):
 template <class T> void map_ss_cp_noshr(T s, T *d);
 
+// Set or extend metadata field. We store the data as CSV
+template <class T> void addmeta(T& store, const std::string& nm,
+                                const std::string& value);
+
+// Compare charset names, removing the more common spelling variations
+extern bool samecharset(const std::string& cs1, const std::string& cs2);
+// Divine language from locale
+extern std::string localelang();
+// Divine 8bit charset from language
+extern std::string langtocode(const std::string& lang);
 
 #endif /* _RCLUTIL_H_INCLUDED_ */

@@ -11,7 +11,7 @@ initvariables $0
 # is not trivial. We do not use recollq here because any change in the
 # indexing process is going to change the order of results.
 
-xadump -d $RECOLL_CONFDIR/xapiandb -t maildir_uniquexxx -F | \
+xadump -d $RECOLL_TESTCACHEDIR/xapiandb -t maildir_uniquexxx -F | \
        grep FreqFor > $mystdout 2> $mystderr
 
 diff -w ${myname}.txt $mystdout > $mydiffs 2>&1

@@ -44,7 +44,7 @@ class HandlerTimeout {};
  * (cmd, params etc.)
  */
 class MimeHandlerExec : public RecollFilter {
- public:
+public:
     ///////////////////////
     // Members not reset by clear(). params, cfgFilterOutputMtype and 
     // cfgFilterOutputCharset
@@ -62,33 +62,43 @@ class MimeHandlerExec : public RecollFilter {
     // those filters, the output charset has to be known: ie set by a command
     // line option.
     std::string cfgFilterOutputCharset; 
-    bool missingHelper;
+    bool missingHelper{false};
+    std::string whatHelper;
     // Resource management values
-    int m_filtermaxseconds;
-    int m_filtermaxmbytes;
+
+    // The filtermaxseconds default is set in the constructor by
+    // querying the recoll.conf configuration variable. It can be
+    // changed by the filter creation code in mimehandler.cpp if a
+    // maxseconds parameter is set on the mimeconf line.
+    int m_filtermaxseconds{900};
+    int m_filtermaxmbytes{0};
     ////////////////
 
     MimeHandlerExec(RclConfig *cnf, const std::string& id);
 
+    virtual void setmaxseconds(int seconds) {
+        m_filtermaxseconds = seconds;
+    }
+    
     virtual bool next_document() override;
     virtual bool skip_to_document(const std::string& ipath) override;
 
     virtual void clear_impl() override {
-	m_fn.erase(); 
-	m_ipath.erase();
+        m_fn.erase(); 
+        m_ipath.erase();
     }
 
 protected:
-    virtual bool set_document_file_impl(const std::string& mt, 
-                                        const std::string& file_path) override;
+    virtual bool set_document_file_impl(
+        const std::string& mt, const std::string& file_path) override;
 
     std::string m_fn;
     std::string m_ipath;
     // md5 computation excluded by handler name: can't change after init
-    bool m_handlernomd5;
-    bool m_hnomd5init;
+    bool m_handlernomd5{false};
+    bool m_hnomd5init{false};
     // If md5 not excluded by handler name, allow/forbid depending on mime
-    bool m_nomd5;
+    bool m_nomd5{false};
     
     // Set the character set field and possibly transcode text/plain
     // output.

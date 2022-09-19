@@ -22,7 +22,6 @@
 #include <stdint.h>
 #include "safefcntl.h"
 #include <sys/types.h>
-#include "safesysstat.h"
 #include "safeunistd.h"
 
 #include <string>
@@ -52,7 +51,7 @@ using namespace std;
 // The internal path element separator. This can't be the same as the rcldb 
 // file to ipath separator : "|"
 // We replace it with a control char if it comes out of a filter (ie:
-// rclzip or rclchm can do this). If you want the SOH control char
+// rclzip.py or rclchm.py can do this). If you want the SOH control char
 // inside an ipath, you're out of luck (and a bit weird).
 static const string cstr_isep(":");
 
@@ -117,7 +116,7 @@ bool FileInterner::ipathContains(const string& parent, const string& child)
 // Empty handler on return says that we're in error, this will be
 // processed by the first call to internfile().
 // Split into "constructor calls init()" to allow use from other constructor
-FileInterner::FileInterner(const string &fn, const struct stat *stp,
+FileInterner::FileInterner(const string &fn, const struct PathStat *stp,
                            RclConfig *cnf, int flags, const string *imime)
 {
     LOGDEB0("FileInterner::FileInterner(fn=" << fn << ")\n");
@@ -137,8 +136,8 @@ FileInterner::FileInterner(const string &fn, const struct stat *stp,
 // used to not be the case, and was changed because this was the
 // simplest way to solve the retry issues (simpler than changing the
 // caller in e.g. fsindexer).
-void FileInterner::init(const string &f, const struct stat *stp, RclConfig *cnf,
-                        int flags, const string *imime)
+void FileInterner::init(const string &f, const struct PathStat *stp,
+                        RclConfig *cnf, int flags, const string *imime)
 {
     if (f.empty()) {
         LOGERR("FileInterner::init: empty file name!\n");
@@ -185,7 +184,7 @@ void FileInterner::init(const string &f, const struct stat *stp, RclConfig *cnf,
             l_mime = *imime;
     }
 
-    int64_t docsize = stp->st_size;
+    int64_t docsize = stp->pst_size;
 
     if (!l_mime.empty()) {
         // Has mime: check for a compressed file. If so, create a
@@ -196,7 +195,7 @@ void FileInterner::init(const string &f, const struct stat *stp, RclConfig *cnf,
             // Check for compressed size limit
             int maxkbs = -1;
             if (!m_cfg->getConfParam("compressedfilemaxkbs", &maxkbs) ||
-                maxkbs < 0 || !stp || int(stp->st_size / 1024) < maxkbs) {
+                maxkbs < 0 || !stp || int(stp->pst_size / 1024) < maxkbs) {
                 if (!m_uncomp->uncompressfile(m_fn, ucmd, m_tfile)) {
                     m_ok = true;
                     return;
@@ -204,14 +203,14 @@ void FileInterner::init(const string &f, const struct stat *stp, RclConfig *cnf,
                 LOGDEB1("FileInterner:: after ucomp: tfile " << m_tfile <<"\n");
                 m_fn = m_tfile;
                 // Stat the uncompressed file, mainly to get the size
-                struct stat ucstat;
+                struct PathStat ucstat;
                 if (path_fileprops(m_fn, &ucstat) != 0) {
                     LOGERR("FileInterner: can't stat the uncompressed file[" <<
                            m_fn << "] errno " << errno << "\n");
                     m_ok = true;
                     return;
                 } else {
-                    docsize = ucstat.st_size;
+                    docsize = ucstat.pst_size;
                 }
                 l_mime = mimetype(m_fn, &ucstat, m_cfg, usfci);
                 if (l_mime.empty() && imime)
@@ -241,17 +240,15 @@ void FileInterner::init(const string &f, const struct stat *stp, RclConfig *cnf,
     m_mimetype = l_mime;
 
     // Look for appropriate handler (might still return empty)
-    RecollFilter *df = getMimeHandler(l_mime, m_cfg, !m_forPreview);
+    RecollFilter *df = getMimeHandler(l_mime, m_cfg, !m_forPreview, f);
 
     if (!df || df->is_unknown()) {
         // No real handler for this type, for now :( 
-        LOGDEB("FileInterner:: unprocessed mime: [" << l_mime << "] [" << f <<
-               "]\n");
+        LOGDEB("FileInterner:: unprocessed mime: [" << l_mime << "] [" << f << "]\n");
         if (!df)
             return;
     }
-    df->set_property(Dijon::Filter::OPERATING_MODE, 
-                     m_forPreview ? "view" : "index");
+    df->set_property(Dijon::Filter::OPERATING_MODE, m_forPreview ? "view" : "index");
     df->set_property(Dijon::Filter::DJF_UDI, udi);
 
     df->set_docsize(docsize);
@@ -272,8 +269,7 @@ FileInterner::FileInterner(const string &data, RclConfig *cnf,
     init(data, cnf, flags, imime);
 }
 
-void FileInterner::init(const string &data, RclConfig *cnf, 
-                        int flags, const string& imime)
+void FileInterner::init(const string &data, RclConfig *, int, const string& imime)
 {
     if (imime.empty()) {
         LOGERR("FileInterner: inmemory constructor needs input mime type\n");
@@ -282,7 +278,7 @@ void FileInterner::init(const string &data, RclConfig *cnf,
     m_mimetype = imime;
 
     // Look for appropriate handler (might still return empty)
-    RecollFilter *df = getMimeHandler(m_mimetype, m_cfg, !m_forPreview);
+    RecollFilter *df = getMimeHandler(m_mimetype, m_cfg, !m_forPreview, m_fn);
 
     if (!df) {
         // No handler for this type, for now :( if indexallfilenames
@@ -290,8 +286,7 @@ void FileInterner::init(const string &data, RclConfig *cnf,
         LOGDEB("FileInterner:: unprocessed mime [" << m_mimetype << "]\n");
         return;
     }
-    df->set_property(Dijon::Filter::OPERATING_MODE, 
-                     m_forPreview ? "view" : "index");
+    df->set_property(Dijon::Filter::OPERATING_MODE, m_forPreview ? "view" : "index");
 
     df->set_docsize(data.length());
     if (df->is_data_input_ok(Dijon::Filter::DOCUMENT_STRING)) {
@@ -560,13 +555,20 @@ bool FileInterner::dijontorcl(Rcl::Doc& doc)
             const string *fnp = 0;
             if (!doc.peekmeta(Rcl::Doc::keyfn, &fnp) || fnp->empty())
                 doc.meta[Rcl::Doc::keyfn] = ent.second;
-        } else if (ent.first == cstr_dj_keymt || 
-                   ent.first == cstr_dj_keycharset) {
+        } else if (ent.first == cstr_dj_keymd5) {
+            // Only if not set during the stack walk: we want the md5
+            // from the actual document, not from further conversions,
+            // as computed, e.g. by the html to text handler
+            const string *val = 0;
+            if (!doc.peekmeta(Rcl::Doc::keymd5, &val) || val->empty())
+                doc.meta[Rcl::Doc::keymd5] = ent.second;
+        } else if (ent.first == cstr_dj_keymt || ent.first == cstr_dj_keycharset) {
             // don't need/want these.
         } else {
-            LOGDEB2("dijontorcl: " << m_cfg->fieldCanon(ent.first) << " -> " <<
-                    ent.second << endl);
-            doc.addmeta(m_cfg->fieldCanon(ent.first), ent.second);
+            LOGDEB2("dijontorcl: " << m_cfg->fieldCanon(ent.first) << " -> " << ent.second << "\n");
+            if (!ent.second.empty()) {
+                doc.meta[m_cfg->fieldCanon(ent.first)] = ent.second;
+            }
         }
     }
     if (doc.meta[Rcl::Doc::keyabs].empty() && 
@@ -581,7 +583,7 @@ const set<string> nocopyfields{cstr_dj_keycontent, cstr_dj_keymd,
         cstr_dj_keyanc, cstr_dj_keyorigcharset, cstr_dj_keyfn,
         cstr_dj_keymt, cstr_dj_keycharset, cstr_dj_keyds};
 
-static void copymeta(const RclConfig *cfg,Rcl::Doc& doc, const RecollFilter* hp)
+static void copymeta(const RclConfig *cfg, Rcl::Doc& doc, const RecollFilter* hp)
 {
     for (const auto& entry : hp->get_meta_data()) {
         if (nocopyfields.find(entry.first) == nocopyfields.end()) {
@@ -648,7 +650,7 @@ void FileInterner::collectIpathAndMT(Rcl::Doc& doc) const
             // handlers to use setfield() instead of embedding
             // metadata in the HTML meta tags.
             if (i == 0 || !pathelprev.empty()) {
-                copymeta(m_cfg, doc, m_handlers[i]);
+                copymeta(m_cfg, doc, m_handlers[i == 0 ? 0 : i-1]);
             }
             if (doc.fbytes.empty()) {
                 lltodecstr(m_handlers[i]->get_docsize(), doc.fbytes);
@@ -735,16 +737,14 @@ int FileInterner::addHandler()
     getKeyValue(docdata, cstr_dj_keyipath, ipathel);
     bool dofilter = !m_forPreview &&
         (mimetype.compare(cstr_texthtml) || !ipathel.empty());
-    RecollFilter *newflt = getMimeHandler(mimetype, m_cfg, dofilter);
+    RecollFilter *newflt = getMimeHandler(mimetype, m_cfg, dofilter, m_fn);
     if (!newflt) {
         // If we can't find a handler, this doc can't be handled
         // but there can be other ones so we go on
-        LOGINFO("FileInterner::addHandler: no filter for [" << mimetype <<
-                "]\n");
+        LOGINFO("FileInterner::addHandler: no filter for [" << mimetype << "]\n");
         return ADD_CONTINUE;
     }
-    newflt->set_property(Dijon::Filter::OPERATING_MODE, 
-                         m_forPreview ? "view" : "index");
+    newflt->set_property(Dijon::Filter::OPERATING_MODE, m_forPreview ? "view" : "index");
     if (!charset.empty())
         newflt->set_property(Dijon::Filter::DEFAULT_CHARSET, charset);
 
@@ -933,7 +933,10 @@ breakloop:
     }
     // Keep this AFTER collectIpathAndMT
     dijontorcl(doc);
-
+    // Fix the bogus mtype used to force mh_text processing of text subdocs
+    if (doc.mimetype == "text/plain1") {
+        doc.mimetype = "text/plain";
+    }
     // Possibly destack so that we can test for FIDone. While doing this
     // possibly set aside an ancestor html text (for the GUI preview)
     while (!m_handlers.empty() && !m_handlers.back()->has_documents()) {
@@ -1096,7 +1099,7 @@ bool FileInterner::interntofile(TempFile& otemp, const string& tofile,
 bool FileInterner::isCompressed(const string& fn, RclConfig *cnf)
 {
     LOGDEB("FileInterner::isCompressed: [" << fn << "]\n");
-    struct stat st;
+    struct PathStat st;
     if (path_fileprops(fn, &st) < 0) {
         LOGERR("FileInterner::isCompressed: can't stat [" << fn << "]\n");
         return false;
@@ -1120,7 +1123,7 @@ bool FileInterner::maybeUncompressToTemp(TempFile& temp, const string& fn,
                                          RclConfig *cnf, const Rcl::Doc& doc)
 {
     LOGDEB("FileInterner::maybeUncompressToTemp: [" << fn << "]\n");
-    struct stat st;
+    struct PathStat st;
     if (path_fileprops(fn.c_str(), &st) < 0) {
         LOGERR("FileInterner::maybeUncompressToTemp: can't stat [" <<fn<<"]\n");
         return false;
@@ -1139,7 +1142,7 @@ bool FileInterner::maybeUncompressToTemp(TempFile& temp, const string& fn,
     // Check for compressed size limit
     int maxkbs = -1;
     if (cnf->getConfParam("compressedfilemaxkbs", &maxkbs) &&
-        maxkbs >= 0 && int(st.st_size / 1024) > maxkbs) {
+        maxkbs >= 0 && int(st.pst_size / 1024) > maxkbs) {
         LOGINFO("FileInterner:: " << fn << " over size limit " << maxkbs <<
                 " kbs\n");
         return false;

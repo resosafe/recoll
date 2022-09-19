@@ -1,4 +1,4 @@
-/* Copyright (C) 2005 J.F.Dockes
+/* Copyright (C) 2005-2020 J.F.Dockes
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation; either version 2 of the License, or
@@ -48,12 +48,13 @@ void CronToolW::init()
 
     // Try to read the current values
     if (!theconfig)
-	return;
+        return;
 
     if (checkCrontabUnmanaged(marker, "recollindex")) {
-	QMessageBox::warning(0, "Recoll", 
-			     tr("It seems that manually edited entries exist for recollindex, cannot edit crontab"));
-	QTimer::singleShot(0, this, SLOT(close()));
+        QMessageBox::warning(
+            0, "Recoll", tr("It seems that manually edited entries exist for "
+                            "recollindex, cannot edit crontab"));
+        QTimer::singleShot(0, this, SLOT(close()));
     }
     
     string id = idstring(theconfig->getConfDir());
@@ -77,26 +78,36 @@ void CronToolW::disableCron()
 void CronToolW::changeCron(bool enable)
 {
     if (!theconfig)
-	return;
+        return;
 
     string id = idstring(theconfig->getConfDir());
     string cmd("recollindex");
+#if defined(MACPORTS) || defined(HOMEBREW)
+    // The MACPORTS and HOMEBREW flags are set by the resp. portfile
+    // and recipee. Adjust the path for finding recollindex accordingly
+#if defined(MACPORTS)
+    cmd = string("PATH=/opt/local/bin/:$PATH ") + cmd;
+#elif defined(HOMEBREW)
+    cmd = string("PATH=/usr/local/bin/:$PATH ") + cmd;
+#endif
+#endif
 
     string reason;
 
     if (!enable) {
-	editCrontab(marker, id, "", "", reason);
-	accept();
+        editCrontab(marker, id, "", "", reason);
+        accept();
     } else {
         string mins(qs2utf8s(minsLE->text().remove(QChar(' '))));
         string hours(qs2utf8s(hoursLE->text().remove(QChar(' '))));
         string days(qs2utf8s(daysLE->text().remove(QChar(' '))));
-	string sched = mins + " " + hours + "  * * " + days;
-	if (editCrontab(marker, id, sched, cmd, reason)) {
-	    accept();
-	}  else {
-	    QMessageBox::warning(0, "Recoll", 
-		     tr("Error installing cron entry. Bad syntax in fields ?"));
-	}	    
+        string sched = mins + " " + hours + "  * * " + days;
+        if (editCrontab(marker, id, sched, cmd, reason)) {
+            accept();
+        }  else {
+            QMessageBox::warning(
+                0, "Recoll", tr("Error installing cron entry. "
+                                "Bad syntax in fields ?"));
+        }        
     }
 }

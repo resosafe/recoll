@@ -32,6 +32,7 @@
 #include <set>
 #include <string>
 #include <functional>
+#include <memory>
 using std::vector;
 using std::set;
 using std::string;
@@ -43,6 +44,8 @@ using std::string;
 #include "rcldb.h"
 #include "execmd.h"
 #include "rclconfig.h"
+#include "webstore.h"
+#include "circache.h"
 
 static const int spacing = 3;
 static const int margin = 3;
@@ -173,7 +176,7 @@ void ConfIndexW::showPrefs(bool modal)
 
     if (nullptr == m_w) {
         QString title = u8s2qs("Recoll - Index Settings: ");
-        title += QString::fromLocal8Bit(m_rclconf->getConfDir().c_str());
+        title += path2qs(m_rclconf->getConfDir());
         conflinkfactory = MyConfLinkFactRCL(&m_conf, &sknull);
         if (nullptr == (m_w = new ConfTabsW(this, title, &conflinkfactory))) {
             return;
@@ -208,6 +211,7 @@ void ConfIndexW::acceptChanges()
     delete m_conf;
     m_conf = 0;
     m_rclconf->updateMainConfig();
+    emit idxConfigPossiblyChanged();
 }
 
 void ConfIndexW::initPanels()
@@ -219,7 +223,7 @@ void ConfIndexW::initPanels()
         new ConfSubPanelW(m_w, &m_conf, m_rclconf),
         tr("Local parameters"));
 
-    idx = m_w->addPanel("Web history");
+    idx = m_w->addPanel(tr("Web history"));
     setupWebHistoryPanel(idx);
 
     idx = m_w->addPanel(tr("Search parameters"));
@@ -252,8 +256,10 @@ bool ConfIndexW::setupTopPanel(int idx)
     }
     m_w->addParam(idx, ConfTabsW::CFPT_CSTRL, "indexstemminglanguages",
                   tr("Stemming languages"),
-                  tr("The languages for which stemming expansion<br>"
-                     "dictionaries will be built."), 0, 0, &m_stemlangs);
+                  tr("The languages for which stemming expansion "
+                     "dictionaries will be built.<br>See the Xapian stemmer "
+                     "documentation for possible values. E.g. english, "
+                     "french, german..."), 0, 0, &m_stemlangs);
 
     m_w->addParam(idx, ConfTabsW::CFPT_FN, "logfilename",
                   tr("Log file name"),
@@ -265,6 +271,13 @@ bool ConfIndexW::setupTopPanel(int idx)
         tr("This value adjusts the amount of messages,<br>from only "
            "errors to a lot of debugging data."), 0, 6);
 
+    m_w->addParam(idx, ConfTabsW::CFPT_FN, "idxlogfilename",
+                  tr("Indexer log file name"),
+                  tr("If empty, the above log file name value will be used. "
+                     "It may useful to have a separate log for diagnostic "
+                     "purposes because the common log will be erased when<br>"
+                     "the GUI starts up."), 0);
+    
     m_w->addParam(idx, ConfTabsW::CFPT_INT, "idxflushmb",
                   tr("Index flush megabytes interval"),
                   tr("This value adjust the amount of "
@@ -273,15 +286,16 @@ bool ConfIndexW::setupTopPanel(int idx)
                      "Default 10MB "), 0, 1000);
 
     m_w->addParam(idx, ConfTabsW::CFPT_INT, "maxfsoccuppc",
-                  tr("Disk full threshold to stop indexing<br>"
-                     "(e.g. 90%, 0 means no limit)"),
+                  tr("Disk full threshold percentage at which we stop indexing<br>"
+                     "E.g. 90% to stop at 90% full, 0 or 100 means no limit)"),
                   tr("This is the percentage of disk usage "
                      "- total disk usage, not index size - at which "
                      "indexing will fail and stop.<br>"
                      "The default value of 0 removes any limit."), 0, 100);
 
     ConfParamW *bparam = m_w->addParam(
-        idx, ConfTabsW::CFPT_BOOL, "noaspell", tr("No aspell usage"),
+        idx, ConfTabsW::CFPT_BOOL, "noaspell", tr("No aspell usage") +
+        tr(" (by default, aspell suggests mispellings when a query has no results)."),
         tr("Disables use of aspell to generate spelling "
            "approximation in the term explorer tool.<br> "
            "Useful if aspell is absent or does not work. "));
@@ -289,12 +303,13 @@ bool ConfIndexW::setupTopPanel(int idx)
         idx, ConfTabsW::CFPT_STR, "aspellLanguage",
         tr("Aspell language"),
         tr("The language for the aspell dictionary. "
-           "This should look like 'en' or 'fr' ...<br>"
+           "The values are are 2-letter "
+           "language codes, e.g. 'en', 'fr' ...<br>"
            "If this value is not set, the NLS environment "
            "will be used to compute it, which usually works. "
            "To get an idea of what is installed on your system, "
            "type 'aspell config' and look for .dat files inside "
-           "the 'data-dir' directory. "));
+           "the 'data-dir' directory."));
     m_w->enableLink(bparam, cparam, true);
 
     m_w->addParam(
@@ -321,7 +336,7 @@ bool ConfIndexW::setupWebHistoryPanel(int idx)
 {
     ConfParamW *bparam = m_w->addParam(
         idx, ConfTabsW::CFPT_BOOL, "processwebqueue",
-        tr("Process the WEB history queue"),
+        tr("Process the Web history queue"),
         tr("Enables indexing Firefox visited pages.<br>"
            "(you need also install the Firefox Recoll plugin)"));
     ConfParamW *cparam = m_w->addParam(
@@ -334,8 +349,7 @@ bool ConfIndexW::setupWebHistoryPanel(int idx)
     m_w->enableLink(bparam, cparam);
 
     cparam = m_w->addParam(
-        idx, ConfTabsW::CFPT_INT, "webcachemaxmbs",
-        tr("Max. size for the web store (MB)"),
+        idx, ConfTabsW::CFPT_INT, "webcachemaxmbs", tr("Max. size for the web store (MB)"),
         tr("Entries will be recycled once the size is reached."
            "<br>"
            "Only increasing the size really makes sense because "
@@ -343,6 +357,24 @@ bool ConfIndexW::setupWebHistoryPanel(int idx)
            "file (only waste space at the end)."
             ), -1, 1000*1000); // Max 1TB...
     m_w->enableLink(bparam, cparam);
+
+    QStringList intervals{"", "day", "week", "month", "year"};
+    cparam = m_w->addParam(
+        idx, ConfTabsW::CFPT_CSTR, "webcachekeepinterval", tr("Page recycle interval"),
+        tr("<p>By default, only one instance of an URL is kept in the cache. This "
+           "can be changed by setting this to a value determining at what frequency "
+           "we keep multiple instances ('day', 'week', 'month', 'year'). "
+           "Note that increasing the interval will not erase existing entries."),
+        0, 0, &intervals);
+    m_w->enableLink(bparam, cparam);
+
+
+    int64_t sz = -1;
+    auto ws = std::unique_ptr<WebStore>(new WebStore(m_rclconf));
+    sz = ws->cc()->size();
+    m_w->addBlurb(idx, tr("Note: old pages will be erased to make space for "
+                          "new ones when the maximum size is reached. "
+                          "Current size: %1").arg(u8s2qs(displayableBytes(sz))));
     m_w->endOfList(idx);
     return true;
 }
@@ -391,13 +423,12 @@ bool ConfIndexW::setupSearchPanel(int idx)
     return true;
 }
 
-ConfSubPanelW::ConfSubPanelW(QWidget *parent, ConfNull **config,
-                             RclConfig *rclconf)
+ConfSubPanelW::ConfSubPanelW(QWidget *parent, ConfNull **config, RclConfig *rclconf)
     : QWidget(parent), m_config(config)
 {
     QVBoxLayout *vboxLayout = new QVBoxLayout(this);
     vboxLayout->setSpacing(spacing);
-    vboxLayout->setMargin(margin);
+    vboxLayout->setContentsMargins(QMargins(margin,margin,margin,margin));
 
     m_subdirs = new ConfParamDNLW(
         "bogus00", this, ConfLink(new confgui::ConfLinkNullRep()), 
@@ -451,7 +482,7 @@ ConfSubPanelW::ConfSubPanelW(QWidget *parent, ConfNull **config,
 
     QGridLayout *gl1 = new QGridLayout(m_groupbox);
     gl1->setSpacing(spacing);
-    gl1->setMargin(margin);
+    gl1->setContentsMargins(QMargins(margin,margin,margin,margin));
     int gridy = 0;
 
     ConfParamSLW *eskn = new ConfParamSLW(

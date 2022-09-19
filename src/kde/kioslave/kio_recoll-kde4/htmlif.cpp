@@ -49,7 +49,7 @@ using namespace KIO;
 bool RecollKioPager::append(const string& data)
 {
     if (!m_parent) 
-	return false;
+    return false;
     m_parent->data(QByteArray(data.c_str()));
     return true;
 }
@@ -58,20 +58,20 @@ string RecollProtocol::makeQueryUrl(int page, bool isdet)
 {
     ostringstream str;
     str << "recoll://search/query?q=" << 
-	url_encode((const char*)m_query.query.toUtf8()) <<
-	"&qtp=" << (const char*)m_query.opt.toUtf8();
+    url_encode((const char*)m_query.query.toUtf8()) <<
+    "&qtp=" << (const char*)m_query.opt.toUtf8();
     if (page >= 0)
-	str << "&p=" << page;
+    str << "&p=" << page;
     if (isdet)
-	str << "&det=1";
+    str << "&det=1";
     return str.str();
 }
 
 string RecollKioPager::detailsLink()
 {
     string chunk = string("<a href=\"") + 
-	m_parent->makeQueryUrl(m_parent->m_pager.pageNumber(), true) + "\">"
-	+ "(show query)" + "</a>";
+    m_parent->makeQueryUrl(m_parent->m_pager.pageNumber(), true) + "\">"
+    + "(show query)" + "</a>";
     return chunk;
 }
 
@@ -81,24 +81,24 @@ const string& RecollKioPager::parFormat()
     // Need to escape the % inside the query url
     string qurl = m_parent->makeQueryUrl(-1, false), escurl;
     for (string::size_type pos = 0; pos < qurl.length(); pos++) {
-	switch(qurl.at(pos)) {
-	case '%':
-	    escurl += "%%";
-	    break;
-	default:
-	    escurl += qurl.at(pos);
-	}
+    switch(qurl.at(pos)) {
+    case '%':
+        escurl += "%%";
+        break;
+    default:
+        escurl += qurl.at(pos);
+    }
     }
 
     ostringstream str;
     str << 
-	"<a href=\"%U\"><img src=\"%I\" align=\"left\"></a>" 
-	"%R %S "
-	"<a href=\"" << escurl << "&cmd=pv&dn=%N\">Preview</a>&nbsp;&nbsp;" <<
-	"<a href=\"%U\">Open</a> " <<
-	"<b>%T</b><br>"
-	"%M&nbsp;%D&nbsp;&nbsp; <i>%U</i>&nbsp;&nbsp;%i<br>"
-	"%A %K";
+    "<a href=\"%U\"><img src=\"%I\" align=\"left\"></a>" 
+    "%R %S "
+    "<a href=\"" << escurl << "&cmd=pv&dn=%N\">Preview</a>&nbsp;&nbsp;" <<
+    "<a href=\"%U\">Open</a> " <<
+    "<b>%T</b><br>"
+    "%M&nbsp;%D&nbsp;&nbsp; <i>%U</i>&nbsp;&nbsp;%i<br>"
+    "%A %K";
     return parformat = str.str();
 }
 
@@ -111,9 +111,9 @@ string RecollKioPager::pageTop()
 // Would be nice to have but doesnt work because the query may be executed
 // by another kio instance which has no idea of the current page o
 #if 0 && KDE_IS_VERSION(4,1,0)
-	" &nbsp;&nbsp;&nbsp;<a href=\"recoll:///" + 
-	url_encode(string(m_parent->m_query.query.toUtf8())) +
-	"/\">Directory view</a> (you may need to reload the page)"
+    " &nbsp;&nbsp;&nbsp;<a href=\"recoll:///" + 
+    url_encode(string(m_parent->m_query.query.toUtf8())) +
+    "/\">Directory view</a> (you may need to reload the page)"
 #endif
 }
 
@@ -121,9 +121,9 @@ string RecollKioPager::nextUrl()
 {
     int pagenum = pageNumber();
     if (pagenum < 0)
-	pagenum = 0;
+    pagenum = 0;
     else
-	pagenum++;
+    pagenum++;
     return m_parent->makeQueryUrl(pagenum);
 }
 
@@ -131,9 +131,9 @@ string RecollKioPager::prevUrl()
 {
     int pagenum = pageNumber();
     if (pagenum <= 0)
-	pagenum = 0;
+    pagenum = 0;
     else
-	pagenum--;
+    pagenum--;
     return m_parent->makeQueryUrl(pagenum);
 }
 
@@ -143,17 +143,17 @@ void RecollProtocol::searchPage()
 {
     mimeType("text/html");
     if (welcomedata.empty()) {
-	QString location = 
-	    KStandardDirs::locate("data", "kio_recoll/welcome.html");
-	string reason;
-	if (location.isEmpty() || 
-	    !file_to_string((const char *)location.toUtf8(), 
-			    welcomedata, &reason)) {
-	    welcomedata = "<html><head><title>Recoll Error</title></head>"
-		"<body><p>Could not locate Recoll welcome.html file: ";
-	    welcomedata += reason;
-	    welcomedata += "</p></body></html>";
-	}
+    QString location = 
+        KStandardDirs::locate("data", "kio_recoll/welcome.html");
+    string reason;
+    if (location.isEmpty() || 
+        !file_to_string((const char *)location.toUtf8(), 
+                welcomedata, &reason)) {
+        welcomedata = "<html><head><title>Recoll Error</title></head>"
+        "<body><p>Could not locate Recoll welcome.html file: ";
+        welcomedata += reason;
+        welcomedata += "</p></body></html>";
+    }
     }    
 
     string catgq;
@@ -164,12 +164,12 @@ void RecollProtocol::searchPage()
     // language, but not too useful in this case, so scrap it for now.
     list<string> cats;
     if (o_rclconfig->getMimeCategories(cats) && !cats.empty()) {
-	catgq = "<p>Filter on types: "
-	    "<input type=\"radio\" name=\"ct\" value=\"All\" checked>All";
-	for (list<string>::iterator it = cats.begin(); it != cats.end();it++) {
-	    catgq += "\n<input type=\"radio\" name=\"ct\" value=\"" +
-		*it + "\">" + *it ;
-	}
+    catgq = "<p>Filter on types: "
+        "<input type=\"radio\" name=\"ct\" value=\"All\" checked>All";
+    for (list<string>::iterator it = cats.begin(); it != cats.end();it++) {
+        catgq += "\n<input type=\"radio\" name=\"ct\" value=\"" +
+        *it + "\">" + *it ;
+    }
     }
 #endif 
 
@@ -190,13 +190,13 @@ void RecollProtocol::queryDetails()
 
     os << "<html><head>" << endl;
     os << "<meta http-equiv=\"Content-Type\" content=\"text/html;"
-	"charset=utf-8\">" << endl;
+    "charset=utf-8\">" << endl;
     os << "<title>" << "Recoll query details" << "</title>\n" << endl;
     os << "</head>" << endl;
     os << "<body><h3>Query details:</h3>" << endl;
     os << "<p>" << m_pager.queryDescription().c_str() <<"</p>"<< endl;
     os << "<p><a href=\"" << makeQueryUrl(m_pager.pageNumber()).c_str() << 
-	"\">Return to results</a>" << endl;
+    "\">Return to results</a>" << endl;
     os << "</body></html>" << endl;
     data(array);
 }
@@ -209,25 +209,25 @@ public:
     }    
 
     virtual string header() {
-	if (m_inputhtml) {
-	    return cstr_null;
-	} else {
-	    return string("<html><head>"
-			  "<META http-equiv=\"Content-Type\""
-			  "content=\"text/html;charset=UTF-8\"><title>").
-		append(m_name).
-		append("</title></head><body><pre>");
-	}
+    if (m_inputhtml) {
+        return cstr_null;
+    } else {
+        return string("<html><head>"
+              "<META http-equiv=\"Content-Type\""
+              "content=\"text/html;charset=UTF-8\"><title>").
+        append(m_name).
+        append("</title></head><body><pre>");
+    }
     }
 
     virtual string startMatch(unsigned int)
     {
-	return string("<font color=\"blue\">");
+    return string("<font color=\"blue\">");
     }
 
     virtual string endMatch() 
     {
-	return string("</font>");
+    return string("</font>");
     }
 
     const string &m_name;
@@ -239,12 +239,12 @@ void RecollProtocol::showPreview(const Rcl::Doc& idoc)
     Rcl::Doc fdoc;
     string ipath = idoc.ipath;
     if (!interner.internfile(fdoc, ipath)) {
-	error(KIO::ERR_SLAVE_DEFINED, "Cannot convert file to internal format");
-	return;
+    error(KIO::ERR_SLAVE_DEFINED, "Cannot convert file to internal format");
+    return;
     }
     if (!interner.get_html().empty()) {
-	fdoc.text = interner.get_html();
-	fdoc.mimetype = "text/html";
+    fdoc.text = interner.get_html();
+    fdoc.mimetype = "text/html";
     }
 
     mimeType("text/html");
@@ -255,14 +255,14 @@ void RecollProtocol::showPreview(const Rcl::Doc& idoc)
     list<string> otextlist;
     HighlightData hdata;
     if (m_source)
-	m_source->getTerms(hdata);
+    m_source->getTerms(hdata);
     ptr.plaintorich(fdoc.text, otextlist, hdata);
 
     QByteArray array;
     QTextStream os(&array, QIODevice::WriteOnly);
     for (list<string>::iterator it = otextlist.begin(); 
-	 it != otextlist.end(); it++) {
-	os << (*it).c_str();
+     it != otextlist.end(); it++) {
+    os << (*it).c_str();
     }
     os << "</body></html>" << endl;
     data(array);
@@ -271,30 +271,30 @@ void RecollProtocol::showPreview(const Rcl::Doc& idoc)
 void RecollProtocol::htmlDoSearch(const QueryDesc& qd)
 {
     kDebug() << "q" << qd.query << "option" << qd.opt << "page" << qd.page <<
-	"isdet" << qd.isDetReq << endl;
+    "isdet" << qd.isDetReq << endl;
  
     mimeType("text/html");
 
     if (!syncSearch(qd))
-	return;
+    return;
     // syncSearch/doSearch do the setDocSource when needed
     if (m_pager.pageNumber() < 0) {
-	m_pager.resultPageNext();
+    m_pager.resultPageNext();
     }
     if (qd.isDetReq) {
-	queryDetails();
-	return;
+    queryDetails();
+    return;
     }
 
     // Check / adjust page number
     if (qd.page > m_pager.pageNumber()) {
-	int npages = qd.page - m_pager.pageNumber();
-	for (int i = 0; i < npages; i++)
-	    m_pager.resultPageNext();
+    int npages = qd.page - m_pager.pageNumber();
+    for (int i = 0; i < npages; i++)
+        m_pager.resultPageNext();
     } else if (qd.page < m_pager.pageNumber()) {
-	int npages = m_pager.pageNumber() - qd.page;
-	for (int i = 0; i < npages; i++) 
-	    m_pager.resultPageBack();
+    int npages = m_pager.pageNumber() - qd.page;
+    for (int i = 0; i < npages; i++) 
+        m_pager.resultPageBack();
     }
     // Display
     m_pager.displayPage(o_rclconfig);

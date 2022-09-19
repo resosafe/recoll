@@ -19,6 +19,11 @@
 
 #include <errno.h>
 #include <fstream>
+#include <time.h>
+
+#ifdef _MSC_VER
+#define localtime_r(A,B) localtime_s(B,A)
+#endif
 
 using namespace std;
 
@@ -39,7 +44,7 @@ bool Logger::reopen(const std::string& fn)
     if (!m_tocerr && m_stream.is_open()) {
         m_stream.close();
     }
-    if (!m_fn.empty() && m_fn.compare("stderr")) {
+    if (!m_fn.empty() && m_fn != "stderr") {
         m_stream.open(m_fn, std::fstream::out | std::ofstream::trunc);
         if (!m_stream.is_open()) {
             cerr << "Logger::Logger: log open failed: for [" <<
@@ -54,6 +59,17 @@ bool Logger::reopen(const std::string& fn)
     return true;
 }
 
+const char *Logger::datestring()
+{
+    time_t clk = time(0);
+    struct tm tmb;
+    localtime_r(&clk, &tmb);
+    if (strftime(m_datebuf, LOGGER_DATESIZE, m_datefmt.c_str(), &tmb)) {
+        return m_datebuf;
+    } else {
+        return "";
+    }
+}
 static Logger *theLog;
 
 Logger *Logger::getTheLog(const string& fn)

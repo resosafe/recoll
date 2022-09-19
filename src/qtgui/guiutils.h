@@ -20,6 +20,7 @@
 #include <string>
 #include <list>
 #include <vector>
+#include <set>
 
 #include <qstring.h>
 #include <qstringlist.h>
@@ -36,7 +37,7 @@ using std::vector;
 
 /** Holder for preferences (gets saved to user Qt prefs) */
 class PrefsPack {
- public:
+public:
     // Simple search entry behaviour
     bool ssearchNoComplete;
     bool ssearchStartOnComplete;
@@ -44,36 +45,38 @@ class PrefsPack {
     // toolbar+combobox or as a button group under simple search
     enum FilterCtlStyle {FCS_BT, FCS_CMB, FCS_MN};
     int filterCtlStyle;
+    int idxFilterTreeDepth{2};
     int respagesize{8};
     int historysize{0};
-    int maxhltextmbs;
+    int maxhltextkbs;
     QString reslistfontfamily;
-    // Not saved in prefs for now. Computed from qt defaults and used to
-    // set main character color for webkit/textbrowser reslist and
-    // snippets window.
-    QString fontcolor; 
-    QString qtermstyle; // CSS style for query terms in reslist and other places
     int reslistfontsize;
+    QString qtermstyle; // CSS style for query terms in reslist and other places
     // Result list format string
     QString reslistformat;
     string  creslistformat;
     QString reslistheadertext;
+    // This is either empty or the contents of the recoll-dark.css
+    // file if we are in dark mode. It is set in the header before the
+    // possible user string above. Not saved/restored to prefs as it
+    // is controled by darkMode
+    QString darkreslistheadertext;
     // Date strftime format
-    QString reslistdateformat;
-    string creslistdateformat;
+    string reslistdateformat;
+
+    //  General Qt style sheet.
     QString qssFile;
+    // Dark mode set-> style sheet is the default dark one. + special reslist header
+    bool darkMode;
+    
     QString snipCssFile;
     QString queryStemLang;
-    int mainwidth;
-    int mainheight;
     enum ShowMode {SHOW_NORMAL, SHOW_MAX, SHOW_FULL};
     int showmode{SHOW_NORMAL};
     int pvwidth; // Preview window geom
     int pvheight;
-    int toolArea; // Area for "tools" toolbar
-    int resArea; // Area for "results" toolbar
     bool ssearchTypSav; // Remember last search mode (else always
-			// start with same)
+    // start with same)
     int ssearchTyp{0};
     // Use single app (default: xdg-open), instead of per-mime settings
     bool useDesktopOpen; 
@@ -94,6 +97,8 @@ class PrefsPack {
     int snipwMaxLength;
     // Snippets window sort by page (dflt: by weight)
     bool snipwSortByPage;
+    // Display Snippets links even for un-paged documents
+    bool alwaysSnippets;
     bool startWithAdvSearchOpen{false};
     // Try to display html if it exists in the internfile stack.
     bool previewHtml;
@@ -108,6 +113,9 @@ class PrefsPack {
     // Extra query indexes. This are stored in the history file, not qt prefs
     vector<string> allExtraDbs;
     vector<string> activeExtraDbs;
+    // Temporary value while we run a saved query. Erased right after use.
+    bool useTmpActiveExtraDbs{false};
+    vector<string> tmpActiveExtraDbs;
     // Advanced search subdir restriction: we don't activate the last value
     // but just remember previously entered values
     QStringList asearchSubdirHist;
@@ -127,9 +135,6 @@ class PrefsPack {
     QString synFile;
     bool    synFileEnable;
 
-    QStringList restableFields;
-    vector<int> restableColWidths;
-
     // Remembered term match mode
     int termMatchType{0};
 
@@ -139,12 +144,25 @@ class PrefsPack {
     // Suppress all noises
     bool noBeeps;
     
+    bool noToolbars{false};
+    bool noClearSearch{false};
+    bool noStatusBar{false};
+    bool noMenuBar{false};
+    bool noSSTypCMB{false};
+    bool resTableTextNoShift{false};
+    bool resTableNoHoverMeta{false};
+    bool noResTableHeader{false};
+    bool showResTableVHeader{false};
+    bool noResTableRowJumpSC{false};
     bool showTrayIcon{false};
     bool closeToTray{false};
     bool trayMessages{false};
-    
-    // See qxtconfirmationmessage. Needs to be -1 for the dialog to show
-    int showTempFileWarning;
+    double wholeuiscale{1.0};
+    /*INSERTHERE*/
+
+    // See widgets/qxtconfirmationmessage.
+    // Values -1/positive. -1 will trigger the dialog.
+    int showTempFileWarning{-1};
     
     // Advanced search window clause list state
     vector<int> advSearchClauses;
@@ -154,6 +172,20 @@ class PrefsPack {
 
     std::string stemlang();
 
+    void setupDarkCSS();
+
+    // HTML Header contents for both the result list, the snippets window and others
+    std::string htmlHeaderContents();
+    
+    // MIME types for which we prefer to use stored text from preview
+    // rather than extracting the possibly nicer HTML because the
+    // extractor is very slow. This is compiled in and there is no UI
+    // for now.
+    std::set<std::string> preferStoredTextMimes{"application/x-hwp"};
+
+    // Scale font-sizes inside css or qss input and return changed sheet. The font-size statements
+    // need to be on their own line.
+    static std::string scaleFonts(const std::string& style, float multiplier);
 };
 
 /** Global preferences record */

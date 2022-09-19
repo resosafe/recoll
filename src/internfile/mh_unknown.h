@@ -27,22 +27,24 @@
  *
  */
 class MimeHandlerUnknown : public RecollFilter {
- public:
+public:
     MimeHandlerUnknown(RclConfig *cnf, const string& id) 
-	: RecollFilter(cnf, id) {
+        : RecollFilter(cnf, id) {
     }
     virtual ~MimeHandlerUnknown() {}
-    virtual bool is_data_input_ok(DataInput input) const {
+    MimeHandlerUnknown(const MimeHandlerUnknown&) = delete;
+    MimeHandlerUnknown& operator=(const MimeHandlerUnknown&) = delete;
+    virtual bool is_data_input_ok(DataInput) const {
         return true;
     }
     
     virtual bool next_document() {
-	if (m_havedoc == false)
-	    return false;
-	m_havedoc = false; 
-	m_metaData[cstr_dj_keycontent] = cstr_null;
-	m_metaData[cstr_dj_keymt] = cstr_textplain;
-	return true;
+        if (m_havedoc == false)
+            return false;
+        m_havedoc = false; 
+        m_metaData[cstr_dj_keycontent] = cstr_null;
+        m_metaData[cstr_dj_keymt] = cstr_textplain;
+        return true;
     }
     virtual bool is_unknown() {return true;}
 };

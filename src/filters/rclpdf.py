@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Copyright (C) 2014 J.F.Dockes
+# Copyright (C) 2014-2020 J.F.Dockes
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
@@ -20,41 +20,64 @@
 # pdftotext sometimes outputs unescaped text inside HTML text sections.
 # We try to correct.
 #
-# If pdftotext produces no text and tesseract is available, we try to
-# perform OCR. As this can be very slow and the result not always
-# good, we only do this if this is required by the configuration
-#
-# We guess the OCR language in order of preference:
-#  - From the content of a ".ocrpdflang" file if it exists in the same
-#    directory as the PDF
-#  - Else from the pdfocrlang in recoll.conf
-#  - Else from an RECOLL_TESSERACT_LANG environment variable
-#  - From the content of $RECOLL_CONFDIR/ocrpdf
-#  - Default to "eng"
-
-from __future__ import print_function
+# If pdftotext produces no text and the configuration allows it, we may try to
+# perform OCR.
 
 import os
 import sys
 import re
-import rclexecm
+import urllib.request
 import subprocess
 import tempfile
-import atexit
-import signal
-import rclconfig
 import glob
 import traceback
+import atexit
+import signal
+import time
+
+import rclexecm
+import rclconfig
 
 _mswindows = (sys.platform == "win32")
+
+# Test access to the poppler-glib python3 bindings ? This allows
+# extracting text from annotations.
+# - On Ubuntu, this comes with package gir1.2-poppler-0.18
+# - On opensuse the package is named typelib-1_0-Poppler-0_18
+# (actual versions may differ of course).
+# 
+# NOTE: we are using the glib introspection bindings for the Poppler C
+# API, which is not the same as the Python bindings of the Poppler C++
+# API (poppler-cpp). The interface is quite different
+# (e.g. attachments are named "embeddedfiles" in the C++ interface.
+havepopplerglib = False
+try:
+    import gi
+    gi.require_version('Poppler', '0.18')
+    from gi.repository import Poppler
+    havepopplerglib = True
+except:
+    pass
+
 tmpdir = None
 
-def finalcleanup():
-    if tmpdir:
-        vacuumdir(tmpdir)
-        os.rmdir(tmpdir)
+_htmlprefix =b'''<html><head>
+<meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">
+</head><body><pre>'''
+_htmlsuffix = b'''</pre></body></html>'''
 
+def finalcleanup():
+    global tmpdir
+    if tmpdir:
+        del tmpdir
+        tmpdir = None
+
+ocrproc = None
 def signal_handler(signal, frame):
+    global ocrproc
+    if ocrproc:
+        ocrproc.wait()
+        ocrproc = None
     sys.exit(1)
 
 atexit.register(finalcleanup)
@@ -68,14 +91,6 @@ try: signal.signal(signal.SIGQUIT, signal_handler)
 except: pass
 try: signal.signal(signal.SIGTERM, signal_handler)
 except: pass
-
-def vacuumdir(dir):
-    if dir:
-        for fn in os.listdir(dir):
-            path = os.path.join(dir, fn)
-            if os.path.isfile(path):
-                os.unlink(path)
-    return True
 
 class PDFExtractor:
     def __init__(self, em):
@@ -120,18 +135,6 @@ class PDFExtractor:
         except:
             pass
         
-        # See if we'll try to perform OCR. Need the commands and the
-        # either the presence of a file in the config dir (historical)
-        # or a set config variable.
-        self.ocrpossible = False
-        self.tesseract = rclexecm.which("tesseract")
-        if self.tesseract:
-            self.pdftoppm = rclexecm.which("pdftoppm")
-            if self.pdftoppm:
-                self.ocrpossible = True
-                self.maybemaketmpdir()
-        # self.em.rclog("OCRPOSSIBLE: %d" % self.ocrpossible)
-
         # Pdftk is optionally used to extract attachments. This takes
         # a hit on performance even in the absence of any attachments,
         # so it can be disabled in the configuration.
@@ -195,6 +198,7 @@ class PDFExtractor:
                 spec.loader.exec_module(EMF)
             except Exception as err:
                 self.em.rclog("Import extrametafix failed: %s" % err)
+                EMF = None
                 pass
 
     # Extract all attachments if any into temporary directory
@@ -207,128 +211,25 @@ class PDFExtractor:
         if not tmpdir or not self.pdftk:
             # no big deal
             return True
-
         try:
-            vacuumdir(tmpdir)
-            subprocess.check_call([self.pdftk, self.filename, "unpack_files",
-                                   "output", tmpdir])
-            self.attachlist = sorted(os.listdir(tmpdir))
+            tmpdir.vacuumdir()
+            # Note: the java version of pdftk sometimes/often fails
+            # here with writing to stdout:
+            #    Error occurred during initialization of VM
+            #    Could not allocate metaspace: 1073741824 bytes
+            # Maybe unsufficient resources when started from Python ?
+            # In any case, the important thing is to discard the
+            # output, until we fix the error or preferably find a way
+            # to do it with poppler...
+            subprocess.check_call(
+                [self.pdftk, self.filename, "unpack_files", "output", tmpdir.getpath()],
+                stdout=sys.stderr)
+            self.attachlist = sorted(os.listdir(tmpdir.getpath()))
             return True
         except Exception as e:
             self.em.rclog("extractAttach: failed: %s" % e)
             # Return true anyway, pdf attachments are no big deal
             return True
-
-    def extractone(self, ipath):
-        #self.em.rclog("extractone: [%s]" % ipath)
-        if not self.attextractdone:
-            if not self.extractAttach():
-                return (False, "", "", rclexecm.RclExecM.eofnow)
-        path = os.path.join(tmpdir, ipath)
-        if os.path.isfile(path):
-            f = open(path)
-            docdata = f.read();
-            f.close()
-        if self.currentindex == len(self.attachlist) - 1:
-            eof = rclexecm.RclExecM.eofnext
-        else:
-            eof = rclexecm.RclExecM.noteof
-        return (True, docdata, ipath, eof)
-
-
-    # Try to guess tesseract language. This should depend on the input
-    # file, but we have no general way to determine it. So use the
-    # environment and hope for the best.
-    def guesstesseractlang(self):
-        tesseractlang = ""
-
-        # First look for a language def file in the file's directory 
-        pdflangfile = os.path.join(os.path.dirname(self.filename),
-                                   b".ocrpdflang")
-        if os.path.isfile(pdflangfile):
-            tesseractlang = open(pdflangfile, "r").read().strip()
-        if tesseractlang:
-            return tesseractlang
-
-        # Then look for a global option. The normal way now that we
-        # have config reading capability in the handlers is to use the
-        # config. Then, for backwards compat, environment variable and
-        # file inside the configuration directory
-        tesseractlang = self.config.getConfParam("pdfocrlang")
-        if tesseractlang:
-            return tesseractlang
-        tesseractlang = os.environ.get("RECOLL_TESSERACT_LANG", "");
-        if tesseractlang:
-            return tesseractlang
-        pdflangfile = os.path.join(self.confdir, "ocrpdf")
-        if os.path.isfile(pdflangfile):
-            tesseractlang = open(pdflangfile, "r").read().strip()
-        if tesseractlang:
-            return tesseractlang
-
-        # Half-assed trial to guess from LANG then default to english
-        localelang = os.environ.get("LANG", "").split("_")[0]
-        if localelang == "en":
-            tesseractlang = "eng"
-        elif localelang == "de":
-            tesseractlang = "deu"
-        elif localelang == "fr":
-            tesseractlang = "fra"
-        if tesseractlang:
-            return tesseractlang
-
-        if not tesseractlang:
-            tesseractlang = "eng"
-        return tesseractlang
-
-    # PDF has no text content and tesseract is available. Give OCR a try
-    def ocrpdf(self):
-
-        global tmpdir
-        if not tmpdir:
-            return b""
-
-        tesseractlang = self.guesstesseractlang()
-        # self.em.rclog("tesseractlang %s" % tesseractlang)
-
-        tesserrorfile = os.path.join(tmpdir, "tesserrorfile")
-        tmpfile = os.path.join(tmpdir, "ocrXXXXXX")
-
-        # Split pdf pages
-        try:
-            vacuumdir(tmpdir)
-            subprocess.check_call([self.pdftoppm, "-r", "300", self.filename,
-                                   tmpfile])
-        except Exception as e:
-            self.em.rclog("pdftoppm failed: %s" % e)
-            return b""
-
-        files = glob.glob(tmpfile + "*")
-        for f in files:
-            out = b''
-            try:
-                out = subprocess.check_output([self.tesseract, f, f, "-l",
-                                               tesseractlang],
-                                              stderr = subprocess.STDOUT)
-            except Exception as e:
-                self.em.rclog("tesseract failed: %s" % e)
-
-            errlines = out.split(b'\n')
-            if len(errlines) > 2:
-                self.em.rclog("Tesseract error: %s" % out)
-
-        # Concatenate the result files
-        files = glob.glob(tmpfile + "*" + ".txt")
-        data = b""
-        for f in files:
-            data += open(f, "rb").read()
-
-        return b'''<html><head>
-        <meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">
-        </head><body><pre>''' + \
-        self.em.htmlescape(data) + \
-        b'''</pre></body></html>'''
-
 
     # pdftotext (used to?) badly escape text inside the header
     # fields. We do it here. This is not an html parser, and depends a
@@ -356,7 +257,7 @@ class PDFExtractor:
                     if not m:
                         m = re.search(b'''(.*content=")(.*)(".*/>.*)''', line)
                     if m:
-                        line = m.group(1) + self.em.htmlescape(m.group(2)) + \
+                        line = m.group(1) + rclexecm.htmlescape(m.group(2)) + \
                                m.group(3)
 
                 # Recoll treats "Subject" as a "title" element
@@ -371,7 +272,7 @@ class PDFExtractor:
                 # We used to remove end-of-line hyphenation (and join
                 # lines), but but it's not clear that we should do
                 # this as pdftotext without the -layout option does it ?
-                line = self.em.htmlescape(line)
+                line = rclexecm.htmlescape(line)
 
             if re.search(b'<head>', line):
                 inheader = True
@@ -384,7 +285,7 @@ class PDFExtractor:
 
     def _metatag(self, nm, val):
         return b"<meta name=\"" + rclexecm.makebytes(nm) + b"\" content=\"" + \
-               self.em.htmlescape(rclexecm.makebytes(val)) + b"\">"
+               rclexecm.htmlescape(rclexecm.makebytes(val)) + b"\">"
 
     # metaheaders is a list of (nm, value) pairs
     def _injectmeta(self, html, metaheaders):
@@ -494,6 +395,79 @@ class PDFExtractor:
         else:
             return html
 
+    def maybemaketmpdir(self):
+        global tmpdir
+        if tmpdir:
+            if not tmpdir.vacuumdir():
+                self.em.rclog("openfile: vacuumdir %s failed" % tmpdir.getpath())
+                return False
+        else:
+            tmpdir = rclexecm.SafeTmpDir("rclpdf", self.em)
+            #self.em.rclog("Using temporary directory %s" % tmpdir.getpath())
+            if self.pdftk and re.match("/snap/", self.pdftk):
+                # We know this is Unix (Ubuntu actually). Check that tmpdir
+                # belongs to the user as snap commands can't use /tmp to share
+                # files. Don't generate an error as this only affects
+                # attachment extraction
+                ok = False
+                if "TMPDIR" in os.environ:
+                    st = os.stat(os.environ["TMPDIR"])
+                    if st.st_uid == os.getuid():
+                        ok = True
+                if not ok:
+                    self.em.rclog("pdftk is a snap command and needs TMPDIR to be owned by you")
+
+    def _process_annotations(self, html):
+        doc = Poppler.Document.new_from_file(
+            'file://%s' %
+            urllib.request.pathname2url(os.path.abspath(self.filename)), None)
+        n_pages = doc.get_n_pages()
+        all_annots = 0
+
+        # output format
+        f = 'P.: {0}, {1:10}, {2:10}: {3}'
+
+        # Array of annotations indexed by page number. The page number
+        # here is the physical one (evince -i), not a page label (evince
+        # -p). This may be different for some documents.
+        abypage = {}
+        for i in range(n_pages):
+            page = doc.get_page(i)
+            pnum = i+1
+            annot_mappings = page.get_annot_mapping ()
+            num_annots = len(annot_mappings)
+            for annot_mapping in annot_mappings:
+                atype = annot_mapping.annot.get_annot_type().value_name
+                if atype  != 'POPPLER_ANNOT_LINK':
+                    # Catch because we sometimes get None values
+                    try:
+                        atext = f.format(
+                            pnum,
+                            annot_mapping.annot.get_modified(),
+                            annot_mapping.annot.get_annot_type().value_nick,
+                            annot_mapping.annot.get_contents()) + "\n"
+                        if pnum in abypage:
+                            abypage[pnum] += atext
+                        else:
+                            abypage[pnum] = atext
+                    except:
+                        pass
+        #self.em.rclog("Annotations: %s" % abypage)
+        pagevec = html.split(b"\f")
+        html = b""
+        annotsfield = b""
+        pagenum = 1
+        for page in pagevec:
+            html += page
+            if pagenum in abypage:
+                html += abypage[pagenum].encode('utf-8')
+                annotsfield += abypage[pagenum].encode('utf-8') + b" - " 
+            html += b"\f"
+            pagenum += 1
+        if annotsfield:
+            self.em.setfield("pdfannot", annotsfield)
+        return html
+    
     def _selfdoc(self):
         '''Extract the text from the pdf doc (as opposed to attachment)'''
         self.em.setmimetype('text/html')
@@ -510,13 +484,20 @@ class PDFExtractor:
         html, isempty = self._fixhtml(html)
         #self.em.rclog("ISEMPTY: %d : data: \n%s" % (isempty, html))
 
-        if isempty and self.ocrpossible:
+        if isempty:
             self.config.setKeyDir(os.path.dirname(self.filename))
             s = self.config.getConfParam("pdfocr")
-            cf_doocr = rclexecm.configparamtrue(s)
-            file_doocr = os.path.isfile(os.path.join(self.confdir, "ocrpdf"))
-            if cf_doocr or file_doocr:
-                html = self.ocrpdf()
+            if rclexecm.configparamtrue(s):
+                try:
+                    cmd = [sys.executable, os.path.join(_execdir, "rclocr.py"), self.filename]
+                    global ocrproc
+                    ocrproc = subprocess.Popen(cmd, stdout=subprocess.PIPE)
+                    data, stderr = ocrproc.communicate()
+                    ocrproc = None
+                    html = _htmlprefix + rclexecm.htmlescape(data) + _htmlsuffix
+                except Exception as e:
+                    self.em.rclog("%s failed: %s" % (cmd, e))
+                    pass
 
         if self.extrameta:
             try:
@@ -525,17 +506,33 @@ class PDFExtractor:
                 self.em.rclog("Metadata extraction failed: %s %s" %
                               (err, traceback.format_exc()))
 
+        if havepopplerglib:
+            try:
+                html = self._process_annotations(html)
+            except Exception as err:
+                self.em.rclog("Annotation extraction failed: %s %s" %
+                              (err, traceback.format_exc()))
         return (True, html, "", eof)
 
 
-    def maybemaketmpdir(self):
-        global tmpdir
-        if tmpdir:
-            if not vacuumdir(tmpdir):
-                self.em.rclog("openfile: vacuumdir %s failed" % tmpdir)
-                return False
+    def extractone(self, ipath):
+        #self.em.rclog("extractone: [%s]" % ipath)
+        if not self.attextractdone:
+            if not self.extractAttach():
+                return (False, "", "", rclexecm.RclExecM.eofnow)
+        if type(ipath) != type(""):
+            ipath = ipath.decode('utf-8')
+        path = os.path.join(tmpdir.getpath(), ipath)
+        if os.path.isfile(path):
+            f = open(path, "rb")
+            docdata = f.read();
+            f.close()
+        if self.currentindex == len(self.attachlist) - 1:
+            eof = rclexecm.RclExecM.eofnext
         else:
-            tmpdir = tempfile.mkdtemp(prefix='rclmpdf')
+            eof = rclexecm.RclExecM.noteof
+        return (True, docdata, ipath, eof)
+
         
     ###### File type handler api, used by rclexecm ---------->
     def openfile(self, params):
@@ -543,7 +540,7 @@ class PDFExtractor:
             print("RECFILTERROR HELPERNOTFOUND pdftotext")
             sys.exit(1);
 
-        self.filename = rclexecm.subprocfile(params["filename:"])
+        self.filename = rclexecm.subprocfile(params["filename"])
 
         #self.em.rclog("openfile: [%s]" % self.filename)
         self.currentindex = -1
@@ -562,7 +559,7 @@ class PDFExtractor:
         return True
 
     def getipath(self, params):
-        ipath = params["ipath:"]
+        ipath = params["ipath"]
         ok, data, ipath, eof = self.extractone(ipath)
         return (ok, data, ipath, eof)
         
@@ -587,11 +584,14 @@ class PDFExtractor:
 
                 #self.em.rclog("getnext: returning ok for [%s]" % ipath)
                 return (ok, data, ipath, eof)
-            except:
+            except Exception as ex:
+                self.em.rclog("getnext: extractone failed for index %d: %s" %
+                                  (self.currentindex, ex))
                 return (False, "", "", rclexecm.RclExecM.eofnow)
 
 
 # Main program: create protocol handler and extractor and run them
+_execdir = os.path.dirname(sys.argv[0])
 proto = rclexecm.RclExecM()
 extract = PDFExtractor(proto)
 rclexecm.main(proto, extract)

@@ -16,5 +16,6 @@
   <file>images/recoll.png</file>
   <file>images/interro.png</file>
   <file>images/clock.png</file>
+  <file>images/menu.png</file>
  </qresource>
 </RCC>

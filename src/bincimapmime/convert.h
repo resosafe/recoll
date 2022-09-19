@@ -93,25 +93,25 @@ namespace Binc {
     const char hexchars[] = "0123456789abcdef";
     std::string tmp;
     for (std::string::const_iterator i = s.begin();
-	 i != s.end() && i + 1 != s.end(); i += 2) {
+     i != s.end() && i + 1 != s.end(); i += 2) {
       ptrdiff_t n;
       unsigned char c = *i;
       unsigned char d = *(i + 1);
       
       const char *t;
       if ((t = strchr(hexchars, c)) == 0)
-	return "out of range";
+    return "out of range";
       n = (t - hexchars) << 4;
       
       
       if ((t = strchr(hexchars, d)) == 0)
-	return "out of range";
+    return "out of range";
       n += (t - hexchars);
       
       if (n >= 0 && n <= 255)
-	tmp += (char) n;
+    tmp += (char) n;
       else
-	return "out of range";
+    return "out of range";
     }
     
     return tmp;
@@ -123,7 +123,7 @@ namespace Binc {
     for (std::string::const_iterator i = s_in.begin(); i != s_in.end(); ++i) {
       unsigned char c = (unsigned char)*i;
       if (c <= 31 || c >= 127 || c == '\"' || c == '\\')
-	return "{" + toString((unsigned long)s_in.length()) + "}\r\n" + s_in;
+    return "{" + toString((unsigned long)s_in.length()) + "}\r\n" + s_in;
     }
     
     return "\"" + s_in + "\"";
@@ -161,7 +161,7 @@ namespace Binc {
 
   //----------------------------------------------------------------------
   inline const std::string unfold(const std::string &a, 
-				  bool removecomment = true)
+                  bool removecomment = true)
   {
     std::string tmp;
     bool incomment = false;
@@ -169,16 +169,16 @@ namespace Binc {
     for (std::string::const_iterator i = a.begin(); i != a.end(); ++i) {
       unsigned char c = (unsigned char)*i;
       if (!inquotes && removecomment) {
-	if (c == '(') {
-	  incomment = true; 
-	  tmp += " ";
-	} else if (c == ')') {
-	  incomment = false; 
-	} else if (c != 0x0a && c != 0x0d) {
-	  tmp += *i;
+    if (c == '(') {
+      incomment = true; 
+      tmp += " ";
+    } else if (c == ')') {
+      incomment = false; 
+    } else if (c != 0x0a && c != 0x0d) {
+      tmp += *i;
         }
       } else if (c != 0x0a && c != 0x0d) {
-	tmp += *i;
+    tmp += *i;
       }
 
       if (!incomment) {
@@ -193,16 +193,16 @@ namespace Binc {
   
   //----------------------------------------------------------------------
   inline void split(const std::string &s_in, const std::string &delim, 
-	     std::vector<std::string> &dest, bool skipempty = true)
+         std::vector<std::string> &dest, bool skipempty = true)
   {
     std::string token;
     for (std::string::const_iterator i = s_in.begin(); i != s_in.end(); ++i) {
       if (delim.find(*i) != std::string::npos) {
-	if (!skipempty || token != "")
-	  dest.push_back(token);
-	token.clear();
+    if (!skipempty || token != "")
+      dest.push_back(token);
+    token.clear();
       } else
-	token += *i;
+    token += *i;
     }
 
     if (token != "")
@@ -211,7 +211,7 @@ namespace Binc {
 
   //----------------------------------------------------------------------
   inline void splitAddr(const std::string &s_in,
-			std::vector<std::string> &dest, bool skipempty = true)
+            std::vector<std::string> &dest, bool skipempty = true)
   {
     static const std::string delim = ",";
     std::string token;
@@ -221,11 +221,11 @@ namespace Binc {
       else if (!inquote && *i == '\"') inquote = true;
 
       if (!inquote && delim.find(*i) != std::string::npos) {
-	if (!skipempty || token != "")
-	  dest.push_back(token);
-	token.clear();
+    if (!skipempty || token != "")
+      dest.push_back(token);
+    token.clear();
       } else
-	token += *i;
+    token += *i;
     }
     if (token != "")
       dest.push_back(token);
@@ -240,7 +240,7 @@ namespace Binc {
       std::string a = s_in.substr(0, 5);
       uppercase(a);
       return a == "INBOX" ?
-	a + (s_in.length() > 5 ? s_in.substr(5) : std::string()) : s_in;
+    a + (s_in.length() > 5 ? s_in.substr(5) : std::string()) : s_in;
     }
     
     return s_in;
@@ -252,19 +252,19 @@ namespace Binc {
     std::string regex = "^";
     for (std::string::const_iterator i = s_in.begin(); i != s_in.end(); ++i) {
       if (*i == '.' || *i == '[' || *i == ']' || *i == '{' || *i == '}' ||
-	  *i == '(' || *i == ')' || *i == '^' || *i == '$' || *i == '?' ||
-	  *i == '+' || *i == '\\') {
-	regex += "\\";
-	regex += *i;
+      *i == '(' || *i == ')' || *i == '^' || *i == '$' || *i == '?' ||
+      *i == '+' || *i == '\\') {
+    regex += "\\";
+    regex += *i;
       } else if (*i == '*')
-	regex += ".*?";
+    regex += ".*?";
        else if (*i == '%') {
         regex += "(\\";
         regex += delimiter;
         regex += "){0,1}";
-	regex += "[^\\";
-	regex += delimiter;
-	regex += "]*?";
+    regex += "[^\\";
+    regex += delimiter;
+    regex += "]*?";
       } else regex += *i;
     }
     

@@ -29,17 +29,17 @@ bool rclionice(const string& clss, const string& cdata)
 {
     string ionicexe;
     if (!ExecCmd::which("ionice", ionicexe)) {
-	// ionice not found, bail out
-	LOGDEB0("rclionice: ionice not found\n" );
-	return false;
+        // ionice not found, bail out
+        LOGDEB0("rclionice: ionice not found\n");
+        return false;
     }
     vector<string> args;
     args.push_back("-c");
     args.push_back(clss);
 
     if (!cdata.empty()) {
-	args.push_back("-n");
-	args.push_back(cdata);
+        args.push_back("-n");
+        args.push_back(cdata);
     }
     
     char cpid[100];
@@ -51,9 +51,8 @@ bool rclionice(const string& clss, const string& cdata)
     int status = cmd.doexec(ionicexe, args);
 
     if (status) {
-	LOGERR("rclionice: failed, status 0x"  << (status) << "\n" );
-	return false;
+        LOGERR("rclionice: failed, status 0x" << status << "\n");
+        return false;
     }
     return true;
 }
-

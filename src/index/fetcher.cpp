@@ -35,17 +35,17 @@ std::unique_ptr<DocFetcher> docFetcherMake(RclConfig *config,
     string backend;
     idoc.getmeta(Rcl::Doc::keybcknd, &backend);
     if (backend.empty() || !backend.compare("FS")) {
-	return std::unique_ptr<DocFetcher>(new FSDocFetcher);
+        return std::unique_ptr<DocFetcher>(new FSDocFetcher);
 #ifndef DISABLE_WEB_INDEXER
     } else if (!backend.compare("BGL")) {
-	return std::unique_ptr<DocFetcher>(new WQDocFetcher);
+        return std::unique_ptr<DocFetcher>(new WQDocFetcher);
 #endif
     } else {
         std::unique_ptr<DocFetcher> f(exeDocFetcherMake(config, backend));
         if (!f) {
             LOGERR("DocFetcherFactory: unknown backend [" << backend << "]\n");
         }
-	return f;
+        return f;
     }
 }
 

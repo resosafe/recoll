@@ -1,15 +1,32 @@
 #!/bin/sh
 
-if test ! -f shared.sh ; then
-    echo must be run in the top test directory
-    exit 1
-fi
+export TMPDIR=$HOME/tmp
 
-. shared.sh
+fatal()
+{
+    echo $*;exit 1
+}
 
-if test ! x$reroot = x ; then
-    rerootResults
-fi
+rerootResults()
+{
+    savedcd=`pwd`
+    dirs=`ls -F | grep / | grep -v CVS | grep -v non-auto | grep -v config`
+    for dir in $dirs ; do
+    	cd $dir
+	resfile=`basename $dir`.txt
+	sed -i.bak \
+	  -e "s!file:///.*/testrecoll/!file://$RECOLL_TESTDATA/!g" \
+	  $resfile
+    	cd ..
+    done
+
+    cd $RECOLL_CONFDIR
+    sed -i.bak \
+  -e "s!/.*/testrecoll/!$RECOLL_TESTDATA/!g" \
+      mimemap
+
+    cd $savedcd
+}
 
 iscmd()
 {
@@ -40,32 +57,66 @@ checkcmds()
     return $result
 }
 
-checkcmds recollq recollindex pxattr xadump || exit 1
+makeindex() {
+  echo "Zeroing Index" 
+  rm -rf $RECOLL_CONFDIR/xapiandb $RECOLL_CONFDIR/aspdict.*.rws
+  rm -rf $RECOLL_CONFDIR/ocrcache
+  echo "Indexing" 
+  recollindex -c $RECOLL_CONFDIR -z
+}
+
+if test ! -f shared.sh ; then
+    fatal must be run in the top test directory
+fi
+checkcmds recollq recollindex pxattr xadump pdftk || exit 1
+
+iscmd pdftk
+pdftk=$iscmdresult
+tmpdir=${RECOLL_TMPDIR:-$TMPDIR}
+case "$pdftk" in
+    /snap/*)
+        if test X$tmpdir = X -o "$tmpdir" = /tmp;then
+            fatal pdftk as snap need '$TMPDIR' to belong to you
+        fi
+    ;;
+esac
+
+if test ! x$reroot = x ; then
+    rerootResults
+fi
+
+# Temp directory for test results
+# Make sure this is computed in the same way as in shared.sh
+toptmp=${TMPDIR:-/tmp}/recolltsttmp
+
+test X"$toptmp" = X && fatal "empty toptmp??"
+test X"$toptmp" = X/ && fatal "toptmp == / ??"
+if test -d "$toptmp" ; then
+   rm -rf $toptmp/*
+fi
+mkdir -p $toptmp || fatal cant create temp dir $toptmp
 
 # Unset DISPLAY because xdg-mime may be affected by the desktop
 # environment on the X server
 unset DISPLAY
 export LC_ALL=en_US.UTF-8
 
-makeindex() {
-  echo "Zeroing Index" 
-  rm -rf $RECOLL_CONFDIR/xapiandb $RECOLL_CONFDIR/aspdict.*.rws
-  echo "Indexing" 
-  recollindex -c $RECOLL_CONFDIR -z
-}
+RECOLL_TESTS=`pwd`
+RECOLL_TESTDATA=${RECOLL_TESTDATA:-/home/dockes/projets/fulltext/testrecoll}
+export RECOLL_CONFDIR=$RECOLL_TESTS/config/
+# Some test need to access RECOLL_TESTCACHEDIR
+export RECOLL_TESTCACHEDIR=$toptmp
+
+sed -e "s,@RECOLL_TESTS@,$RECOLL_TESTS,g" \
+    -e "s,@RECOLL_TESTDATA@,$RECOLL_TESTDATA,g" \
+    -e "s,@RECOLL_TESTCACHEDIR@,$RECOLL_TESTCACHEDIR,g" \
+    < $RECOLL_CONFDIR/recoll.conf.in \
+    > $RECOLL_CONFDIR/recoll.conf || exit 1
 
 if test x$noindex = x ; then
   makeindex
 fi
 
-# Yes, we could/should use the $toptmp from shared.sh here, but what if
-# this is unset ?
-toptmp=${TMPDIR:-/tmp}/recolltsttmp
-if test -d "$toptmp" ; then
-   rm -rf $toptmp/*
-else
-    mkdir $toptmp || fatal cant create temp dir $toptmp
-fi
 
 dirs=`ls -F | grep / | grep -v CVS | grep -v non-auto | grep -v config`
 
@@ -73,7 +124,7 @@ echo
 echo "Running query tests:"
 
 for dir in $dirs ; do
-    cd $dir && $ECHON "$dir "
+    cd $dir && echo -n "$dir "
     sh `basename $dir`.sh
     cd ..
 done

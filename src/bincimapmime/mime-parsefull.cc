@@ -23,6 +23,8 @@
  *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *  --------------------------------------------------------------------
  */
+#include "autoconfig.h"
+
 #include <string.h>
 #include <ctype.h>
 #include <stdio.h>
@@ -34,14 +36,13 @@
 #include <exception>
 #include <iostream>
 
-#ifndef NO_NAMESPACES
-using namespace ::std;
-#endif /* NO_NAMESPACES */
-
 #include "mime.h"
 #include "mime-utils.h"
 #include "mime-inputsource.h"
 #include "convert.h"
+
+using namespace std;
+
 
 // #define MPF
 #ifdef MPF
@@ -111,7 +112,7 @@ void Binc::MimeDocument::parseFull(istream& s)
 
 //------------------------------------------------------------------------
 bool Binc::MimePart::parseOneHeaderLine(Binc::Header *header, 
-					unsigned int *nlines)
+                    unsigned int *nlines)
 {
   using namespace ::Binc;
   char c;
@@ -126,7 +127,7 @@ bool Binc::MimePart::parseOneHeaderLine(Binc::Header *header,
     // start of the body.
     if (c == '\r') {
       for (int i = 0; i < (int) name.length() + 1; ++i)
-	mimeSource->ungetChar();
+    mimeSource->ungetChar();
       return false;
     }
 
@@ -166,17 +167,17 @@ bool Binc::MimePart::parseOneHeaderLine(Binc::Header *header,
     // key,value pair.
     if (cqueue[2] == '\n' && c != ' ' && c != '\t') {
       if (content.length() > 2)
-	content.resize(content.length() - 2);
+    content.resize(content.length() - 2);
 
       trim(content);
       header->add(name, content);
 
       if (c != '\r') {
-	mimeSource->ungetChar();
-	if (c == '\n') --*nlines;
-	return true;
+    mimeSource->ungetChar();
+    if (c == '\n') --*nlines;
+    return true;
       }
-	
+    
       mimeSource->getChar(&c);
       return false;
     }
@@ -202,8 +203,8 @@ void Binc::MimePart::parseHeader(Binc::Header *header, unsigned int *nlines)
 
 //------------------------------------------------------------------------
 void Binc::MimePart::analyzeHeader(Binc::Header *header, bool *multipart,
-				   bool *messagerfc822, string *subtype,
-				   string *boundary)
+                   bool *messagerfc822, string *subtype,
+                   string *boundary)
 {
   using namespace ::Binc;
 
@@ -227,43 +228,43 @@ void Binc::MimePart::analyzeHeader(Binc::Header *header, bool *multipart,
       lowercase(key);
 
       if (key == "multipart") {
-	*multipart = true;
-	lowercase(value);
-	*subtype = value;
+    *multipart = true;
+    lowercase(value);
+    *subtype = value;
       } else if (key == "message") {
-	lowercase(value);
-	if (value == "rfc822")
-	  *messagerfc822 = true;
+    lowercase(value);
+    if (value == "rfc822")
+      *messagerfc822 = true;
       }
     }
 
     for (vector<string>::const_iterator i = types.begin();
-	 i != types.end(); ++i) {
+     i != types.end(); ++i) {
       string element = *i;
       trim(element);
 
       if (element.find("=") != string::npos) {
-	string::size_type pos = element.find('=');
-	string key = element.substr(0, pos);
-	string value = element.substr(pos + 1);
-	
-	lowercase(key);
-	trim(key);
+    string::size_type pos = element.find('=');
+    string key = element.substr(0, pos);
+    string value = element.substr(pos + 1);
+    
+    lowercase(key);
+    trim(key);
 
-	if (key == "boundary") {
-	  trim(value, " \"");
-	  *boundary = value;
-	}
+    if (key == "boundary") {
+      trim(value, " \"");
+      *boundary = value;
+    }
       }
     }
   }
 }
 
 void Binc::MimePart::parseMessageRFC822(vector<Binc::MimePart> *members,
-					bool *foundendofpart,
-					unsigned int *bodylength,
-					unsigned int *nbodylines,
-					const string &toboundary)
+                    bool *foundendofpart,
+                    unsigned int *bodylength,
+                    unsigned int *nbodylines,
+                    const string &toboundary)
 {
   using namespace ::Binc;
 
@@ -300,7 +301,7 @@ void Binc::MimePart::parseMessageRFC822(vector<Binc::MimePart> *members,
 }
 
 bool Binc::MimePart::skipUntilBoundary(const string &delimiter,
-				       unsigned int *nlines, bool *eof)
+                       unsigned int *nlines, bool *eof)
 {
   string::size_type endpos = delimiter.length();
   char *delimiterqueue = 0;
@@ -336,7 +337,7 @@ bool Binc::MimePart::skipUntilBoundary(const string &delimiter,
       delimiterpos = 0;
       
     if (compareStringToQueue(delimiterStr, delimiterqueue,
-			     delimiterpos, int(endpos))) {
+                 delimiterpos, int(endpos))) {
       foundBoundary = true;
       break;
     }
@@ -353,9 +354,9 @@ bool Binc::MimePart::skipUntilBoundary(const string &delimiter,
 // and need to check if it is immediately followed by another boundary 
 // (in this case, we give up our final CRLF in its favour)
 inline void Binc::MimePart::postBoundaryProcessing(bool *eof,
-						   unsigned int *nlines,
-						   int *boundarysize,
-						   bool *foundendofpart)
+                           unsigned int *nlines,
+                           int *boundarysize,
+                           bool *foundendofpart)
 {
     // Read two more characters. This may be CRLF, it may be "--" and
     // it may be any other two characters.
@@ -380,16 +381,16 @@ inline void Binc::MimePart::postBoundaryProcessing(bool *eof,
     if (a == '-' && b == '-') {
       *foundendofpart = true;
       *boundarysize += 2;
-	
+    
       if (!mimeSource->getChar(&a))
-	*eof = true;
+    *eof = true;
       if (a == '\n')
-	++*nlines; 
-	
+    ++*nlines; 
+    
       if (!mimeSource->getChar(&b))
-	*eof = true;
+    *eof = true;
       if (b == '\n')
-	++*nlines;
+    ++*nlines;
     }
 
     // If the boundary is followed by CRLF, we need to handle the
@@ -399,19 +400,19 @@ inline void Binc::MimePart::postBoundaryProcessing(bool *eof,
     if (a == '\r' && b == '\n') {
       // Get 2 more
       if (!mimeSource->getChar(&a) || !mimeSource->getChar(&b)) {
-	*eof = true; 
+    *eof = true; 
       } else if (a == '-' && b == '-') {
-	MPFDEB((stderr, "BINC: consecutive delimiters, giving up CRLF\n"));
-	mimeSource->ungetChar();
-	mimeSource->ungetChar();
-	mimeSource->ungetChar();
-	mimeSource->ungetChar();
+    MPFDEB((stderr, "BINC: consecutive delimiters, giving up CRLF\n"));
+    mimeSource->ungetChar();
+    mimeSource->ungetChar();
+    mimeSource->ungetChar();
+    mimeSource->ungetChar();
       } else {
-	// We unget the 2 chars, and keep our crlf (increasing our own size)
-	MPFDEB((stderr, "BINC: keeping my CRLF\n"));
-	mimeSource->ungetChar();
-	mimeSource->ungetChar();
-	*boundarysize += 2;
+    // We unget the 2 chars, and keep our crlf (increasing our own size)
+    MPFDEB((stderr, "BINC: keeping my CRLF\n"));
+    mimeSource->ungetChar();
+    mimeSource->ungetChar();
+    *boundarysize += 2;
       }
 
     } else {
@@ -423,17 +424,17 @@ inline void Binc::MimePart::postBoundaryProcessing(bool *eof,
 }
 
 void Binc::MimePart::parseMultipart(const string &boundary,
-				    const string &toboundary,
-				    bool *eof,
-				    unsigned int *nlines,
-				    int *boundarysize,
-				    bool *foundendofpart,
-				    unsigned int *bodylength,
-				    vector<Binc::MimePart> *members)
+                    const string &toboundary,
+                    bool *eof,
+                    unsigned int *nlines,
+                    int *boundarysize,
+                    bool *foundendofpart,
+                    unsigned int *bodylength,
+                    vector<Binc::MimePart> *members)
 {
   MPFDEB((stderr, "BINC: ParseMultipart: boundary [%s], toboundary[%s]\n", 
-	  boundary.c_str(),
-	  toboundary.c_str()));
+      boundary.c_str(),
+      toboundary.c_str()));
   using namespace ::Binc;
   unsigned int bodystartoffsetcrlf = mimeSource->getOffset();
 
@@ -461,8 +462,8 @@ void Binc::MimePart::parseMultipart(const string &boundary,
       // final boundary.
       int bsize = 0;
       if (m.doParseFull(mimeSource, boundary, bsize)) {
-	quit = true;
-	*boundarysize = bsize;
+    quit = true;
+    *boundarysize = bsize;
       }
 
       members->push_back(m);
@@ -501,14 +502,14 @@ void Binc::MimePart::parseMultipart(const string &boundary,
 }
 
 void Binc::MimePart::parseSinglePart(const string &toboundary,
-			    int *boundarysize,
-			    unsigned int *nbodylines,
-			    unsigned int *nlines,
-			    bool *eof, bool *foundendofpart,
-			    unsigned int *bodylength)
+                int *boundarysize,
+                unsigned int *nbodylines,
+                unsigned int *nlines,
+                bool *eof, bool *foundendofpart,
+                unsigned int *bodylength)
 {
   MPFDEB((stderr, "BINC: parseSinglePart, boundary [%s]\n", 
-	  toboundary.c_str()));
+      toboundary.c_str()));
   using namespace ::Binc;
   unsigned int bodystartoffsetcrlf = mimeSource->getOffset();
 
@@ -549,7 +550,7 @@ void Binc::MimePart::parseSinglePart(const string &toboundary,
       boundarypos = 0;
       
     if (compareStringToQueue(_toboundaryStr, boundaryqueue,
-			     boundarypos, int(endpos))) {
+                 boundarypos, int(endpos))) {
       *boundarysize = static_cast<int>(_toboundary.length());
       break;
     }
@@ -579,12 +580,12 @@ void Binc::MimePart::parseSinglePart(const string &toboundary,
     *bodylength = 0;
   }
   MPFDEB((stderr, "BINC: parseSimple ret: bodylength %d, boundarysize %d\n",
-	  *bodylength, *boundarysize));
+      *bodylength, *boundarysize));
 }
 
 //------------------------------------------------------------------------
 int Binc::MimePart::doParseFull(MimeInputSource *ms, const string &toboundary,
-				int &boundarysize)
+                int &boundarysize)
 {
   MPFDEB((stderr, "BINC: doParsefull, toboundary[%s]\n", toboundary.c_str()));
   mimeSource = ms;
@@ -609,15 +610,15 @@ int Binc::MimePart::doParseFull(MimeInputSource *ms, const string &toboundary,
 
   if (messagerfc822) {
     parseMessageRFC822(&members, &foundendofpart, &bodylength,
-		       &nbodylines, toboundary);
+               &nbodylines, toboundary);
 
   } else if (multipart) {
     parseMultipart(boundary, toboundary, &eof, &nlines, &boundarysize,
-		   &foundendofpart, &bodylength,
-		   &members);
+           &foundendofpart, &bodylength,
+           &members);
   } else {
     parseSinglePart(toboundary, &boundarysize, &nbodylines, &nlines,
-		    &eof, &foundendofpart, &bodylength);
+            &eof, &foundendofpart, &bodylength);
   }
 
   MPFDEB((stderr, "BINC: doParsefull ret, toboundary[%s]\n", toboundary.c_str()));

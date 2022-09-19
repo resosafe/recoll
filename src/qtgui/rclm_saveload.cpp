@@ -30,6 +30,7 @@
 #include "xmltosd.h"
 #include "searchdata.h"
 #include "copyfile.h"
+#include "pathut.h"
 
 using namespace std;
 using namespace Rcl;
@@ -42,9 +43,9 @@ static QString prevDir()
     string defpath = path_cat(theconfig->getConfDir(), "saved_queries");
     if (prevdir.isEmpty()) {
         if (!path_exists(defpath)) {
-            mkdir(defpath.c_str(), 0700);
+            path_makepath(defpath, 0700);
         }
-        return QString::fromLocal8Bit(defpath.c_str());
+        return path2qs(defpath);
     } else {
         return prevdir;
     }
@@ -86,7 +87,7 @@ void RclMain::saveLastQuery()
         return;
     }
     
-    string tofile((const char *)s.toLocal8Bit());
+    string tofile(qs2path(s));
 
     // Work around qt 5.9-11 bug (linux at least): defaultSuffix is
     // not added to saved file name
@@ -113,7 +114,7 @@ void RclMain::loadSavedQuery()
     if (s.isEmpty())
         return;
 
-    string fromfile((const char *)s.toLocal8Bit());
+    string fromfile(qs2path(s));
     string xml, reason;
     if (!file_to_string(fromfile, xml, &reason)) {
         QMessageBox::warning(this, tr("Read failed"), 

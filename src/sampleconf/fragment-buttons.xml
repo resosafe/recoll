@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Example file for configuring the "Query fragments" window.
+     Each <buttons> or <radiobuttons> element defines a lines of buttons
+     Each active button adds a query language fragment to the current query
+     before execution. 
+-->
+
+<fragbuttons version="1.0">
+
+  <radiobuttons>
+    <!-- Actually useful: toggle WEB queue results inclusion -->
+    <fragbutton>
+      <label>Include Web Results</label>
+      <frag></frag>
+    </fragbutton>
+
+    <fragbutton>
+      <label>Exclude Web Results</label>
+      <frag>-rclbes:BGL</frag>
+    </fragbutton>
+
+    <fragbutton>
+      <label>Only Web Results</label>
+      <frag>rclbes:BGL</frag>
+    </fragbutton>
+
+  </radiobuttons>
+
+  <buttons>
+
+    <fragbutton>
+      <label>Example: Year 2010</label>
+      <frag>date:2010-01-01/2010-12-31</frag>
+    </fragbutton>
+
+    <fragbutton>
+      <label>Example: c++ files</label>
+      <frag>ext:cpp OR ext:cxx</frag>
+    </fragbutton>
+
+    <fragbutton>
+      <label>Example: My Great Directory</label>
+      <frag>dir:/my/great/directory</frag>
+    </fragbutton>
+
+  </buttons>
+
+  <buttons>
+
+    <fragbutton>
+      <label>Check the manual (Query Fragments Window section) for explanations</label>
+      <frag></frag>
+    </fragbutton>
+
+  </buttons>
+
+</fragbuttons>

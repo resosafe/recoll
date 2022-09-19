@@ -53,8 +53,9 @@ public:
 };
 static PlainToRichHtReslist g_hiliter;
 
-ResListPager::ResListPager(int pagesize) 
+ResListPager::ResListPager(int pagesize, bool alwaysSnippets) 
     : m_pagesize(pagesize),
+      m_alwaysSnippets(alwaysSnippets),
       m_newpagesize(pagesize),
       m_resultsInCurrentPage(0),
       m_winfirst(-1),
@@ -147,6 +148,8 @@ void ResListPager::resultPageFor(int docnum)
     m_respage = npage;
 }
 
+static const SimpleRegexp pagenumre("(^ *\\[[pP]\\.* [0-9]+])", 0);
+
 void ResListPager::displayDoc(RclConfig *config, int i, Rcl::Doc& doc, 
                               const HighlightData& hdata, const string& sh)
 {
@@ -195,13 +198,9 @@ void ResListPager::displayDoc(RclConfig *config, int i, Rcl::Doc& doc,
     // Document date: either doc or file modification times
     string datebuf;
     if (!doc.dmtime.empty() || !doc.fmtime.empty()) {
-        char cdate[100];
-        cdate[0] = 0;
-        time_t mtime = doc.dmtime.empty() ?
-            atoll(doc.fmtime.c_str()) : atoll(doc.dmtime.c_str());
+        time_t mtime = doc.dmtime.empty() ? atoll(doc.fmtime.c_str()) : atoll(doc.dmtime.c_str());
         struct tm *tm = localtime(&mtime);
-        strftime(cdate, 99, dateFormat().c_str(), tm);
-        transcode(cdate, datebuf, RclConfig::getLocaleCharset(), "UTF-8");
+        datebuf = utf8datestring(dateFormat(), tm);
     }
 
     // Size information. We print both doc and file if they differ a lot
@@ -222,23 +221,26 @@ void ResListPager::displayDoc(RclConfig *config, int i, Rcl::Doc& doc,
     string richabst;
     bool needabstract = parFormat().find("%A") != string::npos;
     if (needabstract && m_docSource) {
-        vector<string> vabs;
-        m_docSource->getAbstract(doc, vabs);
+        vector<string> snippets;
+        m_docSource->getAbstract(doc, snippets);
         m_hiliter->set_inputhtml(false);
 
-        for (vector<string>::const_iterator it = vabs.begin();
-             it != vabs.end(); it++) {
-            if (!it->empty()) {
+        for (const auto& snippet : snippets) {
+            if (!snippet.empty()) {
                 // No need to call escapeHtml(), plaintorich handles it
                 list<string> lr;
-                // There may be data like page numbers before the snippet text.
-                // will be in brackets.
-                string::size_type bckt = it->find("]");
-                if (bckt == string::npos) {
-                    m_hiliter->plaintorich(*it, lr, hdata);
+                // There may be data like page numbers before the snippet text.  will be in
+                // brackets.
+                if (pagenumre.simpleMatch(snippet)) {
+                    string pagenum = pagenumre.getMatch(snippet, 0);
+                    if (!pagenum.empty()) {
+                        m_hiliter->plaintorich(snippet.substr(pagenum.size()), lr, hdata);
+                        lr.front() = snippet.substr(0, pagenum.size()) + lr.front();
+                    } else {
+                        m_hiliter->plaintorich(snippet, lr, hdata);
+                    }
                 } else {
-                    m_hiliter->plaintorich(it->substr(bckt), lr, hdata);
-                    lr.front() = it->substr(0, bckt) + lr.front();
+                    m_hiliter->plaintorich(snippet, lr, hdata);
                 }
                 richabst += lr.front();
                 richabst += absSep();
@@ -257,7 +259,7 @@ void ResListPager::displayDoc(RclConfig *config, int i, Rcl::Doc& doc,
                  << trans("Open") << "</a>";
     }
     ostringstream snipsbuf;
-    if (doc.haspages) {
+    if (m_alwaysSnippets || doc.haspages) {
         snipsbuf << "<a href=\"" <<linkPrefix()<<"A" << docnumforlinks << "\">" 
                  << trans("Snippets") << "</a>&nbsp;&nbsp;";
         linksbuf << "&nbsp;&nbsp;" << snipsbuf.str();
@@ -312,14 +314,8 @@ void ResListPager::displayDoc(RclConfig *config, int i, Rcl::Doc& doc,
 
     string formatted;
     pcSubst(parFormat(), formatted, subs);
-    chunk << formatted;
-
-    chunk << "</p>" << endl;
-    // This was to force qt 4.x to clear the margins (which it should do
-    // anyway because of the paragraph's style), but we finally took
-    // the table approach for 1.15 for now (in guiutils.cpp)
-//      chunk << "<br style='clear:both;height:0;line-height:0;'>" << endl;
-
+    chunk << formatted << "</p>\n";
+    
     LOGDEB2("Chunk: [" << chunk.rdbuf()->str() << "]\n");
     append(chunk.rdbuf()->str(), i, doc);
 }
@@ -356,11 +352,11 @@ void ResListPager::displayPage(RclConfig *config)
     // gets confused. Hence the use of the 'chunk' text
     // accumulator
     // Also note that there can be results beyond the estimated resCnt.
-    chunk << "<html><head>" << endl
+    chunk << "<html><head>\n"
           << "<meta http-equiv=\"content-type\""
-          << " content=\"text/html; charset=utf-8\">" << endl
+          << " content=\"text/html; charset=utf-8\">\n"
           << headerContent()
-          << "</head><body>" << endl
+          << "</head><body " << bodyAttrs() << ">\n"
           << pageTop()
           << "<p><span style=\"font-size:110%;\"><b>"
           << m_docSource->title()
@@ -370,8 +366,7 @@ void ResListPager::displayPage(RclConfig *config)
         chunk << trans("<p><b>No results found</b><br>");
         string reason = m_docSource->getReason();
         if (!reason.empty()) {
-            chunk << "<blockquote>" << escapeHtml(reason) << 
-                "</blockquote></p>";
+            chunk << "<blockquote>" << escapeHtml(reason) << "</blockquote></p>";
         } else {
             HighlightData hldata;
             m_docSource->getTerms(hldata);
@@ -381,13 +376,10 @@ void ResListPager::displayPage(RclConfig *config)
                 suggest(uterms, spellings);
                 if (!spellings.empty()) {
                     if (o_index_stripchars) {
-                        chunk << 
-                            trans("<p><i>Alternate spellings (accents suppressed): </i>")
+                        chunk << trans("<p><i>Alternate spellings (accents suppressed): </i>")
                               << "<br /><blockquote>";
                     } else {
-                        chunk << 
-                            trans("<p><i>Alternate spellings: </i>")
-                              << "<br /><blockquote>";
+                        chunk << trans("<p><i>Alternate spellings: </i>") << "<br /><blockquote>";
                     
                     }
 
@@ -429,7 +421,7 @@ void ResListPager::displayPage(RclConfig *config)
                   << "</b></a>";
         }
     }
-    chunk << "</p>" << endl;
+    chunk << "</p>\n";
 
     append(chunk.rdbuf()->str());
     chunk.rdbuf()->str("");
@@ -461,10 +453,38 @@ void ResListPager::displayPage(RclConfig *config)
                   << "</b></a>";
         }
     }
-    chunk << "</p>" << endl;
-    chunk << "</body></html>" << endl;
+    chunk << "</p>\n";
+    chunk << "</body></html>\n";
     append(chunk.rdbuf()->str());
+    flush();
 }
+
+void ResListPager::displaySingleDoc(
+    RclConfig *config, int idx, Rcl::Doc& doc, const HighlightData& hdata)
+{
+    ostringstream chunk;
+
+    // Header
+    // Note: have to append text in chunks that make sense
+    // html-wise. If we break things up too much, the editor
+    // gets confused.
+    string bdtag("<body ");
+    bdtag += bodyAttrs();
+    rtrimstring(bdtag, " ");
+    bdtag += ">";
+    chunk << "<html><head>\n"
+          << "<meta http-equiv=\"content-type\""
+          << " content=\"text/html; charset=utf-8\">\n"
+          << headerContent()
+          << "</head>\n" << bdtag << "\n";
+    append(chunk.rdbuf()->str());
+    // Document
+    displayDoc(config, idx, doc, hdata, string());
+    // Footer 
+    append("</body></html>\n");
+    flush();
+}
+
 
 // Default implementations for things that should be implemented by 
 // specializations
@@ -480,9 +500,29 @@ string ResListPager::prevUrl()
 
 string ResListPager::iconUrl(RclConfig *config, Rcl::Doc& doc)
 {
+    // If this is a top level doc, check for a thumbnail image
+    if (doc.ipath.empty()) {
+        vector<Rcl::Doc> docs;
+        docs.push_back(doc);
+        vector<string> paths;
+        Rcl::docsToPaths(docs, paths);
+        if (!paths.empty()) {
+            string path;
+            LOGDEB2("ResList::iconUrl: source path [" << paths[0] << "]\n");
+            if (thumbPathForUrl(cstr_fileu + paths[0], 128, path)) {
+                LOGDEB2("ResList::iconUrl: icon path [" << path << "]\n");
+                return cstr_fileu + path;
+            } else {
+                LOGDEB2("ResList::iconUrl: no icon: path [" << path << "]\n");
+            }
+        } else {
+            LOGDEB("ResList::iconUrl: docsToPaths failed\n");
+        }
+    }
+
+    // No thumbnail, look for the MIME type icon.
     string apptag;
     doc.getmeta(Rcl::Doc::keyapptg, &apptag);
-
     return path_pathtofileurl(config->getMimeIconPath(doc.mimetype, apptag));
 }
 

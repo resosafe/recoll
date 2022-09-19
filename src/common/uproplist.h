@@ -64,13 +64,13 @@ static const unsigned unipuncblocks[] = {
     0x2600, 0x26FF,
     // Dingbats
     0x2700, 0x27BF,
-    // Miscellaneous Mathematical Symbols-A 	
+    // Miscellaneous Mathematical Symbols-A     
     0x27C0, 0x27EF,
     // Supplemental Arrows-A
     0x27F0, 0x27FF,
     // Supplemental Arrows-B
     0x2900, 0x297F,
-    // Miscellaneous Mathematical Symbols-B 	
+    // Miscellaneous Mathematical Symbols-B     
     0x2980,  0x29FF,
     // Supplemental Mathematical Operators
     0x2A00, 0x2AFF,
@@ -170,7 +170,7 @@ static const unsigned int uniskip[] = {
     0x200C, /* ZERO WIDTH NON-JOINER */
     0x200D, /* ZERO WIDTH JOINER */
     0x2060, /* WORD JOINER . Actually this should not be ignored but used to 
-	     * prevent a word break... */
+         * prevent a word break... */
 };
 
 /* Things that would visibly break a block of text, rendering obvious the need

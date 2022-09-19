@@ -39,11 +39,11 @@ namespace Rcl {
 static inline void bufprefix(char *buf, char c)
 {
     if (o_index_stripchars) {
-	buf[0] = c;
+    buf[0] = c;
     } else {
-	buf[0] = ':'; 
-	buf[1] = c; 
-	buf[2] = ':';
+    buf[0] = ':'; 
+    buf[1] = c; 
+    buf[2] = ':';
     }
 }
 static inline int bpoffs() 
@@ -64,43 +64,43 @@ Xapian::Query date_range_filter(int y1, int m1, int d1, int y2, int m2, int d2)
     int d_last = monthdays(m1, y1);
     int d_end = d_last;
     if (y1 == y2 && m1 == m2 && d2 < d_last) {
-	d_end = d2;
+    d_end = d2;
     }
     if (d1 > 1 || d_end < d_last) {
-    	for ( ; d1 <= d_end ; d1++) {
-	    sprintf(buf + 6 + bpoffs(), "%02d", d1);
-	    v.push_back(Xapian::Query(buf));
-	}
+        for ( ; d1 <= d_end ; d1++) {
+        sprintf(buf + 6 + bpoffs(), "%02d", d1);
+        v.push_back(Xapian::Query(buf));
+    }
     } else {
-	bufprefix(buf, 'M');
-	v.push_back(Xapian::Query(buf));
+    bufprefix(buf, 'M');
+    v.push_back(Xapian::Query(buf));
     }
     
     if (y1 == y2 && m1 == m2) {
-	return Xapian::Query(Xapian::Query::OP_OR, v.begin(), v.end());
+    return Xapian::Query(Xapian::Query::OP_OR, v.begin(), v.end());
     }
 
     // Months till the end of first year
     int m_last = (y1 < y2) ? 12 : m2 - 1;
     bufprefix(buf, 'M');
     while (++m1 <= m_last) {
-	sprintf(buf + 4 + bpoffs(), "%02d", m1);
-	v.push_back(Xapian::Query(buf));
+    sprintf(buf + 4 + bpoffs(), "%02d", m1);
+    v.push_back(Xapian::Query(buf));
     }
 
     // Years inbetween and first months of the last year
     if (y1 < y2) {
         bufprefix(buf, 'Y');
-	while (++y1 < y2) {
-	    sprintf(buf + bpoffs(), "%04d", y1);
-	    v.push_back(Xapian::Query(buf));
-	}
-	bufprefix(buf, 'M');
-	sprintf(buf + bpoffs(), "%04d", y2);
-	for (m1 = 1; m1 < m2; m1++) {
-	    sprintf(buf + 4 + bpoffs(), "%02d", m1);
-	    v.push_back(Xapian::Query(buf));
-	}
+    while (++y1 < y2) {
+        sprintf(buf + bpoffs(), "%04d", y1);
+        v.push_back(Xapian::Query(buf));
+    }
+    bufprefix(buf, 'M');
+    sprintf(buf + bpoffs(), "%04d", y2);
+    for (m1 = 1; m1 < m2; m1++) {
+        sprintf(buf + 4 + bpoffs(), "%02d", m1);
+        v.push_back(Xapian::Query(buf));
+    }
     }
 
     // Last month
@@ -108,14 +108,14 @@ Xapian::Query date_range_filter(int y1, int m1, int d1, int y2, int m2, int d2)
 
     // Deal with any final partial month
     if (d2 < monthdays(m2, y2)) {
-	bufprefix(buf, 'D');
-    	for (d1 = 1 ; d1 <= d2; d1++) {
-	    sprintf(buf + 6 + bpoffs(), "%02d", d1);
-	    v.push_back(Xapian::Query(buf));
-	}
+    bufprefix(buf, 'D');
+        for (d1 = 1 ; d1 <= d2; d1++) {
+        sprintf(buf + 6 + bpoffs(), "%02d", d1);
+        v.push_back(Xapian::Query(buf));
+    }
     } else {
-	bufprefix(buf, 'M');
-	v.push_back(Xapian::Query(buf));
+    bufprefix(buf, 'M');
+    v.push_back(Xapian::Query(buf));
     }
 
     return Xapian::Query(Xapian::Query::OP_OR, v.begin(), v.end());

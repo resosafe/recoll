@@ -50,8 +50,8 @@ static InitTMAR initTM;
 
 // Mail headers we compare to:
 static const char *mailhs[] = {"From: ", "Received: ", "Message-Id: ", "To: ", 
-			       "Date: ", "Subject: ", "Status: ", 
-			       "In-Reply-To: "};
+                   "Date: ", "Subject: ", "Status: ", 
+                   "In-Reply-To: "};
 static const int mailhsl[] = {6, 10, 12, 4, 6, 9, 8, 13};
 static const int nmh = sizeof(mailhs) / sizeof(char *);
 
@@ -71,86 +71,86 @@ static string idFileInternal(istream& input, const char *fn)
     for (int loop = 1; loop < 200; loop++, lnum++) {
 
 #define LL 2*1024
-	char cline[LL+1];
-	cline[LL] = 0;
-	input.getline(cline, LL-1);
-	if (input.fail()) {
-	    if (input.bad()) {
-		LOGERR("idfile: error while reading ["  << (fn) << "]\n" );
-		return string();
-	    }
-	    // Must be eof ?
-	    break;
-	}
+    char cline[LL+1];
+    cline[LL] = 0;
+    input.getline(cline, LL-1);
+    if (input.fail()) {
+        if (input.bad()) {
+        LOGERR("idfile: error while reading ["  << (fn) << "]\n" );
+        return string();
+        }
+        // Must be eof ?
+        break;
+    }
 
-	// gcount includes the \n
-	std::streamsize ll = input.gcount() - 1; 
-	if (ll > 0)
-	    gotnonempty = true;
+    // gcount includes the \n
+    std::streamsize ll = input.gcount() - 1; 
+    if (ll > 0)
+        gotnonempty = true;
 
-	LOGDEB2("idfile: lnum "  << (lnum) << " ll "  << ((unsigned int)ll) << ": ["  << (cline) << "]\n" );
+    LOGDEB2("idfile: lnum "  << (lnum) << " ll "  << ((unsigned int)ll) << ": ["  << (cline) << "]\n" );
 
-	// Check for a few things that can't be found in a mail file,
-	// (optimization to get a quick negative)
+    // Check for a few things that can't be found in a mail file,
+    // (optimization to get a quick negative)
 
-	// Empty lines
-	if (ll <= 0) {
-	    // Accept a few empty lines at the beginning of the file,
-	    // otherwise this is the end of headers
-	    if (gotnonempty || lnum > 10) {
-		LOGDEB2("Got empty line\n" );
-		break;
-	    } else {
-		// Don't increment the line counter for initial empty lines.
-		lnum--;
-		continue;
-	    }
-	}
+    // Empty lines
+    if (ll <= 0) {
+        // Accept a few empty lines at the beginning of the file,
+        // otherwise this is the end of headers
+        if (gotnonempty || lnum > 10) {
+        LOGDEB2("Got empty line\n" );
+        break;
+        } else {
+        // Don't increment the line counter for initial empty lines.
+        lnum--;
+        continue;
+        }
+    }
 
-	// emacs vm can insert VERY long header lines.
-	if (ll > LL - 20) {
-	    LOGDEB2("idFile: Line too long\n" );
-	    return string();
-	}
+    // emacs vm can insert VERY long header lines.
+    if (ll > LL - 20) {
+        LOGDEB2("idFile: Line too long\n" );
+        return string();
+    }
 
-	// Check for mbox 'From ' line
-	if (lnum == 1 && !strncmp("From ", cline, 5)) {
-	    if (treat_mbox_as_rfc822 == -1) {
-		line1HasFrom = true;
-		LOGDEB2("idfile: line 1 has From_\n" );
-	    }
-	    continue;
-	} 
+    // Check for mbox 'From ' line
+    if (lnum == 1 && !strncmp("From ", cline, 5)) {
+        if (treat_mbox_as_rfc822 == -1) {
+        line1HasFrom = true;
+        LOGDEB2("idfile: line 1 has From_\n" );
+        }
+        continue;
+    } 
 
-	// Except for a possible first line with 'From ', lines must
-	// begin with whitespace or have a colon 
-	// (hope no one comes up with a longer header name !
-	// Take care to convert to unsigned char because ms ctype does
-	// like negative values
-	if (!isspace((unsigned char)cline[0])) {
-	    char *cp = strchr(cline, ':');
-	    if (cp == 0 || (cp - cline) > 70) {
-		LOGDEB2("idfile: can't be mail header line: ["  << (cline) << "]\n" );
-		break;
-	    }
-	}
+    // Except for a possible first line with 'From ', lines must
+    // begin with whitespace or have a colon 
+    // (hope no one comes up with a longer header name !
+    // Take care to convert to unsigned char because ms ctype does
+    // like negative values
+    if (!isspace((unsigned char)cline[0])) {
+        char *cp = strchr(cline, ':');
+        if (cp == 0 || (cp - cline) > 70) {
+        LOGDEB2("idfile: can't be mail header line: ["  << (cline) << "]\n" );
+        break;
+        }
+    }
 
-	// Compare to known headers
-	for (int i = 0; i < nmh; i++) {
-	    if (!strncasecmp(mailhs[i], cline, mailhsl[i])) {
-		//fprintf(stderr, "Got [%s]\n", mailhs[i]);
-		lookslikemail++;
-		break;
-	    }
-	}
-	if (lookslikemail >= wantnhead)
-	    break;
+    // Compare to known headers
+    for (int i = 0; i < nmh; i++) {
+        if (!strncasecmp(mailhs[i], cline, mailhsl[i])) {
+        //fprintf(stderr, "Got [%s]\n", mailhs[i]);
+        lookslikemail++;
+        break;
+        }
+    }
+    if (lookslikemail >= wantnhead)
+        break;
     }
     if (line1HasFrom)
-	lookslikemail++;
+    lookslikemail++;
 
     if (lookslikemail >= wantnhead)
-	return line1HasFrom ? string("text/x-mail") : string("message/rfc822");
+    return line1HasFrom ? string("text/x-mail") : string("message/rfc822");
 
     return string();
 }
@@ -160,8 +160,8 @@ string idFile(const char *fn)
     ifstream input;
     input.open(fn, ios::in);
     if (!input.is_open()) {
-	LOGERR("idFile: could not open ["  << (fn) << "]\n" );
-	return string();
+    LOGERR("idFile: could not open ["  << (fn) << "]\n" );
+    return string();
     }
     return idFileInternal(input, fn);
 }
@@ -191,14 +191,14 @@ using namespace std;
 int main(int argc, char **argv)
 {
     if (argc < 2) {
-	cerr << "Usage: idfile filename" << endl;
-	exit(1);
+    cerr << "Usage: idfile filename" << endl;
+    exit(1);
     }
     DebugLog::getdbl()->setloglevel(DEBDEB1);
     DebugLog::setfilename("stderr");
     for (int i = 1; i < argc; i++) {
-	string mime = idFile(argv[i]);
-	cout << argv[i] << " : " << mime << endl;
+    string mime = idFile(argv[i]);
+    cout << argv[i] << " : " << mime << endl;
     }
     exit(0);
 }

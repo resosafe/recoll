@@ -1,4 +1,4 @@
-/* Copyright (C) 2005 J.F.Dockes
+/* Copyright (C) 2005-2020 J.F.Dockes
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation; either version 2 of the License, or
@@ -14,11 +14,10 @@
  *   Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
-#ifndef TEST_FILEUDI
 #include "autoconfig.h"
 
-#include <stdio.h>
 #include <cstdlib>
+#include <iostream>
 
 #include "fileudi.h"
 #include "md5.h"
@@ -35,13 +34,13 @@ using std::string;
 void pathHash(const std::string &path, std::string &phash, unsigned int maxlen)
 {
     if (maxlen < HASHLEN) {
-	fprintf(stderr, "pathHash: internal error: requested len too small\n");
-	abort();
+        std::cerr << "pathHash: internal error: requested len too small\n";
+        abort();
     }
 
     if (path.length() <= maxlen) {
-	phash = path;
-	return;
+        phash = path;
+        return;
     }
 
     // Compute the md5
@@ -49,7 +48,7 @@ void pathHash(const std::string &path, std::string &phash, unsigned int maxlen)
     MD5_CTX ctx;
     MD5Init(&ctx);
     MD5Update(&ctx, (const unsigned char *)(path.c_str()+maxlen-HASHLEN), 
-	      path.length() - (maxlen - HASHLEN));
+              path.length() - (maxlen - HASHLEN));
     MD5Final(chash, &ctx);
 
     // Encode it to ascii. This shouldn't be strictly necessary as
@@ -69,7 +68,7 @@ void pathHash(const std::string &path, std::string &phash, unsigned int maxlen)
 // longer paths and uniquize them by appending a hashed value. This
 // is done to avoid xapian max term length limitations, not
 // to gain space (we gain very little even with very short maxlens
-// like 30). The xapian max key length seems to be around 250.
+// like 30). The xapian max key length is 245.
 // The value for PATHHASHLEN includes the length of the hash part.
 #define PATHHASHLEN 150
 
@@ -84,28 +83,3 @@ void make_udi(const string& fn, const string& ipath, string &udi)
     pathHash(s, udi, PATHHASHLEN);
     return;
 }
-
-#else // TEST_FILEUDI
-#include <stdio.h>
-#include <string>
-#include "fileudi.h"
-
-using namespace std;
-
-int main(int argc, char **argv)
-{
-    string path="/usr/lib/toto.cpp";
-    string ipath = "1:2:3:4:5:10";
-    string udi;
-    make_udi(path, ipath, udi);
-    printf("udi [%s]\n", udi.c_str());
-    path = "/some/much/too/looooooooooooooong/path/bla/bla/bla"
-	"/looooooooooooooong/path/bla/bla/bla/llllllllllllllllll"
-	"/looooooooooooooong/path/bla/bla/bla/llllllllllllllllll";
-    ipath = "1:2:3:4:5:10"
-	"1:2:3:4:5:10"
-	"1:2:3:4:5:10";
-    make_udi(path, ipath, udi);
-    printf("udi [%s]\n", udi.c_str());
-}
-#endif // TEST_FILEUDI

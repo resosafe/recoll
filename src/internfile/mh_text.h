@@ -35,6 +35,8 @@ public:
         : RecollFilter(cnf, id), m_paging(false), m_offs(0), m_pagesz(0) {
     }
     virtual ~MimeHandlerText() {}
+    MimeHandlerText(const MimeHandlerText&) = delete;
+    MimeHandlerText& operator=(const MimeHandlerText&) = delete;
 
     virtual bool is_data_input_ok(DataInput input) const override {
         if (input == DOCUMENT_FILE_NAME || input == DOCUMENT_STRING)
@@ -61,12 +63,16 @@ protected:
 private:
     bool   m_paging{false};
     std::string m_text;
+    std::string m_alltext;
     std::string m_fn;
-    int64_t  m_offs{0}; // Offset of next read in file if we're paging
+    int64_t m_offs{0}; // Offset of next read in file if we're paging
+    int64_t m_totlen{0};
     size_t m_pagesz{0};
+    int m_maxmbs{20};
     std::string m_charsetfromxattr; 
 
     bool readnext();
+    void getparams();
 };
 
 #endif /* _MH_TEXT_H_INCLUDED_ */

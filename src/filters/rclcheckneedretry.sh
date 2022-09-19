@@ -17,8 +17,14 @@
 # with retry set).
 #
 
+# If $HOME does not exist, there is nothing we can do (happens, for example when run as upmpdcli)
+if test ! -d "$HOME" ; then
+    exit 0
+fi
+
 # Bin dirs to be tested:
 bindirs="/usr/bin /usr/local/bin $HOME/bin /opt/*/bin"
+
 
 rfiledir=$HOME/.config/Recoll.org
 rfile=$rfiledir/needidxretrydate

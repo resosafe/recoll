@@ -1,4 +1,4 @@
-/* Copyright (C) 2006 J.F.Dockes
+/* Copyright (C) 2006-2022 J.F.Dockes
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation; either version 2 of the License, or
@@ -38,6 +38,8 @@
 #include <QModelIndex>
 #include <QTimer>
 #include <QListView>
+#include <QShortcut>
+#include <QRegularExpression>
 
 #include "log.h"
 #include "guiutils.h"
@@ -50,6 +52,7 @@
 #include "smallut.h"
 #include "rcldb.h"
 #include "recoll.h"
+#include "scbase.h"
 
 using namespace std;
 
@@ -76,8 +79,7 @@ int RclCompleterModel::rowCount(const QModelIndex &) const
 
 QVariant RclCompleterModel::data(const QModelIndex &index, int role) const
 {
-    LOGDEB1("RclCompleterModel::data: row: " << index.row() << " role " <<
-            role << "\n");
+    LOGDEB1("RclCompleterModel::data: row: " << index.row() << " role " << role << "\n");
     if (role != Qt::DisplayRole && role != Qt::EditRole &&
         role != Qt::DecorationRole) {
         return QVariant();
@@ -97,14 +99,12 @@ QVariant RclCompleterModel::data(const QModelIndex &index, int role) const
     }
 }
 
-void RclCompleterModel::onPartialWord(
-    int tp, const QString& _qtext, const QString& qpartial)
+void RclCompleterModel::onPartialWord(int tp, const QString& _qtext, const QString& qpartial)
 {
     string partial = qs2u8s(qpartial);
     QString qtext = _qtext.trimmed();
     bool onlyspace = qtext.isEmpty();
-    LOGDEB1("RclCompleterModel::onPartialWord: [" << partial << "] onlyspace "<<
-            onlyspace << "\n");
+    LOGDEB1("RclCompleterModel::onPartialWord: [" << partial << "] onlyspace "<< onlyspace << "\n");
     
     currentlist.clear();
     beginResetModel();
@@ -120,12 +120,10 @@ void RclCompleterModel::onPartialWord(
     // Look for matches between the full entry and the search history
     // (anywhere in the string)
     for (int i = 0; i < prefs.ssearchHistory.count(); i++) {
-        LOGDEB1("[" << qs2u8s(prefs.ssearchHistory[i]) << "] contains [" <<
-                qs2u8s(qtext) << "] ?\n");
+        LOGDEB1("[" << qs2u8s(prefs.ssearchHistory[i]) << "] contains ["<<qs2u8s(qtext) << "] ?\n");
         // If there is current text, only show a limited count of
         // matching entries, else show the full history.
-        if (onlyspace ||
-            prefs.ssearchHistory[i].contains(qtext, Qt::CaseInsensitive)) {
+        if (onlyspace || prefs.ssearchHistory[i].contains(qtext, Qt::CaseInsensitive)) {
             currentlist.push_back(prefs.ssearchHistory[i]);
             if (!onlyspace && ++histmatch >= maxhistmatch)
                 break;
@@ -133,16 +131,17 @@ void RclCompleterModel::onPartialWord(
     }
     firstfromindex = currentlist.size();
 
-    // Look for Recoll terms beginning with the partial word
-    if (!qpartial.trimmed().isEmpty()) {
+    // Look for Recoll terms beginning with the partial word. If the index is not stripped, only do
+    // this after the partial has at least 2 characters, else the syn/diac/case expansion is too
+    // expensive
+    int mintermsizeforexpand = o_index_stripchars ? 1 : 2;
+    if (qpartial.trimmed().size() >= mintermsizeforexpand) {
         Rcl::TermMatchResult rclmatches;
         if (!rcldb->termMatch(Rcl::Db::ET_WILD, string(),
                               partial + "*", rclmatches, maxdbtermmatch)) {
-            LOGDEB1("RclCompleterModel: termMatch failed: [" << partial + "*" <<
-                    "]\n");
+            LOGDEB1("RclCompleterModel: termMatch failed: [" << partial + "*" << "]\n");
         } else {
-            LOGDEB1("RclCompleterModel: termMatch cnt: " <<
-                    rclmatches.entries.size() << endl);
+            LOGDEB1("RclCompleterModel: termMatch cnt: " << rclmatches.entries.size() << endl);
         }
         for (const auto& entry : rclmatches.entries) {
             LOGDEB1("RclCompleterModel: match " << entry.term << endl);
@@ -169,8 +168,7 @@ void SSearch::init()
             this, SLOT(searchTextEdited(const QString&)));
     connect(clearqPB, SIGNAL(clicked()), queryText, SLOT(clear()));
     connect(searchPB, SIGNAL(clicked()), this, SLOT(startSimpleSearch()));
-    connect(searchTypCMB, SIGNAL(activated(int)), this,
-            SLOT(searchTypeChanged(int)));
+    connect(searchTypCMB, SIGNAL(activated(int)), this, SLOT(onSearchTypeChanged(int)));
 
     m_completermodel = new RclCompleterModel(this);
     m_completer = new QCompleter(m_completermodel, this);
@@ -187,6 +185,33 @@ void SSearch::init()
     connect(m_completer, SIGNAL(activated(const QString&)), this,
             SLOT(onCompletionActivated(const QString&)));
     connect(historyPB, SIGNAL(clicked()), this, SLOT(onHistoryClicked()));
+    setupButtons();
+    onNewShortcuts();
+    connect(&SCBase::scBase(), SIGNAL(shortcutsChanged()),this, SLOT(onNewShortcuts()));
+}
+
+void SSearch::onNewShortcuts()
+{
+    SETSHORTCUT(this, "ssearch:197", tr("Simple search"), tr("History"),
+                "Ctrl+H", m_histsc, onHistoryClicked);
+}
+
+void SSearch::setupButtons()
+{
+    if (prefs.noClearSearch) {
+        clearqPB->hide();
+        searchPB->hide();
+        queryText->setClearButtonEnabled(true);
+    } else {
+        clearqPB->show();
+        searchPB->show();
+        queryText->setClearButtonEnabled(false);
+    }
+    if (prefs.noSSTypCMB) {
+        searchTypCMB->hide();
+    } else {
+        searchTypCMB->show();
+    }
 }
 
 void SSearch::takeFocus()
@@ -228,7 +253,7 @@ void SSearch::onCompleterShown()
     }
     // Test if the completer text begins with the current input.
     QString text = data.toString();
-    if (!text.lastIndexOf(queryText->text()) == 0) {
+    if (text.lastIndexOf(queryText->text()) != 0) {
         return;
     }
     
@@ -250,7 +275,8 @@ void SSearch::onCompleterShown()
 // This is to avoid that if the user types Backspace or Del while we
 // have inserted / selected the current completion, the lineedit text
 // goes back to what it was, the completion fires, and it looks like
-// nothing was typed. So we disable the completion if a
+// nothing was typed. Disable the completionn after Del or Backspace
+// is typed.
 bool SSearch::eventFilter(QObject *target, QEvent *event)
 {
     Q_UNUSED(target);
@@ -262,16 +288,11 @@ bool SSearch::eventFilter(QObject *target, QEvent *event)
             " popup "<<m_completer->popup() << " lineedit "<<queryText<< "\n");
 
     QKeyEvent *keyEvent = (QKeyEvent *)event;
-    if (keyEvent->key() == Qt::Key_Backspace) {
-        LOGDEB("SSearch::eventFilter: backspace\n");
+    if (keyEvent->key() == Qt::Key_Backspace ||
+        keyEvent->key()==Qt::Key_Delete) {
+        LOGDEB("SSearch::eventFilter: backspace/delete\n");
         queryText->setCompleter(nullptr);
-        queryText->backspace();
-        return true;
-    } else if (keyEvent->key()==Qt::Key_Delete) {
-        LOGDEB("SSearch::eventFilter: delete\n");
-        queryText->setCompleter(nullptr);
-        queryText->del();
-        return true;
+        return false;
     } else {
         if (nullptr == queryText->completer()) {
             queryText->setCompleter(m_completer);
@@ -359,16 +380,20 @@ void SSearch::searchTextChanged(const QString& text)
     }
 }
 
-void SSearch::searchTypeChanged(int typ)
+void SSearch::onSearchTypeChanged(int typ)
 {
     LOGDEB1("Search type now " << typ << "\n");
+
+    // This may come from the menus or the combobox. Ensure that
+    // things are in sync. No loop because we are connected to
+    // combobox or menu activated(), not currentIndexChanged()
+    searchTypCMB->setCurrentIndex(typ);
+    
     // Adjust context help
     if (typ == SST_LANG) {
-        HelpClient::installMap((const char *)this->objectName().toUtf8(), 
-                               "RCL.SEARCH.LANG");
+        HelpClient::installMap((const char *)this->objectName().toUtf8(), "RCL.SEARCH.LANG");
     } else {
-        HelpClient::installMap((const char *)this->objectName().toUtf8(), 
-                               "RCL.SEARCH.GUI.SIMPLE");
+        HelpClient::installMap((const char *)this->objectName().toUtf8(), "RCL.SEARCH.GUI.SIMPLE");
     }
     // Also fix tooltips
     switch (typ) {
@@ -420,11 +445,14 @@ void SSearch::searchTypeChanged(int typ)
     default:
         queryText->setToolTip(tr("Enter search terms here."));
     }
+    emit ssearchTypeChanged(typ);
 }
 
 void SSearch::startSimpleSearch()
 {
-    if (queryText->completer() && queryText->completer()->popup()->isVisible()) {
+    // Avoid a double search if we are fired on CR and the completer is active
+    if (queryText->completer() && queryText->completer()->popup()->isVisible()
+        && !queryText->completer()->currentCompletion().isEmpty()) {
         return;
     }
     string u8 = qs2u8s(queryText->text());
@@ -472,7 +500,7 @@ bool SSearch::startSimpleSearch(const string& u8, int maxexp)
     xml << "  <T>" << base64_encode(u8) << "</T>\n";
 
     SSearchType tp = (SSearchType)searchTypCMB->currentIndex();
-    Rcl::SearchData *sdata = 0;
+    std::shared_ptr<Rcl::SearchData> sdata;
 
     if (tp == SST_LANG) {
         xml << "  <SM>QL</SM>\n";
@@ -486,14 +514,14 @@ bool SSearch::startSimpleSearch(const string& u8, int maxexp)
         } else {
             sdata = wasaStringToRcl(theconfig, stemlang, u8, reason);
         }
-        if (sdata == 0) {
+        if (!sdata) {
             QMessageBox::warning(0, "Recoll", tr("Bad query string") + ": " +
                                  QString::fromUtf8(reason.c_str()));
             return false;
         }
     } else {
-        sdata = new Rcl::SearchData(Rcl::SCLT_OR, stemlang);
-        if (sdata == 0) {
+        sdata = std::make_shared<Rcl::SearchData>(Rcl::SCLT_OR, stemlang);
+        if (!sdata) {
             QMessageBox::warning(0, "Recoll", tr("Out of memory"));
             return false;
         }
@@ -531,9 +559,22 @@ bool SSearch::startSimpleSearch(const string& u8, int maxexp)
     m_xml = xml.str();
     LOGDEB("SSearch::startSimpleSearch:xml:[" << m_xml << "]\n");
 
-    std::shared_ptr<Rcl::SearchData> rsdata(sdata);
     emit setDescription(u8s2qs(u8));
-    emit startSearch(rsdata, true);
+    emit startSearch(sdata, true);
+    return true;
+}
+
+bool SSearch::checkExtIndexes(const std::vector<std::string>& dbs)
+{
+    std::string reason;
+    if (!maybeOpenDb(reason, false)) {
+        QMessageBox::critical(0, "Recoll", tr("Can't open index") +
+                              u8s2qs(reason));
+        return false;
+    }
+    if (!rcldb->setExtraQueryDbs(dbs)) {
+        return false;
+    }
     return true;
 }
 
@@ -567,14 +608,19 @@ bool SSearch::fromXML(const SSearchDef& fxml)
             tr(" differ from current preferences (kept)"));
     }
 
-    cur = set<string>(prefs.activeExtraDbs.begin(), prefs.activeExtraDbs.end());
-    stored = set<string>(fxml.extindexes.begin(), fxml.extindexes.end());
-    stringsToString(fxml.extindexes, asString);
-    if (cur != stored) {
+
+    if (!checkExtIndexes(fxml.extindexes)) {
+        stringsToString(fxml.extindexes, asString);
         QMessageBox::warning(
-            0, "Recoll", tr("External indexes for stored query: ") + 
-            QString::fromUtf8(asString.c_str()) + 
-            tr(" differ from current preferences (kept)"));
+            0, "Recoll",
+            tr("Could not restore external indexes for stored query:<br> ") +
+            (rcldb ? u8s2qs(rcldb->getReason()) : tr("???")) + QString("<br>") +
+            tr("Using current preferences."));
+        string s;
+        maybeOpenDb(s, true);
+    } else {
+        prefs.useTmpActiveExtraDbs = true;
+        prefs.tmpActiveExtraDbs = fxml.extindexes;
     }
 
     if (prefs.ssearchAutoPhrase && !fxml.autophrase) {
@@ -637,11 +683,11 @@ void SSearch::onWordReplace(const QString& o, const QString& n)
     LOGDEB("SSearch::onWordReplace: o [" << qs2u8s(o) << "] n [" <<
            qs2u8s(n) << "]\n");
     QString txt = currentText();
-    QRegExp exp = QRegExp(QString("\\b") + o + QString("\\b"));
-    exp.setCaseSensitivity(Qt::CaseInsensitive);
+    QRegularExpression exp(QString("\\b") + o + QString("\\b"),
+                           QRegularExpression::CaseInsensitiveOption);
     txt.replace(exp, n);
     queryText->setText(txt);
-    Qt::KeyboardModifiers mods = QApplication::keyboardModifiers ();
+    Qt::KeyboardModifiers mods = QApplication::keyboardModifiers();
     if (mods == Qt::NoModifier)
         startSimpleSearch();
 }

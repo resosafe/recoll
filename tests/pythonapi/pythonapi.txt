@@ -68,7 +68,7 @@ unique.txt
 
 Catched bad mode. (ok)
 python url.py
-Xapian query: [Query((latin1name_uniquexxx AND XPiso8859name))]
+Xapian query: [Query((latin1name_uniquexxx FILTER XPiso8859name))]
 Result count: 1 1
 iso8859-1_????????.txt
 Contents: [LATIN1NAME_UNIQUEXXX 

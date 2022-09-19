@@ -17,11 +17,11 @@
 #ifndef _FETCHER_H_INCLUDED_
 #define _FETCHER_H_INCLUDED_
 
-#include "safesysstat.h"
 #include <string>
 #include <memory>
 
 #include "rcldoc.h"
+#include "pathut.h"
 
 class RclConfig;
 
@@ -51,7 +51,7 @@ public:
         enum RawDocKind {RDK_FILENAME, RDK_DATA, RDK_DATADIRECT};
         RawDocKind kind;
         std::string data; // Doc data or file name
-        struct stat st; // Only used if RDK_FILENAME
+        struct PathStat st; // Only used if RDK_FILENAME
     };
 
     /** 
@@ -72,18 +72,18 @@ public:
      * @param idoc the data gathered from the index for this doc (udi/ipath)
      * @param sig output. 
      */
-    virtual bool makesig(RclConfig* cnf, const Rcl::Doc& idoc,
-                         std::string& sig) = 0;
+    virtual bool makesig(RclConfig* cnf, const Rcl::Doc& idoc, std::string& sig) = 0;
     enum Reason{FetchOk, FetchNotExist, FetchNoPerm, FetchOther};
-    virtual Reason testAccess(RclConfig* cnf, const Rcl::Doc& idoc) {
+    virtual Reason testAccess(RclConfig*, const Rcl::Doc&) {
         return FetchOther;
     }
+    DocFetcher() {}
     virtual ~DocFetcher() {}
+    DocFetcher(const DocFetcher&) = delete;
+    DocFetcher& operator=(const DocFetcher&) = delete;
 };
 
-/** Return an appropriate fetcher object given the backend string 
- * identifier inside idoc*/
-std::unique_ptr<DocFetcher> docFetcherMake(RclConfig *config,
-                                           const Rcl::Doc& idoc);
+/** Return an appropriate fetcher object given the backend string identifier inside idoc*/
+std::unique_ptr<DocFetcher> docFetcherMake(RclConfig *config, const Rcl::Doc& idoc);
 
 #endif /* _FETCHER_H_INCLUDED_ */

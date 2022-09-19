@@ -1,5 +1,5 @@
-#!/usr/bin/env python3
-# Copyright (C) 2017 J.F.Dockes
+#!/usr/bin/python3
+# Copyright (C) 2017-2022 J.F.Dockes
 #   This program is free software; you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
 #  the Free Software Foundation; either version 2 of the License, or
@@ -31,6 +31,7 @@ but it can also be run by hand.
 import sys
 import os
 import re
+import getopt
 try:
     from hashlib import md5 as md5
 except:
@@ -94,26 +95,44 @@ def list_all_files(dir):
     return mfiles,cfiles
 
 #######################
+def msg(s):
+    print(f"{s}", file=sys.stderr)
 def usage():
-    print("Usage: recoll-we-move-files.py [<downloaddir>]", file=sys.stderr)
+    msg("Usage: recoll-we-move-files.py [-c <recollconfigdir>]")
+    msg(" The script needs the recoll configuration directory. This can be set either through")
+    msg(" the RECOLL_CONFDIR environment variable or the '-c' command line option (which takes")
+    msg(" precedence). If none is set, the default configuration directory will be used.")
     sys.exit(1)
 
-config = rclconfig.RclConfig()
 
-# Source dir is parameter, else from config else default Downloads directory
+opts, args = getopt.getopt(sys.argv[1:], "c:")
+if not len(args) == 0:
+    usage()
+
+configdir = None
+for opt,val in opts:
+    #logdeb(f"opt {opt} val {val}")
+    if opt == "-c":
+        configdir = val
+        if not os.path.isdir(val):
+            msg(f"{val} is not a directory")
+            usage()
+    else:
+        usage()
+
+config = rclconfig.RclConfig(argcnf=configdir)
+
+# Get the directory where the browser extension creates the page files. Our user can set it as a
+# subdirectory of the default Downloads directory, for tidyness
 downloadsdir = config.getConfParam("webdownloadsdir")
 if not downloadsdir:
-    downloadsdir = os.path.expanduser("~/Downloads")
-if len(sys.argv) == 2:
-    mydir = sys.argv[1]
-elif len(sys.argv) == 1:
-    mydir = downloadsdir
-else:
-    usage()
-if not os.path.isdir(mydir):
-    usage()
+    downloadsdir = "~/Downloads"
+downloadsdir = os.path.expanduser(downloadsdir)
+if not os.path.isdir(downloadsdir):
+    msg(f"Downloads directory {downloadsdir} does not exist")
+    sys.exit(1)
 
-# Get target webqueue recoll directory from recoll configuration
+# Get the target recoll webqueue directory, into which we are going to move the downloaded files.
 webqueuedir = config.getConfParam("webqueuedir")
 if not webqueuedir:
     if _mswindows:
@@ -123,10 +142,11 @@ if not webqueuedir:
 webqueuedir = os.path.expanduser(webqueuedir)
 os.makedirs(webqueuedir, exist_ok = True)
 
-# logdeb("webqueuedir is %s" % webqueuedir)
+
+#logdeb(f"recoll confdir [{configdir}] downloadsdir [{downloadsdir}] webqueuedir [{webqueuedir}]")
 
 # Get the lists of all files created by the browser addon
-mfiles, cfiles = list_all_files(mydir)
+mfiles, cfiles = list_all_files(downloadsdir)
 
 # Only keep the last version
 mfiles = delete_previous_instances(mfiles, downloadsdir)
@@ -141,7 +161,7 @@ cfiles = delete_previous_instances(cfiles, downloadsdir)
 # The old plugin created the data first, so we move data then meta
 for hash in cfiles.keys():
     if hash in mfiles.keys():
-        newname = "firefox-recoll-web-"+hash
+        newname = "firefox-recoll-web-" + hash
         shutil.move(os.path.join(downloadsdir, cfiles[hash]),
                     os.path.join(webqueuedir, newname))
         shutil.move(os.path.join(downloadsdir, mfiles[hash]),

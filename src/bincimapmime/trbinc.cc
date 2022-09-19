@@ -44,8 +44,8 @@ Usage(void)
 
 static int     op_flags;
 #define OPT_MOINS 0x1
-#define OPT_s	  0x2 
-#define OPT_b	  0x4 
+#define OPT_s      0x2 
+#define OPT_b      0x4 
 
 #define DEFCOUNT 10
 
@@ -60,31 +60,31 @@ int main(int argc, char **argv)
     argc--; argv++;
 
     while (argc > 0 && **argv == '-') {
-	(*argv)++;
-	if (!(**argv))
-	    /* Cas du "adb - core" */
-	    Usage();
-	while (**argv)
-	    switch (*(*argv)++) {
-	    case 's':	op_flags |= OPT_s; break;
-	    case 'b':	op_flags |= OPT_b; if (argc < 2)  Usage();
-		if ((sscanf(*(++argv), "%d", &count)) != 1) 
-		    Usage(); 
-		argc--; 
-		goto b1;
-	    default: Usage();	break;
-	    }
+    (*argv)++;
+    if (!(**argv))
+        /* Cas du "adb - core" */
+        Usage();
+    while (**argv)
+        switch (*(*argv)++) {
+        case 's':    op_flags |= OPT_s; break;
+        case 'b':    op_flags |= OPT_b; if (argc < 2)  Usage();
+        if ((sscanf(*(++argv), "%d", &count)) != 1) 
+            Usage(); 
+        argc--; 
+        goto b1;
+        default: Usage();    break;
+        }
     b1: argc--; argv++;
     }
 
     if (argc != 1)
-	Usage();
+    Usage();
 
     char *mfile = *argv++;argc--;
     int fd;
     if ((fd = open(mfile, 0)) < 0) {
-	perror("Opening");
-	exit(1);
+    perror("Opening");
+    exit(1);
     }
     Binc::MimeDocument doc;
 
@@ -97,30 +97,30 @@ int main(int argc, char **argv)
     fprintf(stderr, "Size: %d\n", size);
     cp = (char *)malloc(size);
     if (cp==0) {
-	fprintf(stderr, "Malloc %d failed\n", size);
-	exit(1);
+    fprintf(stderr, "Malloc %d failed\n", size);
+    exit(1);
     }
     int n;
     if ((n=read(fd, cp, size)) != size) {
-	fprintf(stderr, "Read failed: requested %d, got %d\n", size, n);
-	exit(1);
+    fprintf(stderr, "Read failed: requested %d, got %d\n", size, n);
+    exit(1);
     }
     std::stringstream s(string(cp, size), ios::in);
     doc.parseFull(s);
 #endif
 
     if (!doc.isHeaderParsed() && !doc.isAllParsed()) {
-	fprintf(stderr, "Parse error\n");
-	exit(1);
+    fprintf(stderr, "Parse error\n");
+    exit(1);
     }
     close(fd);
     Binc::HeaderItem hi;
     for (int i = 0; i < nh ; i++) {
-	if (!doc.h.getFirstHeader(hnames[i], hi)) {
-	    fprintf(stderr, "No %s\n", hnames[i]);
-	    exit(1);
-	}
-	printf("%s: %s\n", hnames[i], hi.getValue().c_str());
+    if (!doc.h.getFirstHeader(hnames[i], hi)) {
+        fprintf(stderr, "No %s\n", hnames[i]);
+        exit(1);
+    }
+    printf("%s: %s\n", hnames[i], hi.getValue().c_str());
     }
     exit(0);
 }

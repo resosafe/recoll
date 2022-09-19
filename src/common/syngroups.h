@@ -1,4 +1,4 @@
-/* Copyright (C) 2015 J.F.Dockes
+/* Copyright (C) 2015-2021 J.F.Dockes
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation; either version 2 of the License, or
@@ -20,6 +20,7 @@
 
 #include <string>
 #include <vector>
+#include <set>
 
 // Manage synonym groups. This is very different from stemming and
 // case/diac expansion because there is no reference form: all terms
@@ -34,8 +35,11 @@ public:
     SynGroups& operator=(const SynGroups&&) = delete;
 
     bool setfile(const std::string& fname);
-    std::vector<std::string> getgroup(const std::string& term);
-    bool ok();
+    std::vector<std::string> getgroup(const std::string& term) const;
+    const std::set<std::string>& getmultiwords() const;
+    size_t getmultiwordsmaxlength() const;
+    const std::string& getpath() const;
+    bool ok() const;
 private:
     class Internal;
     Internal *m;

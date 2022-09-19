@@ -45,7 +45,7 @@ namespace Rcl {
  * Expand for one or several languages
  */
 bool StemDb::stemExpand(const std::string& langs, const std::string& _term,
-			vector<string>& result)
+            vector<string>& result)
 {
     vector<string> llangs;
     stringToStrings(langs, llangs);
@@ -58,29 +58,29 @@ bool StemDb::stemExpand(const std::string& langs, const std::string& _term,
     unacmaybefold(_term, term, "UTF-8", UNACOP_FOLD);
 
     for (vector<string>::const_iterator it = llangs.begin();
-	 it != llangs.end(); it++) {
-	SynTermTransStem stemmer(*it);
-	XapComputableSynFamMember expander(getdb(), synFamStem, *it, &stemmer);
-	(void)expander.synExpand(term, result);
+     it != llangs.end(); it++) {
+    SynTermTransStem stemmer(*it);
+    XapComputableSynFamMember expander(getdb(), synFamStem, *it, &stemmer);
+    (void)expander.synExpand(term, result);
     }
 
     if (!o_index_stripchars) {
-	string unac;
-	unacmaybefold(term, unac, "UTF-8", UNACOP_UNAC);
-	// Expand the unaccented stem, using the unaccented stem
-	// db. Because it's a different db, We need to do it even if
-	// the input has no accent (unac == term)
-	for (vector<string>::const_iterator it = llangs.begin();
-	     it != llangs.end(); it++) {
-	    SynTermTransStem stemmer(*it);
-	    XapComputableSynFamMember expander(getdb(), synFamStemUnac, 
-					       *it, &stemmer);
-	    (void)expander.synExpand(unac, result);
-	}
+    string unac;
+    unacmaybefold(term, unac, "UTF-8", UNACOP_UNAC);
+    // Expand the unaccented stem, using the unaccented stem
+    // db. Because it's a different db, We need to do it even if
+    // the input has no accent (unac == term)
+    for (vector<string>::const_iterator it = llangs.begin();
+         it != llangs.end(); it++) {
+        SynTermTransStem stemmer(*it);
+        XapComputableSynFamMember expander(getdb(), synFamStemUnac, 
+                           *it, &stemmer);
+        (void)expander.synExpand(unac, result);
+    }
     }
 
     if (result.empty())
-	result.push_back(term);
+    result.push_back(term);
 
     sort(result.begin(), result.end());
     vector<string>::iterator uit = unique(result.begin(), result.end());

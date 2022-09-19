@@ -27,9 +27,9 @@ Chapter 5. Installation and configuration
    exist any more.
 
    The package management tools will usually automatically deal with hard
-   dependancies for packages obtained from a proper package repository. You
+   dependencies for packages obtained from a proper package repository. You
    will have to deal with them by hand for downloaded packages (for example,
-   when dpkg complains about missing dependancies).
+   when dpkg complains about missing dependencies).
 
    In all cases, you will have to check or install supporting applications
    for the file types that you want to index beyond those that are natively
@@ -66,7 +66,7 @@ Chapter 5. Installation and configuration
 
    A list of common file types which need external commands follows. Many of
    the handlers need the iconv command, which is not always listed as a
-   dependancy.
+   dependency.
 
    Please note that, due to the relatively dynamic nature of this
    information, the most up to date version is now kept on
@@ -346,7 +346,7 @@ Chapter 5. Installation and configuration
    RECOLL_CONFTOP and RECOLL_CONFMID environment variables. Values from
    configuration files inside the top directory will override user ones,
    values from configuration files inside the middle directory will override
-   system ones and be overriden by user ones. These two variables may be of
+   system ones and be overridden by user ones. These two variables may be of
    use to applications which augment Recoll functionality, and need to add
    configuration data without disturbing the user's files. Please note that
    the two, currently single, values will probably be interpreted as
@@ -486,7 +486,7 @@ Chapter 5. Installation and configuration
 
    skippedNames
 
-           A space-separated list of wilcard patterns for names of files or
+           A space-separated list of wildcard patterns for names of files or
            directories that should be completely ignored. The list defined in
            the default file is:
 
@@ -1075,7 +1075,7 @@ Chapter 5. Installation and configuration
 
    mhmboxquirks
 
-           This allows definining location-related quirks for the mailbox
+           This allows defining location-related quirks for the mailbox
            handler. Currently only the tbird flag is defined, and it should
            be set for directories which hold Thunderbird data, as their
            folder format is weird.
@@ -1270,7 +1270,7 @@ Chapter 5. Installation and configuration
    The file has a section for any index which needs translations, either the
    main one or additional query indexes. The sections are named with the
    Xapian index directory names. No slash character should exist at the end
-   of the paths (all comparisons are textual). An exemple should make things
+   of the paths (all comparisons are textual). An example should make things
    sufficiently clear
 
            [/home/me/.recoll/xapiandb]

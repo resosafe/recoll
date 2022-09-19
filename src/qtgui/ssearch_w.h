@@ -27,6 +27,7 @@
 #include <QPixmap>
 
 class QTimer;
+class QShortcut;
 
 #include "recoll.h"
 #include "searchdata.h"
@@ -78,16 +79,16 @@ public:
     virtual void init();
     virtual void setAnyTermMode();
     virtual bool hasSearchString();
-    virtual void setPrefs();
     // Return last performed search as XML text.
     virtual std::string asXML();
     // Restore ssearch UI from saved search
     virtual bool fromXML(const SSearchDef& fxml);
     virtual QString currentText();
     virtual bool eventFilter(QObject *target, QEvent *event);
-                                  
+    virtual void setupButtons();
+                               
 public slots:
-    virtual void searchTypeChanged(int);
+    virtual void onSearchTypeChanged(int);
     virtual void setSearchString(const QString& text);
     virtual void startSimpleSearch();
     virtual void addTerm(QString);
@@ -95,6 +96,8 @@ public slots:
     virtual void takeFocus();
     // Forget current entry and any state (history)
     virtual void clearAll();
+    virtual void setPrefs();
+    virtual void onNewShortcuts();
 
 private slots:
     virtual void searchTextChanged(const QString&);
@@ -109,13 +112,16 @@ signals:
     void setDescription(QString);
     void clearSearch();
     void partialWord(int, const QString& text, const QString &partial);
-
+    void ssearchTypeChanged(int typ);
+    
 private:
     int getPartialWord(QString& word);
     bool startSimpleSearch(const string& q, int maxexp = -1);
+    bool checkExtIndexes(const std::vector<std::string>& dbs);
 
     RclCompleterModel *m_completermodel{nullptr};
     QCompleter *m_completer{nullptr};
+    QShortcut *m_histsc{nullptr};
     /* We save multiword entries because the completer replaces them with
        the completion */
     QString m_savedEditText;

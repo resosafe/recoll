@@ -43,16 +43,16 @@ void multiSave(QWidget *p, vector<Rcl::Doc>& docs)
     fdialog.setFileMode(QFileDialog::Directory);
     fdialog.setOption(QFileDialog::ShowDirsOnly);
     if (fdialog.exec() == 0) 
-	return;
+    return;
     QStringList dirl = fdialog.selectedFiles();
     if (dirl.size() != 1) {
-	// Can't happen ?
-	QMessageBox::warning(0, "Recoll",
-			     QWidget::tr("Choose exactly one directory"));
-	return;
+    // Can't happen ?
+    QMessageBox::warning(0, "Recoll",
+                 QWidget::tr("Choose exactly one directory"));
+    return;
     }
-    string dir((const char *)dirl[0].toLocal8Bit());
-    LOGDEB2("multiSave: got dir "  << (dir) << "\n" );
+    string dir(qs2path(dirl[0]));
+    LOGDEB2("multiSave: got dir " << dir << "\n");
 
     /* Save doc to files in target directory. Issues:
        - It is quite common to have docs in the array with the same
@@ -77,68 +77,64 @@ void multiSave(QWidget *p, vector<Rcl::Doc>& docs)
     */
     set<string> existingNames;
     string reason;
-    if (!readdir(dir, reason, existingNames)) {
-	QMessageBox::warning(0, "Recoll",
-			     QWidget::tr("Could not read directory: ") +
-			     QString::fromLocal8Bit(reason.c_str()));
-	return;
+    if (!listdir(dir, reason, existingNames)) {
+    QMessageBox::warning(0, "Recoll",
+                 QWidget::tr("Could not read directory: ") +
+                 path2qs(reason));
+    return;
     }
 
     set<string> toBeCreated;
     vector<string> filenames;
     for (vector<Rcl::Doc>::iterator it = docs.begin(); it != docs.end(); it++) {
-	string utf8fn;
-	it->getmeta(Rcl::Doc::keyfn, &utf8fn);
-	string suffix = path_suffix(utf8fn);
-	LOGDEB("Multisave: ["  << (utf8fn) << "] suff ["  << (suffix) << "]\n" );
-	if (suffix.empty() || suffix.size() > 10) {
-	    suffix = theconfig->getSuffixFromMimeType(it->mimetype);
-	    LOGDEB("Multisave: suff from config ["  << (suffix) << "]\n" );
-	}
-	string simple = path_basename(utf8fn, string(".") + suffix);
-	LOGDEB("Multisave: simple ["  << (simple) << "]\n" );
-	if (simple.empty())
-	    simple = "rclsave";
-	if (simple.size() > maxlen) {
-	    simple = simple.substr(0, maxlen);
-	}
-	for  (int vers = 0; ; vers++) {
-	    ostringstream ss;
-	    ss << simple;
-	    if (vers)
-		ss << "." << vers;
-	    if (!suffix.empty()) 
-		ss << "." << suffix;
+    string utf8fn;
+    it->getmeta(Rcl::Doc::keyfn, &utf8fn);
+    string suffix = path_suffix(utf8fn);
+    LOGDEB("Multisave: ["  << (utf8fn) << "] suff ["  << (suffix) << "]\n" );
+    if (suffix.empty() || suffix.size() > 10) {
+        suffix = theconfig->getSuffixFromMimeType(it->mimetype);
+        LOGDEB("Multisave: suff from config ["  << (suffix) << "]\n" );
+    }
+    string simple = path_basename(utf8fn, string(".") + suffix);
+    LOGDEB("Multisave: simple ["  << (simple) << "]\n" );
+    if (simple.empty())
+        simple = "rclsave";
+    if (simple.size() > maxlen) {
+        simple = simple.substr(0, maxlen);
+    }
+    for  (int vers = 0; ; vers++) {
+        ostringstream ss;
+        ss << simple;
+        if (vers)
+        ss << "." << vers;
+        if (!suffix.empty()) 
+        ss << "." << suffix;
 
-	    string fn = 
-		(const char *)QString::fromUtf8(ss.str().c_str()).toLocal8Bit();
-	    if (existingNames.find(fn) == existingNames.end() &&
-		toBeCreated.find(fn) == toBeCreated.end()) {
-		toBeCreated.insert(fn);
-		filenames.push_back(fn);
-		break;
-	    }
-	}
+        string fn = qs2path(u8s2qs(ss.str()));
+        if (existingNames.find(fn) == existingNames.end() &&
+        toBeCreated.find(fn) == toBeCreated.end()) {
+        toBeCreated.insert(fn);
+        filenames.push_back(fn);
+        break;
+        }
+    }
     }
     
     for (unsigned int i = 0; i != docs.size(); i++) {
-	string fn = path_cat(dir, filenames[i]);
-	if (path_exists(fn)) {
-	    QMessageBox::warning(0, "Recoll",
-				 QWidget::tr("Unexpected file name collision, "
-				       "cancelling."));
-	    return;
-	}
-	// There is still a race condition here, should we care ?
-	TempFile temp;// not used
-	if (!FileInterner::idocToFile(temp, fn, theconfig, docs[i], false)) {
-	    QMessageBox::warning(0, "Recoll",
-				 QWidget::tr("Cannot extract document: ") +
-				 QString::fromLocal8Bit(docs[i].url.c_str()) +
-				 " | " +
-				 QString::fromLocal8Bit(docs[i].ipath.c_str())
-		);
-	}
+    string fn = path_cat(dir, filenames[i]);
+    if (path_exists(fn)) {
+        QMessageBox::warning(0, "Recoll",
+                 QWidget::tr("Unexpected file name collision, "
+                       "cancelling."));
+        return;
+    }
+    // There is still a race condition here, should we care ?
+    TempFile temp;// not used
+    if (!FileInterner::idocToFile(temp, fn, theconfig, docs[i], false)) {
+        QMessageBox::warning(
+                0, "Recoll", QWidget::tr("Cannot extract document: ") +
+                path2qs(docs[i].url) + " | " + u8s2qs(docs[i].ipath));
+    }
     }
 }
 

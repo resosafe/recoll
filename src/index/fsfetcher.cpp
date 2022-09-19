@@ -17,7 +17,6 @@
 #include "autoconfig.h"
 
 #include <errno.h>
-#include "safesysstat.h"
 
 #include "log.h"
 #include "cstr.h"
@@ -29,7 +28,7 @@
 using std::string;
 
 static DocFetcher::Reason urltopath(RclConfig* cnf, const Rcl::Doc& idoc,
-                                    string& fn, struct stat& st)
+                                    string& fn, struct PathStat& st)
 {
     // The url has to be like file://
     fn = fileurltolocalpath(idoc.url);
@@ -58,21 +57,27 @@ bool FSDocFetcher::fetch(RclConfig* cnf, const Rcl::Doc& idoc, RawDoc& out)
     out.data = fn;
     return true;
 }
-    
+
+void fsmakesig(const struct PathStat *stp, string& out)
+{
+    out = lltodecstr(stp->pst_size) + 
+        lltodecstr(o_uptodate_test_use_mtime ? stp->pst_mtime : stp->pst_ctime);
+}
+
 bool FSDocFetcher::makesig(RclConfig* cnf, const Rcl::Doc& idoc, string& sig)
 {
     string fn;
-    struct stat st;
+    struct PathStat st;
     if (urltopath(cnf, idoc, fn, st) != DocFetcher::FetchOk)
         return false;
-    FsIndexer::makesig(&st, sig);
+    fsmakesig(&st, sig);
     return true;
 }
 
 DocFetcher::Reason FSDocFetcher::testAccess(RclConfig* cnf, const Rcl::Doc& idoc)
 {
     string fn;
-    struct stat st;
+    struct PathStat st;
     DocFetcher::Reason reason = urltopath(cnf, idoc, fn, st);
     if (reason != DocFetcher::FetchOk) {
         return reason;

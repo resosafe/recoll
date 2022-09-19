@@ -37,7 +37,7 @@ class Query;
 
 #ifdef IDX_THREADS
 // Task for the index update thread. This can be 
-//  - add/update for a new / update documment
+//  - add/update for a new / update document
 //  - delete for a deleted document
 //  - purgeOrphans when a multidoc file is updated during a partial pass (no 
 //    general purge). We want to remove subDocs that possibly don't
@@ -52,7 +52,7 @@ public:
     // available on the caller site.
     // Take some care to avoid sharing string data (if string impl is cow)
     DbUpdTask(Op _op, const string& ud, const string& un, 
-	      Xapian::Document *d, size_t tl, string& rztxt)
+          Xapian::Document *d, size_t tl, string& rztxt)
         : op(_op), udi(ud.begin(), ud.end()), uniterm(un.begin(), un.end()), 
           doc(d), txtlen(tl) {
         rawztext.swap(rztxt);
@@ -98,6 +98,8 @@ class Db::Native {
 
     Native(Db *db);
     ~Native();
+    Native(const Native &) = delete;
+    Native& operator=(const Native &) = delete;
 
 #ifdef IDX_THREADS
     friend void *DbUpdWorker(void*);
@@ -112,7 +114,7 @@ class Db::Native {
     
     // Final steps of doc update, part which need to be single-threaded
     bool addOrUpdateWrite(const string& udi, const string& uniterm, 
-			  Xapian::Document *doc, size_t txtlen
+              Xapian::Document *doc, size_t txtlen
                           , const string& rawztext);
 
     /** Delete all documents which are contained in the input document, 
@@ -127,7 +129,7 @@ class Db::Native {
      * @param uniterm equivalent to udi, passed just to avoid recomputing.
      */
     bool purgeFileWrite(bool onlyOrphans, const string& udi, 
-			const string& uniterm);
+            const string& uniterm);
 
     bool getPagePositions(Xapian::docid docid, vector<int>& vpos);
     int getPageNumberForPosition(const vector<int>& pbreaks, int pos);
@@ -159,10 +161,10 @@ class Db::Native {
 
     /** Update existing Xapian document for pure extended attrs change */
     bool docToXdocXattrOnly(TextSplitDb *splitter, const string &udi, 
-			    Doc &doc, Xapian::Document& xdoc);
+                Doc &doc, Xapian::Document& xdoc);
     /** Remove all terms currently indexed for field defined by idx prefix */
     bool clearField(Xapian::Document& xdoc, const string& pfx, 
-		    Xapian::termcount wdfdec);
+            Xapian::termcount wdfdec);
 
     /** Check if term wdf is 0 and remove term if so */
     bool clearDocTermIfWdf0(Xapian::Document& xdoc, const string& term);

@@ -38,7 +38,6 @@ class StopList {
 public:
     StopList() {}
     StopList(const string &filename) {setFile(filename);}
-    virtual ~StopList() {}
 
     bool setFile(const string &filename);
     bool isStop(const string &term) const;

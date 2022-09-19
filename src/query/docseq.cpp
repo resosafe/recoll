@@ -1,4 +1,4 @@
-/* Copyright (C) 2005 J.F.Dockes
+/* Copyright (C) 2005-2020 J.F.Dockes
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation; either version 2 of the License, or
@@ -30,11 +30,11 @@ int DocSequence::getSeqSlice(int offs, int cnt, vector<ResListEntry>& result)
 {
     int ret = 0;
     for (int num = offs; num < offs + cnt; num++, ret++) {
-	result.push_back(ResListEntry());
-	if (!getDoc(num, result.back().doc, &result.back().subHeader)) {
-	    result.pop_back();
-	    return ret;
-	}
+        result.push_back(ResListEntry());
+        if (!getDoc(num, result.back().doc, &result.back().subHeader)) {
+            result.pop_back();
+            return ret;
+        }
     }
     return ret;
 }
@@ -43,8 +43,8 @@ bool DocSequence::getEnclosing(Rcl::Doc& doc, Rcl::Doc& pdoc)
 {
     std::shared_ptr<Rcl::Db> db = getDb();
     if (!db) {
-	LOGERR("DocSequence::getEnclosing: no db\n" );
-	return false;
+        LOGERR("DocSequence::getEnclosing: no db\n" );
+        return false;
     }
     std::unique_lock<std::mutex> locker(o_dblock);
     string udi;
@@ -59,9 +59,9 @@ bool DocSequence::getEnclosing(Rcl::Doc& doc, Rcl::Doc& pdoc)
 void DocSource::stripStack()
 {
     if (!m_seq)
-	return;
+        return;
     while (m_seq->getSourceSeq()) {
-	m_seq = m_seq->getSourceSeq();
+        m_seq = m_seq->getSourceSeq();
     }
 }
 
@@ -71,29 +71,28 @@ bool DocSource::buildStack()
     stripStack();
 
     if (!m_seq)
-	return false;
+        return false;
 
     // Filtering must be done before sorting, (which may
     // truncates the original list)
     if (m_seq->canFilter()) {
-	if (!m_seq->setFiltSpec(m_fspec)) {
-	    LOGERR("DocSource::buildStack: setfiltspec failed\n" );
-	}
+        if (!m_seq->setFiltSpec(m_fspec)) {
+            LOGERR("DocSource::buildStack: setfiltspec failed\n" );
+        }
     } else {
-	if (m_fspec.isNotNull()) {
-	    m_seq = 
-		std::shared_ptr<DocSequence>(new DocSeqFiltered(m_config, m_seq, m_fspec));
-	} 
+        if (m_fspec.isNotNull()) {
+            m_seq = std::shared_ptr<DocSequence>(new DocSeqFiltered(m_config, m_seq, m_fspec));
+        } 
     }
     
     if (m_seq->canSort()) {
-	if (!m_seq->setSortSpec(m_sspec)) {
-	    LOGERR("DocSource::buildStack: setsortspec failed\n" );
-	}
+        if (!m_seq->setSortSpec(m_sspec)) {
+            LOGERR("DocSource::buildStack: setsortspec failed\n" );
+        }
     } else {
-	if (m_sspec.isNotNull()) {
-	    m_seq = std::shared_ptr<DocSequence>(new DocSeqSorted(m_seq, m_sspec));
-	}
+        if (m_sspec.isNotNull()) {
+            m_seq = std::shared_ptr<DocSequence>(new DocSeqSorted(m_seq, m_sspec));
+        }
     }
     return true;
 }
@@ -101,14 +100,14 @@ bool DocSource::buildStack()
 string DocSource::title()
 {
     if (!m_seq)
-	return string();
+        return string();
     string qual;
     if (m_fspec.isNotNull() && !m_sspec.isNotNull())
-	qual = string(" (") + o_filt_trans + string(")");
+        qual = string(" (") + o_filt_trans + string(")");
     else if (!m_fspec.isNotNull() && m_sspec.isNotNull())
-	qual = string(" (") + o_sort_trans + string(")");
+        qual = string(" (") + o_sort_trans + string(")");
     else if (m_fspec.isNotNull() && m_sspec.isNotNull())
-	qual = string(" (") + o_sort_trans + string(",") + o_filt_trans + string(")");
+        qual = string(" (") + o_sort_trans + string(",") + o_filt_trans + string(")");
     return m_seq->title() + qual;
 }
 
@@ -127,5 +126,3 @@ bool DocSource::setSortSpec(const DocSeqSortSpec &s)
     buildStack();
     return true;
 }
-
-

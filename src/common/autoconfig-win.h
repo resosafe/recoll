@@ -1,12 +1,8 @@
 /* Manually edited version of autoconfig.h for windows. Many things are
-overriden in the c++ code by ifdefs _WIN32 anyway  */
-#ifndef _AUTOCONFIG_H_INCLUDED
-#define _AUTOCONFIG_H_INCLUDED
+   overriden in the c++ code by ifdefs _WIN32 anyway  */
+
 /* Define if building universal (internal helper macro) */
 /* #undef AC_APPLE_UNIVERSAL_BUILD */
-
-/* Path to the aspell api include file */
-#define ASPELL_INCLUDE "aspell-local.h"
 
 /* Aspell program parameter to findFilter(). */
 #define ASPELL_PROG "aspell-installed/mingw32/bin/aspell"
@@ -20,9 +16,6 @@ overriden in the c++ code by ifdefs _WIN32 anyway  */
 /* Path to the file program */
 #define FILE_PROG "/usr/bin/file"
 
-/* "Have C++0x" */
-#define HAVE_CXX0X_UNORDERED 1
-
 /* Define to 1 if you have the <dlfcn.h> header file. */
 #undef HAVE_DLFCN_H
 
@@ -34,11 +27,26 @@ overriden in the c++ code by ifdefs _WIN32 anyway  */
 /* Define to 1 if you have the <inttypes.h> header file. */
 #define HAVE_INTTYPES_H 1
 
+/* Define to 1 if you have the `kqueue' function. */
+/* #undef HAVE_KQUEUE */
+
+/* Define to 1 if you have the `chm' library (-lchm). */
+#define HAVE_LIBCHM 1
+
 /* Define to 1 if you have the `pthread' library (-lpthread). */
 #define HAVE_LIBPTHREAD 1
 
 /* Define to 1 if you have the `z' library (-lz). */
 #define HAVE_LIBZ 1
+
+/* Define to 1 if you have the <malloc.h> header file. */
+#undef HAVE_MALLOC_H
+
+/* Define to 1 if you have the <malloc/malloc.h> header file. */
+#undef HAVE_MALLOC_MALLOC_H
+
+/* Define to 1 if you have the `malloc_trim' function. */
+#undef HAVE_MALLOC_TRIM
 
 /* Define to 1 if you have the <memory.h> header file. */
 #define HAVE_MEMORY_H 1
@@ -51,12 +59,6 @@ overriden in the c++ code by ifdefs _WIN32 anyway  */
 
 /* Define to 1 if you have the `setrlimit' function. */
 #define HAVE_SETRLIMIT 1
-
-/* Has std::shared_ptr */
-#define HAVE_SHARED_PTR_STD
-
-/* Has std::tr1::shared_ptr */
-/* #undef HAVE_SHARED_PTR_TR1 */
 
 /* Define to 1 if you have the <spawn.h> header file. */
 #define HAVE_SPAWN_H 1
@@ -94,9 +96,6 @@ overriden in the c++ code by ifdefs _WIN32 anyway  */
 /* Define to 1 if you have the <sys/vfs.h> header file. */
 /* #undef HAVE_SYS_VFS_H */
 
-/* "Have tr1" */
-/* #undef HAVE_TR1_UNORDERED */
-
 /* Define to 1 if you have the <unistd.h> header file. */
 /* #undef HAVE_UNISTD_H */
 
@@ -119,10 +118,7 @@ overriden in the c++ code by ifdefs _WIN32 anyway  */
 #define PACKAGE_NAME "Recoll"
 
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING "Recoll 1.26.2"
-
-/* Define to the version of this package. */
-#define PACKAGE_VERSION "1.26.2"
+#define PACKAGE_STRING "Recoll 1.33.0"
 
 /* Define to the one symbol short name of this package. */
 #define PACKAGE_TARNAME "recoll"
@@ -130,11 +126,14 @@ overriden in the c++ code by ifdefs _WIN32 anyway  */
 /* Define to the home page for this package. */
 #define PACKAGE_URL ""
 
+/* Define to the version of this package. */
+#define PACKAGE_VERSION "1.33.0"
+
 /* putenv parameter is const */
 /* #undef PUTENV_ARG_CONST */
 
 /* Real time monitoring option */
-#undef RCL_MONITOR
+#define RCL_MONITOR 1
 
 /* Split camelCase words */
 /* #undef RCL_SPLIT_CAMELCASE */
@@ -146,7 +145,7 @@ overriden in the c++ code by ifdefs _WIN32 anyway  */
 /* #undef RCL_USE_FAM */
 
 /* Compile the inotify interface */
-#define RCL_USE_INOTIFY 1
+/* #undef RCL_USE_INOTIFY */
 
 /* Define to 1 if you have the ANSI C header files. */
 #define STDC_HEADERS 1
@@ -184,7 +183,4 @@ overriden in the c++ code by ifdefs _WIN32 anyway  */
 /* Define for large files, on AIX-style hosts. */
 /* #undef _LARGE_FILES */
 
-// #define DISABLE_WEB_INDEXER
-
 #include "conf_post.h"
-#endif // already included

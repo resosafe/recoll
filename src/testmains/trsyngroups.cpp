@@ -59,15 +59,15 @@ int main(int argc, char **argv)
     SynGroups syns;
     syns.setfile(fn);
     if (!syns.ok()) {
-	cerr << "Initialization failed\n";
-	return 1;
+    cerr << "Initialization failed\n";
+    return 1;
     }
 
     vector<string> group = syns.getgroup(word);
     cout << group.size() << " terms in group\n";
     for (vector<string>::const_iterator it = group.begin();
-	 it != group.end(); it++) {
-	cout << "[" << *it << "] ";
+     it != group.end(); it++) {
+    cout << "[" << *it << "] ";
     }
     cout << endl;
     return 0;

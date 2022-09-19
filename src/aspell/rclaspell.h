@@ -1,4 +1,4 @@
-/* Copyright (C) 2006 J.F.Dockes
+/* Copyright (C) 2006-2021 J.F.Dockes
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation; either version 2 of the License, or
@@ -27,12 +27,10 @@
  * exist in the document set for a given word.
  * A specific aspell dictionary is created out of all the terms in the 
  * xapian index, and we then use it to expand a term to spelling neighbours.
- * We use the aspell C api for term expansion, but have 
- * to execute the program to create dictionaries.
  */
 
 #include <string>
-#include <list>
+#include <vector>
 
 #include "rclconfig.h"
 #include "rcldb.h"
@@ -40,9 +38,11 @@
 class AspellData;
 
 class Aspell {
- public:
+public:
     Aspell(const RclConfig *cnf);
     ~Aspell();
+    Aspell(const Aspell &) = delete;
+    Aspell& operator=(const Aspell &) = delete;
 
     /** Check health */
     bool ok() const;
@@ -54,19 +54,11 @@ class Aspell {
      * of an indexing pass. */
     bool buildDict(Rcl::Db &db, std::string &reason);
 
-    /** Check that word is in dictionary. Note that this would mean
-     * that the EXACT word is: aspell just does a lookup, no
-     * grammatical, case or diacritics magic of any kind
-     *
-     * @return true if word in dic, false if not. reason.size() -> error
-     */
-    bool check(const std::string& term, std::string& reason);
-
     /** Return a list of possible expansions for a given word */
     bool suggest(Rcl::Db &db, const std::string& term, 
-		 std::list<std::string> &suggestions, std::string &reason);
-
- private:
+                 std::vector<std::string> &suggestions, std::string &reason);
+    
+private:
     std::string dicPath();
     const RclConfig  *m_config;
     std::string      m_lang;

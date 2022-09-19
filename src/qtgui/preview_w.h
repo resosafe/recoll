@@ -29,8 +29,9 @@
 #include <memory>
 
 #include <QComboBox>
-#include <qvariant.h>
-#include <qwidget.h>
+#include <QVariant>
+#include <QWidget>
+#include <QFont>
 
 #ifdef PREVIEW_TEXTBROWSER
 #include <QTextBrowser>
@@ -44,8 +45,10 @@
 #include "rcldb.h"
 #include "plaintorich.h"
 #include "rclmain_w.h"
+#include "internfile.h"
 
 #include "ui_preview.h"
+
 
 class QTabWidget;
 class QLabel;
@@ -55,6 +58,10 @@ class Preview;
 class PlainToRichQtPreview;
 class QUrl;
 class RclMain;
+class LoadThread;
+class QTimer;
+class QEventLoop;
+class QProgressDialog;
 
 class PreviewTextEdit : public PREVIEW_PARENTCLASS {
     Q_OBJECT;
@@ -62,7 +69,7 @@ public:
     PreviewTextEdit(QWidget* parent, const char* name, Preview *pv);
     void moveToAnchor(const QString& name);
     enum DspType {PTE_DSPTXT, PTE_DSPFLDS, PTE_DSPIMG};
-
+    
 public slots:
     virtual void displayFields();
     virtual void displayText();
@@ -107,9 +114,10 @@ private:
     DspType m_curdsp;
 };
 
+class QShortcut;
 
 class Preview : public QDialog, public Ui::Preview {
-    Q_OBJECT
+    Q_OBJECT;
 
 public:
 
@@ -134,6 +142,10 @@ public:
     void emitWordSelect(QString);
     friend class PreviewTextEdit;
 
+    /** List shortcuts so that the prefs can be edited before any preview 
+        is created */
+    static void listShortcuts();
+
 public slots:
     // Search stuff
     virtual void searchTextChanged(const QString& text);
@@ -152,7 +164,11 @@ public slots:
     virtual void emitSaveDocToFile();
     virtual void emitEditRequested();
     virtual void togglePlainPre();
-
+    virtual void onNewShortcuts();
+    // Other
+    virtual void zoomIn();
+    virtual void zoomOut();
+    
 signals:
     void previewClosed(Preview *);
     void wordSelect(QString);
@@ -178,13 +194,23 @@ private:
     bool          m_loading{false};
     HighlightData m_hData;
     bool          m_justCreated{true}; // First tab create is different
-
+    QFont         m_font;
+    QShortcut *m_closewinsc{nullptr};
+    QShortcut *m_nextdocsc{nullptr};
+    QShortcut *m_prevdocsc{nullptr};
+    QShortcut *m_closetabsc{nullptr};
+    QShortcut *m_printtabsc{nullptr};
+    
     void init();
     virtual void setCurTabProps(const Rcl::Doc& doc, int docnum);
     virtual PreviewTextEdit *editor(int);
     virtual PreviewTextEdit *currentEditor();
     virtual PreviewTextEdit *addEditorTab();
     virtual bool loadDocInCurrentTab(const Rcl::Doc& idoc, int dnm);
+    void displayLoadError(
+        FileInterner::ErrorPossibleCause explain, bool canGetRawText);
+    bool runLoadThread(LoadThread& lthr, QTimer& tT, QEventLoop& loop,
+                       QProgressDialog& progress, bool canGetRawText);
 };
 
 #endif /* _PREVIEW_W_H_INCLUDED_ */

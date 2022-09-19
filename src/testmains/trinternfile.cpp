@@ -49,7 +49,7 @@ Usage(void)
 }
 
 static int        op_flags;
-#define OPT_q	  0x1 
+#define OPT_q      0x1 
 
 RclConfig *config;
 int main(int argc, char **argv)
@@ -58,41 +58,41 @@ int main(int argc, char **argv)
     argc--; argv++;
 
     while (argc > 0 && **argv == '-') {
-	(*argv)++;
-	if (!(**argv))
-	    /* Cas du "adb - core" */
-	    Usage();
-	while (**argv)
-	    switch (*(*argv)++) {
-	    default: Usage();	break;
-	    }
-	argc--; argv++;
+    (*argv)++;
+    if (!(**argv))
+        /* Cas du "adb - core" */
+        Usage();
+    while (**argv)
+        switch (*(*argv)++) {
+        default: Usage();    break;
+        }
+    argc--; argv++;
     }
     DebugLog::getdbl()->setloglevel(DEBDEB1);
     DebugLog::setfilename("stderr");
 
     if (argc < 1)
-	Usage();
+    Usage();
     string fn(*argv++);
     argc--;
     string ipath;
     if (argc >= 1) {
-	ipath.append(*argv++);
-	argc--;
+    ipath.append(*argv++);
+    argc--;
     }
     string reason;
     config = recollinit(0, 0, 0, reason);
 
     if (config == 0 || !config->ok()) {
-	string str = "Configuration problem: ";
-	str += reason;
-	fprintf(stderr, "%s\n", str.c_str());
-	exit(1);
+    string str = "Configuration problem: ";
+    str += reason;
+    fprintf(stderr, "%s\n", str.c_str());
+    exit(1);
     }
     struct stat st;
     if (stat(fn.c_str(), &st)) {
-	perror("stat");
-	exit(1);
+    perror("stat");
+    exit(1);
     }
     FileInterner interner(fn, &st, config, 0);
     Rcl::Doc doc;
@@ -100,30 +100,30 @@ int main(int argc, char **argv)
     switch (status) {
     case FileInterner::FIDone:
     case FileInterner::FIAgain:
-	break;
+    break;
     case FileInterner::FIError:
     default:
-	fprintf(stderr, "internfile failed\n");
-	exit(1);
+    fprintf(stderr, "internfile failed\n");
+    exit(1);
     }
     
     cout << "doc.url [[[[" << doc.url << 
-	"]]]]\n-----------------------------------------------------\n" <<
-	"doc.ipath [[[[" << doc.ipath <<
-	"]]]]\n-----------------------------------------------------\n" <<
-	"doc.mimetype [[[[" << doc.mimetype <<
-	"]]]]\n-----------------------------------------------------\n" <<
-	"doc.fmtime [[[[" << doc.fmtime <<
-	"]]]]\n-----------------------------------------------------\n" <<
-	"doc.dmtime [[[[" << doc.dmtime <<
-	"]]]]\n-----------------------------------------------------\n" <<
-	"doc.origcharset [[[[" << doc.origcharset <<
-	"]]]]\n-----------------------------------------------------\n" <<
-	"doc.meta[title] [[[[" << doc.meta["title"] <<
-	"]]]]\n-----------------------------------------------------\n" <<
-	"doc.meta[keywords] [[[[" << doc.meta["keywords"] <<
-	"]]]]\n-----------------------------------------------------\n" <<
-	"doc.meta[abstract] [[[[" << doc.meta["abstract"] <<
-	"]]]]\n-----------------------------------------------------\n" <<
-	"doc.text [[[[" << doc.text << "]]]]\n";
+    "]]]]\n-----------------------------------------------------\n" <<
+    "doc.ipath [[[[" << doc.ipath <<
+    "]]]]\n-----------------------------------------------------\n" <<
+    "doc.mimetype [[[[" << doc.mimetype <<
+    "]]]]\n-----------------------------------------------------\n" <<
+    "doc.fmtime [[[[" << doc.fmtime <<
+    "]]]]\n-----------------------------------------------------\n" <<
+    "doc.dmtime [[[[" << doc.dmtime <<
+    "]]]]\n-----------------------------------------------------\n" <<
+    "doc.origcharset [[[[" << doc.origcharset <<
+    "]]]]\n-----------------------------------------------------\n" <<
+    "doc.meta[title] [[[[" << doc.meta["title"] <<
+    "]]]]\n-----------------------------------------------------\n" <<
+    "doc.meta[keywords] [[[[" << doc.meta["keywords"] <<
+    "]]]]\n-----------------------------------------------------\n" <<
+    "doc.meta[abstract] [[[[" << doc.meta["abstract"] <<
+    "]]]]\n-----------------------------------------------------\n" <<
+    "doc.text [[[[" << doc.text << "]]]]\n";
 }

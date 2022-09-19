@@ -21,8 +21,7 @@
 
 class RclConfig;
 namespace Rcl {
-    class Db;
-    class Doc;
+class Doc;
 }
 class CirCache;
 
@@ -35,6 +34,8 @@ class WebStore {
 public:
     WebStore(RclConfig *config);
     ~WebStore();
+    WebStore(const WebStore&) = delete;
+    WebStore& operator=(const WebStore&) = delete;
 
     bool getFromCache(const std::string& udi, Rcl::Doc &doc, std::string& data,
                       std::string *hittype = 0);

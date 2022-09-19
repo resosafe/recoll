@@ -10,7 +10,7 @@ add_definitions(-DKDE_DEFAULT_DEBUG_AREA=7130
     -DLIBDIR=\\"${CMAKE_INSTALL_PREFIX}/lib\\"
     -DHAVE_CONFIG_H
 )
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${KDE4_ENABLE_EXCEPTIONS}") 
+set(CMAKE_CXX_FLAGS "-fPIC ${CMAKE_CXX_FLAGS} ${KDE4_ENABLE_EXCEPTIONS}") 
 
 set(rcltop ${CMAKE_CURRENT_SOURCE_DIR}/../../../)
 
@@ -60,7 +60,7 @@ add_custom_target(rcllib
 )
 add_dependencies(kio_recoll rcllib)
 
-target_link_libraries(kio_recoll recoll xapian xslt xml2 z ${EXTRA_LIBS} ${KDE4_KIO_LIBS})
+target_link_libraries(kio_recoll recoll xapian xslt xml2 z ${EXTRA_LIBS} ${KDE4_KIO_LIBS} X11)
 
 install(TARGETS kio_recoll DESTINATION ${PLUGIN_INSTALL_DIR})
 

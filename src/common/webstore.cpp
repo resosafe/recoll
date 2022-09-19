@@ -37,15 +37,15 @@ WebStore::WebStore(RclConfig *cnf)
     int maxmbs = 40;
     cnf->getConfParam("webcachemaxmbs", &maxmbs);
     if ((m_cache = new CirCache(ccdir)) == 0) {
-	LOGERR("WebStore: cant create CirCache object\n" );
-	return;
+        LOGERR("WebStore: cant create CirCache object\n" );
+        return;
     }
     if (!m_cache->create(int64_t(maxmbs)*1000*1024, CirCache::CC_CRUNIQUE)) {
-	LOGERR("WebStore: cache file creation failed: " <<
+        LOGERR("WebStore: cache file creation failed: " <<
                m_cache->getReason() << "\n");
-	delete m_cache;
-	m_cache = 0;
-	return;
+        delete m_cache;
+        m_cache = 0;
+        return;
     }
 }
 
@@ -57,17 +57,17 @@ WebStore::~WebStore()
 // Read  document from cache. Return the metadata as an Rcl::Doc
 // @param htt Web Hit Type 
 bool WebStore::getFromCache(const string& udi, Rcl::Doc &dotdoc, 
-				    string& data, string *htt)
+                            string& data, string *htt)
 {
     string dict;
 
     if (m_cache == 0) {
-	LOGERR("WebStore::getFromCache: cache is null\n");
-	return false;
+        LOGERR("WebStore::getFromCache: cache is null\n");
+        return false;
     }
     if (!m_cache->get(udi, dict, &data)) {
-	LOGDEB("WebStore::getFromCache: get failed\n");
-	return false;
+        LOGDEB("WebStore::getFromCache: get failed\n");
+        return false;
     }
 
     ConfSimple cf(dict, 1);
@@ -89,4 +89,3 @@ bool WebStore::getFromCache(const string& udi, Rcl::Doc &dotdoc,
     dotdoc.meta[Rcl::Doc::keyudi] = udi;
     return true;
 }
-

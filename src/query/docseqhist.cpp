@@ -14,6 +14,8 @@
  *   Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
+#include "autoconfig.h"
+
 #include "docseqhist.h"
 
 #include <stdio.h>
@@ -123,31 +125,31 @@ bool DocSequenceHistory::getDoc(int num, Rcl::Doc &doc, string *sh)
 {
     // Retrieve history list
     if (!m_hist)
-	return false;
+        return false;
     if (m_history.empty())
-	m_history = getDocHistory(m_hist);
+        m_history = getDocHistory(m_hist);
 
     if (num < 0 || num >= (int)m_history.size())
-	return false;
+        return false;
 
     // We get the history oldest first, but our users expect newest first
     RclDHistoryEntry& hentry = m_history[m_history.size() - 1 - num];
 
     if (sh) {
-	if (m_prevtime < 0 || abs(m_prevtime - hentry.unixtime) > 86400) {
-	    m_prevtime = hentry.unixtime;
-	    time_t t = (time_t)(hentry.unixtime);
-	    *sh = string(ctime(&t));
-	    // Get rid of the final \n in ctime
-	    sh->erase(sh->length()-1);
-	} else {
-	    sh->erase();
+        if (m_prevtime < 0 || abs(m_prevtime - hentry.unixtime) > 86400) {
+            m_prevtime = hentry.unixtime;
+            time_t t = (time_t)(hentry.unixtime);
+            *sh = string(ctime(&t));
+            // Get rid of the final \n in ctime
+            sh->erase(sh->length()-1);
+        } else {
+            sh->erase();
         }
     }
 
     bool ret = m_db->getDoc(hentry.udi, hentry.dbdir, doc);
     if (!ret || doc.pc == -1) {
-	doc.url = "UNKNOWN";
+        doc.url = "UNKNOWN";
         doc.ipath = "";
     }
 
@@ -159,9 +161,9 @@ bool DocSequenceHistory::getDoc(int num, Rcl::Doc &doc, string *sh)
 }
 
 int DocSequenceHistory::getResCnt()
-{	
+{    
     if (m_history.empty())
-	m_history = getDocHistory(m_hist);
+        m_history = getDocHistory(m_hist);
     return int(m_history.size());
 }
 

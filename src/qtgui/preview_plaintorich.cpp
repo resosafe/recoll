@@ -44,7 +44,7 @@ void PlainToRichQtPreview::clear()
     m_lastanchor = 0;
     m_groupanchors.clear();
     m_groupcuranchors.clear();
-    QSettings settings("Recoll.org", "recoll");
+    QSettings settings;
     m_spacehack = settings.value("anchorSpcHack", 0).toBool();
 }
 
@@ -55,21 +55,22 @@ bool PlainToRichQtPreview::haveAnchors()
 
 string  PlainToRichQtPreview::PlainToRichQtPreview::header()
 {
-    if (!m_inputhtml) {
-        switch (prefs.previewPlainPre) {
-        case PrefsPack::PP_BR:
-            m_eolbr = true;
-            return "<qt><head><title></title></head><body>";
-        case PrefsPack::PP_PRE:
-            m_eolbr = false;
-            return "<qt><head><title></title></head><body><pre>";
-        case PrefsPack::PP_PREWRAP:
-            m_eolbr = false;
-            return "<qt><head><title></title></head><body>"
-                "<pre style=\"white-space: pre-wrap\">";
-        }
+    if (m_inputhtml) {
+        return cstr_null;
     }
-    return cstr_null;
+    switch (prefs.previewPlainPre) {
+    case PrefsPack::PP_BR:
+        m_eolbr = true;
+        return "<qt><head><title></title></head><body>";
+    case PrefsPack::PP_PRE:
+        m_eolbr = false;
+        return "<qt><head><title></title></head><body><pre>";
+    case PrefsPack::PP_PREWRAP:
+    default:
+        m_eolbr = false;
+        return "<qt><head><title></title></head><body>"
+            "<pre style=\"white-space: pre-wrap\">";
+    }
 }
 
 string PlainToRichQtPreview::startMatch(unsigned int grpidx)
@@ -88,11 +89,15 @@ string PlainToRichQtPreview::startMatch(unsigned int grpidx)
     // highlighting the spurious space. The space hack only work in a
     // <pre> section. Also: having <a name=xxx></a> before the match
     // term causes the same problem (so not a possible fix).
-    string hackspace = m_spacehack? " " : "";
+    // Space does not seem to work any more (2021-04) ?
+    //   Zero Width Non Joiner works but is displayed as ? sometimes on windows.
+    //  nbsp seems to now work !
+    string hackspace = m_spacehack? "&nbsp;" : "";
     string startmarker{
-        "<a name='" + termAnchorName(m_lastanchor) + "'>" + hackspace +
-            "<span style='" + qs2utf8s(prefs.qtermstyle) + "'>"
-            };
+        "<a name='" + termAnchorName(m_lastanchor) + "'>" +
+        hackspace +
+        "<span style='" + qs2utf8s(prefs.qtermstyle) + "'>" 
+    };
     return startmarker;
 }
 
@@ -117,10 +122,8 @@ string  PlainToRichQtPreview::startChunk()
 int  PlainToRichQtPreview::nextAnchorNum(int grpidx)
 {
     LOGDEB2("nextAnchorNum: group " << grpidx << "\n");
-    map<unsigned int, unsigned int>::iterator curit = 
-        m_groupcuranchors.find(grpidx);
-    map<unsigned int, vector<int> >::iterator vecit = 
-        m_groupanchors.find(grpidx);
+    auto curit = m_groupcuranchors.find(grpidx);
+    auto vecit = m_groupanchors.find(grpidx);
     if (grpidx == -1 || curit == m_groupcuranchors.end() ||
         vecit == m_groupanchors.end()) {
         if (m_curanchor >= m_lastanchor)
@@ -140,10 +143,8 @@ int  PlainToRichQtPreview::nextAnchorNum(int grpidx)
 
 int  PlainToRichQtPreview::prevAnchorNum(int grpidx)
 {
-    map<unsigned int, unsigned int>::iterator curit = 
-        m_groupcuranchors.find(grpidx);
-    map<unsigned int, vector<int> >::iterator vecit = 
-        m_groupanchors.find(grpidx);
+    auto curit = m_groupcuranchors.find(grpidx);
+    auto vecit = m_groupanchors.find(grpidx);
     if (grpidx == -1 || curit == m_groupcuranchors.end() ||
         vecit == m_groupanchors.end()) {
         if (m_curanchor <= 1)
@@ -162,7 +163,7 @@ int  PlainToRichQtPreview::prevAnchorNum(int grpidx)
 
 QString  PlainToRichQtPreview::curAnchorName() const
 {
-    return QString::fromUtf8(termAnchorName(m_curanchor).c_str());
+    return u8s2qs(termAnchorName(m_curanchor));
 }
 
 
@@ -189,8 +190,7 @@ void ToRichThread::run()
     }
 
     // Convert C++ string list to QString list
-    for (list<string>::iterator it = out.begin(); 
-         it != out.end(); it++) {
-        m_output.push_back(QString::fromUtf8(it->c_str(), it->length()));
+    for (const auto& chunk : out) {
+        m_output.push_back(u8s2qs(chunk));
     }
 }

@@ -1,4 +1,4 @@
-/*
+/* Copyright (C) 2005-2020 J.F.Dockes
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation; either version 2 of the License, or
@@ -30,23 +30,25 @@ class SpecIdxW : public QDialog, public Ui::SpecIdxW {
 public:
 
     SpecIdxW(QWidget * parent = 0) 
-	: QDialog(parent)
-    {
-	setupUi(this);
+        : QDialog(parent) {
+        setupUi(this);
         selPatsLE->setEnabled(false);
-        connect(browsePB, SIGNAL(clicked()), this, SLOT(onBrowsePB_clicked()));
+        connect(targBrowsePB, SIGNAL(clicked()), this, SLOT(onTargBrowsePB_clicked()));
         connect(targLE, SIGNAL(textChanged(const QString&)), 
                 this, SLOT(onTargLE_textChanged(const QString&)));
+        connect(diagsBrowsePB, SIGNAL(clicked()), this, SLOT(onDiagsBrowsePB_clicked()));
     }
     bool noRetryFailed();
     bool eraseFirst();
     std::vector<std::string> selpatterns();
     std::string toptarg();
+    std::string diagsfile();
 
 public slots:
 
     void onTargLE_textChanged(const QString&);
-    void onBrowsePB_clicked();
+    void onTargBrowsePB_clicked();
+    void onDiagsBrowsePB_clicked();
 };
 
 

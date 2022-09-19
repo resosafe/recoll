@@ -7,6 +7,9 @@ class ZLibUtBuf {
 public:
     ZLibUtBuf();
     ~ZLibUtBuf();
+    ZLibUtBuf(const ZLibUtBuf&) = delete;
+    ZLibUtBuf& operator=(const ZLibUtBuf&) = delete;
+    
     char *getBuf() const;
     char *takeBuf();
     size_t getCnt();

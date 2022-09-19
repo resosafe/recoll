@@ -26,8 +26,8 @@ lowercase_term(std::string &term)
 {
     std::string::iterator i = term.begin();
     while (i != term.end()) {
-	if (*i >= 'A' && *i <= 'Z')
-	    *i = *i + 'a' - 'A';
+        if (*i >= 'A' && *i <= 'Z')
+            *i = *i + 'a' - 'A';
         i++;
     }
 }

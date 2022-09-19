@@ -1,0 +1,8 @@
+/*
+ * This is always applied to the recoll GUI, and can be extended or overridden by the style sheet
+ * set in the preferences. The font size is edited before applying when recoll is scaled.
+ */
+QWidget {
+    font-size: 12px;
+}
+

@@ -38,6 +38,7 @@
 class RclMain;
 class QtGuiResListPager;
 class QEvent;
+class QProgressDialog;
 namespace Rcl {
 class Doc;
 }
@@ -54,6 +55,8 @@ class ResList : public RESLIST_PARENTCLASS
 public:
     ResList(QWidget* parent = 0, const char* name = 0);
     virtual ~ResList();
+    ResList(const ResList&) = delete;
+    ResList& operator=(const ResList&) = delete;
     
     // Return document for given docnum. We mostly act as an
     // intermediary to the docseq here, but this has also the
@@ -81,10 +84,13 @@ public slots:
     virtual void menuEdit();
     virtual void menuOpenWith(QAction *);
     virtual void menuCopyFN();
+    virtual void menuCopyPath();
     virtual void menuCopyURL();
+    virtual void menuCopyText();
     virtual void menuExpand();
     virtual void menuPreviewParent();
     virtual void menuOpenParent();
+    virtual void menuOpenFolder();
     virtual void menuShowSnippets();
     virtual void menuShowSubDocs();
     virtual void previewExposed(int);
@@ -93,7 +99,8 @@ public slots:
     virtual void highlighted(const QString& link);
     virtual void createPopupMenu(const QPoint& pos);
     virtual void showQueryDetails();
-        
+    virtual void onUiPrefsChanged();
+    
 signals:
     void nextPageAvailable(bool);
     void prevPageAvailable(bool);
@@ -117,10 +124,15 @@ protected:
 public slots:
     virtual void onLinkClicked(const QUrl &);
     virtual void onPopupJsDone(const QVariant&);
-    void runJS(const QString& js);
-    void runStoredJS();
+
 protected slots:
     virtual void languageChange();
+    void setupArrows();
+#if defined(USING_WEBENGINE)
+    void runStoredJS(bool);
+    void onPageScrollPositionChanged(const QPointF &position);
+    void onPageContentsSizeChanged(const QSizeF &size);
+#endif // USING_WEBENGINE
 
 private:
     QtGuiResListPager  *m_pager{0};
@@ -134,6 +146,16 @@ private:
     // Webview makes it more difficult to append text incrementally,
     // so we store the page and display it when done.
     QString    m_text;
+    QProgressDialog *m_progress{nullptr};
+    int m_residx{0}; // result index in page
+    QString    m_lasttext;
+    void runJS(const QString& js);
+#if defined(USING_WEBENGINE)
+    // Webengine local image display appears to break randomly (for some versions and platforms,
+    // circa 2022) when we display the same data multiple times. Detect and avoid.
+    QPointF m_scrollpos{0,0};
+    QSizeF m_contentsize{0,0};
+#endif // WEBENGINE    
 #else
     // Translate from textedit paragraph number to relative
     // docnum. Built while we insert text into the qtextedit
@@ -141,7 +163,10 @@ private:
     virtual int docnumfromparnum(int);
     virtual std::pair<int,int> parnumfromdocnum(int);
 #endif
+    // Running js after page load. Sometimes we don't want to do it on the first event (which may be
+    // a reset), hence the countdown.
     QString m_js;
+    int m_js_countdown{0};
     RclMain   *m_rclmain{0};
     bool m_ismainres{true};
 
@@ -151,7 +176,6 @@ private:
     void resetView();
     bool scrollIsAtTop();
     bool scrollIsAtBottom();
-    void setupArrows();
 };
 
 #ifdef USING_WEBENGINE

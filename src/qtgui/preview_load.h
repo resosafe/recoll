@@ -38,8 +38,9 @@ public:
     LoadThread(RclConfig *conf,
                const Rcl::Doc& idoc, bool pvhtml, QObject *parent = 0);
 
-    virtual ~LoadThread() {
-    }
+    virtual ~LoadThread() {}
+    LoadThread(const LoadThread&) = delete;
+    LoadThread& operator=(const LoadThread&) = delete;
 
     virtual void run();
 

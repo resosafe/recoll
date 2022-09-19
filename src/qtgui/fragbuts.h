@@ -39,6 +39,8 @@ public:
 
     FragButs(QWidget* parent = 0);
     virtual ~FragButs();
+    FragButs(const FragButs&) = delete;
+    FragButs& operator=(const FragButs&) = delete;
 
     struct ButFrag {
         QAbstractButton *button;
@@ -49,7 +51,7 @@ public:
     };
 
     void getfrags(std::vector<std::string>&);
-	bool ok() {return m_ok;}
+    bool ok() {return m_ok;}
     bool isStale(time_t *reftime);
 private slots:
     void onButtonClicked(bool);
@@ -62,7 +64,6 @@ private:
     std::string m_fn;
     time_t m_reftime; 
     bool m_ok;
- };
-
+};
 
 #endif /* _FRAGBUTS_H_INCLUDED_ */

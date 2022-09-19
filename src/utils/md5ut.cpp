@@ -32,13 +32,13 @@ public:
     FileScanMd5loc(string& d) : digest(d) {}
     virtual bool init(int64_t, string *)
     {
-	MD5Init(&ctx);
-	return true;
+    MD5Init(&ctx);
+    return true;
     }
     virtual bool data(const char *buf, int cnt, string*)
     {
-	MD5Update(&ctx, (const unsigned char*)buf, cnt);
-	return true;
+    MD5Update(&ctx, (const unsigned char*)buf, cnt);
+    return true;
     }
     string &digest;
     MD5_CTX ctx;
@@ -48,7 +48,7 @@ bool MD5File(const string& filename, string &digest, string *reason)
 {
     FileScanMd5loc md5er(digest);
     if (!file_scan(filename, &md5er, reason))
-	return false;
+    return false;
     // We happen to know that digest and md5er.digest are the same object
     MD5Final(md5er.digest, &md5er.ctx);
     return true;

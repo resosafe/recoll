@@ -1,14 +1,18 @@
 # @(#$Id: shared.sh,v 1.4 2009-01-06 18:47:33 dockes Exp $  (C) 2006 J.F.Dockes
 # shared code and variables for all tests
 
-RECOLL_TESTDATA=/home/dockes/projets/fulltext/testrecoll
+# TMPDIR has to be something which belongs to the user because of pdftk
+# issues (see runtests.sh)
+export TMPDIR=$HOME/tmp
+
+RECOLL_TESTDATA=${RECOLL_TESTDATA:-/home/dockes/projets/fulltext/testrecoll}
 
 # All source'rs should set topdir as a relative path from their location to
-# this directory
+# this directory. Computing RECOLL_CONFDIR this way allows to rerun an
+# individual test from its directory.
 topdir=${topdir:-.}
 
-RECOLL_CONFDIR=$topdir/config/
-export RECOLL_CONFDIR
+export RECOLL_CONFDIR=$topdir/config/
 
 ECHON="/bin/echo -n"
 
@@ -22,35 +26,11 @@ initvariables() {
   mydiffs=$toptmp/${myname}.diffs
 }
 
-rerootResults()
-{
-    savedcd=`pwd`
-    dirs=`ls -F | grep / | grep -v CVS | grep -v non-auto | grep -v config`
-    for dir in $dirs ; do
-    	cd $dir
-	resfile=`basename $dir`.txt
-	sed -i.bak \
-	  -e "s!file:///.*/testrecoll/!file://$RECOLL_TESTDATA/!g" \
-	  $resfile
-    	cd ..
-    done
-
-    cd $RECOLL_CONFDIR
-    sed -i.bak \
-  -e "s!/.*/testrecoll/!$RECOLL_TESTDATA/!g" \
-      recoll.conf
-    sed -i.bak \
-  -e "s!/.*/testrecoll/!$RECOLL_TESTDATA/!g" \
-      mimemap
-
-    cd $savedcd
-}
-
 fatal () {
-      set -f
-      echo
-      echo $*
-      exit 1
+  set -f
+  echo
+  echo $*
+  exit 1
 }
 
 checkresult() {

@@ -1,4 +1,4 @@
-/* Copyright (C) 2012 J.F.Dockes
+/* Copyright (C) 2012-2021 J.F.Dockes
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation; either version 2 of the License, or
@@ -52,6 +52,8 @@
 #include "rcldb.h"
 #include "rclhelp.h"
 #include "plaintorich.h"
+#include "scbase.h"
+#include "readfile.h"
 
 using namespace std;
 
@@ -66,8 +68,7 @@ using namespace std;
 class PlainToRichQtSnippets : public PlainToRich {
 public:
     virtual string startMatch(unsigned int) {
-        return string("<span class='rclmatch' style='")
-            + qs2utf8s(prefs.qtermstyle) + string("'>");
+        return string("<span class='rclmatch' style='") + qs2utf8s(prefs.qtermstyle) + string("'>");
     }
     virtual string endMatch() {
         return string("</span>");
@@ -81,18 +82,10 @@ void SnippetsW::init()
     QPushButton *searchButton = new QPushButton(tr("Search"));
     searchButton->setAutoDefault(false);
     buttonBox->addButton(searchButton, QDialogButtonBox::ActionRole);
-//    setWindowFlags(Qt::WindowStaysOnTopHint);
     searchFM->hide();
 
-    new QShortcut(QKeySequence::Find, this, SLOT(slotEditFind()));
-    new QShortcut(QKeySequence(Qt::Key_Slash), this, SLOT(slotEditFind()));
-    new QShortcut(QKeySequence(Qt::Key_Escape), searchFM, SLOT(hide()));
-    new QShortcut(QKeySequence::FindNext, this, SLOT(slotEditFindNext()));
-    new QShortcut(QKeySequence(Qt::Key_F3), this, SLOT(slotEditFindNext()));
-    new QShortcut(QKeySequence::FindPrevious, this, 
-                  SLOT(slotEditFindPrevious()));
-    new QShortcut(QKeySequence(Qt::SHIFT + Qt::Key_F3), 
-                  this, SLOT(slotEditFindPrevious()));
+    onNewShortcuts();
+    connect(&SCBase::scBase(), SIGNAL(shortcutsChanged()), this, SLOT(onNewShortcuts()));
 
     QPushButton *closeButton = buttonBox->button(QDialogButtonBox::Close);
     if (closeButton)
@@ -110,18 +103,9 @@ void SnippetsW::init()
     browserw = new QWebView(this);
     verticalLayout->insertWidget(0, browserw);
     browser->setUrl(QUrl(QString::fromUtf8("about:blank")));
-    connect(browser, SIGNAL(linkClicked(const QUrl &)), 
-            this, SLOT(onLinkClicked(const QUrl &)));
+    connect(browser, SIGNAL(linkClicked(const QUrl &)), this, SLOT(onLinkClicked(const QUrl &)));
     browser->page()->setLinkDelegationPolicy(QWebPage::DelegateAllLinks);
-    browser->page()->currentFrame()->setScrollBarPolicy(Qt::Horizontal,
-                                                        Qt::ScrollBarAlwaysOff);
-    QWEBSETTINGS *ws = browser->page()->settings();
-    if (prefs.reslistfontfamily != "") {
-        ws->setFontFamily(QWEBSETTINGS::StandardFont, prefs.reslistfontfamily);
-        ws->setFontSize(QWEBSETTINGS::DefaultFontSize, prefs.reslistfontsize);
-    }
-    if (!prefs.snipCssFile.isEmpty())
-        ws->setUserStyleSheetUrl(QUrl::fromLocalFile(prefs.snipCssFile));
+    browser->page()->currentFrame()->setScrollBarPolicy(Qt::Horizontal, Qt::ScrollBarAlwaysOff);
     browserw->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(browserw, SIGNAL(customContextMenuRequested(const QPoint&)),
             this, SLOT(createPopupMenu(const QPoint&)));
@@ -129,11 +113,6 @@ void SnippetsW::init()
     browserw = new QWebEngineView(this);
     verticalLayout->insertWidget(0, browserw);
     browser->setPage(new SnipWebPage(this));
-    QWEBSETTINGS *ws = browser->page()->settings();
-    if (prefs.reslistfontfamily != "") {
-        ws->setFontFamily(QWEBSETTINGS::StandardFont, prefs.reslistfontfamily);
-        ws->setFontSize(QWEBSETTINGS::DefaultFontSize, prefs.reslistfontsize);
-    }
     // Stylesheet TBD
     browserw->setContextMenuPolicy(Qt::CustomContextMenu);
     connect(browserw, SIGNAL(customContextMenuRequested(const QPoint&)),
@@ -141,13 +120,12 @@ void SnippetsW::init()
 #else
     browserw = new QTextBrowser(this);
     verticalLayout->insertWidget(0, browserw);
-    connect(browser, SIGNAL(anchorClicked(const QUrl &)), 
-            this, SLOT(onLinkClicked(const QUrl &)));
+    connect(browser, SIGNAL(anchorClicked(const QUrl &)), this, SLOT(onLinkClicked(const QUrl &)));
     browser->setReadOnly(true);
     browser->setUndoRedoEnabled(false);
     browser->setOpenLinks(false);
     browser->setTabChangesFocus(true);
-    if (prefs.reslistfontfamily.length()) {
+    if (prefs.reslistfontfamily != "") {
         QFont nfont(prefs.reslistfontfamily, prefs.reslistfontsize);
         browser->setFont(nfont);
     } else {
@@ -156,12 +134,39 @@ void SnippetsW::init()
 #endif
 }
 
+void SnippetsW::onNewShortcuts()
+{
+    SETSHORTCUT(this, "snippets:156", tr("Snippets Window"), tr("Find"),
+                "Ctrl+F", m_find1sc, slotEditFind);
+    SETSHORTCUT(this, "snippets:158", tr("Snippets Window"), tr("Find (alt)"),
+                "/", m_find2sc, slotEditFind);
+    SETSHORTCUT(this, "snippets:160", tr("Snippets Window"), tr("Find next"),
+                "F3", m_findnextsc, slotEditFindNext);
+    SETSHORTCUT(this, "snippets:162", tr("Snippets Window"), tr("Find previous"),
+                "Shift+F3", m_findprevsc, slotEditFindPrevious);
+    SETSHORTCUT(this, "snippets:164", tr("Snippets Window"), tr("Close window"),
+                "Esc", m_hidesc, hide);
+}
+
+void SnippetsW::listShortcuts()
+{
+    LISTSHORTCUT(this, "snippets:156", tr("Snippets Window"), tr("Find"),
+                 "Ctrl+F", m_find1sc, slotEditFind);
+    LISTSHORTCUT(this, "snippets:158", tr("Snippets Window"), tr("Find (alt)"),
+                 "/", m_find2sc, slotEditFind);
+    LISTSHORTCUT(this, "snippets:160",tr("Snippets Window"), tr("Find next"),
+                 "F3", m_find2sc, slotEditFindNext);
+    LISTSHORTCUT(this, "snippets:162",tr("Snippets Window"), tr("Find previous"),
+                 "Shift+F3", m_find2sc, slotEditFindPrevious);
+    LISTSHORTCUT(this, "snippets:164", tr("Snippets Window"), tr("Close window"),
+                 "Esc", m_hidesc, hide);
+}
+
 void SnippetsW::createPopupMenu(const QPoint& pos)
 {
     QMenu *popup = new QMenu(this);
     if (m_sortingByPage) {
-        popup->addAction(tr("Sort By Relevance"), this,
-                         SLOT(reloadByRelevance()));
+        popup->addAction(tr("Sort By Relevance"), this, SLOT(reloadByRelevance()));
     } else {
         popup->addAction(tr("Sort By Page"), this, SLOT(reloadByPage()));
     }
@@ -206,30 +211,22 @@ void SnippetsW::onSetDoc(Rcl::Doc doc, std::shared_ptr<DocSequence> source)
     HighlightData hdata;
     source->getTerms(hdata);
 
+    std::string snipcss;
+    if (!prefs.snipCssFile.isEmpty()) {
+        file_to_string(qs2path(prefs.snipCssFile), snipcss);
+    }
     ostringstream oss;
-    oss << 
-        "<html><head>"
-        "<meta http-equiv=\"content-type\" "
-        "content=\"text/html; charset=utf-8\">";
-
-    oss << "<style type=\"text/css\">\nbody,table,select,input {\n";
-    oss << "color: " + qs2utf8s(prefs.fontcolor) + ";\n";
-    oss << "}\n</style>\n";
-    oss << qs2utf8s(prefs.reslistheadertext);
-
-    oss << 
-        "</head>"
-        "<body>"
-        "<table class=\"snippets\">"
-        ;
+    oss << "<html><head>\n"
+        "<meta http-equiv=\"content-type\" content=\"text/html; charset=utf-8\">\n";
+    oss << prefs.htmlHeaderContents() << snipcss;
+    oss << "\n</head>\n<body>\n<table class=\"snippets\">";
 
     g_hiliter.set_inputhtml(false);
     bool nomatch = true;
 
     for (const auto& snippet : vpabs) {
         if (snippet.page == -1) {
-            oss << "<tr><td colspan=\"2\">" << 
-                snippet.snippet << "</td></tr>" << endl;
+            oss << "<tr><td colspan=\"2\">" << snippet.snippet << "</td></tr>" << "\n";
             continue;
         }
         list<string> lr;
@@ -240,13 +237,15 @@ void SnippetsW::onSetDoc(Rcl::Doc doc, std::shared_ptr<DocSequence> source)
         nomatch = false;
         oss << "<tr><td>";
         if (snippet.page > 0) {
-            oss << "<a href=\"http://h/P" << snippet.page << "T" <<
-                snippet.term << "\">" 
-                << "P.&nbsp;" << snippet.page << "</a>";
+            oss << "<a href=\"http://h/P" << snippet.page << "T" << snippet.term << "\">" <<
+                "P.&nbsp;" << snippet.page << "</a>";
+        } else if (snippet.line > 0) {
+            oss << "<a href=\"http://h/L" << snippet.line << "T" << snippet.term << "\">" <<
+                "L.&nbsp;" << snippet.line << "</a>";
         }
-        oss << "</td><td>" << lr.front().c_str() << "</td></tr>" << endl;
+        oss << "</td><td>" << lr.front().c_str() << "</td></tr>" << "\n";
     }
-    oss << "</table>" << endl;
+    oss << "</table>" << "\n";
     if (nomatch) {
         oss.str("<html><head></head><body>\n");
         oss << qs2utf8s(tr("<p>Sorry, no exact match was found within limits. "
@@ -255,9 +254,12 @@ void SnippetsW::onSetDoc(Rcl::Doc doc, std::shared_ptr<DocSequence> source)
     }
     oss << "\n</body></html>";
 #if defined(USING_WEBKIT) || defined(USING_WEBENGINE)
-    browser->setHtml(QString::fromUtf8(oss.str().c_str()));
+    browser->setHtml(u8s2qs(oss.str()));
 #else
-    browser->insertHtml(QString::fromUtf8(oss.str().c_str()));
+    browser->clear();
+    browser->append(".");
+    browser->clear();
+    browser->insertHtml(u8s2qs(oss.str()));
     browser->moveCursor (QTextCursor::Start);
     browser->ensureCursorVisible();
 #endif
@@ -318,18 +320,23 @@ void SnippetsW::onLinkClicked(const QUrl &url)
     if (ascurl.size() > 3) {
         int what = ascurl[0];
         switch (what) {
-        case 'P': 
+        case 'P':
+        case 'L':
         {
             string::size_type numpos = ascurl.find_first_of("0123456789");
             if (numpos == string::npos)
                 return;
-            int page = atoi(ascurl.c_str() + numpos);
+            int page = -1, line = -1;
+            if (what == 'P') {
+                page = atoi(ascurl.c_str() + numpos);
+            } else {
+                line = atoi(ascurl.c_str() + numpos);
+            }
             string::size_type termpos = ascurl.find_first_of("T");
             string term;
             if (termpos != string::npos)
                 term = ascurl.substr(termpos+1);
-            emit startNativeViewer(m_doc, page, 
-                                   QString::fromUtf8(term.c_str()));
+            emit startNativeViewer(m_doc, page, u8s2qs(term), line);
             return;
         }
         }

@@ -1,6 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.1" language="fr">
+<TS version="2.1" language="fr" sourcelanguage="en">
+<context>
+    <name>ActSearchDLG</name>
+    <message>
+        <source>Menu search</source>
+        <translation>Recherche dans les menus</translation>
+    </message>
+</context>
 <context>
     <name>AdvSearch</name>
     <message>
@@ -21,7 +28,7 @@
     </message>
     <message>
         <source>presentations</source>
-        <translation type="obsolete">présentations</translation>
+        <translation type="vanished">présentations</translation>
     </message>
     <message>
         <source>media</source>
@@ -29,7 +36,7 @@
     </message>
     <message>
         <source>messages</source>
-        <translation type="obsolete">messages</translation>
+        <translation type="vanished">messages</translation>
     </message>
     <message>
         <source>other</source>
@@ -54,6 +61,26 @@
     <message>
         <source>message</source>
         <translation>message</translation>
+    </message>
+    <message>
+        <source>Advanced Search</source>
+        <translation>Recherche avancée</translation>
+    </message>
+    <message>
+        <source>History Next</source>
+        <translation type="vanished">Historique, suivant</translation>
+    </message>
+    <message>
+        <source>History Prev</source>
+        <translation type="vanished">Historique, Precedent</translation>
+    </message>
+    <message>
+        <source>Load next stored search</source>
+        <translation>Afficher la recherche sauvegardée suivante</translation>
+    </message>
+    <message>
+        <source>Load previous stored search</source>
+        <translation>Afficher la recherche sauvegardée précédente</translation>
     </message>
 </context>
 <context>
@@ -164,7 +191,7 @@
     </message>
     <message>
         <source>Select</source>
-        <translation type="obsolete">Sélectionner</translation>
+        <translation type="vanished">Sélectionner</translation>
     </message>
     <message>
         <source>Filter</source>
@@ -192,7 +219,7 @@
     </message>
     <message>
         <source>Check this to enable filtering on sizes</source>
-        <translation>Cocher pour activer le fitrage sur taille fichier</translation>
+        <translation>Cocher pour activer le filtrage sur taille fichier</translation>
     </message>
     <message>
         <source>Filter sizes</source>
@@ -223,7 +250,7 @@
     </message>
     <message>
         <source>The list of directories where recursive indexing starts. Default: your home.</source>
-        <translation>La liste des répertoires où l&apos;indexation récursive démarre. Défault: votre répertoire par défaut.</translation>
+        <translation>La liste des répertoires où l&apos;indexation récursive démarre. Défaut: votre répertoire par défaut.</translation>
     </message>
     <message>
         <source>Skipped paths</source>
@@ -239,7 +266,7 @@
     </message>
     <message>
         <source>The languages for which stemming expansion&lt;br&gt;dictionaries will be built.</source>
-        <translation>Les langages pour lesquels les dictionnaires d&apos;expansion&lt;br&gt;des termes seront construits.</translation>
+        <translation type="vanished">Les langages pour lesquels les dictionnaires d&apos;expansion&lt;br&gt;des termes seront construits.</translation>
     </message>
     <message>
         <source>Log file name</source>
@@ -266,10 +293,6 @@
         <translation>Ajuste la quantité de données lues entre les écritures sur disque.&lt;br&gt;Contrôle l&apos;utilisation de la mémoire. Défaut 10 Mo </translation>
     </message>
     <message>
-        <source>Disk full threshold to stop indexing&lt;br&gt;(e.g. 90%, 0 means no limit)</source>
-        <translation></translation>
-    </message>
-    <message>
         <source>This is the percentage of disk usage - total disk usage, not index size - at which indexing will fail and stop.&lt;br&gt;The default value of 0 removes any limit.</source>
         <translation>C&apos;est le pourcentage d&apos;utilisation disque - utilisation totale, et non taille de l&apos;index - où l&apos;indexation s&apos;arrêtera en erreur.&lt;br&gt;La valeur par défaut de 0 désactive ce test.</translation>
     </message>
@@ -283,11 +306,11 @@
     </message>
     <message>
         <source>Aspell language</source>
-        <translation>Langue pour aspell</translation>
+        <translation>Langue pour Aspell</translation>
     </message>
     <message>
         <source>The language for the aspell dictionary. This should look like &apos;en&apos; or &apos;fr&apos; ...&lt;br&gt;If this value is not set, the NLS environment will be used to compute it, which usually works. To get an idea of what is installed on your system, type &apos;aspell config&apos; and look for .dat files inside the &apos;data-dir&apos; directory. </source>
-        <translation>Langue pour le dictionnaire aspell. La valeur devrait ressembler à &apos;en&apos; ou &apos;fr&apos;... &lt;br&gt;Si cette valeur n&apos;est pas positionnée, l&apos;environnement national sera utilisé pour la calculer, ce qui marche bien habituellement. Pour avoir une liste des valeurs possibles sur votre système, entrer &apos;aspell config&apos; sur une ligne de commande et regarder les fichiers &apos;.dat&apos; dans le répertoire &apos;data-dir&apos;. </translation>
+        <translation type="vanished">Langue pour le dictionnaire aspell. La valeur devrait ressembler à &apos;en&apos; ou &apos;fr&apos;... &lt;br&gt;Si cette valeur n&apos;est pas positionnée, l&apos;environnement national sera utilisé pour la calculer, ce qui marche bien habituellement. Pour avoir une liste des valeurs possibles sur votre système, entrer &apos;aspell config&apos; sur une ligne de commande et regarder les fichiers &apos;.dat&apos; dans le répertoire &apos;data-dir&apos;. </translation>
     </message>
     <message>
         <source>Database directory name</source>
@@ -307,7 +330,7 @@
     </message>
     <message>
         <source>Process the WEB history queue</source>
-        <translation>Traiter la file des pages WEB</translation>
+        <translation type="vanished">Traiter la file des pages WEB</translation>
     </message>
     <message>
         <source>Enables indexing Firefox visited pages.&lt;br&gt;(you need also install the Firefox Recoll plugin)</source>
@@ -315,7 +338,7 @@
     </message>
     <message>
         <source>Web page store directory name</source>
-        <translation>Répertoire de stockage des pages WEB</translation>
+        <translation>Répertoire de stockage des pages Web</translation>
     </message>
     <message>
         <source>The name for a directory where to store the copies of visited web pages.&lt;br&gt;A non-absolute path is taken relative to the configuration directory.</source>
@@ -343,7 +366,7 @@
     </message>
     <message>
         <source>&lt;p&gt;Automatically trigger character case sensitivity if the entry has upper-case characters in any but the first position. Else you need to use the query language and the &lt;i&gt;C&lt;/i&gt; modifier to specify character-case sensitivity.</source>
-        <translation>&lt;p&gt;Activer automatiquement la sensibilité aux majuscules si le terme de recherche contient des majuscules (sauf en première lettre). Sans cette option, vous devez utiliser le langage de recherche et le drapeau &lt;i&gt;C&lt;/i&gt; pour activer la sensibilité aux majuscules.</translation>
+        <translation>&lt;p&gt;Activer automatiquement la sensibilité aux majuscules si le terme de recherche contient des majuscules ailleurs qu&apos;en première lettre. Sans cette option, vous devez utiliser le langage de recherche et le drapeau &lt;i&gt;C&lt;/i&gt; pour activer la sensibilité aux majuscules.</translation>
     </message>
     <message>
         <source>Maximum term expansion count</source>
@@ -360,6 +383,50 @@
     <message>
         <source>&lt;p&gt;Maximum number of elementary clauses we add to a single Xapian query. In some cases, the result of term expansion can be multiplicative, and we want to avoid using excessive memory. The default of 100 000 should be both high enough in most cases and compatible with current typical hardware configurations.</source>
         <translation>&lt;p&gt;Nombre maximum de clauses Xapian élémentaires générées pour une requête. Dans certains cas, le résultat de l&apos;expansion des termes peut ere multiplicatif, et utiliserait trop de mémoire. La valeur par défaut de 100000 devrait être à la fois suffisante et compatible avec les configurations matérielles typiques.</translation>
+    </message>
+    <message>
+        <source>The languages for which stemming expansion dictionaries will be built.&lt;br&gt;See the Xapian stemmer documentation for possible values. E.g. english, french, german...</source>
+        <translation>Langues pour lesquelles les dictionnaires d&apos;expansion des racines.&lt;br&gt;Consulter la liste des valeurs possibles dans documentation Xapian (stemmers). Ex: english, french, german...</translation>
+    </message>
+    <message>
+        <source>The language for the aspell dictionary. The values are are 2-letter language codes, e.g. &apos;en&apos;, &apos;fr&apos; ...&lt;br&gt;If this value is not set, the NLS environment will be used to compute it, which usually works. To get an idea of what is installed on your system, type &apos;aspell config&apos; and look for .dat files inside the &apos;data-dir&apos; directory.</source>
+        <translation>Langue du dictionnaire aspell. Les valeurs sont des codes en deux lettres, par exemple &apos;en&apos;, &apos;fr&apos;...&lt;br&gt;Si cette valeur n&apos;est pas renseignée, l&apos;environnement système sera utilisé pour la déterminer, ce qui marche bien le plus souvent. Pour avoir une idée de ce qui est installé sur votre système, utiliser la commande &apos;aspell --help&apos; qui affiche entre autres la liste des dictionnaires disponibles.</translation>
+    </message>
+    <message>
+        <source>Indexer log file name</source>
+        <translation>Nom du fichier journal de l&apos;indexeur</translation>
+    </message>
+    <message>
+        <source>If empty, the above log file name value will be used. It may useful to have a separate log for diagnostic purposes because the common log will be erased when&lt;br&gt;the GUI starts up.</source>
+        <translation>Si la valeur est vide, la valeur du journal commun est utilisée. Il peut être utile d&apos;avoir un fichier séparé pour l&apos;indexeur parce que le fichier commun est effacé quand&lt;br&gt;l&apos;interface graphique démarre.</translation>
+    </message>
+    <message>
+        <source>Disk full threshold percentage at which we stop indexing&lt;br&gt;E.g. 90% to stop at 90% full, 0 or 100 means no limit)</source>
+        <translation>Pourcentage d&apos;occupation du disque provoquant l&apos;arrêt de l&apos;indexation&lt;br&gt;Ex: 90% pour arrêter quand le disque est 90% plein. 0 ou 100 signifient pas de limite</translation>
+    </message>
+    <message>
+        <source>Web history</source>
+        <translation>Historique Web</translation>
+    </message>
+    <message>
+        <source>Process the Web history queue</source>
+        <translation>Traiter la file d&apos;attente de l&apos;historique Web</translation>
+    </message>
+    <message>
+        <source> (by default, aspell suggests mispellings when a query has no results).</source>
+        <translation> (par défaut, aspell suggère des erreurs lorsqu&apos;une requête n&apos;a pas de résultats).</translation>
+    </message>
+    <message>
+        <source>Page recycle interval</source>
+        <translation>Intervalle de recyclage de la page</translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;By default, only one instance of an URL is kept in the cache. This can be changed by setting this to a value determining at what frequency we keep multiple instances (&apos;day&apos;, &apos;week&apos;, &apos;month&apos;, &apos;year&apos;). Note that increasing the interval will not erase existing entries.</source>
+        <translation>&lt;p&gt;Par défaut, une seule instance d&apos;une URL est conservée dans le cache. Cela peut être modifié en définissant cette valeur à une valeur déterminant à quelle fréquence nous gardons plusieurs instances (&apos;day&apos;, &apos;semaine&apos;, &apos;mois&apos;, &apos;année&apos;). Notez qu&apos;augmenter l&apos;intervalle n&apos;effacera pas les entrées existantes.</translation>
+    </message>
+    <message>
+        <source>Note: old pages will be erased to make space for new ones when the maximum size is reached. Current size: %1</source>
+        <translation>Remarque : les anciennes pages seront effacées pour faire de l&apos;espace pour les nouvelles lorsque la taille maximale est atteinte. Taille actuelle : %1</translation>
     </message>
 </context>
 <context>
@@ -415,7 +482,8 @@ Ceci diminue les ressources consommées par l&apos;indexation et aide le chargem
     <message>
         <source>External filters working longer than this will be aborted. This is for the rare case (ie: postscript) where a document could cause a filter to loop. Set to -1 for no limit.
 </source>
-        <translation>Un filtre externe qui prend plus de temps sera arrêté. Traite le cas rare (possible avec postscript par exemple) où un document pourrait amener un filtre à boucler sans fin. Mettre -1 pour complètement supprimer la limite (déconseillé).</translation>
+        <translation>Un filtre externe qui prend plus de temps sera arrêté. Traite le cas rare (possible avec postscript par exemple) où un document pourrait amener un filtre à boucler sans fin. Mettre -1 pour complètement supprimer la limite.
+</translation>
     </message>
     <message>
         <source>Global</source>
@@ -609,7 +677,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>Fragment Buttons</source>
-        <translation type="obsolete">Fragments de recherche</translation>
+        <translation type="vanished">Boutons de fragment</translation>
     </message>
     <message>
         <source>Query Fragments</source>
@@ -676,16 +744,17 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>Could not open database in </source>
-        <translation type="obsolete">Impossible d&apos;ouvrir la base dans </translation>
+        <translation type="vanished">Impossible d&apos;ouvrir la base de données dans </translation>
     </message>
     <message>
         <source>.
 Click Cancel if you want to edit the configuration file before indexing starts, or Ok to let it proceed.</source>
-        <translation type="obsolete">Cliquer Annuler pour pouvoir éditer le fichier de configuration avant que l&apos;indexation ne démarre, ou Ok pour continuer.</translation>
+        <translation type="vanished">.
+Cliquez sur Annuler si vous voulez modifier le fichier de configuration avant le début de l&apos;indexation, ou sur Ok pour le laisser continuer.</translation>
     </message>
     <message>
         <source>Configuration problem (dynconf</source>
-        <translation type="obsolete">Problème de configuration (dynconf)</translation>
+        <translation type="vanished">Problème de configuration (dynconf</translation>
     </message>
     <message>
         <source>&quot;history&quot; file is damaged or un(read)writeable, please check or remove it: </source>
@@ -728,7 +797,7 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
     </message>
     <message>
         <source>Cannot create temporary directory</source>
-        <translation type="obsolete">Impossible de créer le répertoire temporaire</translation>
+        <translation type="vanished">Impossible de créer le répertoire temporaire</translation>
     </message>
     <message>
         <source>Cancel</source>
@@ -748,7 +817,7 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
     </message>
     <message>
         <source>Cannot create temporary directory: </source>
-        <translation type="obsolete">Impossible de créer un répertoire temporaire</translation>
+        <translation type="vanished">Impossible de créer le répertoire temporaire: </translation>
     </message>
     <message>
         <source>Error while loading file</source>
@@ -800,11 +869,51 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
     </message>
     <message>
         <source>Previous result document</source>
-        <translation type="unfinished"></translation>
+        <translation>Prévisualisation du résultat</translation>
     </message>
     <message>
         <source>Next result document</source>
-        <translation type="unfinished"></translation>
+        <translation>Résultat suivant</translation>
+    </message>
+    <message>
+        <source>Preview Window</source>
+        <translation>Fenêtre d&apos;aperçu</translation>
+    </message>
+    <message>
+        <source>Close Window</source>
+        <translation type="vanished">Fermer la fenêtre</translation>
+    </message>
+    <message>
+        <source>Next doc in tab</source>
+        <translation type="vanished">Résultat suivant</translation>
+    </message>
+    <message>
+        <source>Previous doc in tab</source>
+        <translation type="vanished">Résultat précédent</translation>
+    </message>
+    <message>
+        <source>Close tab</source>
+        <translation>Fermer l&apos;onglet</translation>
+    </message>
+    <message>
+        <source>Print tab</source>
+        <translation type="vanished">Imprimer l&apos;onglet</translation>
+    </message>
+    <message>
+        <source>Close preview window</source>
+        <translation>Fermer la fenêtre</translation>
+    </message>
+    <message>
+        <source>Show next result</source>
+        <translation>Afficher le résultat suivant</translation>
+    </message>
+    <message>
+        <source>Show previous result</source>
+        <translation>Afficher le résultat précédent</translation>
+    </message>
+    <message>
+        <source>Print</source>
+        <translation>Imprimer</translation>
     </message>
 </context>
 <context>
@@ -886,11 +995,11 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
     </message>
     <message>
         <source>Default character set</source>
-        <translation type="obsolete">Jeu de caractères par défaut</translation>
+        <translation type="vanished">Jeu de caractères par défaut</translation>
     </message>
     <message>
         <source>This is the character set used for reading files which do not identify the character set internally, for example pure text files.&lt;br&gt;The default value is empty, and the value from the NLS environnement is used.</source>
-        <translation type="obsolete">Jeu de caractères utilisé pour lire les fichiers qui ne l&apos;identifient pas de manière interne, par exemple les fichiers de texte pur. &lt;br&gt;La valeur par défaut est vide, et le programme utilise l&apos;environnement.</translation>
+        <translation type="vanished">Il s&apos;agit du jeu de caractères utilisé pour lire des fichiers qui n&apos;identifient pas le jeu de caractères en interne, par exemple des fichiers texte purs.&lt;br&gt;La valeur par défaut est vide, et la valeur du NLS environnement est utilisée.</translation>
     </message>
     <message>
         <source>Follow symbolic links</source>
@@ -910,7 +1019,7 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
     </message>
     <message>
         <source>Beagle web history</source>
-        <translation type="obsolete">Queue Web</translation>
+        <translation type="vanished">Historique du web Beagle</translation>
     </message>
     <message>
         <source>Search parameters</source>
@@ -935,8 +1044,8 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
     <message>
         <source>These are file name endings for files which will be indexed by content only 
 (no MIME type identification attempt, no decompression, no content indexing.</source>
-        <translation type="obsolete">Suffixes correspondants `a des fichiers qui seront indexe&apos;s par nom seulement  
-(pas d&apos;identification de type MIME, pas d&apos;ecompression, pas d&apos;indexation du contenu).</translation>
+        <translation type="vanished">Suffixes sélectionnant des fichiers qui seront indexés uniquement sur leur nom
+(pas d&apos; identification de type MIME, pas de décompression, pas d&apos; indexation du contenu.</translation>
     </message>
     <message>
         <source>These are file name endings for files which will be indexed by name only 
@@ -989,7 +1098,7 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
     </message>
     <message>
         <source>Copy &amp;File Name</source>
-        <translation>Copier le nom de &amp;Fichier</translation>
+        <translation type="vanished">Copier le nom de &amp;Fichier</translation>
     </message>
     <message>
         <source>Copy &amp;URL</source>
@@ -1009,7 +1118,7 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
     </message>
     <message>
         <source>&amp;Open Parent document/folder</source>
-        <translation>&amp;Ouvrir le document/dossier parent</translation>
+        <translation type="vanished">&amp;Ouvrir le document/dossier parent</translation>
     </message>
     <message>
         <source>Find &amp;similar documents</source>
@@ -1022,6 +1131,26 @@ Click Cancel if you want to edit the configuration file before indexing starts, 
     <message>
         <source>Show subdocuments / attachments</source>
         <translation>Afficher les sous-documents et attachements</translation>
+    </message>
+    <message>
+        <source>&amp;Open Parent document</source>
+        <translation>&amp;Ouvrir le document parent</translation>
+    </message>
+    <message>
+        <source>&amp;Open Parent Folder</source>
+        <translation>Ouvrir le dossier parent</translation>
+    </message>
+    <message>
+        <source>Copy Text</source>
+        <translation>Copier le texte</translation>
+    </message>
+    <message>
+        <source>Copy &amp;File Path</source>
+        <translation>Copier le chemin du fichier</translation>
+    </message>
+    <message>
+        <source>Copy File Name</source>
+        <translation>Copier le nom du fichier</translation>
     </message>
 </context>
 <context>
@@ -1136,7 +1265,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>Files</source>
-        <translation type="obsolete">Fichiers</translation>
+        <translation type="vanished">Fichiers</translation>
     </message>
     <message>
         <source>Purge</source>
@@ -1160,13 +1289,13 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>Can&apos;t start query: </source>
-        <translation type="obsolete">Impossible de démarrer la recherche : </translation>
+        <translation type="vanished">Peut&apos;t démarrer la requête : </translation>
     </message>
     <message>
         <source>Bad viewer command line for %1: [%2]
 Please check the mimeconf file</source>
-        <translation type="obsolete">Mauvaise commande pour %1 : [%2]
-Vérifier le fichier mimeconf</translation>
+        <translation type="vanished">Mauvaise ligne de commande du visualiseur pour %1: [%2]
+Veuillez vérifier le fichier mimeconf</translation>
     </message>
     <message>
         <source>Cannot extract document or create temporary file</source>
@@ -1236,7 +1365,7 @@ Vérifier le fichier mimeconf</translation>
         <source>External applications/commands needed and not found for indexing your file types:
 
 </source>
-        <translation type="obsolete">Applications externes non trouvees pour indexer vos types de fichiers :
+        <translation type="vanished">Applications/commandes externes nécessaires et non trouvées pour l&apos;indexation de vos types de fichiers :
 
 </translation>
     </message>
@@ -1250,15 +1379,15 @@ Vérifier le fichier mimeconf</translation>
     </message>
     <message>
         <source>Save file dialog</source>
-        <translation type="obsolete">Dialogue de sauvegarde de fichier</translation>
+        <translation type="vanished">Boîte de dialogue de sauvegarde des fichiers</translation>
     </message>
     <message>
         <source>Choose a file name to save under</source>
-        <translation type="obsolete">Choisir un nom pour le nouveau fichier</translation>
+        <translation type="vanished">Choisissez un nom de fichier sous lequel enregistrer</translation>
     </message>
     <message>
         <source>Document category filter</source>
-        <translation type="obsolete">Filtre de catégories de documents</translation>
+        <translation type="vanished">Filtre de catégorie de document</translation>
     </message>
     <message>
         <source>No external viewer configured for mime type [</source>
@@ -1288,7 +1417,7 @@ Voulez vous démarrer le dialogue de préférences ?</translation>
     </message>
     <message>
         <source>Query details</source>
-        <translation type="obsolete">Détails de la recherche</translation>
+        <translation type="vanished">Détail de la recherche</translation>
     </message>
     <message>
         <source>Could not open external index. Db not open. Check external indexes list.</source>
@@ -1320,7 +1449,7 @@ Voulez vous démarrer le dialogue de préférences ?</translation>
     </message>
     <message>
         <source>The current indexing process was not started from this interface. Click Ok to kill it anyway, or Cancel to leave it alone</source>
-        <translation>Le processus d&apos;indexation en cours n&apos;a pas été démarré depuis cette interface. Cliquer OK pour le tuer quand même, ou Annuler pour le laisser tranquille.</translation>
+        <translation type="vanished">Le processus d&apos;indexation en cours n&apos;a pas été démarré depuis cette interface. Cliquer OK pour le tuer quand même, ou Annuler pour le laisser tranquille.</translation>
     </message>
     <message>
         <source>Erasing index</source>
@@ -1348,7 +1477,7 @@ Voulez vous démarrer le dialogue de préférences ?</translation>
     </message>
     <message>
         <source>Indexed Mime Types</source>
-        <translation type="obsolete">Types MIME indexés</translation>
+        <translation type="vanished">Types Mime indexés</translation>
     </message>
     <message>
         <source>Content has been indexed for these MIME types:</source>
@@ -1356,7 +1485,7 @@ Voulez vous démarrer le dialogue de préférences ?</translation>
     </message>
     <message>
         <source>Index not up to date for this file. Refusing to risk showing the wrong entry. Click Ok to update the index for this file, then re-run the query when indexing is done. Else, Cancel.</source>
-        <translation type="obsolete">Index pas à jour pour ce fichier. Risque d&apos;afficher une entrée incorrecte. Cliquer OK pour mettre à jour l&apos;index pour ce fichier, puis redémarrer la requête quand l&apos;indexation est terminée. Sinon, Annuler.</translation>
+        <translation type="vanished">L&apos;index n&apos;est pas à jour pour ce fichier. Refuser pour risquer d&apos;afficher la mauvaise entrée. Cliquez sur OK pour mettre à jour l&apos;index de ce fichier, puis ré-exécuter la requête lorsque l&apos;indexation est terminée. Sinon, Annuler.</translation>
     </message>
     <message>
         <source>Can&apos;t update index: indexer running</source>
@@ -1390,15 +1519,15 @@ Vérifier le fichier mimeview.</translation>
     </message>
     <message>
         <source>Index not up to date for this file. Refusing to risk showing the wrong entry.</source>
-        <translation type="obsolete">L&apos;index n&apos;est pas à jour pour ce fichier. Il y aurait un risque d&apos;afficher une entrée incorrecte</translation>
+        <translation type="vanished">L&apos;index n&apos;est pas à jour pour ce fichier. Refuser pour risquer d&apos;afficher la mauvaise entrée.</translation>
     </message>
     <message>
         <source>Click Ok to update the index for this file, then re-run the query when indexing is done. Else, Cancel.</source>
-        <translation type="obsolete">Cliquer OK pour mettre à jour l&apos;index pour ce fichier, puis relancer la recherche quand l&apos;indexation est terminée. Sinon cliquer Annuler</translation>
+        <translation type="vanished">Cliquez sur OK pour mettre à jour l&apos;index de ce fichier, puis ré-exécuter la requête lorsque l&apos;indexation est terminée. Sinon, Annuler.</translation>
     </message>
     <message>
         <source>Indexer running so things should improve when it&apos;s done</source>
-        <translation type="obsolete">L&apos;indexeur est en cours d&apos;exécution, le fichier devrait être mis à jour</translation>
+        <translation type="vanished">Indexer en cours d&apos;exécution donc les choses devraient s&apos;améliorer quand cela&apos;s est fait</translation>
     </message>
     <message>
         <source>Sub-documents and attachments</source>
@@ -1422,19 +1551,19 @@ Vérifier le fichier mimeview.</translation>
     </message>
     <message>
         <source>The document belongs to an external indexwhich I can&apos;t update. </source>
-        <translation type="obsolete">Le document appartient à un index externe que je ne peux pas mettre à jour.</translation>
+        <translation type="vanished">Le document appartient à un index externe que je peux&apos;t mettre à jour. </translation>
     </message>
     <message>
         <source>Click Cancel to return to the list. Click Ignore to show the preview anyway. </source>
-        <translation type="obsolete">Cliquer Annuler pour retourner à la liste. Cliquer Ignorer pour afficher tout de même.</translation>
+        <translation type="vanished">Cliquez sur Annuler pour retourner à la liste. Cliquez sur Ignorer pour afficher l&apos;aperçu quand même. </translation>
     </message>
     <message>
         <source>Duplicate documents</source>
-        <translation>Documents identiques</translation>
+        <translation type="vanished">Documents identiques</translation>
     </message>
     <message>
         <source>These Urls ( | ipath) share the same content:</source>
-        <translation>Ces URLs(| ipath) partagent le même contenu : </translation>
+        <translation type="vanished">Ces URLs(| ipath) partagent le même contenu : </translation>
     </message>
     <message>
         <source>Bad desktop app spec for %1: [%2]
@@ -1647,23 +1776,131 @@ Merci de vérifier le fichier desktop </translation>
     </message>
     <message>
         <source>Batch scheduling</source>
-        <translation type="unfinished"></translation>
+        <translation>Programmation du traitement par lots</translation>
     </message>
     <message>
         <source>The tool will let you decide at what time indexing should run.  It uses the Windows task scheduler.</source>
-        <translation type="unfinished"></translation>
+        <translation>Utilisez cet outil pour déterminer à quelle heure l&apos;indexation doit s&apos;exécuter. Il est basé sur l&apos;outile de programmation de tâches Windows.</translation>
     </message>
     <message>
         <source>Confirm</source>
-        <translation type="unfinished"></translation>
+        <translation>Confirmer</translation>
     </message>
     <message>
         <source>Erasing simple and advanced search history lists, please click Ok to confirm</source>
-        <translation type="unfinished"></translation>
+        <translation>Effacement des historique de recherche, cliquer Ok pour confirmer</translation>
     </message>
     <message>
         <source>Could not open/create file</source>
-        <translation type="unfinished"></translation>
+        <translation>Impossible d&apos;ouvrir ou créer le fichier</translation>
+    </message>
+    <message>
+        <source>F&amp;ilter</source>
+        <translation>F&amp;iltre</translation>
+    </message>
+    <message>
+        <source>Could not start recollindex (temp file error)</source>
+        <translation type="vanished">Impossible de démarrer l&apos;indexeur (erreur de fichier temporaire)</translation>
+    </message>
+    <message>
+        <source>Could not read: </source>
+        <translation type="vanished">Impossible de lire:</translation>
+    </message>
+    <message>
+        <source>This will replace the current contents of the result list header string and GUI qss file name. Continue ?</source>
+        <translation type="vanished">Ceci remplacera le contenu courant le la préférence &quot;en-tete de liste de résultats&quot; et le nom du fichier qss. Continuer ?</translation>
+    </message>
+    <message>
+        <source>You will need to run a query to complete the display change.</source>
+        <translation type="vanished">Exécutez une recherche pour compléter le changement d&apos;affichage.</translation>
+    </message>
+    <message>
+        <source>Simple search type</source>
+        <translation>Type de recherche simple</translation>
+    </message>
+    <message>
+        <source>Any term</source>
+        <translation>Certains termes</translation>
+    </message>
+    <message>
+        <source>All terms</source>
+        <translation>Tous les termes</translation>
+    </message>
+    <message>
+        <source>File name</source>
+        <translation>Nom de fichier</translation>
+    </message>
+    <message>
+        <source>Query language</source>
+        <translation>Language d&apos;interrogation</translation>
+    </message>
+    <message>
+        <source>Stemming language</source>
+        <translation>Langue pour l&apos;expansion des termes</translation>
+    </message>
+    <message>
+        <source>Main Window</source>
+        <translation>Fenêtre principale</translation>
+    </message>
+    <message>
+        <source>Focus to Search</source>
+        <translation type="vanished">Retourner à la zone du texte de recherche</translation>
+    </message>
+    <message>
+        <source>Focus to Search, alt.</source>
+        <translation type="vanished">Retourner à la zone du texte de recherche, alt.</translation>
+    </message>
+    <message>
+        <source>Clear Search</source>
+        <translation type="vanished">Effacer la recherche</translation>
+    </message>
+    <message>
+        <source>Focus to Result Table</source>
+        <translation type="vanished">Activer la table</translation>
+    </message>
+    <message>
+        <source>Clear search</source>
+        <translation>Effacer la recherche</translation>
+    </message>
+    <message>
+        <source>Move keyboard focus to search entry</source>
+        <translation>Cibler l&apos;entrée clavier sur la zone de recherche</translation>
+    </message>
+    <message>
+        <source>Move keyboard focus to search, alt.</source>
+        <translation>Cibler l&apos;entrée clavier vers la zone de recherche, autre.</translation>
+    </message>
+    <message>
+        <source>Toggle tabular display</source>
+        <translation>Basculer l&apos;affichage en mode table</translation>
+    </message>
+    <message>
+        <source>Move keyboard focus to table</source>
+        <translation>Cibler l&apos;entrée clavier vers la table</translation>
+    </message>
+    <message>
+        <source>Flushing</source>
+        <translation>Écriture de l&apos;index</translation>
+    </message>
+    <message>
+        <source>Show menu search dialog</source>
+        <translation>Afficher le dialogue de recherche dans les menus</translation>
+    </message>
+    <message>
+        <source>Duplicates</source>
+        <translation>Doublons</translation>
+    </message>
+    <message>
+        <source>Filter directories</source>
+        <translation>Filtrer par répertoire</translation>
+    </message>
+    <message>
+        <source>Main index open error: </source>
+        <translation>Erreur d&apos;ouverture de l&apos;index principal:</translation>
+    </message>
+    <message>
+        <source>. The index may be corrupted. Maybe try to run xapian-check or rebuild the index ?.</source>
+        <translation>L&apos;index est peut-être corrompu. Essayer d&apos;exécuter xapian-check, ou reconstruire l&apos;index.</translation>
     </message>
 </context>
 <context>
@@ -1698,11 +1935,11 @@ Merci de vérifier le fichier desktop </translation>
     </message>
     <message>
         <source>Search tools</source>
-        <translation type="obsolete">Outils de recherche</translation>
+        <translation type="vanished">Outils de recherche</translation>
     </message>
     <message>
         <source>Result list</source>
-        <translation type="obsolete">Liste de résultats</translation>
+        <translation type="vanished">Liste de résultats</translation>
     </message>
     <message>
         <source>&amp;About Recoll</source>
@@ -1722,7 +1959,7 @@ Merci de vérifier le fichier desktop </translation>
     </message>
     <message>
         <source>Advanced/complex  Search</source>
-        <translation>Recherche Avancée</translation>
+        <translation type="vanished">Recherche Avancée</translation>
     </message>
     <message>
         <source>&amp;Sort parameters</source>
@@ -1742,7 +1979,7 @@ Merci de vérifier le fichier desktop </translation>
     </message>
     <message>
         <source>&amp;Query configuration</source>
-        <translation type="obsolete">&amp;Recherche</translation>
+        <translation type="vanished">Configuration des &amp;requêtes</translation>
     </message>
     <message>
         <source>&amp;User manual</source>
@@ -1786,15 +2023,15 @@ Merci de vérifier le fichier desktop </translation>
     </message>
     <message>
         <source>&amp;Indexing configuration</source>
-        <translation type="obsolete">Configuration d&apos;&amp;Indexation</translation>
+        <translation type="vanished">&amp;Indexation</translation>
     </message>
     <message>
         <source>All</source>
-        <translation type="obsolete">Tout</translation>
+        <translation type="vanished">Tout</translation>
     </message>
     <message>
         <source>&amp;Show missing helpers</source>
-        <translation type="obsolete">Afficher les application&amp;s manquantes</translation>
+        <translation type="vanished">&amp;Afficher les aides manquantes</translation>
     </message>
     <message>
         <source>PgDown</source>
@@ -1802,7 +2039,7 @@ Merci de vérifier le fichier desktop </translation>
     </message>
     <message>
         <source>Shift+Home, Ctrl+S, Ctrl+Q, Ctrl+S</source>
-        <translation type="obsolete">Shift+Home, Ctrl+S, Ctrl+Q, Ctrl+S</translation>
+        <translation type="vanished">Maj+Accueil, Ctrl+S, Ctrl+Q, Ctrl+S</translation>
     </message>
     <message>
         <source>PgUp</source>
@@ -1826,7 +2063,7 @@ Merci de vérifier le fichier desktop </translation>
     </message>
     <message>
         <source>sortByDateAsc</source>
-        <translation type="obsolete">sortByDateAsc</translation>
+        <translation type="vanished">sortByDateAsc</translation>
     </message>
     <message>
         <source>Sort by dates from oldest to newest</source>
@@ -1834,7 +2071,7 @@ Merci de vérifier le fichier desktop </translation>
     </message>
     <message>
         <source>sortByDateDesc</source>
-        <translation type="obsolete">sortByDateDesc</translation>
+        <translation type="vanished">trier par description de la date</translation>
     </message>
     <message>
         <source>Sort by dates from newest to oldest</source>
@@ -1846,7 +2083,7 @@ Merci de vérifier le fichier desktop </translation>
     </message>
     <message>
         <source>Show results as table</source>
-        <translation type="obsolete">Afficher les résultats en tableau</translation>
+        <translation type="vanished">Afficher les résultats sous forme de tableau</translation>
     </message>
     <message>
         <source>&amp;Rebuild index</source>
@@ -1854,7 +2091,7 @@ Merci de vérifier le fichier desktop </translation>
     </message>
     <message>
         <source>&amp;Show indexed types</source>
-        <translation type="obsolete">&amp;Afficher les types indexés</translation>
+        <translation type="vanished">&amp;Afficher les types indexés</translation>
     </message>
     <message>
         <source>Shift+PgUp</source>
@@ -1862,7 +2099,7 @@ Merci de vérifier le fichier desktop </translation>
     </message>
     <message>
         <source>&amp;Indexing schedule</source>
-        <translation type="obsolete">&amp;Planning d&apos;indexation</translation>
+        <translation type="vanished">&amp;Planning de l&apos;indexation</translation>
     </message>
     <message>
         <source>E&amp;xternal index dialog</source>
@@ -1978,7 +2215,51 @@ Merci de vérifier le fichier desktop </translation>
     </message>
     <message>
         <source>E&amp;xport simple search history</source>
-        <translation type="unfinished"></translation>
+        <translation>E&amp;xporter l&apos;historique de recherches simples</translation>
+    </message>
+    <message>
+        <source>Use default dark mode</source>
+        <translation type="vanished">Utiliser le mode sombre standard</translation>
+    </message>
+    <message>
+        <source>Dark mode</source>
+        <translation type="vanished">Mode sombre</translation>
+    </message>
+    <message>
+        <source>&amp;Query</source>
+        <translation>R&amp;echerche</translation>
+    </message>
+    <message>
+        <source>Increase results text font size</source>
+        <translation>Augmenter la taille de la police de texte des résultats</translation>
+    </message>
+    <message>
+        <source>Increase Font Size</source>
+        <translation>Augmenter la taille de police</translation>
+    </message>
+    <message>
+        <source>Decrease results text font size</source>
+        <translation>Diminuer la taille de la police de texte des résultats</translation>
+    </message>
+    <message>
+        <source>Decrease Font Size</source>
+        <translation>Réduire la taille de police</translation>
+    </message>
+    <message>
+        <source>Start real time indexer</source>
+        <translation>Démarrage de l&apos;indexation au fil de l&apos;eau</translation>
+    </message>
+    <message>
+        <source>Query Language Filters</source>
+        <translation>Filtres de recherche (mode language)</translation>
+    </message>
+    <message>
+        <source>Filter dates</source>
+        <translation>Filtrer sur les dates</translation>
+    </message>
+    <message>
+        <source>Assisted complex search</source>
+        <translation>Recherche complexe assistée</translation>
     </message>
 </context>
 <context>
@@ -2024,7 +2305,7 @@ Merci de vérifier le fichier desktop </translation>
     </message>
     <message>
         <source> Ipath</source>
-        <translation type="obsolete">Ipath</translation>
+        <translation type="vanished"> Ipath</translation>
     </message>
     <message>
         <source>Keywords</source>
@@ -2032,7 +2313,7 @@ Merci de vérifier le fichier desktop </translation>
     </message>
     <message>
         <source>Mime type</source>
-        <translation type="obsolete">Type Mime</translation>
+        <translation type="vanished">Type Mime</translation>
     </message>
     <message>
         <source>Original character set</source>
@@ -2052,7 +2333,7 @@ Merci de vérifier le fichier desktop </translation>
     </message>
     <message>
         <source>Mtime</source>
-        <translation>Mtime</translation>
+        <translation type="vanished">Mtime</translation>
     </message>
     <message>
         <source>Date</source>
@@ -2099,15 +2380,15 @@ Merci de vérifier le fichier desktop </translation>
     </message>
     <message>
         <source>&amp;Preview</source>
-        <translation type="obsolete">&amp;Voir contenu</translation>
+        <translation type="vanished">&amp;Voir contenu</translation>
     </message>
     <message>
         <source>Copy &amp;URL</source>
-        <translation type="obsolete">Copier l&apos;&amp;Url</translation>
+        <translation type="vanished">Copier l&apos;&amp;Url</translation>
     </message>
     <message>
         <source>Find &amp;similar documents</source>
-        <translation type="obsolete">Chercher des documents &amp;similaires</translation>
+        <translation type="vanished">Chercher des documents &amp;similaires</translation>
     </message>
     <message>
         <source>Query details</source>
@@ -2119,15 +2400,15 @@ Merci de vérifier le fichier desktop </translation>
     </message>
     <message>
         <source>Copy &amp;File Name</source>
-        <translation type="obsolete">Copier le nom de &amp;Fichier</translation>
+        <translation type="vanished">Copier le nom de &amp;Fichier</translation>
     </message>
     <message>
         <source>filtered</source>
-        <translation type="obsolete">filtré</translation>
+        <translation type="vanished">filtré</translation>
     </message>
     <message>
         <source>sorted</source>
-        <translation type="obsolete">trié</translation>
+        <translation type="vanished">trié</translation>
     </message>
     <message>
         <source>Document history</source>
@@ -2147,19 +2428,19 @@ Merci de vérifier le fichier desktop </translation>
     </message>
     <message>
         <source>&amp;Write to File</source>
-        <translation type="obsolete">&amp;Sauver sous</translation>
+        <translation type="vanished">&amp;Sauver sous</translation>
     </message>
     <message>
         <source>Preview P&amp;arent document/folder</source>
-        <translation type="obsolete">Prévisualiser le document p&amp;arent</translation>
+        <translation type="vanished">Prévisualiser le document p&amp;arent</translation>
     </message>
     <message>
         <source>&amp;Open Parent document/folder</source>
-        <translation type="obsolete">&amp;Ouvrir le document parent</translation>
+        <translation type="vanished">&amp;Ouvrir le document/dossier parent</translation>
     </message>
     <message>
         <source>&amp;Open</source>
-        <translation type="obsolete">&amp;Ouvrir</translation>
+        <translation type="vanished">&amp;Ouvrir</translation>
     </message>
     <message>
         <source>Documents</source>
@@ -2179,15 +2460,15 @@ Merci de vérifier le fichier desktop </translation>
     </message>
     <message>
         <source>Open &amp;Snippets window</source>
-        <translation type="obsolete">Ouvrir la fenêtre des e&amp;xtraits</translation>
+        <translation type="vanished">Ouvrir la fenêtre des e&amp;xtraits</translation>
     </message>
     <message>
         <source>Duplicate documents</source>
-        <translation type="obsolete">Documents identiques</translation>
+        <translation type="vanished">Documents identiques</translation>
     </message>
     <message>
         <source>These Urls ( | ipath) share the same content:</source>
-        <translation type="obsolete">Ces URLs(| ipath) partagent le même contenu</translation>
+        <translation type="vanished">Ces URLs(| ipath) partagent le même contenu : </translation>
     </message>
     <message>
         <source>Result count (est.)</source>
@@ -2210,11 +2491,11 @@ Merci de vérifier le fichier desktop </translation>
     </message>
     <message>
         <source>Add &quot;</source>
-        <translation type="obsolete">Ajouter &quot;</translation>
+        <translation type="vanished">Ajouter &quot;</translation>
     </message>
     <message>
         <source>&quot; column</source>
-        <translation type="obsolete">&quot; colonne</translation>
+        <translation type="vanished">&quot; colonne</translation>
     </message>
     <message>
         <source>Save table to CSV file</source>
@@ -2226,35 +2507,35 @@ Merci de vérifier le fichier desktop </translation>
     </message>
     <message>
         <source>&amp;Preview</source>
-        <translation type="obsolete">&amp;Voir contenu</translation>
+        <translation type="vanished">&amp;Voir contenu</translation>
     </message>
     <message>
         <source>&amp;Open</source>
-        <translation type="obsolete">&amp;Ouvrir</translation>
+        <translation type="vanished">&amp;Ouvrir</translation>
     </message>
     <message>
         <source>Copy &amp;File Name</source>
-        <translation type="obsolete">Copier le nom de &amp;Fichier</translation>
+        <translation type="vanished">Copier le nom de &amp;Fichier</translation>
     </message>
     <message>
         <source>Copy &amp;URL</source>
-        <translation type="obsolete">Copier l&apos;&amp;Url</translation>
+        <translation type="vanished">Copier l&apos;&amp;Url</translation>
     </message>
     <message>
         <source>&amp;Write to File</source>
-        <translation type="obsolete">&amp;Sauver sous</translation>
+        <translation type="vanished">&amp;Sauver sous</translation>
     </message>
     <message>
         <source>Find &amp;similar documents</source>
-        <translation type="obsolete">Chercher des documents &amp;similaires</translation>
+        <translation type="vanished">Chercher des documents &amp;similaires</translation>
     </message>
     <message>
         <source>Preview P&amp;arent document/folder</source>
-        <translation type="obsolete">Prévisualiser le document p&amp;arent</translation>
+        <translation type="vanished">Prévisualiser le document p&amp;arent</translation>
     </message>
     <message>
         <source>&amp;Open Parent document/folder</source>
-        <translation type="obsolete">&amp;Ouvrir le document parent</translation>
+        <translation type="vanished">&amp;Ouvrir le document/dossier parent</translation>
     </message>
     <message>
         <source>&amp;Save as CSV</source>
@@ -2264,95 +2545,151 @@ Merci de vérifier le fichier desktop </translation>
         <source>Add &quot;%1&quot; column</source>
         <translation>Ajouter une colonne &quot;%1&quot;</translation>
     </message>
+    <message>
+        <source>Result Table</source>
+        <translation>Tableau de résultats</translation>
+    </message>
+    <message>
+        <source>Open</source>
+        <translation type="vanished">Ouvrir</translation>
+    </message>
+    <message>
+        <source>Open and Quit</source>
+        <translation type="vanished">Ouvrir et quitter</translation>
+    </message>
+    <message>
+        <source>Preview</source>
+        <translation>Prévisualisation</translation>
+    </message>
+    <message>
+        <source>Show Snippets</source>
+        <translation type="vanished">Afficher les extraits</translation>
+    </message>
+    <message>
+        <source>Open current result document</source>
+        <translation>Ouvrir le document résultat courant</translation>
+    </message>
+    <message>
+        <source>Open current result and quit</source>
+        <translation>Ouvrir le document résultat courant puis quitter le programme</translation>
+    </message>
+    <message>
+        <source>Show snippets</source>
+        <translation>Afficher les extraits</translation>
+    </message>
+    <message>
+        <source>Show header</source>
+        <translation>Afficher l&apos;en tête de table</translation>
+    </message>
+    <message>
+        <source>Show vertical header</source>
+        <translation>Afficher les en-têtes de ligne</translation>
+    </message>
+    <message>
+        <source>Copy current result text to clipboard</source>
+        <translation>Copier le texte du résultat courant vers le presse-papier</translation>
+    </message>
+    <message>
+        <source>Use Shift+click to display the text instead.</source>
+        <translation>Utilisez Maj+clic pour afficher le texte à la place.</translation>
+    </message>
+    <message>
+        <source>%1 bytes copied to clipboard</source>
+        <translation>%1 octets copiés vers le presse-papiers</translation>
+    </message>
+    <message>
+        <source>Copy result text and quit</source>
+        <translation>Copier le texte du résultat et quitter le programme</translation>
+    </message>
 </context>
 <context>
     <name>ResTableDetailArea</name>
     <message>
         <source>&amp;Preview</source>
-        <translation type="obsolete">&amp;Voir contenu</translation>
+        <translation type="vanished">&amp;Voir contenu</translation>
     </message>
     <message>
         <source>&amp;Open</source>
-        <translation type="obsolete">&amp;Ouvrir</translation>
+        <translation type="vanished">&amp;Ouvrir</translation>
     </message>
     <message>
         <source>Copy &amp;File Name</source>
-        <translation type="obsolete">Copier le nom de &amp;Fichier</translation>
+        <translation type="vanished">Copier le nom de &amp;Fichier</translation>
     </message>
     <message>
         <source>Copy &amp;URL</source>
-        <translation type="obsolete">Copier l&apos;&amp;Url</translation>
+        <translation type="vanished">Copier l&apos;&amp;Url</translation>
     </message>
     <message>
         <source>&amp;Write to File</source>
-        <translation type="obsolete">&amp;Sauver sous</translation>
+        <translation type="vanished">&amp;Sauver sous</translation>
     </message>
     <message>
         <source>Find &amp;similar documents</source>
-        <translation type="obsolete">Chercher des documents &amp;similaires</translation>
+        <translation type="vanished">Chercher des documents &amp;similaires</translation>
     </message>
     <message>
         <source>Preview P&amp;arent document/folder</source>
-        <translation type="obsolete">Prévisualiser le document p&amp;arent</translation>
+        <translation type="vanished">Prévisualiser le document p&amp;arent</translation>
     </message>
     <message>
         <source>&amp;Open Parent document/folder</source>
-        <translation type="obsolete">&amp;Ouvrir le document parent</translation>
+        <translation type="vanished">&amp;Ouvrir le document/dossier parent</translation>
     </message>
 </context>
 <context>
     <name>ResultPopup</name>
     <message>
         <source>&amp;Preview</source>
-        <translation type="obsolete">&amp;Voir contenu</translation>
+        <translation type="vanished">&amp;Voir contenu</translation>
     </message>
     <message>
         <source>&amp;Open</source>
-        <translation type="obsolete">&amp;Ouvrir</translation>
+        <translation type="vanished">&amp;Ouvrir</translation>
     </message>
     <message>
         <source>Copy &amp;File Name</source>
-        <translation type="obsolete">Copier le nom de &amp;Fichier</translation>
+        <translation type="vanished">Copier le nom de &amp;Fichier</translation>
     </message>
     <message>
         <source>Copy &amp;URL</source>
-        <translation type="obsolete">Copier l&apos;&amp;Url</translation>
+        <translation type="vanished">Copier l&apos;&amp;Url</translation>
     </message>
     <message>
         <source>&amp;Write to File</source>
-        <translation type="obsolete">&amp;Sauver sous</translation>
+        <translation type="vanished">&amp;Sauver sous</translation>
     </message>
     <message>
         <source>Save selection to files</source>
-        <translation type="obsolete">Sauvegarder la sélection courante dans des fichiers</translation>
+        <translation type="vanished">Sauvegarder la sélection courante dans des fichiers</translation>
     </message>
     <message>
         <source>Preview P&amp;arent document/folder</source>
-        <translation type="obsolete">Prévisualiser le document p&amp;arent</translation>
+        <translation type="vanished">Prévisualiser le document p&amp;arent</translation>
     </message>
     <message>
         <source>&amp;Open Parent document/folder</source>
-        <translation type="obsolete">&amp;Ouvrir le document parent</translation>
+        <translation type="vanished">&amp;Ouvrir le document/dossier parent</translation>
     </message>
     <message>
         <source>Find &amp;similar documents</source>
-        <translation type="obsolete">Chercher des documents &amp;similaires</translation>
+        <translation type="vanished">Chercher des documents &amp;similaires</translation>
     </message>
     <message>
         <source>Open &amp;Snippets window</source>
-        <translation type="obsolete">Ouvrir la fenêtre des e&amp;xtraits</translation>
+        <translation type="vanished">Ouvrir la fenêtre des e&amp;xtraits</translation>
     </message>
     <message>
         <source>Show subdocuments / attachments</source>
-        <translation type="obsolete">Afficher les sous-documents et attachements</translation>
+        <translation type="vanished">Afficher les sous-documents et attachements</translation>
     </message>
     <message>
         <source>Open With</source>
-        <translation type="obsolete">Ouvrir Avec</translation>
+        <translation type="vanished">Ouvrir Avec</translation>
     </message>
     <message>
         <source>Run Script</source>
-        <translation type="obsolete">Exécuter le Script</translation>
+        <translation type="vanished">Exécuter le Script</translation>
     </message>
 </context>
 <context>
@@ -2371,15 +2708,15 @@ Merci de vérifier le fichier desktop </translation>
     </message>
     <message>
         <source>Completions</source>
-        <translation type="obsolete">Complétions</translation>
+        <translation type="vanished">Complètement</translation>
     </message>
     <message>
         <source>Select an item:</source>
-        <translation type="obsolete">Sélectionner un élément :</translation>
+        <translation type="vanished">Sélectionnez un élément:</translation>
     </message>
     <message>
         <source>Too many completions</source>
-        <translation type="obsolete">Trop de complétions possibles</translation>
+        <translation type="vanished">Trop de complétions</translation>
     </message>
     <message>
         <source>Query language</source>
@@ -2407,7 +2744,7 @@ Merci de vérifier le fichier desktop </translation>
 &lt;i&gt;&quot;term1 term2&quot;p&lt;/i&gt; : unordered proximity search with default distance.&lt;br&gt;
 Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual (&amp;lt;F1&gt;) for more detail.
 </source>
-        <translation type="obsolete">Entrer une expression du langage de recherche. Antisèche :&lt;br&gt;
+        <translation type="vanished">Entrer une expression du langage de recherche. Antisèche :&lt;br&gt;
 &lt;i&gt;term1 term2&lt;/i&gt; : &apos;term1&apos; ET &apos;term2&apos; champ non spécifié.&lt;br&gt;
 &lt;i&gt;field:term1&lt;/i&gt; : &apos;term1&apos; recherche dans le champ &apos;field&apos;.&lt;br&gt;
  Noms de champs standards (utiliser les mots anglais)/alias:&lt;br&gt;
@@ -2471,7 +2808,7 @@ Utiliser le lien &lt;b&gt;Afficher la requête en détail&lt;/b&gt; en cas de do
     </message>
     <message>
         <source>External indexes for stored query: </source>
-        <translation>Les index externes pour la recherche sauvegardée : </translation>
+        <translation type="vanished">Les index externes pour la recherche sauvegardée : </translation>
     </message>
     <message>
         <source>Autophrase is set but it was unset for stored query</source>
@@ -2487,131 +2824,155 @@ Utiliser le lien &lt;b&gt;Afficher la requête en détail&lt;/b&gt; en cas de do
     </message>
     <message>
         <source>&lt;html&gt;&lt;head&gt;&lt;style&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;html&gt;&lt;head&gt;&lt;style&gt;</translation>
     </message>
     <message>
         <source>table, th, td {</source>
-        <translation type="unfinished"></translation>
+        <translation>table, th, td {</translation>
     </message>
     <message>
         <source>border: 1px solid black;</source>
-        <translation type="unfinished"></translation>
+        <translation>border: 1px solid black;</translation>
     </message>
     <message>
         <source>border-collapse: collapse;</source>
-        <translation type="unfinished"></translation>
+        <translation>border: 1px solid black;</translation>
     </message>
     <message>
         <source>}</source>
-        <translation type="unfinished"></translation>
+        <translation>}</translation>
     </message>
     <message>
         <source>th,td {</source>
-        <translation type="unfinished"></translation>
+        <translation>th,td {</translation>
     </message>
     <message>
         <source>text-align: center;</source>
-        <translation type="unfinished"></translation>
+        <translation>text-align: center;</translation>
     </message>
     <message>
         <source>&lt;/style&gt;&lt;/head&gt;&lt;body&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;/style&gt;&lt;/head&gt;&lt;body&gt;</translation>
     </message>
     <message>
         <source>&lt;p&gt;Query language cheat-sheet. In doubt: click &lt;b&gt;Show Query&lt;/b&gt;.&amp;nbsp;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;p&gt;Langue de requête feuille de triche. En doute : cliquez sur &lt;b&gt;Afficher la requête&lt;/b&gt;.&amp;nbsp;</translation>
     </message>
     <message>
         <source>You should really look at the manual (F1)&lt;/p&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>Vous devriez vraiment consulter le manuel (F1)&lt;/p&gt;</translation>
     </message>
     <message>
         <source>&lt;table border=&apos;1&apos; cellspacing=&apos;0&apos;&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;table border=&apos;1&apos; cellspacing=&apos;0&apos;&gt;</translation>
     </message>
     <message>
         <source>&lt;tr&gt;&lt;th&gt;What&lt;/th&gt;&lt;th&gt;Examples&lt;/th&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;tr&gt;&lt;th&gt;Quoi&lt;/th&gt;&lt;th&gt;Exemples&lt;/th&gt;</translation>
     </message>
     <message>
         <source>&lt;tr&gt;&lt;td&gt;And&lt;/td&gt;&lt;td&gt;one two&amp;nbsp;&amp;nbsp;&amp;nbsp;one AND two&amp;nbsp;&amp;nbsp;&amp;nbsp;one &amp;&amp; two&lt;/td&gt;&lt;/tr&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;tr&gt;&lt;td&gt;And&lt;/td&gt;&lt;td&gt;one two&amp;nbsp;&amp;nbsp;&amp;nbsp;one AND two&amp;nbsp;&amp;nbsp;&amp;nbsp;one &amp;&amp; two&lt;/td&gt;&lt;/tr&gt;</translation>
     </message>
     <message>
         <source>&lt;tr&gt;&lt;td&gt;Or&lt;/td&gt;&lt;td&gt;one OR two&amp;nbsp;&amp;nbsp;&amp;nbsp;one || two&lt;/td&gt;&lt;/tr&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;tr&gt;&lt;td&gt;Or&lt;/td&gt;&lt;td&gt;one OR two&amp;nbsp;&amp;nbsp;&amp;nbsp;one || two&lt;/td&gt;&lt;/tr&gt;</translation>
     </message>
     <message>
         <source>&lt;tr&gt;&lt;td&gt;Complex boolean. OR has priority, use parentheses&amp;nbsp;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;tr&gt;&lt;td&gt;Boolean complexe. OR a priorité, utilisez des parenthèses&amp;nbsp;</translation>
     </message>
     <message>
         <source>where needed&lt;/td&gt;&lt;td&gt;(one AND two) OR three&lt;/td&gt;&lt;/tr&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>si nécessaire&lt;/td&gt;&lt;td&gt;(un AND deux) OR trois&lt;/td&gt;&lt;/tr&gt;</translation>
     </message>
     <message>
         <source>&lt;tr&gt;&lt;td&gt;Not&lt;/td&gt;&lt;td&gt;-term&lt;/td&gt;&lt;/tr&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;tr&gt;&lt;td&gt;Not&lt;/td&gt;&lt;td&gt;-term&lt;/td&gt;&lt;/tr&gt;</translation>
     </message>
     <message>
         <source>&lt;tr&gt;&lt;td&gt;Phrase&lt;/td&gt;&lt;td&gt;&quot;pride and prejudice&quot;&lt;/td&gt;&lt;/tr&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;tr&gt;&lt;td&gt;Phrase&lt;/td&gt;&lt;td&gt;&quot;pride and prejudice&quot;&lt;/td&gt;&lt;/tr&gt;</translation>
     </message>
     <message>
         <source>&lt;tr&gt;&lt;td&gt;Ordered proximity (slack=1)&lt;/td&gt;&lt;td&gt;&quot;pride prejudice&quot;o1&lt;/td&gt;&lt;/tr&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;tr&gt;&lt;td&gt;Ordered proximity (slack=1)&lt;/td&gt;&lt;td&gt;&quot;pride prejudice&quot;o1&lt;/td&gt;&lt;/tr&gt;</translation>
     </message>
     <message>
         <source>&lt;tr&gt;&lt;td&gt;Unordered proximity (slack=1)&lt;/td&gt;&lt;td&gt;&quot;prejudice pride&quot;po1&lt;/td&gt;&lt;/tr&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;tr&gt;&lt;td&gt;Unordered proximity (slack=1)&lt;/td&gt;&lt;td&gt;&quot;prejudice pride&quot;po1&lt;/td&gt;&lt;/tr&gt;</translation>
     </message>
     <message>
         <source>&lt;tr&gt;&lt;td&gt;Unordered prox. (default slack=10)&lt;/td&gt;&lt;td&gt;&quot;prejudice&amp;nbsp;pride&quot;p&lt;/td&gt;&lt;/tr&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;tr&gt;&lt;td&gt;Unordered prox. (default slack=10)&lt;/td&gt;&lt;td&gt;&quot;prejudice&amp;nbsp;pride&quot;p&lt;/td&gt;&lt;/tr&gt;</translation>
     </message>
     <message>
         <source>&lt;tr&gt;&lt;td&gt;No stem expansion: capitalize&lt;/td&gt;&lt;td&gt;Floor&lt;/td&gt;&lt;/tr&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;tr&gt;&lt;td&gt;No stem expansion: capitalize&lt;/td&gt;&lt;td&gt;Floor&lt;/td&gt;&lt;/tr&gt;</translation>
     </message>
     <message>
         <source>&lt;tr&gt;&lt;td&gt;Field-specific&lt;/td&gt;&lt;td&gt;author:austen&amp;nbsp;&amp;nbsp;title:prejudice&lt;/td&gt;&lt;/tr&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;tr&gt;&lt;td&gt;Field-specific&lt;/td&gt;&lt;td&gt;author:austen&amp;nbsp;&amp;nbsp;title:prejudice&lt;/td&gt;&lt;/tr&gt;</translation>
     </message>
     <message>
         <source>&lt;tr&gt;&lt;td&gt;AND inside field (no order)&lt;/td&gt;&lt;td&gt;author:jane,austen&lt;/td&gt;&lt;/tr&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;tr&gt;&lt;td&gt;AND inside field (no order)&lt;/td&gt;&lt;td&gt;author:jane,austen&lt;/td&gt;&lt;/tr&gt;</translation>
     </message>
     <message>
         <source>&lt;tr&gt;&lt;td&gt;OR inside field&lt;/td&gt;&lt;td&gt;author:austen/bronte&lt;/td&gt;&lt;/tr&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;tr&gt;&lt;td&gt;OR inside field&lt;/td&gt;&lt;td&gt;author:austen/bronte&lt;/td&gt;&lt;/tr&gt;</translation>
     </message>
     <message>
         <source>&lt;tr&gt;&lt;td&gt;Field names&lt;/td&gt;&lt;td&gt;title/subject/caption&amp;nbsp;&amp;nbsp;author/from&lt;br&gt;recipient/to&amp;nbsp;&amp;nbsp;filename&amp;nbsp;&amp;nbsp;ext&lt;/td&gt;&lt;/tr&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;tr&gt;&lt;td&gt;Noms de champs&lt;/td&gt;&lt;td&gt;titre/sujet/légende&amp;nbsp;&amp;nbsp;auteur/de&lt;br&gt;destinataire/à&amp;nbsp;&amp;nbsp;nom de fichier&amp;nbsp;&amp;nbsp;ext&lt;/td&gt;&lt;/tr&gt;</translation>
     </message>
     <message>
         <source>&lt;tr&gt;&lt;td&gt;Directory path filter&lt;/td&gt;&lt;td&gt;dir:/home/me&amp;nbsp;&amp;nbsp;dir:doc&lt;/td&gt;&lt;/tr&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;tr&gt;&lt;td&gt;Filtre du chemin du répertoire&lt;/td&gt;&lt;td&gt;dir:/home/me&amp;nbsp;&amp;nbsp;dir:doc&lt;/td&gt;&lt;/tr&gt;</translation>
     </message>
     <message>
         <source>&lt;tr&gt;&lt;td&gt;MIME type filter&lt;/td&gt;&lt;td&gt;mime:text/plain mime:video/*&lt;/td&gt;&lt;/tr&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;tr&gt;&lt;td&gt;Filtre de type MIME&lt;/td&gt;&lt;td&gt;mime:text/plain mime:video/*&lt;/td&gt;&lt;/tr&gt;</translation>
     </message>
     <message>
         <source>&lt;tr&gt;&lt;td&gt;Date intervals&lt;/td&gt;&lt;td&gt;date:2018-01-01/2018-31-12&lt;br&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;tr&gt;&lt;td&gt;Intervalle de date&lt;/td&gt;&lt;td&gt;date:2018-01-01/2018-31-12&lt;br&gt;</translation>
     </message>
     <message>
         <source>date:2018&amp;nbsp;&amp;nbsp;date:2018-01-01/P12M&lt;/td&gt;&lt;/tr&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>date:2018&amp;nbsp;&amp;nbsp;date:2018-01-01/P12M&lt;/td&gt;&lt;/tr&gt;</translation>
     </message>
     <message>
         <source>&lt;tr&gt;&lt;td&gt;Size&lt;/td&gt;&lt;td&gt;size&amp;gt;100k size&amp;lt;1M&lt;/td&gt;&lt;/tr&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;tr&gt;&lt;td&gt;Taille&lt;/td&gt;&lt;td&gt;size&amp;gt;100k size&amp;lt;1M&lt;/td&gt;&lt;/tr&gt;</translation>
     </message>
     <message>
         <source>&lt;/table&gt;&lt;/body&gt;&lt;/html&gt;</source>
-        <translation type="unfinished"></translation>
+        <translation>&lt;/table&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+    </message>
+    <message>
+        <source>Can&apos;t open index</source>
+        <translation>Impossible d&apos;ouvrir l&apos;index</translation>
+    </message>
+    <message>
+        <source>Could not restore external indexes for stored query:&lt;br&gt; </source>
+        <translation>Impossible de restaurer les index externes utilisés pour la requête d&apos;origine:&lt;br&gt;</translation>
+    </message>
+    <message>
+        <source>???</source>
+        <translation>???</translation>
+    </message>
+    <message>
+        <source>Using current preferences.</source>
+        <translation>Utilisation des préférences actuelles.</translation>
+    </message>
+    <message>
+        <source>Simple search</source>
+        <translation>Type de recherche simple</translation>
+    </message>
+    <message>
+        <source>History</source>
+        <translation>Historique</translation>
     </message>
 </context>
 <context>
@@ -2626,7 +2987,7 @@ Utiliser le lien &lt;b&gt;Afficher la requête en détail&lt;/b&gt; en cas de do
     </message>
     <message>
         <source>Ctrl+S</source>
-        <translation>Ctrl+S</translation>
+        <translation type="vanished">Ctrl+S</translation>
     </message>
     <message>
         <source>Erase search entry</source>
@@ -2656,36 +3017,40 @@ Utiliser le lien &lt;b&gt;Afficher la requête en détail&lt;/b&gt; en cas de do
         <source>Enter search terms here.</source>
         <translation type="vanished">Entrer les termes recherchés ici.</translation>
     </message>
+    <message>
+        <source>Main menu</source>
+        <translation>Menu principal</translation>
+    </message>
 </context>
 <context>
     <name>SearchClauseW</name>
     <message>
         <source>SearchClauseW</source>
-        <translation type="obsolete">SearchClauseW</translation>
+        <translation type="vanished">Recherche dans ClauseW</translation>
     </message>
     <message>
         <source>Any of these</source>
-        <translation type="obsolete">Un de ces mots</translation>
+        <translation type="vanished">Tous ces éléments</translation>
     </message>
     <message>
         <source>All of these</source>
-        <translation type="obsolete">Tous ces mots</translation>
+        <translation type="vanished">Tous ces éléments</translation>
     </message>
     <message>
         <source>None of these</source>
-        <translation type="obsolete">Aucun de ces mots</translation>
+        <translation type="vanished">Aucun de ces éléments</translation>
     </message>
     <message>
         <source>This phrase</source>
-        <translation type="obsolete">Cette phrase</translation>
+        <translation type="vanished">Cette phrase</translation>
     </message>
     <message>
         <source>Terms in proximity</source>
-        <translation type="obsolete">Termes en proximité</translation>
+        <translation type="vanished">Termes à proximité</translation>
     </message>
     <message>
         <source>File name matching</source>
-        <translation type="obsolete">Modèle de nom de fichier</translation>
+        <translation type="vanished">Nom du fichier correspondant</translation>
     </message>
     <message>
         <source>Select the type of query that will be performed with the words</source>
@@ -2697,7 +3062,7 @@ Utiliser le lien &lt;b&gt;Afficher la requête en détail&lt;/b&gt; en cas de do
     </message>
     <message>
         <source>In field</source>
-        <translation type="obsolete">Sans champ</translation>
+        <translation type="vanished">Dans le champ</translation>
     </message>
     <message>
         <source>No field</source>
@@ -2736,7 +3101,7 @@ Utiliser le lien &lt;b&gt;Afficher la requête en détail&lt;/b&gt; en cas de do
     </message>
     <message>
         <source>X</source>
-        <translation type="obsolete">X</translation>
+        <translation type="vanished">X</translation>
     </message>
     <message>
         <source>Find:</source>
@@ -2769,43 +3134,79 @@ Utiliser le lien &lt;b&gt;Afficher la requête en détail&lt;/b&gt; en cas de do
         <source>Sort By Page</source>
         <translation>Trier Par Page</translation>
     </message>
+    <message>
+        <source>Snippets Window</source>
+        <translation>Fenêtre des extraits</translation>
+    </message>
+    <message>
+        <source>Find</source>
+        <translation>Trouver</translation>
+    </message>
+    <message>
+        <source>Find (alt)</source>
+        <translation>Trouver (alt)</translation>
+    </message>
+    <message>
+        <source>Find Next</source>
+        <translation type="vanished">Trouver le suivant</translation>
+    </message>
+    <message>
+        <source>Find Previous</source>
+        <translation type="vanished">Trouver le précédent</translation>
+    </message>
+    <message>
+        <source>Hide</source>
+        <translation type="vanished">Fermer</translation>
+    </message>
+    <message>
+        <source>Find next</source>
+        <translation>Trouver le suivant</translation>
+    </message>
+    <message>
+        <source>Find previous</source>
+        <translation>Trouver le précédent</translation>
+    </message>
+    <message>
+        <source>Close window</source>
+        <translation>Fermer la fenêtre</translation>
+    </message>
 </context>
 <context>
     <name>SortForm</name>
     <message>
         <source>Date</source>
-        <translation type="obsolete">Date</translation>
+        <translation type="vanished">Date</translation>
     </message>
     <message>
         <source>Mime type</source>
-        <translation type="obsolete">Type Mime</translation>
+        <translation type="vanished">Type Mime</translation>
     </message>
 </context>
 <context>
     <name>SortFormBase</name>
     <message>
         <source>Sort Criteria</source>
-        <translation type="obsolete">Critères de tri</translation>
+        <translation type="vanished">Critères de tri</translation>
     </message>
     <message>
         <source>Sort the</source>
-        <translation type="obsolete">Trier les</translation>
+        <translation type="vanished">Trier le</translation>
     </message>
     <message>
         <source>most relevant results by:</source>
-        <translation type="obsolete">résultats les plus pertinents en fonction de :</translation>
+        <translation type="vanished">résultats les plus pertinents par:</translation>
     </message>
     <message>
         <source>Descending</source>
-        <translation type="obsolete">Décroissant</translation>
+        <translation type="vanished">Descendant</translation>
     </message>
     <message>
         <source>Close</source>
-        <translation type="obsolete">Fermer</translation>
+        <translation type="vanished">Fermer</translation>
     </message>
     <message>
         <source>Apply</source>
-        <translation type="obsolete">Appliquer</translation>
+        <translation type="vanished">Appliquer</translation>
     </message>
 </context>
 <context>
@@ -2828,7 +3229,7 @@ Utiliser le lien &lt;b&gt;Afficher la requête en détail&lt;/b&gt; en cas de do
     </message>
     <message>
         <source>Directory to recursively index</source>
-        <translation type="obsolete">Répertoire à indexer récursivement</translation>
+        <translation type="vanished">Répertoire d&apos;index récursif</translation>
     </message>
     <message>
         <source>Browse</source>
@@ -2866,6 +3267,14 @@ Utiliser le lien &lt;b&gt;Afficher la requête en détail&lt;/b&gt; en cas de do
         <source>Start directory. Must be part of the indexed tree. Use full indexed area if empty.</source>
         <translation>Répertoire de départ. Doit faire partie de la zone indexée. Traite toute la zone si non renseigné.</translation>
     </message>
+    <message>
+        <source>Diagnostics output file. Will be truncated and receive indexing diagnostics (reasons for files not being indexed).</source>
+        <translation>Fichier de sortie de diagnostics. Il sera tronqué et recevra des diagnostics d&apos;indexation (raisons pour lesquelles les fichiers ne sont pas indexés).</translation>
+    </message>
+    <message>
+        <source>Diagnostics file</source>
+        <translation>Fichier de diagnostics</translation>
+    </message>
 </context>
 <context>
     <name>SpellBase</name>
@@ -2891,7 +3300,7 @@ Utiliser le lien &lt;b&gt;Afficher la requête en détail&lt;/b&gt; en cas de do
     </message>
     <message>
         <source>Term</source>
-        <translation type="obsolete">Terme</translation>
+        <translation type="vanished">Terme</translation>
     </message>
     <message>
         <source>No db info.</source>
@@ -2899,7 +3308,7 @@ Utiliser le lien &lt;b&gt;Afficher la requête en détail&lt;/b&gt; en cas de do
     </message>
     <message>
         <source>Doc. / Tot.</source>
-        <translation type="obsolete">Doc. / Tot.</translation>
+        <translation type="vanished">Doc. / Tot.</translation>
     </message>
     <message>
         <source>Match</source>
@@ -2918,7 +3327,7 @@ Utiliser le lien &lt;b&gt;Afficher la requête en détail&lt;/b&gt; en cas de do
     <name>SpellW</name>
     <message>
         <source>Wildcards</source>
-        <translation>Wildcards</translation>
+        <translation>Jokers</translation>
     </message>
     <message>
         <source>Regexp</source>
@@ -2958,7 +3367,7 @@ Utiliser le lien &lt;b&gt;Afficher la requête en détail&lt;/b&gt; en cas de do
     </message>
     <message>
         <source>Index: %1 documents, average length %2 terms</source>
-        <translation type="obsolete">Index : %1 documents, taille moyenne %2 termes</translation>
+        <translation type="vanished">Index: %1 documents, longueur moyenne %2 termes</translation>
     </message>
     <message>
         <source>Index: %1 documents, average length %2 terms.%3 results</source>
@@ -2990,11 +3399,11 @@ Utiliser le lien &lt;b&gt;Afficher la requête en détail&lt;/b&gt; en cas de do
     </message>
     <message>
         <source>Smallest document length</source>
-        <translation type="obsolete">Longueur du plus petit document</translation>
+        <translation type="vanished">Longueur de document la plus petite</translation>
     </message>
     <message>
         <source>Longest document length</source>
-        <translation type="obsolete">Longueur du plus grand document</translation>
+        <translation type="vanished">Longueur la plus longue du document</translation>
     </message>
     <message>
         <source>Database directory size</source>
@@ -3061,7 +3470,7 @@ Utiliser le lien &lt;b&gt;Afficher la requête en détail&lt;/b&gt; en cas de do
     </message>
     <message>
         <source>Select xapian index directory (ie: /home/buddy/.recoll/xapiandb)</source>
-        <translation type="obsolete">Sélectionner un répertoire contenant un index Xapian (ex: /home/monAmi/.recoll/xapiandb)</translation>
+        <translation type="vanished">Sélectionnez le répertoire d&apos;index xapian (ie: /home/buddy/.recoll/xapiandb)</translation>
     </message>
     <message>
         <source>error retrieving stemming languages</source>
@@ -3119,223 +3528,243 @@ Utiliser le lien &lt;b&gt;Afficher la requête en détail&lt;/b&gt; en cas de do
         <source>Value from previous program exit</source>
         <translation>Valeur obtenue de la dernière exécution</translation>
     </message>
+    <message>
+        <source>Context</source>
+        <translation>Contexte</translation>
+    </message>
+    <message>
+        <source>Description</source>
+        <translation>Libellé</translation>
+    </message>
+    <message>
+        <source>Shortcut</source>
+        <translation>Raccourci</translation>
+    </message>
+    <message>
+        <source>Default</source>
+        <translation>Défaut</translation>
+    </message>
+    <message>
+        <source>Choose QSS File</source>
+        <translation>Choisir un fichier QSS</translation>
+    </message>
 </context>
 <context>
     <name>UIPrefsDialogBase</name>
     <message>
         <source>User interface</source>
-        <translation type="obsolete">Interface utilisateur</translation>
+        <translation type="vanished">Interface utilisateur</translation>
     </message>
     <message>
         <source>Number of entries in a result page</source>
-        <translation type="obsolete">Nombre de résultats par page</translation>
+        <translation type="vanished">Nombre de résultats par page</translation>
     </message>
     <message>
         <source>Result list font</source>
-        <translation type="obsolete">Fonte pour la liste de résultats</translation>
+        <translation type="vanished">Fonte pour la liste de résultats</translation>
     </message>
     <message>
         <source>Helvetica-10</source>
-        <translation type="obsolete">Helvetica-10</translation>
+        <translation type="vanished">Helvetica-10</translation>
     </message>
     <message>
         <source>Opens a dialog to select the result list font</source>
-        <translation type="obsolete">Ouvre une fenetre permettant de changer la fonte</translation>
+        <translation type="vanished">Ouvre une fenêtre permettant de changer la fonte</translation>
     </message>
     <message>
         <source>Reset</source>
-        <translation type="obsolete">Réinitialiser</translation>
+        <translation type="vanished">Réinitialiser</translation>
     </message>
     <message>
         <source>Resets the result list font to the system default</source>
-        <translation type="obsolete">Réinitialiser la fonte à la valeur par défaut</translation>
+        <translation type="vanished">Réinitialiser la fonte à la valeur par défaut</translation>
     </message>
     <message>
         <source>Auto-start simple search on whitespace entry.</source>
-        <translation type="obsolete">Démarrer automatiquement une recherche simple sur entrée d&apos;un espace.</translation>
+        <translation type="vanished">Démarrer automatiquement une recherche simple sur entrée d&apos;un espace.</translation>
     </message>
     <message>
         <source>Start with advanced search dialog open.</source>
-        <translation type="obsolete">Panneau de recherche avancée ouvert au démarrage</translation>
+        <translation type="vanished">Panneau de recherche avancée ouvert au démarrage.</translation>
     </message>
     <message>
         <source>Start with sort dialog open.</source>
-        <translation type="obsolete">Panneau de tri ouvert au démarrage.</translation>
+        <translation type="vanished">Commencer par ouvrir la boîte de dialogue de tri.</translation>
     </message>
     <message>
         <source>Search parameters</source>
-        <translation type="obsolete">Paramètres pour la recherche</translation>
+        <translation type="vanished">Paramètres pour la recherche</translation>
     </message>
     <message>
         <source>Stemming language</source>
-        <translation type="obsolete">Langue pour l&apos;expansion des termes</translation>
+        <translation type="vanished">Langue pour l&apos;expansion des termes</translation>
     </message>
     <message>
         <source>Dynamically build abstracts</source>
-        <translation type="obsolete">Construire dynamiquement les résumés</translation>
+        <translation type="vanished">Construire dynamiquement les résumés</translation>
     </message>
     <message>
         <source>Do we try to build abstracts for result list entries by using the context of query terms ? 
 May be slow for big documents.</source>
-        <translation type="obsolete">Décide si des résumés seront construits à partir du contexte des termes de recherche. 
+        <translation type="vanished">Décide si des résumés seront construits à partir du contexte des termes de recherche. 
 Peut ralentir l&apos;affichage si les documents sont gros.</translation>
     </message>
     <message>
         <source>Replace abstracts from documents</source>
-        <translation type="obsolete">Remplacer les résumés existant dans les documents</translation>
+        <translation type="vanished">Remplacer les résumés existant dans les documents</translation>
     </message>
     <message>
         <source>Do we synthetize an abstract even if the document seemed to have one?</source>
-        <translation type="obsolete">Est-ce qu&apos;un résumé doit etre synthétisé meme dans le cas ou le document original en avait un?</translation>
+        <translation type="vanished">Est-ce qu&apos;un résumé doit etre synthétisé meme dans le cas ou le document original en avait un?</translation>
     </message>
     <message>
         <source>Synthetic abstract size (characters)</source>
-        <translation type="obsolete">Taille du résumé synthétique (caractères)</translation>
+        <translation type="vanished">Taille du résumé synthétique (caractères)</translation>
     </message>
     <message>
         <source>Synthetic abstract context words</source>
-        <translation type="obsolete">Nombre de mots de contexte par occurrence de terme dans le résumé</translation>
+        <translation type="vanished">Nombre de mots de contexte par occurrence de terme dans le résumé</translation>
     </message>
     <message>
         <source>External Indexes</source>
-        <translation type="obsolete">Index externes</translation>
+        <translation type="vanished">Index externes</translation>
     </message>
     <message>
         <source>Add index</source>
-        <translation type="obsolete">Ajouter un index</translation>
+        <translation type="vanished">Ajouter un index</translation>
     </message>
     <message>
         <source>Select the xapiandb directory for the index you want to add, then click Add Index</source>
-        <translation type="obsolete">Sélectionner le répertoire xapian de l&apos;index à ajouter, puis cliquer Ajouter Index</translation>
+        <translation type="vanished">Sélectionnez le répertoire xapiandb pour l&apos;index que vous souhaitez ajouter, puis cliquez sur Ajouter un index</translation>
     </message>
     <message>
         <source>Browse</source>
-        <translation type="obsolete">Parcourir</translation>
+        <translation type="vanished">Parcourir</translation>
     </message>
     <message>
         <source>&amp;OK</source>
-        <translation type="obsolete">&amp;OK</translation>
+        <translation type="vanished">&amp;OK</translation>
     </message>
     <message>
         <source>Apply changes</source>
-        <translation type="obsolete">Appliquer les modifications</translation>
+        <translation type="vanished">Appliquer les modifications</translation>
     </message>
     <message>
         <source>&amp;Cancel</source>
-        <translation type="obsolete">&amp;Annuler</translation>
+        <translation type="vanished">&amp;Annuler</translation>
     </message>
     <message>
         <source>Discard changes</source>
-        <translation type="obsolete">Suivant</translation>
+        <translation type="vanished">Abandonner les modifications</translation>
     </message>
     <message>
         <source>Result paragraph&lt;br&gt;format string</source>
-        <translation type="obsolete">Chaîne de formatage&lt;br&gt;des paragraphes résultats</translation>
+        <translation type="vanished">Format de texte&lt;br&gt;du paragraphe résultat</translation>
     </message>
     <message>
         <source>Automatically add phrase to simple searches</source>
-        <translation type="obsolete">Ajouter automatiquement une phrase aux recherches simples.</translation>
+        <translation type="vanished">Ajouter automatiquement une phrase aux recherches simples</translation>
     </message>
     <message>
         <source>A search for [rolling stones] (2 terms) will be changed to [rolling or stones or (rolling phrase 2 stones)]. 
 This should give higher precedence to the results where the search terms appear exactly as entered.</source>
-        <translation type="obsolete">Une recherche pour [vin rouge] (2 mots) sera complétée comme [vin OU rouge OU (vin PHRASE 2 rouge)].&lt;br&gt;
+        <translation type="vanished">Une recherche pour [vin rouge] (2 mots) sera complétée comme [vin OU rouge OU (vin PHRASE 2 rouge)].&lt;br&gt;
 Ceci devrait donner une meilleure pertinence aux résultats où les termes recherchés apparaissent exactement et dans l&apos;ordre.</translation>
     </message>
     <message>
         <source>User preferences</source>
-        <translation type="obsolete">Préférences utilisateur</translation>
+        <translation type="vanished">Préférences utilisateur</translation>
     </message>
     <message>
         <source>Use desktop preferences to choose document editor.</source>
-        <translation type="obsolete">Utiliser les réglages du bureau pour choisir l&apos;application de visualisation.</translation>
+        <translation type="vanished">Utilisez les préférences du bureau pour choisir l&apos;éditeur de document.</translation>
     </message>
     <message>
         <source>External indexes</source>
-        <translation type="obsolete">Index externes</translation>
+        <translation type="vanished">Index externes</translation>
     </message>
     <message>
         <source>Toggle selected</source>
-        <translation type="obsolete">Changer l&apos;état pour les entrées sélectionnées</translation>
+        <translation type="vanished">Changer l&apos;état pour les entrées sélectionnées</translation>
     </message>
     <message>
         <source>Activate All</source>
-        <translation type="obsolete">Tout activer</translation>
+        <translation type="vanished">Tout activer</translation>
     </message>
     <message>
         <source>Deactivate All</source>
-        <translation type="obsolete">Tout désactiver</translation>
+        <translation type="vanished">Tout désactiver</translation>
     </message>
     <message>
         <source>Remove selected</source>
-        <translation type="obsolete">Effacer la sélection</translation>
+        <translation type="vanished">Effacer la sélection</translation>
     </message>
     <message>
         <source>Remove from list. This has no effect on the disk index.</source>
-        <translation type="obsolete">Oter de la liste. Sans effet sur les données stockées.</translation>
+        <translation type="vanished">Oter de la liste. Sans effet sur les données stockées.</translation>
     </message>
     <message>
         <source>Defines the format for each result list paragraph. Use qt html format and printf-like replacements:&lt;br&gt;%A Abstract&lt;br&gt; %D Date&lt;br&gt; %I Icon image name&lt;br&gt; %K Keywords (if any)&lt;br&gt; %L Preview and Edit links&lt;br&gt; %M Mime type&lt;br&gt; %N Result number&lt;br&gt; %R Relevance percentage&lt;br&gt; %S Size information&lt;br&gt; %T Title&lt;br&gt; %U Url&lt;br&gt;</source>
-        <translation type="obsolete">Definit le format des paragraphes de la liste de resultats. Utilise le format html qt et des directives de substitution de type printf:&lt;br&gt;%A Abstract&lt;br&gt; %D Date&lt;br&gt; %I Icon image name&lt;br&gt; %K Keywords (if any)&lt;br&gt; %L Preview and Edit links&lt;br&gt; %M Mime type&lt;br&gt; %N Result number&lt;br&gt; %R Relevance percentage&lt;br&gt; %S Size information&lt;br&gt; %T Title&lt;br&gt; %U Url&lt;br&gt;</translation>
+        <translation type="vanished">Définit le format de chaque paragraphe de la liste de résultats. Utiliser le format qt html et les remplacements de type d&apos;impression :&lt;br&gt;%A Résumé&lt;br&gt; %D Date&lt;br&gt; %I Nom de l&apos;image de l&apos;icône&lt;br&gt; %K Mots-clés (le cas échéant)&lt;br&gt; %L Aperçu et modification des liens&lt;br&gt; %M Type MIME&lt;br&gt; %N Nombre de résultats&lt;br&gt; %R Pourcentage de pertinence&lt;br&gt; %S Informations sur la taille&lt;br&gt; %T Titre&lt;br&gt; %U Url&lt;br&gt;</translation>
     </message>
     <message>
         <source>Remember sort activation state.</source>
-        <translation type="obsolete">Mémoriser l&apos;état d&apos;activation du tri</translation>
+        <translation type="vanished">Mémoriser l&apos;état d&apos;activation du tri</translation>
     </message>
     <message>
         <source>Maximum text size highlighted for preview (megabytes)</source>
-        <translation type="obsolete">Taille maximum des textes surlignes avant previsualisation (MO)</translation>
+        <translation type="vanished">Taille maximum des textes surlignés avant prévisualisation (Mo)</translation>
     </message>
     <message>
         <source>Texts over this size will not be highlighted in preview (too slow).</source>
-        <translation type="obsolete">Les texte plus gros ne seront pas surlignes dans la previsualisation (trop lent).</translation>
+        <translation type="vanished">Les textes plus gros ne seront pas surlignés dans la prévisualisation (trop lent).</translation>
     </message>
     <message>
         <source>Highlight color for query terms</source>
-        <translation type="obsolete">Couleur de mise en relief des termes recherchés</translation>
+        <translation type="vanished">Couleur de mise en relief des termes recherchés</translation>
     </message>
     <message>
         <source>Prefer Html to plain text for preview.</source>
-        <translation type="obsolete">Utiliser le format Html pour la prévisualisation</translation>
+        <translation type="vanished">Utiliser le format Html pour la previsualisation.</translation>
     </message>
     <message>
         <source>If checked, results with the same content under different names will only be shown once.</source>
-        <translation type="obsolete">N&apos;afficher qu&apos;une entrée pour les résultats de contenu identique.</translation>
+        <translation type="vanished">N&apos;afficher qu&apos;une entrée pour les résultats de contenu identique.</translation>
     </message>
     <message>
         <source>Hide duplicate results.</source>
-        <translation type="obsolete">Cacher les doublons</translation>
+        <translation type="vanished">Cacher les doublons</translation>
     </message>
     <message>
         <source>Choose editor applications</source>
-        <translation type="obsolete">Choisir les éditeurs pour les différents types de fichiers</translation>
+        <translation type="vanished">Choisir les éditeurs pour les différents types de fichiers</translation>
     </message>
     <message>
         <source>Display category filter as toolbar instead of button panel (needs restart).</source>
-        <translation type="obsolete">Afficher le filtre de catégorie comme une barre d&apos;outils plutot que comme un panneau de boutons (après le redémarrage).</translation>
+        <translation type="vanished">Afficher le filtre de catégorie comme barre d&apos;outils au lieu du panneau des boutons (redémarrage nécessaire).</translation>
     </message>
     <message>
         <source>The words in the list will be automatically turned to ext:xxx clauses in the query language entry.</source>
-        <translation type="obsolete">Les mots de la liste seront automatiquement changés en clauses ext:xxx dans les requêtes en langage d&apos;interrogation.</translation>
+        <translation type="vanished">Les mots de la liste seront automatiquement changés en clauses ext:xxx dans les requêtes en langage d&apos;interrogation.</translation>
     </message>
     <message>
         <source>Query language magic file name suffixes.</source>
-        <translation type="obsolete">Suffixes automatiques pour le langage d&apos;interrogation.</translation>
+        <translation type="vanished">Suffixes automatiques pour le langage d&apos;interrogation</translation>
     </message>
     <message>
         <source>Enable</source>
-        <translation type="obsolete">Activer</translation>
+        <translation type="vanished">Activer</translation>
     </message>
 </context>
 <context>
     <name>ViewAction</name>
     <message>
         <source>Changing actions with different current values</source>
-        <translation type="obsolete">Changement d&apos;actions avec des valeurs actuelles differentes</translation>
+        <translation type="vanished">Changement des actions avec des valeurs actuelles différentes</translation>
     </message>
     <message>
         <source>Mime type</source>
-        <translation type="obsolete">Type Mime</translation>
+        <translation type="vanished">Type Mime</translation>
     </message>
     <message>
         <source>Command</source>
@@ -3358,19 +3787,19 @@ Ceci devrait donner une meilleure pertinence aux résultats où les termes reche
     <name>ViewActionBase</name>
     <message>
         <source>File type</source>
-        <translation type="obsolete">Type de fichier</translation>
+        <translation type="vanished">Type de fichier</translation>
     </message>
     <message>
         <source>Action</source>
-        <translation type="obsolete">Action</translation>
+        <translation type="vanished">Action</translation>
     </message>
     <message>
         <source>Select one or several file types, then click Change Action to modify the program used to open them</source>
-        <translation type="obsolete">Sélectionner une ou plusieurs types de fichiers, puis cliquer Changer pour modifier le programme utilisé pour les ouvrir</translation>
+        <translation type="vanished">Sélectionnez un ou plusieurs types de fichiers, puis cliquez sur Modifier l&apos;action pour modifier le programme utilisé pour les ouvrir</translation>
     </message>
     <message>
         <source>Change Action</source>
-        <translation type="obsolete">Changer</translation>
+        <translation type="vanished">Modifier l&apos;action</translation>
     </message>
     <message>
         <source>Close</source>
@@ -3382,7 +3811,7 @@ Ceci devrait donner une meilleure pertinence aux résultats où les termes reche
     </message>
     <message>
         <source>Select one or several mime types then click &quot;Change Action&quot;&lt;br&gt;You can also close this dialog and check &quot;Use desktop preferences&quot;&lt;br&gt;in the main panel to ignore this list and use your desktop defaults.</source>
-        <translation type="obsolete">Sélectionner un ou plusieurs types MIME puis cliquer &quot;Modifier l&apos;Action&quot;&lt;br&gt;Vous pouvez aussi fermer ce dialogue et choisir &quot;Utiliser les préférences du bureau&quot;&lt;br&gt; dans le dialogue principal pour ignorer cette liste.</translation>
+        <translation type="vanished">Sélectionnez un ou plusieurs types mime, puis cliquez sur &quot;Changer d&apos;action&quot;&lt;br&gt;Vous pouvez également fermer cette boîte de dialogue et cocher &quot;Utiliser les préférences du bureau&quot;&lt;br&gt;dans le panneau principal pour ignorer cette liste et utiliser les paramètres par défaut de votre bureau.</translation>
     </message>
     <message>
         <source>Select one or several mime types then use the controls in the bottom frame to change how they are processed.</source>
@@ -3458,6 +3887,14 @@ Ceci devrait donner une meilleure pertinence aux résultats où les termes reche
         <source>Webcache was modified, you will need to run the indexer after closing this window.</source>
         <translation>Le fichier webcache a été modifié, il faudra redémarrer l&apos;indexation après avoir fermé cette fenêtre.</translation>
     </message>
+    <message>
+        <source>Save to File</source>
+        <translation>Enregistrer sous</translation>
+    </message>
+    <message>
+        <source>File creation failed: </source>
+        <translation>La création du fichier a échoué : </translation>
+    </message>
 </context>
 <context>
     <name>WebcacheModel</name>
@@ -3469,32 +3906,67 @@ Ceci devrait donner une meilleure pertinence aux résultats où les termes reche
         <source>Url</source>
         <translation>Url</translation>
     </message>
+    <message>
+        <source>Date</source>
+        <translation>Date</translation>
+    </message>
+    <message>
+        <source>Size</source>
+        <translation>Taille</translation>
+    </message>
+</context>
+<context>
+    <name>WinSchedToolW</name>
+    <message>
+        <source>Error</source>
+        <translation type="vanished">Erreur</translation>
+    </message>
+    <message>
+        <source>Configuration not initialized</source>
+        <translation type="vanished">Configuration non initialisée</translation>
+    </message>
+    <message>
+        <source>&lt;h3&gt;Recoll indexing batch scheduling&lt;/h3&gt;&lt;p&gt;We use the standard Windows task scheduler for this. The program will be started when you click the button below.&lt;/p&gt;&lt;p&gt;You can use either the full interface (&lt;i&gt;Create task&lt;/i&gt; in the menu on the right), or the simplified &lt;i&gt;Create Basic task&lt;/i&gt; wizard. In both cases Copy/Paste the batch file path listed below as the &lt;i&gt;Action&lt;/i&gt; to be performed.&lt;/p&gt;</source>
+        <translation type="vanished">&lt;h3&gt;Programmation de l&apos;indexation par lots&lt;/h3&gt;&lt;p&gt;Recoll utilise l&apos;outil standard Windows de programmation de tâches. Ce programme sera démarré quand vous cliquerez le bouton ci-dessous.&lt;/p&gt;&lt;p&gt;Vous pouvez utiliser soit l&apos;interface complète (&lt;i&gt;Créer&lt;/i&gt; dans le menu à droite), ou l&apos;interface simplifiée &lt;i&gt;Créer une tâche basique&lt;/i&gt;. Dans les deux cas, Copier/Coller le chemin du fichier de tâche listé ci-dessous comme l&apos;&lt;i&gt;Action&lt;/i&gt; à exécuter.&lt;/p&gt;</translation>
+    </message>
+    <message>
+        <source>Command already started</source>
+        <translation type="vanished">Commande déjà démarrée</translation>
+    </message>
+    <message>
+        <source>Recoll Batch indexing</source>
+        <translation type="vanished">Indexation par lots</translation>
+    </message>
+    <message>
+        <source>Start Windows Task Scheduler tool</source>
+        <translation type="vanished">Démarrer l&apos;outil de programmation de tâches</translation>
+    </message>
 </context>
 <context>
     <name>confgui::ConfBeaglePanelW</name>
     <message>
         <source>Steal Beagle indexing queue</source>
-        <translation type="obsolete">Voler la queue d&apos;indexation de Beagle</translation>
+        <translation type="vanished">Vol de la file d&apos;indexation des Beagles</translation>
     </message>
     <message>
         <source>Beagle MUST NOT be running. Enables processing the beagle queue to index Firefox web history.&lt;br&gt;(you should also install the Firefox Beagle plugin)</source>
-        <translation type="obsolete">Beagle NE DOIT PAS être actif. Permet de traiter la queue de Beagle pour indexer l&apos;historique des pages visitées de Firefox.&lt;br&gt; (Il faut aussi installer le plugin Beagle pour Firefox)</translation>
+        <translation type="vanished">Beagle NE DOIT PAS être en cours d&apos;exécution. Active le traitement de la file d&apos;attente de beagle pour indexer l&apos;historique web de Firefox.&lt;br&gt;(Vous devriez également installer le plugin Firefox Beagle)</translation>
     </message>
     <message>
         <source>Web cache directory name</source>
-        <translation type="obsolete">Nom du répertoire cache de pages WEB</translation>
+        <translation type="vanished">Nom du répertoire du cache Web</translation>
     </message>
     <message>
         <source>The name for a directory where to store the cache for visited web pages.&lt;br&gt;A non-absolute path is taken relative to the configuration directory.</source>
-        <translation type="obsolete">Le nom d&apos;un répertoire où stocker les copies des pages WEB visitées.&lt;br&gt;Le chemin peut être relatif au répertoire de configuration.</translation>
+        <translation type="vanished">Le nom d&apos;un répertoire où stocker le cache pour les pages Web visitées.&lt;br&gt;Un chemin non absolu est pris par rapport au répertoire de configuration.</translation>
     </message>
     <message>
         <source>Max. size for the web cache (MB)</source>
-        <translation type="obsolete">Taille maximum pour le cache (Mo)</translation>
+        <translation type="vanished">Taille maximale du cache web (MB)</translation>
     </message>
     <message>
         <source>Entries will be recycled once the size is reached</source>
-        <translation type="obsolete">Les pages seront écrasées quand la taille spécifiée est atteinte</translation>
+        <translation type="vanished">Les entrées seront recyclées une fois la taille atteinte</translation>
     </message>
     <message>
         <source>Web page store directory name</source>
@@ -3536,7 +4008,7 @@ Ceci devrait donner une meilleure pertinence aux résultats où les termes reche
     <name>confgui::ConfParamFNW</name>
     <message>
         <source>Browse</source>
-        <translation type="obsolete">Parcourir</translation>
+        <translation type="vanished">Parcourir</translation>
     </message>
     <message>
         <source>Choose</source>
@@ -3646,7 +4118,8 @@ Ceci diminue les ressources consommées par l&apos;indexation et aide le chargem
     <message>
         <source>External filters working longer than this will be aborted. This is for the rare case (ie: postscript) where a document could cause a filter to loopSet to -1 for no limit.
 </source>
-        <translation type="obsolete">Un filtre externe sera interrompu si l&apos;attente dépasse ce temps. Utile dans le cas rare (programme postscript par exemple) où un document pourrait forcer un filtre à boucler indéfiniment. Positionner à -1 pour supprimer la limite.</translation>
+        <translation type="vanished">Les filtres externes fonctionnant plus longtemps que cela seront abandonnés. Ceci est pour le cas rare (ex: postscript) où un document pourrait faire boucler un filtre à -1 pour pas de limite.
+</translation>
     </message>
     <message>
         <source>External filters working longer than this will be aborted. This is for the rare case (ie: postscript) where a document could cause a filter to loop. Set to -1 for no limit.
@@ -3742,7 +4215,7 @@ Ceci diminue les ressources consommées par l&apos;indexation et aide le chargem
     </message>
     <message>
         <source>The language for the aspell dictionary. This should look like &apos;en&apos; or &apos;fr&apos; ...&lt;br&gt;If this value is not set, the NLS environment will be used to compute it, which usually works.To get an idea of what is installed on your system, type &apos;aspell config&apos; and look for .dat files inside the &apos;data-dir&apos; directory. </source>
-        <translation type="obsolete">Langue du dictionnaire aspell. Une valeur correcte ressemble à &apos;en&apos; ou &apos;fr&apos;... &lt;br&gt;Si cette valeur n&apos;est pas positionnée, l&apos;environnement est utilisé pour la calculer, ce qui marche bien, habituellement. Utiliser &apos;aspell config&apos; et regarder les fichiers .dat dans le répertoire &apos;data-dir&apos; pour connaitre les langues aspell installées sur votre système.</translation>
+        <translation type="vanished">La langue du dictionnaire aspell. Cela devrait ressembler à &apos;en&apos; ou &apos;fr&apos; . .&lt;br&gt;Si cette valeur n&apos;est pas définie, l&apos;environnement NLS sera utilisé pour le calculer, ce qui fonctionne. o obtenez une idée de ce qui est installé sur votre système, tapez &apos;config aspell&apos; et cherchez . dans le répertoire &apos;data-dir&apos;. </translation>
     </message>
     <message>
         <source>Database directory name</source>
@@ -3750,15 +4223,15 @@ Ceci diminue les ressources consommées par l&apos;indexation et aide le chargem
     </message>
     <message>
         <source>The name for a directory where to store the index&lt;br&gt;A non-absolute path is taken relative to the  configuration directory. The default is &apos;xapiandb&apos;.</source>
-        <translation type="obsolete">Le nom d&apos;un répertoire où l&apos;index sera stocké&lt;br&gt;Un chemin relatif démarrera au répertoire de configuration. Le défaut est &apos;xapiandb&apos;.</translation>
+        <translation type="vanished">Le nom d&apos;un répertoire où stocker l&apos;index&lt;br&gt;Un chemin non absolu est pris par rapport au répertoire de configuration. La valeur par défaut est &apos;xapiandb&apos;.</translation>
     </message>
     <message>
         <source>Use system&apos;s &apos;file&apos; command</source>
-        <translation type="obsolete">Utiliser la commande &apos;file&apos; du systeme</translation>
+        <translation type="vanished">Utiliser la commande système&apos;s &apos;file&apos;</translation>
     </message>
     <message>
         <source>Use the system&apos;s &apos;file&apos; command if internal&lt;br&gt;mime type identification fails.</source>
-        <translation type="obsolete">Utiliser la commande &apos;file&apos; si la determination&lt;br&gt;interne du type mime n&apos;obtient pas de resultat.</translation>
+        <translation type="vanished">Utilisez la commande système&apos;s &apos;file&apos; si l&apos;identification interne de type mime&lt;br&gt;échoue.</translation>
     </message>
     <message>
         <source>Disables use of aspell to generate spelling approximation in the term explorer tool.&lt;br&gt; Useful if aspell is absent or does not work. </source>
@@ -3841,11 +4314,11 @@ Ceci diminue les ressources consommées par l&apos;indexation et aide le chargem
     </message>
     <message>
         <source>Defines the format for each result list paragraph. Use qt html format and printf-like replacements:&lt;br&gt;%A Abstract&lt;br&gt; %D Date&lt;br&gt; %I Icon image name&lt;br&gt; %K Keywords (if any)&lt;br&gt; %L Preview and Edit links&lt;br&gt; %M Mime type&lt;br&gt; %N Result number&lt;br&gt; %R Relevance percentage&lt;br&gt; %S Size information&lt;br&gt; %T Title&lt;br&gt; %U Url&lt;br&gt;</source>
-        <translation type="obsolete">Definit le format des paragraphes de la liste de resultats. Utilise le format html qt et des directives de substitution de type printf:&lt;br&gt;%A Abstract&lt;br&gt; %D Date&lt;br&gt; %I Icon image name&lt;br&gt; %K Keywords (if any)&lt;br&gt; %L Preview and Edit links&lt;br&gt; %M Mime type&lt;br&gt; %N Result number&lt;br&gt; %R Relevance percentage&lt;br&gt; %S Size information&lt;br&gt; %T Title&lt;br&gt; %U Url&lt;br&gt;</translation>
+        <translation type="vanished">Définit le format de chaque paragraphe de la liste de résultats. Utiliser le format qt html et les remplacements de type d&apos;impression :&lt;br&gt;%A Résumé&lt;br&gt; %D Date&lt;br&gt; %I Nom de l&apos;image de l&apos;icône&lt;br&gt; %K Mots-clés (le cas échéant)&lt;br&gt; %L Aperçu et modification des liens&lt;br&gt; %M Type MIME&lt;br&gt; %N Nombre de résultats&lt;br&gt; %R Pourcentage de pertinence&lt;br&gt; %S Informations sur la taille&lt;br&gt; %T Titre&lt;br&gt; %U Url&lt;br&gt;</translation>
     </message>
     <message>
         <source>Result paragraph&lt;br&gt;format string</source>
-        <translation type="obsolete">Chaîne de formatage&lt;br&gt;des paragraphes résultats</translation>
+        <translation type="vanished">Format de texte&lt;br&gt;du paragraphe résultat</translation>
     </message>
     <message>
         <source>Texts over this size will not be highlighted in preview (too slow).</source>
@@ -3853,11 +4326,11 @@ Ceci diminue les ressources consommées par l&apos;indexation et aide le chargem
     </message>
     <message>
         <source>Maximum text size highlighted for preview (megabytes)</source>
-        <translation>Taille maximum des textes surlignés avant prévisualisation (Mo)</translation>
+        <translation type="vanished">Taille maximum des textes surlignés avant prévisualisation (Mo)</translation>
     </message>
     <message>
         <source>Use desktop preferences to choose document editor.</source>
-        <translation type="obsolete">Utiliser les réglages du bureau pour choisir l&apos;application de visualisation.</translation>
+        <translation type="vanished">Utilisez les préférences du bureau pour choisir l&apos;éditeur de document.</translation>
     </message>
     <message>
         <source>Choose editor applications</source>
@@ -3865,7 +4338,7 @@ Ceci diminue les ressources consommées par l&apos;indexation et aide le chargem
     </message>
     <message>
         <source>Display category filter as toolbar instead of button panel (needs restart).</source>
-        <translation type="obsolete">Afficher le filtre de catégorie comme une barre d&apos;outils plutot que comme un panneau de boutons (après le redémarrage).</translation>
+        <translation type="vanished">Afficher le filtre de catégorie comme barre d&apos;outils au lieu du panneau des boutons (redémarrage nécessaire).</translation>
     </message>
     <message>
         <source>Auto-start simple search on whitespace entry.</source>
@@ -3877,7 +4350,7 @@ Ceci diminue les ressources consommées par l&apos;indexation et aide le chargem
     </message>
     <message>
         <source>Start with sort dialog open.</source>
-        <translation type="obsolete">Panneau de tri ouvert au démarrage.</translation>
+        <translation type="vanished">Commencer par ouvrir la boîte de dialogue de tri.</translation>
     </message>
     <message>
         <source>Remember sort activation state.</source>
@@ -3969,7 +4442,7 @@ Peut ralentir l&apos;affichage si les documents sont gros.</translation>
     </message>
     <message>
         <source>Click to add another index directory to the list</source>
-        <translation type="obsolete">Cliquer pour ajouter un autre index à la liste</translation>
+        <translation type="vanished">Cliquez pour ajouter un autre répertoire d&apos;index à la liste</translation>
     </message>
     <message>
         <source>Add index</source>
@@ -3997,11 +4470,11 @@ Peut ralentir l&apos;affichage si les documents sont gros.</translation>
     </message>
     <message>
         <source>Use &lt;PRE&gt; tags instead of &lt;BR&gt;to display plain text as html.</source>
-        <translation type="obsolete">Utilise des balises &lt;PRE&gt; au lieu de &lt;BR&gt; pour afficher du texte brut en html.</translation>
+        <translation type="vanished">Utilisez les balises &lt;PRE&gt; au lieu de &lt;BR&gt;pour afficher du texte brut en html.</translation>
     </message>
     <message>
         <source>Lines in PRE text are not folded. Using BR loses indentation.</source>
-        <translation type="obsolete">Les lignes de text brut &lt;PRE&gt; ne sont pas replies (scroll horizontal). L&apos;utilisation de balises &lt;BR&gt; ne preserve pas l&apos;indentation.</translation>
+        <translation type="vanished">Les lignes dans le texte PRE ne sont pas pliées. L&apos;utilisation de BR perd l&apos;indentation.</translation>
     </message>
     <message>
         <source>Style sheet</source>
@@ -4009,7 +4482,7 @@ Peut ralentir l&apos;affichage si les documents sont gros.</translation>
     </message>
     <message>
         <source>Opens a dialog to select the style sheet file</source>
-        <translation>Ouvre un dialogue pour choisir un fichier feuille de style</translation>
+        <translation type="vanished">Ouvre un dialogue pour choisir un fichier feuille de style</translation>
     </message>
     <message>
         <source>Choose</source>
@@ -4021,11 +4494,11 @@ Peut ralentir l&apos;affichage si les documents sont gros.</translation>
     </message>
     <message>
         <source>Lines in PRE text are not folded. Using BR loses some indentation.</source>
-        <translation type="obsolete">Les lignes dans des sections PRE ne sont pas justifiées. Utiliser BR perd une partie de l&apos;indentation.</translation>
+        <translation type="vanished">Les lignes dans le texte PRE ne sont pas pliées. L&apos;utilisation de BR perd une certaine indentation.</translation>
     </message>
     <message>
         <source>Use &lt;PRE&gt; tags instead of &lt;BR&gt;to display plain text as html in preview.</source>
-        <translation type="obsolete">Utiliser des tags &lt;PRE&gt; au lieu de &lt;BR&gt; pour afficher du texte non formaté en html dans la prévisualisation</translation>
+        <translation type="vanished">Utilisez les balises &lt;PRE&gt; au lieu de &lt;BR&gt;pour afficher du texte brut comme html dans la prévisualisation.</translation>
     </message>
     <message>
         <source>Result List</source>
@@ -4079,11 +4552,11 @@ La valeur par défaut est 2%</translation>
     </message>
     <message>
         <source>Exceptions</source>
-        <translation type="obsolete">Exceptions</translation>
+        <translation type="vanished">Exception</translation>
     </message>
     <message>
         <source>Mime types that should not be passed to xdg-open even when &quot;Use desktop preferences&quot; is set.&lt;br&gt; Useful to pass page number and search string options to, e.g. evince.</source>
-        <translation type="obsolete">Types MIME qui ne doivent pas être passés à xdg-open même quand &quot;Utiliser les préférences du bureau&quot; est coché. &lt;br&gt; Utile pour pouvoir passer les paramètres de numéro de page et de terme de recherche à evince, par exemple. </translation>
+        <translation type="vanished">Types de Mime qui ne devraient pas être passés à xdg-open même lorsque &quot;Utiliser les préférences du bureau&quot; est défini.&lt;br&gt; Utile pour passer le numéro de page et les options de recherche, par exemple évince.</translation>
     </message>
     <message>
         <source>Disable Qt autocompletion in search entry.</source>
@@ -4143,7 +4616,7 @@ La valeur par défaut est 2%</translation>
     </message>
     <message>
         <source>Start with simple search mode</source>
-        <translation>Démarrer en mode recherche simple</translation>
+        <translation type="vanished">Démarrer en mode recherche simple</translation>
     </message>
     <message>
         <source>Show warning when opening temporary file.</source>
@@ -4199,27 +4672,183 @@ La valeur par défaut est 2%</translation>
     </message>
     <message>
         <source>Application Qt style sheet</source>
-        <translation type="unfinished"></translation>
+        <translation>Feuille de style Qt pour l&apos;application</translation>
     </message>
     <message>
         <source>Limit the size of the search history. Use 0 to disable, -1 for unlimited.</source>
-        <translation type="unfinished"></translation>
+        <translation>Limiter la taille de l&apos;historique de recherche. Entrer 0 pour ne pas avoir d&apos;historique, et -1 pour ne pas avoir de limite de taille.</translation>
     </message>
     <message>
         <source>Maximum size of search history (0: disable, -1: unlimited):</source>
-        <translation type="unfinished"></translation>
+        <translation>Taille maximum de l&apos;historique de recherche (0:inactivé, -1: sans limite):</translation>
     </message>
     <message>
         <source>Generate desktop notifications.</source>
-        <translation type="unfinished"></translation>
+        <translation>Générer des notifications bureau.</translation>
     </message>
     <message>
         <source>Misc</source>
-        <translation type="unfinished"></translation>
+        <translation>Divers</translation>
     </message>
     <message>
         <source>Work around QTBUG-78923 by inserting space before anchor text</source>
-        <translation type="unfinished"></translation>
+        <translation type="vanished">Contourner le QTBUG-78923 en inseŕant un espace devant le texte du lien</translation>
+    </message>
+    <message>
+        <source>Display a Snippets link even if the document has no pages (needs restart).</source>
+        <translation>Afficher un lien Extraits me quand le document n&apos;est pas paginé (vous devrez redémarrer Recoll).</translation>
+    </message>
+    <message>
+        <source>Maximum text size highlighted for preview (kilobytes)</source>
+        <translation>Taille maximum de texte surligné pour la prévisualisation (kilo-octets)</translation>
+    </message>
+    <message>
+        <source>Start with simple search mode: </source>
+        <translation>Démarrer avec le type de recherche simple qui suit:</translation>
+    </message>
+    <message>
+        <source>Hide toolbars.</source>
+        <translation type="vanished">Cacher les barres d&apos;outils.</translation>
+    </message>
+    <message>
+        <source>Hide status bar.</source>
+        <translation type="vanished">Cacher la barre de status.</translation>
+    </message>
+    <message>
+        <source>Hide Clear and Search buttons.</source>
+        <translation type="vanished">Cacher les boutons Effacer et Recherche.</translation>
+    </message>
+    <message>
+        <source>Hide menu bar (show button instead).</source>
+        <translation type="vanished">Cacher la barre de menu (afficher un bouton à la place).</translation>
+    </message>
+    <message>
+        <source>Hide simple search type (show in menu only).</source>
+        <translation type="vanished">Cacher le type de recherche simple (afficher uniquement dans le menu).</translation>
+    </message>
+    <message>
+        <source>Shortcuts</source>
+        <translation>Raccourcis</translation>
+    </message>
+    <message>
+        <source>Hide result table header.</source>
+        <translation>Cacher l&apos;en-tête de table de résultats</translation>
+    </message>
+    <message>
+        <source>Show result table row headers.</source>
+        <translation>Afficher les en-têtes de ligne.</translation>
+    </message>
+    <message>
+        <source>Reset shortcuts defaults</source>
+        <translation>Rétablir la configuration par défaut des raccourcis</translation>
+    </message>
+    <message>
+        <source>Disable the Ctrl+[0-9]/[a-z] shortcuts for jumping to table rows.</source>
+        <translation type="vanished">Désactive les raccourcis Ctrl+[0-9]/[a-z] pour sauter sur les lignes du tableau.</translation>
+    </message>
+    <message>
+        <source>Use F1 to  access the manual</source>
+        <translation>Utilisez F1 pour accéder au manuel</translation>
+    </message>
+    <message>
+        <source>Hide some user interface elements.</source>
+        <translation>Masquer certains éléments de l&apos;interface utilisateur.</translation>
+    </message>
+    <message>
+        <source>Hide:</source>
+        <translation>Fermer:</translation>
+    </message>
+    <message>
+        <source>Toolbars</source>
+        <translation>Barres d&apos;outils</translation>
+    </message>
+    <message>
+        <source>Status bar</source>
+        <translation>Barre d&apos;état</translation>
+    </message>
+    <message>
+        <source>Show button instead.</source>
+        <translation>Afficher le bouton à la place.</translation>
+    </message>
+    <message>
+        <source>Menu bar</source>
+        <translation>Barre de menu</translation>
+    </message>
+    <message>
+        <source>Show choice in menu only.</source>
+        <translation>Afficher le choix dans le menu seulement.</translation>
+    </message>
+    <message>
+        <source>Simple search type</source>
+        <translation>Type de recherche simple</translation>
+    </message>
+    <message>
+        <source>Clear/Search buttons</source>
+        <translation>Boutons d&apos;effacement/recherche</translation>
+    </message>
+    <message>
+        <source>Disable the Ctrl+[0-9]/Shift+[a-z] shortcuts for jumping to table rows.</source>
+        <translation>Désactive les raccourcis Ctrl+[0-9]/[a-z] pour sauter vers les lignes du tableau.</translation>
+    </message>
+    <message>
+        <source>None (default)</source>
+        <translation>Aucun (par défaut)</translation>
+    </message>
+    <message>
+        <source>Uses the default dark mode style sheet</source>
+        <translation>Utilise la feuille de style de mode sombre par défaut</translation>
+    </message>
+    <message>
+        <source>Dark mode</source>
+        <translation>Mode sombre</translation>
+    </message>
+    <message>
+        <source>Choose QSS File</source>
+        <translation>Choisir un fichier QSS</translation>
+    </message>
+    <message>
+        <source>To display document text instead of metadata in result table detail area, use:</source>
+        <translation>Pour afficher le texte du document au lieu des métadonnées dans la zone de détail de la table de résultats, utilisez :</translation>
+    </message>
+    <message>
+        <source>left mouse click</source>
+        <translation>clic gauche de la souris</translation>
+    </message>
+    <message>
+        <source>Shift+click</source>
+        <translation>Maj+clic</translation>
+    </message>
+    <message>
+        <source>Opens a dialog to select the style sheet file.&lt;br&gt;Look at /usr/share/recoll/examples/recoll[-dark].qss for an example.</source>
+        <translation>Ouvre une boîte de dialogue pour sélectionner le fichier de feuille de style.&lt;br&gt;Regardez /usr/share/recoll/examples/recoll[-dark].qss pour un exemple.</translation>
+    </message>
+    <message>
+        <source>Result Table</source>
+        <translation>Tableau de résultats</translation>
+    </message>
+    <message>
+        <source>Do not display metadata when hovering over rows.</source>
+        <translation>Ne pas afficher les détails quand on passe sur un rang avec la souris.</translation>
+    </message>
+    <message>
+        <source>Work around Tamil QTBUG-78923 by inserting space before anchor text</source>
+        <translation>Contourner le bug QTBUG-78923 pour le Tamil en inseŕant un espace devant le texte du lien</translation>
+    </message>
+    <message>
+        <source>The bug causes a strange circle characters to be displayed inside highlighted Tamil words. The workaround inserts an additional space character which appears to fix the problem.</source>
+        <translation>Ce bug provoque l&apos;apparition d&apos;un caractère étrange en forme de cercle à l&apos;intérieur de mots en Tamil. Le contournement insère un caractère d&apos;espace additionnel supplémentaire qui semble corriger le problème.</translation>
+    </message>
+    <message>
+        <source>Depth of side filter directory tree</source>
+        <translation>Profondeur de l&apos;arbre du filtre de répertoires</translation>
+    </message>
+    <message>
+        <source>Zoom factor for the user interface. Useful if the default is not right for your screen resolution.</source>
+        <translation>Facteur de zoom pour l&apos;interface utilisateur. Utile si l&apos;affichage par défaut ne convient pas à votre résolution d&apos;écran.</translation>
+    </message>
+    <message>
+        <source>Display scale (default 1.0):</source>
+        <translation>Échelle d&apos;affichage (défaut 1.0):</translation>
     </message>
 </context>
 </TS>

@@ -40,9 +40,8 @@ public:
      * @param op defines if we remove diacritics, case or both 
      */
     SynTermTransUnac(UnacOp op)
-    : m_op(op)
-    {
-    }
+        : m_op(op) {}
+
     virtual std::string name() {
         std::string nm("Unac: ");
         if (m_op & UNACOP_UNAC)
@@ -51,19 +50,19 @@ public:
             nm  += "FOLD ";
         return nm;
     }
-    virtual std::string operator()(const std::string& in)
-    {
-	string out;
-	unacmaybefold(in, out, "UTF-8", m_op);
-	LOGDEB2("SynTermTransUnac("  << (int(m_op)) << "): in ["  << (in) << "] out ["  << (out) << "]\n" );
-	return out;
+
+    virtual std::string operator()(const std::string& in) {
+        std::string out;
+        unacmaybefold(in, out, "UTF-8", m_op);
+        LOGDEB2("SynTermTransUnac(" << m_op << "): in [" << in << "] out [" << out << "]\n");
+        return out;
     }
     UnacOp m_op;
 };
 
 /** Walk the Xapian term list and create all the expansion dbs in one go. */
 extern bool createExpansionDbs(Xapian::WritableDatabase& wdb, 
-			       const std::vector<std::string>& langs);
+                               const std::vector<std::string>& langs);
 }
 
 #endif /* _EXPANSIONDBS_H_INCLUDED_ */

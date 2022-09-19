@@ -22,14 +22,17 @@
 #include <stdlib.h>
 #include "safefcntl.h"
 #include "safeunistd.h"
-#include "dirent.h"
 #include "cstr.h"
 #ifdef _WIN32
 #include "safewindows.h"
+#include <Shlobj.h>
 #else
 #include <sys/param.h>
 #include <pwd.h>
 #include <sys/file.h>
+#endif
+#ifdef __APPLE__
+#include <mach-o/dyld.h>
 #endif
 #include <math.h>
 #include <errno.h>
@@ -40,6 +43,8 @@
 #include <map>
 #include <unordered_map>
 #include <list>
+#include <vector>
+#include <numeric>
 
 #include "rclutil.h"
 #include "pathut.h"
@@ -48,6 +53,7 @@
 #include "md5ut.h"
 #include "log.h"
 #include "smallut.h"
+#include "rclconfig.h"
 
 using namespace std;
 
@@ -63,6 +69,24 @@ template void map_ss_cp_noshr<map<string, string> >(
     map<string, string> s, map<string, string>*d);
 template void map_ss_cp_noshr<unordered_map<string, string> >(
     unordered_map<string,string> s, unordered_map<string,string>*d);
+
+// Add data to metadata field, store multiple values as CSV, avoid
+// appending multiple identical instances.
+template <class T> void addmeta(
+    T& store, const string& nm, const string& value)
+{
+    auto it = store.find(nm);
+    if (it == store.end() || it->second.empty()) {
+        store[nm] = value;
+    } else if (it->second.find(value) == string::npos) {
+        store[nm] += ',';
+        store[nm] += value;
+    }
+}
+template void addmeta<map<string, string>>(
+    map<string, string>&, const string&, const string&);
+template void addmeta<unordered_map<string, string>>(
+    unordered_map<string, string>&, const string&, const string&);
 
 #ifdef _WIN32
 static bool path_hasdrive(const string& s)
@@ -101,7 +125,7 @@ string path_thisexecpath()
     return path;
 }
 
-// On Windows, we ese a subdirectory named "rcltmp" inside the windows
+// On Windows, we use a subdirectory named "rcltmp" inside the windows
 // temp location to create the temporary files in.
 static const string& path_wingetrcltmpdir()
 {
@@ -109,11 +133,15 @@ static const string& path_wingetrcltmpdir()
     static string tdir;
     if (tdir.empty()) {
         wchar_t dbuf[MAX_PATH + 1];
-        GetTempPathW(MAX_PATH + 1, dbuf);
-        wchartoutf8(dbuf, tdir);
-        tdir = path_cat(tdir, "rcltmp");;
+        GetTempPathW(MAX_PATH, dbuf);
+        if (!wchartoutf8(dbuf, tdir)) {
+            LOGERR("path_wingetrcltmpdir: wchartoutf8 failed. Using c:/Temp\n");
+            tdir = "C:/Temp";
+        }
+        LOGDEB1("path_wingetrcltmpdir(): gettemppathw ret: " << tdir << "\n");
+        tdir = path_cat(tdir, "rcltmp");
         if (!path_exists(tdir)) {
-            if (path_makepath(tdir, 0700)) {
+            if (!path_makepath(tdir, 0700)) {
                 LOGSYSERR("path_wingettempfilename", "path_makepath", tdir);
             }
         }
@@ -121,9 +149,10 @@ static const string& path_wingetrcltmpdir()
     return tdir;
 }
 
-static bool path_gettempfilename(string& filename, string& reason)
+static bool path_gettempfilename(string& filename, string&)
 {
-    string tdir = path_wingetrcltmpdir();
+    string tdir = tmplocation();
+    LOGDEB0("path_gettempfilename: tdir: [" << tdir << "]\n");
     wchar_t dbuf[MAX_PATH + 1];
     utf8towchar(tdir, dbuf, MAX_PATH);
 
@@ -139,6 +168,7 @@ static bool path_gettempfilename(string& filename, string& reason)
         LOGDEB1("path_wingettempfilename: DeleteFile " << filename << " Ok\n");
     }
     path_slashize(filename);
+    LOGDEB1("path_gettempfilename: filename: [" << filename << "]\n");
     return true;
 }
 
@@ -162,12 +192,34 @@ static bool path_gettempfilename(string& filename, string& reason)
         return false;
     }
     close(fd);
-    unlink(cp);
+    path_unlink(cp);
     filename = cp;
     free(cp);
     return true;
 }
 #endif // posix
+
+// The default place to store the default config and other stuff (e.g webqueue)
+string path_homedata()
+{
+#ifdef _WIN32
+    wchar_t *cp;
+    SHGetKnownFolderPath(FOLDERID_LocalAppData, 0, nullptr, &cp);
+    string dir;
+    if (cp != 0) {
+        wchartoutf8(cp, dir);
+    }
+    if (!dir.empty()) {
+        dir = path_canon(dir);
+    } else {
+        dir = path_cat(path_home(), "AppData/Local/");
+    }
+    return dir;
+#else
+    // We should use an xdg-conforming location, but, history...
+    return path_home();
+#endif
+}
 
 // Check if path is either non-existing or an empty directory.
 bool path_empty(const string& path)
@@ -175,7 +227,7 @@ bool path_empty(const string& path)
     if (path_isdir(path)) {
         string reason;
         std::set<string> entries;
-        if (!readdir(path, reason, entries) || entries.empty()) {
+        if (!listdir(path, reason, entries) || entries.empty()) {
             return true;
         }
         return false;
@@ -193,24 +245,221 @@ string path_defaultrecollconfsubdir()
 #endif
 }
 
-// Location for sample config, filters, etc. (e.g. /usr/share/recoll/)
+// Location for sample config, filters, etc. E.g. /usr/share/recoll/ on linux
+// or c:/program files (x86)/recoll/share on Windows
 const string& path_pkgdatadir()
 {
     static string datadir;
-    if (datadir.empty()) {
-#ifdef _WIN32
-        datadir = path_cat(path_thisexecpath(), "Share");
-#else
-        const char *cdatadir = getenv("RECOLL_DATADIR");
-        if (cdatadir == 0) {
-            // If not in environment, use the compiled-in constant.
-            datadir = RECOLL_DATADIR;
-        } else {
-            datadir = cdatadir;
-        }
-#endif
+    if (!datadir.empty()) {
+        return datadir;
     }
+    const char *cdatadir = getenv("RECOLL_DATADIR");
+    if (nullptr != cdatadir) {
+        datadir = cdatadir;
+        return datadir;
+    }
+    
+#if defined(_WIN32)
+    // Try a path relative with the exec. This works if we are
+    // recoll/recollindex etc.
+    // But maybe we are the python module, and execpath is the python
+    // exe which could be anywhere. Try the default installation
+    // directory, else tell the user to set the environment
+    // variable.
+    vector<string> paths{path_thisexecpath(), "c:/program files (x86)/recoll",
+            "c:/program files/recoll"};
+    for (const auto& path : paths) {
+        datadir = path_cat(path, "Share");
+        if (path_exists(datadir)) {
+            return datadir;
+        }
+    }
+    // Not found
+    std::cerr << "Could not find the recoll installation data. It is usually "
+        "a subfolder of the installation directory. \n"
+        "Please set the RECOLL_DATADIR environment variable to point to it\n"
+        "(e.g. setx RECOLL_DATADIR \"C:/Program Files (X86)/Recoll/Share)\"\n";
+#elif defined(__APPLE__) && !defined(MACPORTS) && !defined(HOMEBREW)
+    uint32_t size = 0;
+    _NSGetExecutablePath(nullptr, &size);
+    char *path= (char*)malloc(size+1);
+    _NSGetExecutablePath(path, &size);
+    datadir = path_cat(path_getfather(path_getfather(path)), "Resources");
+    free(path);
+#else
+    // If not in environment, use the compiled-in constant.
+    datadir = RECOLL_DATADIR;
+#endif
     return datadir;
+}
+
+/* There is a lot of vagueness about what should be percent-encoded or
+ * not in a file:// url. The constraint that we have is that we may use
+ * the encoded URL to compute (MD5) a thumbnail path according to the
+ * freedesktop.org thumbnail spec, which itself does not define what
+ * should be escaped. We choose to exactly escape what gio does, as
+ * implemented in glib/gconvert.c:g_escape_uri_string(uri, UNSAFE_PATH). 
+ * Hopefully, the other desktops have the same set of escaped chars. 
+ * Note that $ is not encoded, so the value is not shell-safe.
+ */
+string url_encode(const string& url, string::size_type offs)
+{
+    string out = url.substr(0, offs);
+    const char *cp = url.c_str();
+    for (string::size_type i = offs; i < url.size(); i++) {
+        unsigned int c;
+        const char *h = "0123456789ABCDEF";
+        c = cp[i];
+        if (c <= 0x20 ||
+            c >= 0x7f ||
+            c == '"' ||
+            c == '#' ||
+            c == '%' ||
+            c == ';' ||
+            c == '<' ||
+            c == '>' ||
+            c == '?' ||
+            c == '[' ||
+            c == '\\' ||
+            c == ']' ||
+            c == '^' ||
+            c == '`' ||
+            c == '{' ||
+            c == '|' ||
+            c == '}') {
+            out += '%';
+            out += h[(c >> 4) & 0xf];
+            out += h[c & 0xf];
+        } else {
+            out += char(c);
+        }
+    }
+    return out;
+}
+
+static inline int h2d(int c) {
+    if ('0' <= c && c <= '9')
+        return c - '0';
+    else if ('A' <= c && c <= 'F')
+        return 10 + c - 'A';
+    else if ('a' <= c && c <= 'f')
+        return 10 + c - 'a';
+    else 
+        return -1;
+}
+
+string url_decode(const string &in)
+{
+    if (in.size() <= 2)
+        return in;
+    string out;
+    out.reserve(in.size());
+    const char *cp = in.c_str();
+    string::size_type i = 0;
+    for (; i < in.size() - 2; i++) {
+        if (cp[i] == '%') {
+            int d1 = h2d(cp[i+1]);
+            int d2 = h2d(cp[i+2]);
+            if (d1 != -1 && d2 != -1) {
+                out += (d1 << 4) + d2;
+            } else {
+                out += '%';
+                out += cp[i+1];
+                out += cp[i+2];
+            }
+            i += 2;
+        } else {
+            out += cp[i];
+        }
+    }
+    while (i < in.size()) {
+        out += cp[i++];
+    }
+    return out;
+}
+
+string url_gpath(const string& url)
+{
+    // Remove the access schema part (or whatever it's called)
+    string::size_type colon = url.find_first_of(":");
+    if (colon == string::npos || colon == url.size() - 1) {
+        return url;
+    }
+    // If there are non-alphanum chars before the ':', then there
+    // probably is no scheme. Whatever...
+    for (string::size_type i = 0; i < colon; i++) {
+        if (!isalnum(url.at(i))) {
+            return url;
+        }
+    }
+
+    // In addition we canonize the path to remove empty host parts
+    // (for compatibility with older versions of recoll where file://
+    // was hardcoded, but the local path was used for doc
+    // identification.
+    return path_canon(url.substr(colon + 1));
+}
+
+string url_parentfolder(const string& url)
+{
+    // In general, the parent is the directory above the full path
+    string parenturl = path_getfather(url_gpath(url));
+    // But if this is http, make sure to keep the host part. Recoll
+    // only has file or http urls for now.
+    bool isfileurl = urlisfileurl(url);
+    if (!isfileurl && parenturl == "/") {
+        parenturl = url_gpath(url);
+    }
+    return isfileurl ? string("file://") + parenturl :
+        string("http://") + parenturl;
+}
+
+
+// Convert to file path if url is like file:
+// Note: this only works with our internal pseudo-urls which are not
+// encoded/escaped
+string fileurltolocalpath(string url)
+{
+    if (url.find("file://") == 0) {
+        url = url.substr(7, string::npos);
+    } else {
+        return string();
+    }
+
+    // If this looks like a Windows path: absolute file urls are like: file:///c:/mydir/...
+    // Get rid of the initial '/'
+    if (url.size() >= 3 && url[0] == '/' && isalpha(url[1]) && url[2] == ':') {
+        url = url.substr(1);
+    }
+
+    // Removing the fragment part. This is exclusively used when
+    // executing a viewer for the recoll manual, and we only strip the
+    // part after # if it is preceded by .html
+    string::size_type pos;
+    if ((pos = url.rfind(".html#")) != string::npos) {
+        url.erase(pos + 5);
+    } else if ((pos = url.rfind(".htm#")) != string::npos) {
+        url.erase(pos + 4);
+    }
+
+    return url;
+}
+
+string path_pathtofileurl(const string& path)
+{
+    // We're supposed to receive a canonic absolute path, but on windows we
+    // may need to add a '/' in front of the drive spec
+    string url(cstr_fileu);
+    if (path.empty() || path[0] != '/') {
+        url.push_back('/');
+    }
+    url += path;
+    return url;
+}
+
+bool urlisfileurl(const string& url)
+{
+    return url.find("file://") == 0;
 }
 
 // Printable url: this is used to transcode from the system charset
@@ -218,6 +467,7 @@ const string& path_pkgdatadir()
 bool printableUrl(const string& fcharset, const string& in, string& out)
 {
 #ifdef _WIN32
+    PRETEND_USE(fcharset);
     // On windows our paths are always utf-8
     out = in;
 #else
@@ -229,26 +479,52 @@ bool printableUrl(const string& fcharset, const string& in, string& out)
     return true;
 }
 
+#ifdef _WIN32
+// Convert X:/path to /X/path for path splitting inside the index
+string path_slashdrive(const string& path)
+{
+    string npath;
+    if (path_hasdrive(path)) {
+        npath.append(1, '/');
+        npath.append(1, path[0]);
+        if (path_isdriveabs(path)) {
+            npath.append(path.substr(2));
+        } else {
+            // This should be an error really
+            npath.append(1, '/');
+            npath.append(path.substr(2));
+        }
+    } else {
+        npath = path; ///??
+    }
+    return npath;
+}
+#endif // _WIN32
+
 string url_gpathS(const string& url)
 {
 #ifdef _WIN32
-    string u = url_gpath(url);
-    string nu;
-    if (path_hasdrive(u)) {
-        nu.append(1, '/');
-        nu.append(1, u[0]);
-        if (path_isdriveabs(u)) {
-            nu.append(u.substr(2));
-        } else {
-            // This should be an error really
-            nu.append(1, '/');
-            nu.append(u.substr(2));
-        }
-    }
-    return nu;
+    return path_slashdrive(url_gpath(url));
 #else
     return url_gpath(url);
 #endif
+}
+
+std::string utf8datestring(const std::string& format, struct tm *tm)
+{
+    string u8date;
+#ifdef _WIN32
+    wchar_t wformat[200];
+    utf8towchar(format, wformat, 199);
+    wchar_t wdate[250];
+    wcsftime(wdate, 250, wformat, tm);
+    wchartoutf8(wdate, u8date);
+#else
+    char datebuf[200];
+    strftime(datebuf, 199, format.c_str(), tm);
+    transcode(datebuf, u8date, RclConfig::getLocaleCharset(), "UTF-8");
+#endif
+    return u8date;
 }
 
 const string& tmplocation()
@@ -256,6 +532,11 @@ const string& tmplocation()
     static string stmpdir;
     if (stmpdir.empty()) {
         const char *tmpdir = getenv("RECOLL_TMPDIR");
+
+#ifndef _WIN32
+        /* Don't use these under windows because they will return
+         * non-ascii non-unicode stuff (would have to call _wgetenv()
+         * instead. path_wingetrcltmpdir() will manage */
         if (tmpdir == 0) {
             tmpdir = getenv("TMPDIR");
         }
@@ -265,11 +546,11 @@ const string& tmplocation()
         if (tmpdir == 0) {
             tmpdir = getenv("TEMP");
         }
+#endif
+
         if (tmpdir == 0) {
 #ifdef _WIN32
-            wchar_t bufw[MAX_PATH + 1];
-            GetTempPathW(MAX_PATH + 1, bufw);
-            wchartoutf8(bufw, stmpdir);
+            stmpdir = path_wingetrcltmpdir();
 #else
             stmpdir = "/tmp";
 #endif
@@ -399,24 +680,18 @@ TempFile::Internal::Internal(const string& suffix)
         return;
     }
     m_filename += suffix;
-    LOGDEB1("TempFile: filename: " << m_filename << endl);
-    int fd1 = open(m_filename.c_str(), O_CREAT | O_EXCL, 0600);
-    if (fd1 < 0) {
+    std::fstream fout;
+    if (!path_streamopen(m_filename, ios::out|ios::trunc, fout)) {
         m_reason = string("Open/create error. errno : ") +
             lltodecstr(errno) + " file name: " + m_filename;
+        LOGSYSERR("Tempfile::Internal::Internal", "open/create", m_filename);
         m_filename.erase();
-    } else {
-        close(fd1);
     }
 }
 
 const std::string& TempFile::rcltmpdir()
 {
-#ifdef _WIN32
-    return path_wingetrcltmpdir();
-#else
     return tmplocation();
-#endif
 }
 
 #ifdef _WIN32
@@ -428,7 +703,7 @@ TempFile::Internal::~Internal()
 {
     if (!m_filename.empty() && !m_noremove) {
         LOGDEB1("TempFile:~: unlinking " << m_filename << endl);
-        if (unlink(m_filename.c_str()) != 0) {
+        if (!path_unlink(m_filename)) {
             LOGSYSERR("TempFile:~", "unlink", m_filename);
 #ifdef _WIN32
             {
@@ -454,7 +729,7 @@ void TempFile::tryRemoveAgain()
     std::unique_lock<std::mutex> lock(remTmpFNMutex);
     std::list<string>::iterator pos = remainingTempFileNames.begin();
     while (pos != remainingTempFileNames.end()) {
-        if (unlink(pos->c_str()) != 0) {
+        if (!path_unlink(*pos)) {
             LOGSYSERR("TempFile::tryRemoveAgain", "unlink", *pos);
             pos++;
         } else {
@@ -522,10 +797,16 @@ static const string& thumbnailsdir()
     return thumbnailsd;
 }
 
+// Place for 1024x1024 files
+static const string thmbdirxxlarge = "xx-large";
+// Place for 512x512 files
+static const string thmbdirxlarge = "x-large";
 // Place for 256x256 files
 static const string thmbdirlarge = "large";
 // 128x128
 static const string thmbdirnormal = "normal";
+
+static const vector<string> thmbdirs{thmbdirxxlarge, thmbdirxlarge, thmbdirlarge, thmbdirnormal};
 
 static void thumbname(const string& url, string& name)
 {
@@ -538,28 +819,110 @@ static void thumbname(const string& url, string& name)
 
 bool thumbPathForUrl(const string& url, int size, string& path)
 {
-    string name;
+    string name, path128, path256, path512, path1024;
     thumbname(url, name);
     if (size <= 128) {
         path = path_cat(thumbnailsdir(), thmbdirnormal);
+        path = path_cat(path, name);
+        path128 = path;
+    } else if (size <= 256) {
+        path = path_cat(thumbnailsdir(), thmbdirlarge);
+        path = path_cat(path, name);
+        path256 = path;
+    } else if (size <= 512) {
+        path = path_cat(thumbnailsdir(), thmbdirxlarge);
+        path = path_cat(path, name);
+        path512 = path;
+    } else {
+        path = path_cat(thumbnailsdir(), thmbdirxxlarge);
+        path = path_cat(path, name);
+        path1024 = path;
+    }
+    if (access(path.c_str(), R_OK) == 0) {
+        return true;
+    }
+
+    // Not found in requested size. Try to find any size and return it. Let the client scale.
+    for (const auto& tdir : thmbdirs) {
+        path = path_cat(thumbnailsdir(), tdir);
         path = path_cat(path, name);
         if (access(path.c_str(), R_OK) == 0) {
             return true;
         }
     }
-    path = path_cat(thumbnailsdir(), thmbdirlarge);
-    path = path_cat(path, name);
-    if (access(path.c_str(), R_OK) == 0) {
-        return true;
-    }
 
-    // File does not exist. Path corresponds to the large version at this point,
-    // fix it if needed.
+    // File does not exist. Return appropriate path anyway.
     if (size <= 128) {
-        path = path_cat(path_home(), thmbdirnormal);
-        path = path_cat(path, name);
+        path = path128;
+    } else if (size <= 256) {
+        path = path256;
+    } else if (size <= 512) {
+        path = path512;
+    } else {
+        path = path1024;
     }
     return false;
+}
+
+// Compare charset names, removing the more common spelling variations
+bool samecharset(const string& cs1, const string& cs2)
+{
+    auto mcs1 = std::accumulate(cs1.begin(), cs1.end(), "", [](const char* m, char i) { return (i != '_' && i != '-') ? m + ::tolower(i) : m; });
+    auto mcs2 = std::accumulate(cs2.begin(), cs2.end(), "", [](const char* m, char i) { return (i != '_' && i != '-') ? m + ::tolower(i) : m; });
+    return mcs1 == mcs2;
+}
+
+static const std::unordered_map<string, string> lang_to_code {
+    {"be", "cp1251"},
+    {"bg", "cp1251"},
+    {"cs", "iso-8859-2"},
+    {"el", "iso-8859-7"},
+    {"he", "iso-8859-8"},
+    {"hr", "iso-8859-2"},
+    {"hu", "iso-8859-2"},
+    {"ja", "eucjp"},
+    {"kk", "pt154"},
+    {"ko", "euckr"},
+    {"lt", "iso-8859-13"},
+    {"lv", "iso-8859-13"},
+    {"pl", "iso-8859-2"},
+    {"rs", "iso-8859-2"},
+    {"ro", "iso-8859-2"},
+    {"ru", "koi8-r"},
+    {"sk", "iso-8859-2"},
+    {"sl", "iso-8859-2"},
+    {"sr", "iso-8859-2"},
+    {"th", "iso-8859-11"},
+    {"tr", "iso-8859-9"},
+    {"uk", "koi8-u"},
+        };
+
+string langtocode(const string& lang)
+{
+    const auto it = lang_to_code.find(lang);
+
+    // Use cp1252 by default...
+    if (it == lang_to_code.end()) {
+        return cstr_cp1252;
+    }
+
+    return it->second;
+}
+
+string localelang()
+{
+    const char *lang = getenv("LANG");
+
+    if (lang == nullptr || *lang == 0 || !strcmp(lang, "C") ||
+        !strcmp(lang, "POSIX")) {
+        return "en";
+    }
+    string locale(lang);
+    string::size_type under = locale.find_first_of('_');
+    if (under == string::npos) {
+        return locale;
+    }
+    return locale.substr(0, under);
 }
 
 void rclutil_init_mt()
@@ -567,4 +930,6 @@ void rclutil_init_mt()
     path_pkgdatadir();
     tmplocation();
     thumbnailsdir();
+    // Init langtocode() static table
+    langtocode("");
 }

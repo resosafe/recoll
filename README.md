@@ -17,4 +17,4 @@ documents as well as file names.
 For more detail, see the [features page on the web site](http://www.recoll.org/features.html) or the [online documentation](http://www.recoll.org/doc.html).
 
 Most distributions feature prebuilt packages for Recoll, but if you need them, [the instructions for building and
-installing are here](http://www.recoll.org/usermanual/webhelp/docs/RCL.INSTALL.BUILDING.html).
+installing are here](https://www.lesbonscomptes.com/recoll/usermanual/usermanual.html#RCL.INSTALL.BUILDING).

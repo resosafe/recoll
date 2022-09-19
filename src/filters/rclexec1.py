@@ -26,8 +26,6 @@
 # this would be to slow. So this helps implementing a permanent script
 # to repeatedly execute single commands.
 
-from __future__ import print_function
-
 import subprocess
 import rclexecm
 from rclbasehandler import RclBaseHandler
@@ -92,15 +90,15 @@ class Executor(RclBaseHandler):
                 return True, data
 
     def extractone(self, params):
-        #self.em.rclog("extractone %s %s" % (params["filename:"], \
-        # params["mimetype:"]))
+        #self.em.rclog("extractone %s %s" % (params["filename"], \
+        # params["mimetype"]))
         self.flt.reset()
         ok = False
-        if not "filename:" in params:
+        if not "filename" in params:
             self.em.rclog("extractone: no file name")
             return (ok, "", "", rclexecm.RclExecM.eofnow)
 
-        fn = params["filename:"]
+        fn = params["filename"]
         while True:
             cmdseq = self.flt.getCmd(fn)
             cmd = cmdseq[0]

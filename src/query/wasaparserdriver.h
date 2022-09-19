@@ -22,14 +22,12 @@
 #include <vector>
 
 #include "smallut.h"
+#include "searchdata.h"
 
 class WasaParserDriver;
-namespace Rcl {
-    class SearchData;
-    class SearchDataClauseSimple;
-}
+
 namespace yy {
-    class parser;
+class parser;
 }
 
 class RclConfig;
@@ -37,9 +35,12 @@ class RclConfig;
 class WasaParserDriver {
 public:
     
-    WasaParserDriver(const RclConfig *c, const std::string sl, 
-                     const std::string& as);
-    ~WasaParserDriver();
+    WasaParserDriver(const RclConfig *c, const std::string sl, const std::string& as)
+        : m_stemlang(sl), m_autosuffs(as), m_config(c) {}
+        
+    ~WasaParserDriver() {}
+    WasaParserDriver(const WasaParserDriver&) = delete;
+    WasaParserDriver& operator=(const WasaParserDriver&) = delete;
     
     Rcl::SearchData *parse(const std::string&);
     bool addClause(Rcl::SearchData *sd, Rcl::SearchDataClauseSimple* cl);
@@ -67,20 +68,20 @@ private:
     // input string.
     std::string m_input;
     // Current position in m_input
-    unsigned int m_index;
+    unsigned int m_index{0};
     // Characters pushed-back, ready for next getchar.
     std::stack<int> m_returns;
     // Result, set by parser.
-    Rcl::SearchData *m_result;
+    Rcl::SearchData *m_result{nullptr};
 
     // Storage for top level filters
     std::vector<std::string>  m_filetypes; 
     std::vector<std::string>  m_nfiletypes;
-    bool                      m_haveDates;
+    bool                      m_haveDates{false};
     DateInterval              m_dates; // Restrict to date interval
-    size_t                    m_maxSize;
-    size_t                    m_minSize;
-
+    int64_t                   m_maxSize{-1};
+    int64_t                   m_minSize{-1};
+    int                       m_subSpec{Rcl::SearchData::SUBDOC_ANY};
     std::string m_reason;
 
     // Let the quoted string reader store qualifiers in there, simpler

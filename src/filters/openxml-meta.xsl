@@ -17,12 +17,72 @@
     <xsl:apply-templates/>
   </xsl:template>
 
-  <xsl:template match="dc:creator">
+  <xsl:template match="dc:title">
     <meta>
     <xsl:attribute name="name">
       <!-- <xsl:value-of select="name()"/> pour sortir tous les meta avec 
        le meme nom que dans le xml (si on devenait dc-natif) -->
+      <xsl:text>title</xsl:text> 
+    </xsl:attribute>
+    <xsl:attribute name="content">
+       <xsl:value-of select="."/>
+    </xsl:attribute>
+    </meta>
+    <xsl:text>&#10;</xsl:text>
+  </xsl:template>
+
+  <xsl:template match="dc:subject">
+    <meta>
+    <xsl:attribute name="name">
+      <xsl:text>keywords</xsl:text> 
+    </xsl:attribute>
+    <xsl:attribute name="content">
+       <xsl:value-of select="."/>
+    </xsl:attribute>
+    </meta>
+    <xsl:text>&#10;</xsl:text>
+  </xsl:template>
+
+  <xsl:template match="dc:creator">
+    <meta>
+    <xsl:attribute name="name">
       <xsl:text>author</xsl:text> 
+    </xsl:attribute>
+    <xsl:attribute name="content">
+       <xsl:value-of select="."/>
+    </xsl:attribute>
+    </meta>
+    <xsl:text>&#10;</xsl:text>
+  </xsl:template>
+
+  <xsl:template match="cp:lastModifiedBy">
+    <meta>
+    <xsl:attribute name="name">
+      <xsl:text>author</xsl:text> 
+    </xsl:attribute>
+    <xsl:attribute name="content">
+       <xsl:value-of select="."/>
+    </xsl:attribute>
+    </meta>
+    <xsl:text>&#10;</xsl:text>
+  </xsl:template>
+
+  <xsl:template match="cp:keywords">
+    <meta>
+    <xsl:attribute name="name">
+      <xsl:text>keywords</xsl:text> 
+    </xsl:attribute>
+    <xsl:attribute name="content">
+       <xsl:value-of select="."/>
+    </xsl:attribute>
+    </meta>
+    <xsl:text>&#10;</xsl:text>
+  </xsl:template>
+
+  <xsl:template match="dc:description">
+    <meta>
+    <xsl:attribute name="name">
+      <xsl:text>abstract</xsl:text> 
     </xsl:attribute>
     <xsl:attribute name="content">
        <xsl:value-of select="."/>

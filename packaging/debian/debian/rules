@@ -21,16 +21,17 @@ endif
 
 # main packaging script based on dh7 syntax
 %:
-	dh $@ --parallel --with python2 --with python3 --with autotools-dev 
+	dh $@ --with python2 --with python3
 
 override_dh_auto_configure:
-	dh_auto_configure -- --enable-recollq --enable-xadump
+	dh_auto_configure -- --enable-recollq --enable-xadump --enable-webkit
+#	dh_auto_configure -- --enable-recollq --enable-xadump --enable-webengine
 
 build3vers := $(shell py3versions -sv)
 
 override_dh_auto_install:
 	dh_auto_install
-	(cd python/recoll; libdir=/usr/lib/$${DEB_BUILD_MULTIARCH} python \
+	(cd python/recoll; libdir=/usr/lib/$${DEB_BUILD_MULTIARCH} python2 \
 					   ./setup.py install \
 	                                   --install-layout=deb \
 					   --prefix=/usr \
@@ -42,7 +43,7 @@ override_dh_auto_install:
 					--prefix=/usr \
 	                                --root=$(CURDIR)/debian/tmp/ ) ; \
 	done
-	(cd python/pychm; python ./setup.py install \
+	(cd python/pychm; python2 ./setup.py install \
 	                                   --install-layout=deb \
 					   --prefix=/usr \
 	                                   --root=$(CURDIR)/debian/tmp/ )

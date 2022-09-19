@@ -35,30 +35,30 @@ bool WQDocFetcher::fetch(RclConfig* cnf, const Rcl::Doc& idoc, RawDoc& out)
 {
     string udi;
     if (!idoc.getmeta(Rcl::Doc::keyudi, &udi) || udi.empty()) {
-	LOGERR("WQDocFetcher:: no udi in idoc\n" );
-	return false;
+        LOGERR("WQDocFetcher:: no udi in idoc\n" );
+        return false;
     }
     Rcl::Doc dotdoc;
     {
         std::unique_lock<std::mutex> locker(o_beagler_mutex);
-	// Retrieve from our webcache (beagle data). The beagler
-	// object is created at the first call of this routine and
-	// deleted when the program exits.
-	static WebStore o_beagler(cnf);
-	if (!o_beagler.getFromCache(udi, dotdoc, out.data)) {
-	    LOGINFO("WQDocFetcher::fetch: failed for [" << udi << "]\n");
-	    return false;
-	}
+        // Retrieve from our webcache (beagle data). The beagler
+        // object is created at the first call of this routine and
+        // deleted when the program exits.
+        static WebStore o_beagler(cnf);
+        if (!o_beagler.getFromCache(udi, dotdoc, out.data)) {
+            LOGINFO("WQDocFetcher::fetch: failed for [" << udi << "]\n");
+            return false;
+        }
     }
     if (dotdoc.mimetype.compare(idoc.mimetype)) {
-	LOGINFO("WQDocFetcher:: udi [" << udi << "], mimetp mismatch: in: [" <<
+        LOGINFO("WQDocFetcher:: udi [" << udi << "], mimetp mismatch: in: [" <<
                 idoc.mimetype << "], bgl [" << dotdoc.mimetype << "]\n");
     }
     out.kind = RawDoc::RDK_DATA;
     return true;
 }
     
-bool WQDocFetcher::makesig(RclConfig* cnf, const Rcl::Doc& idoc, string& sig)
+bool WQDocFetcher::makesig(RclConfig*, const Rcl::Doc&, string& sig)
 {
     // Web queue sigs are empty
     sig.clear();

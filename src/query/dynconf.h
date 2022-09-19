@@ -48,8 +48,11 @@
 
 /** Interface for a stored object. */
 class DynConfEntry {
- public:
+public:
+    DynConfEntry() {}
     virtual ~DynConfEntry() {}
+    DynConfEntry(const DynConfEntry&) = default;
+    DynConfEntry& operator=(const DynConfEntry&) = default;
     /** Decode object-as-string coming out from storage */
     virtual bool decode(const std::string &value) = 0;
     /** Encode object state into state for storing */
@@ -60,23 +63,25 @@ class DynConfEntry {
 
 /** Stored object specialization for generic string storage */
 class RclSListEntry : public DynConfEntry {
- public:
+public:
     RclSListEntry() {}
     virtual ~RclSListEntry() {}
+    RclSListEntry(const RclSListEntry&) = default;
+    RclSListEntry& operator=(const RclSListEntry&) = default;
     RclSListEntry(const std::string& v) 
-    : value(v) {
+        : value(v) {
     }
-    virtual bool decode(const std::string &enc) {
-	base64_decode(enc, value);
-	return true;
+    virtual bool decode(const std::string &enc) override {
+        base64_decode(enc, value);
+        return true;
     }
-    virtual bool encode(std::string& enc) {
-	base64_encode(value, enc);
-	return true;
+    virtual bool encode(std::string& enc) override {
+        base64_encode(value, enc);
+        return true;
     }
-    virtual bool equal(const DynConfEntry& other) {
-	const RclSListEntry& e = dynamic_cast<const RclSListEntry&>(other);
-	return e.value == value;
+    virtual bool equal(const DynConfEntry& other) override {
+        const RclSListEntry& e = dynamic_cast<const RclSListEntry&>(other);
+        return e.value == value;
     }
 
     std::string value;
@@ -84,20 +89,20 @@ class RclSListEntry : public DynConfEntry {
 
 /** The dynamic configuration class */
 class RclDynConf {
- public:
+public:
     RclDynConf(const std::string &fn);
 
     bool ro() {
-	return m_data.getStatus() == ConfSimple::STATUS_RO;
+        return m_data.getStatus() == ConfSimple::STATUS_RO;
     }
     bool rw() {
-	return m_data.getStatus() == ConfSimple::STATUS_RW;
+        return m_data.getStatus() == ConfSimple::STATUS_RW;
     }
     bool ok() {
-	return m_data.getStatus() != ConfSimple::STATUS_ERROR;
+        return m_data.getStatus() != ConfSimple::STATUS_ERROR;
     }
     std::string getFilename() {
-	return m_data.getFilename();
+        return m_data.getFilename();
     }
 
     // Generic methods
@@ -125,39 +130,38 @@ class RclDynConf {
                      int maxlen = -1);
     template <template <class, class> class Container>
     Container<std::string, std::allocator<std::string>>
-        getStringEntries(const std::string& sk);
+    getStringEntries(const std::string& sk);
     
- private:
-    unsigned int m_mlen;
+private:
     ConfSimple   m_data;
 };
 
 template <template <class, class> class Container, class Type>
 Container<Type, std::allocator<Type>>
-    RclDynConf::getEntries(const std::string& sk)
+RclDynConf::getEntries(const std::string& sk)
 {
     Container<Type, std::allocator<Type>> out;
     Type entry;
     std::vector<std::string> names = m_data.getNames(sk);
     for (const auto& name : names) {
-	std::string value;
-	if (m_data.get(name, value, sk)) {
-	    if (!entry.decode(value))
-		continue;
-	    out.push_back(entry);
-	}
+        std::string value;
+        if (m_data.get(name, value, sk)) {
+            if (!entry.decode(value))
+                continue;
+            out.push_back(entry);
+        }
     }
     return out;
 }
 
 template <template <class, class> class Container>
 Container<std::string, std::allocator<std::string>>
-    RclDynConf::getStringEntries(const std::string& sk) 
+RclDynConf::getStringEntries(const std::string& sk) 
 {
     std::vector<RclSListEntry> el = getEntries<std::vector, RclSListEntry>(sk);
     Container<std::string, std::allocator<std::string>> sl;
     for (const auto& entry : el) {
-	sl.push_back(entry.value);
+        sl.push_back(entry.value);
     }
     return sl;
 }

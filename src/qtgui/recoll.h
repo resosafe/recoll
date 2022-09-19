@@ -29,8 +29,7 @@
 // Misc declarations in need of sharing between the UI files
 
 // Open the database if needed. We now force a close/open by default
-extern bool maybeOpenDb(std::string &reason, bool force = true, 
-			bool *maindberror = 0);
+extern bool maybeOpenDb(std::string &reason, bool force, bool *maindberror = 0);
 
 /** Retrieve configured stemming languages */
 bool getStemLangs(vector<string>& langs);
@@ -55,17 +54,47 @@ inline std::string qs2u8s(const QString& qs)
 {
     return std::string((const char *)qs.toUtf8());
 }
-inline QString u8s2qs(const std::string us)
+inline QString u8s2qs(const std::string& us)
 {
     return QString::fromUtf8(us.c_str());
 }
+inline QString path2qs(const std::string& us)
+{
+#ifdef _WIN32
+    return QString::fromUtf8(us.c_str());
+#else
+    return QString::fromLocal8Bit(us.c_str());
+#endif
+}
+inline std::string qs2path(const QString& qs)
+{
+#ifdef _WIN32
+    return qs2utf8s(qs);
+#else
+    return (const char*)qs.toLocal8Bit();
+#endif
+}
 
-/** Specialized version of the qt file dialog. Can't use getOpenFile()
-   etc. cause they hide dot files... */
+/** Specialized version of the qt file dialog. Can't use getOpenFile() etc. cause they hide dot
+    files... Need something more adaptable than the static functions but less complex than the full
+    dialog */
+
+// Also : can't keep adding parms with default values, we now use an object as parameter.
+class MyGFNParams {
+public:
+    QString caption;
+    bool filenosave{false};
+    QString dirlocation; // Note: this holds the new location on return
+    QString dfltnm;
+    std::vector<std::string> sidedirs;
+    bool readonly{false};
+};
 extern QString myGetFileName(bool isdir, QString caption = QString(),
-			     bool filenosave = false,
+                             bool filenosave = false,
                              QString dirlocation = QString(),
                              QString dlftnm = QString()
     );
+
+extern QString myGetFileName(bool isdir, MyGFNParams &parms);
 
 #endif /* _RECOLL_H_INCLUDED_ */

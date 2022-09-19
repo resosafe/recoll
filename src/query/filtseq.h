@@ -29,20 +29,24 @@ class RclConfig;
 /** 
  * A filtered sequence is created from another one by selecting entries
  * according to the given criteria.
+ * Note that this class can only filter on mime type (or rclcatg) at the moment,
+ * and is only used for history. Normal query filtering is performed by adding a
+ * clause to the Xapian query.
  */
 class DocSeqFiltered : public DocSeqModifier {
 public:
-    DocSeqFiltered(RclConfig *conf, std::shared_ptr<DocSequence> iseq, 
-		   DocSeqFiltSpec &filtspec);
+    DocSeqFiltered(RclConfig *conf, std::shared_ptr<DocSequence> iseq, DocSeqFiltSpec &filtspec);
     virtual ~DocSeqFiltered() {}
+    DocSeqFiltered(const DocSeqFiltered&) = delete;
+    DocSeqFiltered& operator=(const DocSeqFiltered&) = delete;
     virtual bool canFilter() {return true;}
     virtual bool setFiltSpec(const DocSeqFiltSpec &filtspec);
     virtual bool getDoc(int num, Rcl::Doc &doc, std::string *sh = 0);
     virtual int getResCnt() {return m_seq->getResCnt();}
- private:
+private:
     RclConfig     *m_config;    
     DocSeqFiltSpec m_spec;
-    std::vector<int>    m_dbindices;
+    std::vector<int> m_dbindices;
 };
 
 #endif /* _FILTSEQ_H_INCLUDED_ */

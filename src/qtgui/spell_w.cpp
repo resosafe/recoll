@@ -77,21 +77,21 @@ void SpellW::init()
     stemLangCMB->clear();
     vector<string> langs;
     if (!getStemLangs(langs)) {
-	QMessageBox::warning(0, "Recoll", 
-			     tr("error retrieving stemming languages"));
+        QMessageBox::warning(0, "Recoll", 
+                             tr("error retrieving stemming languages"));
     }
     for (vector<string>::const_iterator it = langs.begin(); 
-	 it != langs.end(); it++) {
-	stemLangCMB->addItem(u8s2qs(*it));
+         it != langs.end(); it++) {
+        stemLangCMB->addItem(u8s2qs(*it));
     }
 
     (void)new HelpClient(this);
     HelpClient::installMap((const char *)this->objectName().toUtf8(), 
-			   "RCL.SEARCH.GUI.TERMEXPLORER");
+                           "RCL.SEARCH.GUI.TERMEXPLORER");
 
     // signals and slots connections
     connect(baseWordLE, SIGNAL(textChanged(const QString&)), 
-	    this, SLOT(wordChanged(const QString&)));
+            this, SLOT(wordChanged(const QString&)));
     connect(baseWordLE, SIGNAL(returnPressed()), this, SLOT(doExpand()));
     connect(expandPB, SIGNAL(clicked()), this, SLOT(doExpand()));
     connect(dismissPB, SIGNAL(clicked()), this, SLOT(close()));
@@ -105,7 +105,7 @@ void SpellW::init()
 #endif
     resTW->verticalHeader()->setDefaultSectionSize(20); 
     connect(resTW,
-	   SIGNAL(cellDoubleClicked(int, int)),
+            SIGNAL(cellDoubleClicked(int, int)),
             this, SLOT(textDoubleClicked(int, int)));
 
     resTW->setColumnWidth(0, 200);
@@ -120,9 +120,9 @@ void SpellW::init()
 int SpellW::cmbIdx(comboboxchoice mode)
 {
     vector<comboboxchoice>::const_iterator it = 
-	std::find(m_c2t.begin(), m_c2t.end(), mode);
+        std::find(m_c2t.begin(), m_c2t.end(), mode);
     if (it == m_c2t.end())
-	it = m_c2t.begin();
+        it = m_c2t.begin();
     return it - m_c2t.begin();
 }
 
@@ -133,19 +133,19 @@ void SpellW::doExpand()
 {
     int idx = expTypeCMB->currentIndex();
     if (idx < 0 || idx >= int(m_c2t.size()))
-	idx = 0;
+        idx = 0;
     comboboxchoice mode = m_c2t[idx];
 
     // Can't clear qt4 table widget: resets column headers too
     resTW->setRowCount(0);
     if (baseWordLE->text().isEmpty() && !wordlessMode(mode)) 
-	return;
+        return;
 
     string reason;
-    if (!maybeOpenDb(reason)) {
-	QMessageBox::critical(0, "Recoll", QString(reason.c_str()));
-	LOGDEB("SpellW::doExpand: db error: "  << (reason) << "\n" );
-	return;
+    if (!maybeOpenDb(reason, false)) {
+        QMessageBox::critical(0, "Recoll", QString(reason.c_str()));
+        LOGDEB("SpellW::doExpand: db error: "  << (reason) << "\n" );
+        return;
     }
 
     int mt;
@@ -156,10 +156,10 @@ void SpellW::doExpand()
     default: mt = Rcl::Db::ET_WILD;
     }
     if (caseSensCB->isChecked()) {
-	mt |= Rcl::Db::ET_CASESENS;
+        mt |= Rcl::Db::ET_CASESENS;
     }
     if (diacSensCB->isChecked()) {
-	mt |= Rcl::Db::ET_DIACSENS;
+        mt |= Rcl::Db::ET_DIACSENS;
     }
     Rcl::TermMatchResult res;
     string expr = string((const char *)baseWordLE->text().toUtf8());
@@ -172,29 +172,29 @@ void SpellW::doExpand()
     case TYPECMB_REG:
     case TYPECMB_STEM:
     {
-	string l_stemlang = qs2utf8s(stemLangCMB->currentText());
+        string l_stemlang = qs2utf8s(stemLangCMB->currentText());
 
-	if (!rcldb->termMatch(mt, l_stemlang, expr, res, maxexpand)) {
-	    LOGERR("SpellW::doExpand:rcldb::termMatch failed\n" );
-	    return;
-	}
+        if (!rcldb->termMatch(mt, l_stemlang, expr, res, maxexpand)) {
+            LOGERR("SpellW::doExpand:rcldb::termMatch failed\n" );
+            return;
+        }
         statsLBL->setText(tr("Index: %1 documents, average length %2 terms."
-			     "%3 results")
+                             "%3 results")
                           .arg(dbs.dbdoccount).arg(dbs.dbavgdoclen, 0, 'f', 0)
-			  .arg(res.entries.size()));
+                          .arg(res.entries.size()));
     }
         
     break;
 
     case TYPECMB_SPELL: 
     {
-	LOGDEB("SpellW::doExpand: spelling [" << expr << "]\n" );
-	vector<string> suggs;
-	if (!rcldb->getSpellingSuggestions(expr, suggs)) {
-	    QMessageBox::warning(0, "Recoll", tr("Spell expansion error. "));
-	}
-	for (const auto& it : suggs) {
-	    res.entries.push_back(Rcl::TermMatchEntry(it));
+        LOGDEB("SpellW::doExpand: spelling [" << expr << "]\n" );
+        vector<string> suggs;
+        if (!rcldb->getSpellingSuggestions(expr, suggs)) {
+            QMessageBox::warning(0, "Recoll", tr("Spell expansion error. "));
+        }
+        for (const auto& it : suggs) {
+            res.entries.push_back(Rcl::TermMatchEntry(it));
         }
         statsLBL->setText(tr("%1 results").arg(res.entries.size()));
     }
@@ -202,14 +202,14 @@ void SpellW::doExpand()
 
     case TYPECMB_STATS: 
     {
-	showStats();
-	return;
+        showStats();
+        return;
     }
     break;
     case TYPECMB_FAILED:
     {
-	showFailed();
-	return;
+        showFailed();
+        return;
     }
     break;
     }
@@ -218,36 +218,36 @@ void SpellW::doExpand()
         resTW->setItem(0, 0, new QTableWidgetItem(tr("No expansion found")));
     } else {
         int row = 0;
+        // maxexpand is static const, thus guaranteed to be >0
+        if (int(res.entries.size()) >= maxexpand) {
+            resTW->setRowCount(row + 1);
+            resTW->setSpan(row, 0, 1, 2);
+            resTW->setItem(row++, 0, 
+                           new QTableWidgetItem(
+                               tr("List was truncated alphabetically, "
+                                  "some frequent "))); 
+            resTW->setRowCount(row + 1);
+            resTW->setSpan(row, 0, 1, 2);
+            resTW->setItem(row++, 0, new QTableWidgetItem(
+                               tr("terms may be missing. "
+                                  "Try using a longer root.")));
+            resTW->setRowCount(row + 1);
+            resTW->setItem(row++, 0, new QTableWidgetItem(""));
+        }
 
-	if (maxexpand > 0 && int(res.entries.size()) >= maxexpand) {
-	    resTW->setRowCount(row + 1);
-	    resTW->setSpan(row, 0, 1, 2);
-	    resTW->setItem(row++, 0, 
-			   new QTableWidgetItem(
-			       tr("List was truncated alphabetically, "
-				  "some frequent "))); 
-	    resTW->setRowCount(row + 1);
-	    resTW->setSpan(row, 0, 1, 2);
-	    resTW->setItem(row++, 0, new QTableWidgetItem(
-			       tr("terms may be missing. "
-				  "Try using a longer root.")));
-	    resTW->setRowCount(row + 1);
-	    resTW->setItem(row++, 0, new QTableWidgetItem(""));
-	}
-
-	for (vector<Rcl::TermMatchEntry>::iterator it = res.entries.begin(); 
-	     it != res.entries.end(); it++) {
-	    LOGDEB2("SpellW::expand: " << it->wcf << " [" << it->term << "]\n");
-	    char num[30];
-	    if (it->wcf)
-		sprintf(num, "%d / %d",  it->docs, it->wcf);
-	    else
-		num[0] = 0;
-	    resTW->setRowCount(row+1);
+        for (vector<Rcl::TermMatchEntry>::iterator it = res.entries.begin(); 
+             it != res.entries.end(); it++) {
+            LOGDEB2("SpellW::expand: " << it->wcf << " [" << it->term << "]\n");
+            char num[30];
+            if (it->wcf)
+                sprintf(num, "%d / %d",  it->docs, it->wcf);
+            else
+                num[0] = 0;
+            resTW->setRowCount(row+1);
             resTW->setItem(row, 0, new QTableWidgetItem(u8s2qs(it->term)));
             resTW->setItem(row++, 1, 
-                             new QTableWidgetItem(QString::fromUtf8(num)));
-	}
+                           new QTableWidgetItem(QString::fromUtf8(num)));
+        }
     }
 }
 
@@ -258,99 +258,99 @@ void SpellW::showStats()
 
     Rcl::DbStats res;
     if (!rcldb->dbStats(res, false)) {
-	LOGERR("SpellW::doExpand:rcldb::dbStats failed\n" );
-	return;
+        LOGERR("SpellW::doExpand:rcldb::dbStats failed\n" );
+        return;
     }
 
     resTW->setRowCount(row+1);
     resTW->setItem(row, 0,
-		   new QTableWidgetItem(tr("Number of documents")));
+                   new QTableWidgetItem(tr("Number of documents")));
     resTW->setItem(row++, 1, new QTableWidgetItem(
-		       QString::number(res.dbdoccount)));
+                       QString::number(res.dbdoccount)));
 
     resTW->setRowCount(row+1);
     resTW->setItem(row, 0,
-		   new QTableWidgetItem(tr("Average terms per document")));
+                   new QTableWidgetItem(tr("Average terms per document")));
     resTW->setItem(row++, 1, new QTableWidgetItem(
-		       QString::number(res.dbavgdoclen, 'f', 0)));
+                       QString::number(res.dbavgdoclen, 'f', 0)));
 
     resTW->setRowCount(row+1);
     resTW->setItem(row, 0,
-		   new QTableWidgetItem(tr("Smallest document length (terms)")));
+                   new QTableWidgetItem(tr("Smallest document length (terms)")));
     resTW->setItem(row++, 1, new QTableWidgetItem(
-		       QString::number(res.mindoclen)));
+                       QString::number(res.mindoclen)));
 
     resTW->setRowCount(row+1);
     resTW->setItem(row, 0,
-		   new QTableWidgetItem(tr("Longest document length (terms)")));
+                   new QTableWidgetItem(tr("Longest document length (terms)")));
     resTW->setItem(row++, 1, new QTableWidgetItem(
-		       QString::number(res.maxdoclen)));
+                       QString::number(res.maxdoclen)));
 
     if (!theconfig)
-	return;
+        return;
 
     DbIxStatus st;
     readIdxStatus(theconfig, st);
 
     resTW->setRowCount(row+1);
     resTW->setItem(row, 0,
-		   new QTableWidgetItem(tr("Results from last indexing:")));
+                   new QTableWidgetItem(tr("Results from last indexing:")));
     resTW->setItem(row++, 1, new QTableWidgetItem(""));
     resTW->setRowCount(row+1);
     resTW->setItem(row, 0,
-		   new QTableWidgetItem(tr("  Documents created/updated")));
+                   new QTableWidgetItem(tr("  Documents created/updated")));
     resTW->setItem(row++, 1,
                    new QTableWidgetItem(QString::number(st.docsdone)));
     resTW->setRowCount(row+1);
     resTW->setItem(row, 0,
-		   new QTableWidgetItem(tr("  Files tested")));
+                   new QTableWidgetItem(tr("  Files tested")));
     resTW->setItem(row++, 1,
                    new QTableWidgetItem(QString::number(st.filesdone)));
     resTW->setRowCount(row+1);
     resTW->setItem(row, 0,
-		   new QTableWidgetItem(tr("  Unindexed files")));
+                   new QTableWidgetItem(tr("  Unindexed files")));
     resTW->setItem(row++, 1,
                    new QTableWidgetItem(QString::number(st.fileerrors)));
 
-    baseWordLE->setText(QString::fromLocal8Bit(theconfig->getDbDir().c_str()));
+    baseWordLE->setText(path2qs(theconfig->getDbDir()));
 
     int64_t dbkbytes = fsTreeBytes(theconfig->getDbDir()) / 1024;
     if (dbkbytes < 0) {
-	dbkbytes = 0;
+        dbkbytes = 0;
     }
     resTW->setRowCount(row+1);
     resTW->setItem(row, 0,
-		   new QTableWidgetItem(tr("Database directory size")));
+                   new QTableWidgetItem(tr("Database directory size")));
     resTW->setItem(row++, 1, new QTableWidgetItem(
-		       u8s2qs(displayableBytes(dbkbytes*1024))));
+                       u8s2qs(displayableBytes(dbkbytes*1024))));
 
     vector<string> allmimetypes = theconfig->getAllMimeTypes();
     multimap<int, string> mtbycnt;
     for (vector<string>::const_iterator it = allmimetypes.begin();
-	 it != allmimetypes.end(); it++) {
-	string reason;
-	string q = string("mime:") + *it;
-	Rcl::SearchData *sd = wasaStringToRcl(theconfig, "", q, reason);
-	std::shared_ptr<Rcl::SearchData> rq(sd);
-	Rcl::Query query(rcldb.get());
-	if (!query.setQuery(rq)) {
-	    LOGERR("Query setup failed: "  << (query.getReason()) << "" );
-	    return;
-	}
-	int cnt = query.getResCnt();
-	mtbycnt.insert(pair<int,string>(cnt,*it));
+         it != allmimetypes.end(); it++) {
+        string reason;
+        string q = string("mime:") + *it;
+        std::shared_ptr<Rcl::SearchData> sd =
+            wasaStringToRcl(theconfig, "", q, reason);
+        Rcl::Query query(rcldb.get());
+        if (!query.setQuery(sd)) {
+            LOGERR("Query setup failed: "  << (query.getReason()) << "" );
+            return;
+        }
+        int cnt = query.getResCnt();
+        mtbycnt.insert(pair<int,string>(cnt,*it));
     }
     resTW->setRowCount(row+1);
     resTW->setItem(row, 0, new QTableWidgetItem(tr("MIME types:")));
     resTW->setItem(row++, 1, new QTableWidgetItem(""));
 
     for (multimap<int, string>::const_reverse_iterator it = mtbycnt.rbegin();
-	 it != mtbycnt.rend(); it++) {
-	resTW->setRowCount(row+1);
-	resTW->setItem(row, 0, new QTableWidgetItem(QString("    ") +
+         it != mtbycnt.rend(); it++) {
+        resTW->setRowCount(row+1);
+        resTW->setItem(row, 0, new QTableWidgetItem(QString("    ") +
                                                     u8s2qs(it->second)));
-	resTW->setItem(row++, 1, new QTableWidgetItem(
-			   QString::number(it->first)));
+        resTW->setItem(row++, 1, new QTableWidgetItem(
+                           QString::number(it->first)));
     }
 }
 
@@ -361,23 +361,23 @@ void SpellW::showFailed()
 
     Rcl::DbStats res;
     if (!rcldb->dbStats(res, true)) {
-	LOGERR("SpellW::doExpand:rcldb::dbStats failed\n" );
-	return;
+        LOGERR("SpellW::doExpand:rcldb::dbStats failed\n" );
+        return;
     }
     for (auto entry : res.failedurls) {
-	resTW->setRowCount(row+1);
-	resTW->setItem(row, 0, new QTableWidgetItem(u8s2qs(entry)));
-	resTW->setItem(row++, 1, new QTableWidgetItem(""));
+        resTW->setRowCount(row+1);
+        resTW->setItem(row, 0, new QTableWidgetItem(u8s2qs(entry)));
+        resTW->setItem(row++, 1, new QTableWidgetItem(""));
     }
 }
 
 void SpellW::wordChanged(const QString &text)
 {
     if (text.isEmpty()) {
-	expandPB->setEnabled(false);
+        expandPB->setEnabled(false);
         resTW->setRowCount(0);
     } else {
-	expandPB->setEnabled(true);
+        expandPB->setEnabled(true);
     }
 }
 
@@ -392,7 +392,7 @@ void SpellW::textDoubleClicked(int row, int)
 void SpellW::onModeChanged(int idx)
 {
     if (idx < 0 || idx > int(m_c2t.size()))
-	return;
+        return;
     comboboxchoice mode = m_c2t[idx];
     setModeCommon(mode);
 }
@@ -411,96 +411,96 @@ void SpellW::setModeCommon(comboboxchoice mode)
     m_prevmode = mode;
     resTW->setRowCount(0);
     if (o_index_stripchars) {
-	caseSensCB->setEnabled(false);
-	diacSensCB->setEnabled(false);
+        caseSensCB->setEnabled(false);
+        diacSensCB->setEnabled(false);
     } else {
-	caseSensCB->setEnabled(true);
-	diacSensCB->setEnabled(true);
+        caseSensCB->setEnabled(true);
+        diacSensCB->setEnabled(true);
     }
    
     if (mode == TYPECMB_STEM) {
-	stemLangCMB->setEnabled(true);
-	diacSensCB->setChecked(false);
-	diacSensCB->setEnabled(false);
-	caseSensCB->setChecked(false);
-	caseSensCB->setEnabled(false);
+        stemLangCMB->setEnabled(true);
+        diacSensCB->setChecked(false);
+        diacSensCB->setEnabled(false);
+        caseSensCB->setChecked(false);
+        caseSensCB->setEnabled(false);
     } else {
-	stemLangCMB->setEnabled(false);
+        stemLangCMB->setEnabled(false);
     }
 
     if (wordlessMode(mode)) {
-	baseWordLE->setEnabled(false);
-	QStringList labels(tr("Item"));
-	labels.push_back(tr("Value"));
-	resTW->setHorizontalHeaderLabels(labels);
-	diacSensCB->setEnabled(false);
-	caseSensCB->setEnabled(false);
-	doExpand();
+        baseWordLE->setEnabled(false);
+        QStringList labels(tr("Item"));
+        labels.push_back(tr("Value"));
+        resTW->setHorizontalHeaderLabels(labels);
+        diacSensCB->setEnabled(false);
+        caseSensCB->setEnabled(false);
+        doExpand();
     } else {
-	baseWordLE->setEnabled(true);
-	QStringList labels(tr("Term"));
-	labels.push_back(tr("Doc. / Tot."));
-	resTW->setHorizontalHeaderLabels(labels);
-	prefs.termMatchType = mode;
+        baseWordLE->setEnabled(true);
+        QStringList labels(tr("Term"));
+        labels.push_back(tr("Doc. / Tot."));
+        resTW->setHorizontalHeaderLabels(labels);
+        prefs.termMatchType = mode;
     }
 }
 
 void SpellW::copy()
 {
-  QItemSelectionModel * selection = resTW->selectionModel();
-  QModelIndexList indexes = selection->selectedIndexes();
+    QItemSelectionModel * selection = resTW->selectionModel();
+    QModelIndexList indexes = selection->selectedIndexes();
 
-  if(indexes.size() < 1)
-    return;
+    if(indexes.size() < 1)
+        return;
 
-  // QModelIndex::operator < sorts first by row, then by column. 
-  // this is what we need
-  std::sort(indexes.begin(), indexes.end());
+    // QModelIndex::operator < sorts first by row, then by column. 
+    // this is what we need
+    std::sort(indexes.begin(), indexes.end());
 
-  // You need a pair of indexes to find the row changes
-  QModelIndex previous = indexes.first();
-  indexes.removeFirst();
-  QString selected_text;
-  QModelIndex current;
-  Q_FOREACH(current, indexes)
-  {
-    QVariant data = resTW->model()->data(previous);
-    QString text = data.toString();
-    // At this point `text` contains the text in one cell
-    selected_text.append(text);
-    // If you are at the start of the row the row number of the previous index
-    // isn't the same.  Text is followed by a row separator, which is a newline.
-    if (current.row() != previous.row())
+    // You need a pair of indexes to find the row changes
+    QModelIndex previous = indexes.first();
+    indexes.removeFirst();
+    QString selected_text;
+    QModelIndex current;
+    Q_FOREACH(current, indexes)
     {
-      selected_text.append(QLatin1Char('\n'));
+        QVariant data = resTW->model()->data(previous);
+        QString text = data.toString();
+        // At this point `text` contains the text in one cell
+        selected_text.append(text);
+        // If you are at the start of the row the row number of the previous index
+        // isn't the same.  Text is followed by a row separator, which is a newline.
+        if (current.row() != previous.row())
+        {
+            selected_text.append(QLatin1Char('\n'));
+        }
+        // Otherwise it's the same row, so append a column separator, which is a tab.
+        else
+        {
+            selected_text.append(QLatin1Char('\t'));
+        }
+        previous = current;
     }
-    // Otherwise it's the same row, so append a column separator, which is a tab.
-    else
-    {
-      selected_text.append(QLatin1Char('\t'));
-    }
-    previous = current;
-  }
 
-  // add last element
-  selected_text.append(resTW->model()->data(current).toString());
-  selected_text.append(QLatin1Char('\n'));
-  qApp->clipboard()->setText(selected_text, QClipboard::Selection);
-  qApp->clipboard()->setText(selected_text, QClipboard::Clipboard);
+    // add last element
+    selected_text.append(resTW->model()->data(current).toString());
+    selected_text.append(QLatin1Char('\n'));
+    qApp->clipboard()->setText(selected_text, QClipboard::Selection);
+    qApp->clipboard()->setText(selected_text, QClipboard::Clipboard);
 }
 
 
 bool SpellW::eventFilter(QObject *target, QEvent *event)
 {
     if (event->type() != QEvent::KeyPress ||
-	(target != resTW && target != resTW->viewport())) 
-	return false;
+        (target != resTW && target != resTW->viewport())) 
+        return false;
 
     QKeyEvent *keyEvent = (QKeyEvent *)event;
     if(keyEvent->matches(QKeySequence::Copy) )
     {
-	copy();
-	return true;
+        copy();
+        return true;
     }
     return false;
 }

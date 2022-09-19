@@ -37,7 +37,6 @@ class Doc;
 }
 
 class Uncomp;
-struct stat;
 
 /** Storage for missing helper program info. We want to keep this out of the 
  * FileInterner class, because the data will typically be accumulated by several
@@ -50,10 +49,11 @@ public:
     FIMissingStore() {}
     FIMissingStore(const string& in);
     virtual ~FIMissingStore() {}
-    virtual void addMissing(const string& prog, const string& mt)
-        {
-            m_typesForMissing[prog].insert(mt);
-        }
+    FIMissingStore(const FIMissingStore&) = delete;
+    FIMissingStore& operator=(const FIMissingStore&) = delete;
+    virtual void addMissing(const string& prog, const string& mt) {
+        m_typesForMissing[prog].insert(mt);
+    }
     // Get simple progs list string
     virtual void getMissingExternal(string& out);
     // Get progs + assoc mtypes description string
@@ -114,7 +114,7 @@ public:
      * @param mtype mime type if known. For a compressed file this is the 
      *   mime type for the uncompressed version.
      */
-    FileInterner(const string &fn, const struct stat *stp, 
+    FileInterner(const string &fn, const struct PathStat *stp, 
                  RclConfig *cnf, int flags, const string *mtype = 0);
     
     /** 
@@ -137,6 +137,8 @@ public:
     FileInterner(const Rcl::Doc& idoc, RclConfig *cnf, int flags);
 
     ~FileInterner();
+    FileInterner(const FileInterner&) = delete;
+    FileInterner& operator=(const FileInterner&) = delete;
 
     void setMissingStore(FIMissingStore *st) {
         m_missingdatap = st;
@@ -183,14 +185,12 @@ public:
         we keep it around to save work for our caller, which can get it here */
     TempFile get_imgtmp() {return m_imgtmp;}
 
-    const string& getReason() const 
-        {
-            return m_reason;
-        }
-    bool ok() const
-        {
-            return m_ok;
-        }
+    const string& getReason() const {
+        return m_reason;
+    }
+    bool ok() const {
+        return m_ok;
+    }
 
     /**
      * Get UDI for immediate parent for document. 
@@ -206,8 +206,7 @@ public:
     static std::string getLastIpathElt(const std::string& ipath);
 
     /** Check that 2nd param is child of first */
-    static bool ipathContains(const std::string& parent,
-                              const std::string& child);
+    static bool ipathContains(const std::string& parent, const std::string& child);
     /** 
      * Build sig for doc coming from rcldb. This is here because we know how
      * to query the right backend. Used to check up-to-dateness at query time */
@@ -250,8 +249,7 @@ public:
     /** Try to get a top level reason after an operation failed. This
      * is just for "simple" issues, like file missing, permissions,
      * etc. */
-    enum ErrorPossibleCause{FetchMissing, FetchPerm, FetchNoBackend,
-                            InternfileOther};
+    enum ErrorPossibleCause{FetchMissing, FetchPerm, FetchNoBackend, InternfileOther};
     static ErrorPossibleCause tryGetReason(RclConfig *, const Rcl::Doc&);
 
 private:
@@ -290,7 +288,7 @@ private:
     bool                   m_direct; // External app did the extraction
     
     // Pseudo-constructors
-    void init(const string &fn, const struct stat *stp, 
+    void init(const string &fn, const struct PathStat *stp, 
               RclConfig *cnf, int flags, const string *mtype = 0);
     void init(const string &data, RclConfig *cnf, int flags, 
               const string& mtype);

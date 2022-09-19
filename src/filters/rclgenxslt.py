@@ -18,8 +18,6 @@
 
 # Base class for simple (one stylesheet) xslt-based handlers
 
-from __future__ import print_function
-
 import sys
 import rclxslt
 import gzip

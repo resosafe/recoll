@@ -88,4 +88,7 @@ private:
 };
 
 
+/** Helper function: is MIME type a simple image ? */
+bool mimeIsImage(const std::string& tp);
+
 #endif /* _APPFORMIME_H_INCLUDED_ */

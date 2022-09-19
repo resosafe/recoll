@@ -31,11 +31,12 @@
 class DocSeqSorted : public DocSeqModifier {
  public:
     DocSeqSorted(std::shared_ptr<DocSequence> iseq, DocSeqSortSpec &sortspec)
-	:  DocSeqModifier(iseq)
-    {
-	setSortSpec(sortspec);
+    :  DocSeqModifier(iseq) {
+        setSortSpec(sortspec);
     }
     virtual ~DocSeqSorted() {}
+    DocSeqSorted(const DocSeqSorted&) = delete;
+    DocSeqSorted& operator=(const DocSeqSorted&) = delete;
     virtual bool canSort() {return true;}
     virtual bool setSortSpec(const DocSeqSortSpec &sortspec);
     virtual bool getDoc(int num, Rcl::Doc &doc, string *sh = 0);

@@ -1,13 +1,6 @@
 Recoll KIO slave
 ================
 
-An experiment with a recoll KIO slave.
-
-Caveat: I am only currently testing this with a production, but very
-recent, version of KDE 4.1, and I don't intend to really support
-older versions. The most usable aspects work under KDE 4.0 though. As
-a reference, my test system is an up to date (2009-01) Kubuntu 8.10.
-
 Usage
 =====
 
@@ -29,10 +22,9 @@ a Konqueror URL entry. Depending on the KDE version, this will bring
 you either to an HTML search form, or to a directory listing, where
 you should READ THE HELP FILE.
 
+
 Building and installing:
 =======================
-
-Only tested with KDE 4.1 and later.
 
 The main Recoll installation shares its prefix with the KIO slave,
 which needs to use the KDE one. This means that, if KDE lives in /usr,
@@ -40,14 +32,11 @@ Recoll must be configured with --prefix=/usr, not /usr/local. Else
 you'll have run-time problems, the slave will not be able to find the
 Recoll configuration.
 
-!!*Notice: You cannot share a build directory between recoll and kio_recoll
-because they use different configure options for the main lib, but build it
-in the same place. The main lib "configure" is run at "cmake" time for
-kio_recoll, the build is done at "make" time.
-
-
 Recipe:
- - Make sure the KDE4 core devel packages and cmake are installed.
+
+ - Make sure the KF5 core and KIO devel packages and cmake are
+   installed. You probably need the kio-devel and extra-cmake-modules
+   packages.
 
  - Extract the Recoll source.
 
@@ -60,7 +49,8 @@ Recipe:
 
 mkdir builddir
 cd builddir
-cmake .. -DCMAKE_INSTALL_PREFIX=/usr 
+cmake -DCMAKE_INSTALL_PREFIX=/usr ..
+
 make
 sudo make install
 

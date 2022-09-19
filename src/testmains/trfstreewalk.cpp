@@ -24,6 +24,7 @@
 
 #include "rclinit.h"
 #include "rclconfig.h"
+#include "pathut.h"
 
 using namespace std;
 
@@ -43,29 +44,32 @@ static int     op_flags;
 #define OPT_k     0x1000
 #define OPT_y     0x2000
 #define OPT_s     0x4000
+#define OPT_S     0x8000
 
 class myCB : public FsTreeWalkerCB {
 public:
     FsTreeWalker::Status processone(const string &path, 
-                                    const struct stat *st,
+                                    const struct PathStat *st,
                                     FsTreeWalker::CbFlag flg) {
-            if (flg == FsTreeWalker::FtwDirEnter) {
-                if (op_flags & OPT_r) {
-                    cout << path << endl;
-                } else {
-                    if (!(op_flags&OPT_s)) {
-                        cout << "[Entering " << path << "]" << endl;
-                    }
-                }
-            } else if (flg == FsTreeWalker::FtwDirReturn) {
-                    if (!(op_flags&OPT_s)) {
-                        cout << "[Returning to " << path << "]" << endl;
-                    }
-            } else if (flg == FsTreeWalker::FtwRegular) {
+        if (flg == FsTreeWalker::FtwDirEnter) {
+            if (op_flags & OPT_r) {
                 cout << path << endl;
+            } else {
+                if (!(op_flags&OPT_s)) {
+                    cout << "[Entering " << path << "]" << endl;
+                }
             }
-            return FsTreeWalker::FtwOk;
+        } else if (flg == FsTreeWalker::FtwDirReturn) {
+            if (!(op_flags&OPT_s)) {
+                cout << "[Returning to " << path << "]" << endl;
+            }
+        } else if (flg == FsTreeWalker::FtwRegular) {
+            cout << path << endl;
+        } else if (flg == FsTreeWalker::FtwSkipped) {
+            cout << "SKIPPED: " << path << endl;
         }
+        return FsTreeWalker::FtwOk;
+    }
 };
 
 static const char *thisprog;
@@ -89,22 +93,23 @@ static const char *thisprog;
 // real    17m10.585s user    0m4.532s sys     0m35.033s
 
 static char usage [] =
-"trfstreewalk [-p pattern] [-P ignpath] [-r] [-c] [-L] topdir\n"
-" -D : skip dotfiles\n"
-" -L : follow symbolic links\n"
-" -M <depth>: limit depth (works with -b/m/d)\n"
-" -P <pattern> : add skippedPaths entry\n"
-" -p <pattern> : add skippedNames entry\n"
-" -b : use breadth first walk\n"
-" -c : no path canonification\n"
-" -d : use almost depth first (dir files, then subdirs)\n"
-" -k : like du\n"
-" -m : use breadth up to 4 deep then switch to -d\n"
-" -r : norecurse\n"
-" -s : don't print dir change info\n"
-" -w : unset default FNM_PATHNAME when using fnmatch() to match skipped paths\n"
-" -y <pattern> : add onlyNames entry\n"
-;
+                    "trfstreewalk [-p pattern] [-P ignpath] [-r] [-c] [-L] topdir\n"
+                    " -D : skip dotfiles\n"
+                    " -L : follow symbolic links\n"
+                    " -M <depth>: limit depth (works with -b/m/d)\n"
+                    " -P <pattern> : add skippedPaths entry\n"
+                    " -p <pattern> : add skippedNames entry\n"
+                    " -b : use breadth first walk\n"
+                    " -c : no path canonification\n"
+                    " -d : use almost depth first (dir files, then subdirs)\n"
+                    " -k : like du\n"
+                    " -m : use breadth up to 4 deep then switch to -d\n"
+                    " -r : norecurse\n"
+                    " -s : don't print dir change info\n"
+                    " -w : unset default FNM_PATHNAME when using fnmatch() to match skipped paths\n"
+                    " -y <pattern> : add onlyNames entry\n"
+                    " -S : only print skipped files and directories\n";
+                    ;
 static void
 Usage(void)
 {
@@ -149,6 +154,7 @@ int main(int argc, const char **argv)
                 goto b1;
             case 'r':   op_flags |= OPT_r; break;
             case 's':   op_flags |= OPT_s; break;
+            case 'S':   op_flags |= OPT_S; break;
             case 'w':   op_flags |= OPT_w; break;
             case 'y':   op_flags |= OPT_y; if (argc < 2)  Usage();
                 onlynames.push_back(*(++argv));
@@ -183,6 +189,8 @@ int main(int argc, const char **argv)
         opt |= FsTreeWalker::FtwFollow;
     if (op_flags & OPT_D)
         opt |= FsTreeWalker::FtwSkipDotFiles;
+    if (op_flags & OPT_S)
+        opt |= FsTreeWalker::FtwOnlySkipped;
 
     if (op_flags & OPT_b)
         opt |= FsTreeWalker::FtwTravBreadth;
@@ -191,6 +199,7 @@ int main(int argc, const char **argv)
     else if (op_flags & OPT_m)
         opt |= FsTreeWalker::FtwTravBreadthThenDepth;
 
+    
     string reason;
     if (!recollinit(0, 0, 0, reason)) {
         fprintf(stderr, "Init failed: %s\n", reason.c_str());

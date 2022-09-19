@@ -22,7 +22,12 @@
 #include "mimehandler.h"
 #include "log.h"
 #include "smallut.h"
+#include "rclutil.h"
 #include "listmem.h"
+
+#ifdef _WIN32
+#include "utf8iter.h"
+#endif
 
 using std::string;
 
@@ -99,9 +104,9 @@ static string bomtocode(const string& itext)
 bool RecollFilter::txtdcode(const string& who)
 {
     if (m_metaData[cstr_dj_keymt].compare(cstr_textplain)) {
-	LOGERR(who << "::txtdcode: called on non txt/plain: " <<
+        LOGERR(who << "::txtdcode: called on non txt/plain: " <<
                m_metaData[cstr_dj_keymt] << "\n");
-	return false;
+        return false;
     }
 
     string& ocs = m_metaData[cstr_dj_keyorigcharset];
@@ -110,6 +115,17 @@ bool RecollFilter::txtdcode(const string& who)
            ocs << "] to UTF-8\n");
     int ecnt;
     string otext;
+
+#ifdef _WIN32
+    // Under Windows the environment charset will usually not be
+    // utf-8. We check if the text is actually utf-8. This is worth
+    // it, else the conversion from 8-bit is going to succeed if the
+    // text is already utf-8, and produce bogus data.
+    if (utf8check(itext) >= 0) {
+        m_metaData[cstr_dj_keycharset] = cstr_utf8;
+        return true;
+    }
+#endif
 
     string bomfromcode = bomtocode(itext);
     if (!bomfromcode.empty()) {
@@ -120,17 +136,17 @@ bool RecollFilter::txtdcode(const string& who)
     
     bool ret = transcode(itext, otext, ocs, cstr_utf8, &ecnt);
     if (!ret || ecnt > int(itext.size() / 100)) {
-	LOGERR(who << "::txtdcode: transcode " << itext.size() <<
+        LOGERR(who << "::txtdcode: transcode " << itext.size() <<
                " bytes to UTF-8 failed for input charset [" << ocs <<
                "] ret " << ret << " ecnt "  << ecnt << "\n");
 
         ret = alternate_decode(itext, otext, ocs);
 
-	if (!ret) {
-	    LOGDEB("txtdcode: failed. Doc is not text?\n" );
-	    itext.erase();
-	    return false;
-	}
+        if (!ret) {
+            LOGDEB("txtdcode: failed. Doc is not text?\n" );
+            itext.erase();
+            return false;
+        }
     }
 
     itext.swap(otext);

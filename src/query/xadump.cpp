@@ -72,7 +72,7 @@ static int        op_flags;
 #define OPT_P     0x8
 #define OPT_T     0x10
 #define OPT_X     0x20
-#define OPT_d	  0x80 
+#define OPT_d      0x80 
 #define OPT_e     0x100
 #define OPT_f     0x200
 #define OPT_i     0x400
@@ -88,16 +88,16 @@ static int        op_flags;
 static string detailstring(const string& in)
 {
     if (!(op_flags & OPT_x))
-	return in;
+    return in;
     string out;
     Utf8Iter  it(in);
     for (; !it.eof(); it++) {
-	it.appendchartostring(out);
-	out += ' ';
+    it.appendchartostring(out);
+    out += ' ';
     }
     // Strip last space
     if (!out.empty())
-	out.resize(out.size()-1);
+    out.resize(out.size()-1);
     return out;
 }
 
@@ -120,9 +120,9 @@ bool o_index_stripchars;
 inline bool has_prefix(const string& trm)
 {
     if (o_index_stripchars) {
-	return trm.size() && 'A' <= trm[0] && trm[0] <= 'Z';
+    return trm.size() && 'A' <= trm[0] && trm[0] <= 'Z';
     } else {
-	return trm.size() > 0 && trm[0] == ':';
+    return trm.size() > 0 && trm[0] == ':';
     }
 }
 
@@ -158,174 +158,174 @@ int main(int argc, char **argv)
     argc--; argv++;
 
     while (argc > 0 && **argv == '-') {
-	(*argv)++;
-	if (!(**argv))
-	    /* Cas du "adb - core" */
-	    Usage();
-	while (**argv)
-	    switch (*(*argv)++) {
-	    case 'D':	op_flags |= OPT_D; break;
-	    case 'd':	op_flags |= OPT_d; if (argc < 2)  Usage();
-		dbdir = *(++argv);
-		argc--; 
-		goto b1;
-	    case 'E':	op_flags |= OPT_E; break;
-	    case 'e':	op_flags |= OPT_d; if (argc < 2)  Usage();
-		outencoding = *(++argv);
-		argc--; 
-		goto b1;
-	    case 'F':   op_flags |= OPT_F; break;
-	    case 'f':   op_flags |= OPT_f; break;
-	    case 'i':	op_flags |= OPT_i; if (argc < 2)  Usage();
-		if (sscanf(*(++argv), "%d", &docid) != 1) Usage();
-		argc--; 
-		goto b1;
-	    case 'l':   op_flags |= OPT_l; break;
-	    case 'n':	op_flags |= OPT_n; break;
-	    case 'P':	op_flags |= OPT_P; break;
-	    case 'q':	op_flags |= OPT_q; break;
-	    case 'r':	case 'b': op_flags |= OPT_r; break;
-	    case 'T':	op_flags |= OPT_T; break;
-	    case 't':	op_flags |= OPT_t; if (argc < 2)  Usage();
-		aterm = *(++argv);
-		argc--; 
-		goto b1;
-	    case 'X':	op_flags |= OPT_X; break;
-	    case 'x':	op_flags |= OPT_x; break;
-	    default: Usage();	break;
-	    }
+    (*argv)++;
+    if (!(**argv))
+        /* Cas du "adb - core" */
+        Usage();
+    while (**argv)
+        switch (*(*argv)++) {
+        case 'D':    op_flags |= OPT_D; break;
+        case 'd':    op_flags |= OPT_d; if (argc < 2)  Usage();
+        dbdir = *(++argv);
+        argc--; 
+        goto b1;
+        case 'E':    op_flags |= OPT_E; break;
+        case 'e':    op_flags |= OPT_d; if (argc < 2)  Usage();
+        outencoding = *(++argv);
+        argc--; 
+        goto b1;
+        case 'F':   op_flags |= OPT_F; break;
+        case 'f':   op_flags |= OPT_f; break;
+        case 'i':    op_flags |= OPT_i; if (argc < 2)  Usage();
+        if (sscanf(*(++argv), "%d", &docid) != 1) Usage();
+        argc--; 
+        goto b1;
+        case 'l':   op_flags |= OPT_l; break;
+        case 'n':    op_flags |= OPT_n; break;
+        case 'P':    op_flags |= OPT_P; break;
+        case 'q':    op_flags |= OPT_q; break;
+        case 'r':    case 'b': op_flags |= OPT_r; break;
+        case 'T':    op_flags |= OPT_T; break;
+        case 't':    op_flags |= OPT_t; if (argc < 2)  Usage();
+        aterm = *(++argv);
+        argc--; 
+        goto b1;
+        case 'X':    op_flags |= OPT_X; break;
+        case 'x':    op_flags |= OPT_x; break;
+        default: Usage();    break;
+        }
     b1: argc--; argv++;
     }
 
     vector<string> qterms;
     if (op_flags & OPT_q) {
-	fprintf(stderr, "q argc %d\n", argc);
-	if (argc < 1)
-	    Usage();
-	while (argc > 0) {
-	    qterms.push_back(*argv++); argc--;
-	}
+    fprintf(stderr, "q argc %d\n", argc);
+    if (argc < 1)
+        Usage();
+    while (argc > 0) {
+        qterms.push_back(*argv++); argc--;
+    }
     }
 
     if (argc != 0)
-	Usage();
+    Usage();
 
     atexit(cleanup);
     if (signal(SIGHUP, SIG_IGN) != SIG_IGN)
-	signal(SIGHUP, sigcleanup);
+    signal(SIGHUP, sigcleanup);
     if (signal(SIGINT, SIG_IGN) != SIG_IGN)
-	signal(SIGINT, sigcleanup);
+    signal(SIGINT, sigcleanup);
     if (signal(SIGQUIT, SIG_IGN) != SIG_IGN)
-	signal(SIGQUIT, sigcleanup);
+    signal(SIGQUIT, sigcleanup);
     if (signal(SIGTERM, SIG_IGN) != SIG_IGN)
-	signal(SIGTERM, sigcleanup);
+    signal(SIGTERM, sigcleanup);
 
     try {
-	db = new Xapian::Database(dbdir);
-	cout << "DB: ndocs " << db->get_doccount() << " lastdocid " <<
-	    db->get_lastdocid() << " avglength " << db->get_avlength() << endl;
+    db = new Xapian::Database(dbdir);
+    cout << "DB: ndocs " << db->get_doccount() << " lastdocid " <<
+        db->get_lastdocid() << " avglength " << db->get_avlength() << endl;
 
-	// If we have terms with a leading ':' it's a new style,
-	// unstripped index
-	{
-	    Xapian::TermIterator term = db->allterms_begin(":");
-	    if (term == db->allterms_end())
-		o_index_stripchars = true;
-	    else
-		o_index_stripchars = false;
-	    cout<<"DB: terms are "<<(o_index_stripchars?"stripped":"raw")<<endl;
-	}
+    // If we have terms with a leading ':' it's a new style,
+    // unstripped index
+    {
+        Xapian::TermIterator term = db->allterms_begin(":");
+        if (term == db->allterms_end())
+        o_index_stripchars = true;
+        else
+        o_index_stripchars = false;
+        cout<<"DB: terms are "<<(o_index_stripchars?"stripped":"raw")<<endl;
+    }
     
-	if (op_flags & OPT_T) {
-	    Xapian::TermIterator term;
-	    string printable;
-	    string op = (op_flags & OPT_n) ? string(): "[";
-	    string cl = (op_flags & OPT_n) ? string(): "]";
-	    if (op_flags & OPT_i) {
-		for (term = db->termlist_begin(docid); 
-		     term != db->termlist_end(docid);term++) {
-		    const string& s = *term;
-		    if ((op_flags&OPT_l) && has_prefix(s))
-			continue;
-		    cout << op << detailstring(s) << cl << endl;
-		}
-	    } else {
-		for (term = db->allterms_begin(); 
-		     term != db->allterms_end();term++) {
-		    const string& s = *term;
-		    if ((op_flags&OPT_l) && has_prefix(s))
-			continue;
-		    if (op_flags & OPT_f)
-			cout <<  db->get_collection_freq(*term) << " " 
-			     << term.get_termfreq() << " ";
-		    cout << op << detailstring(s) << cl << endl;
-		}
-	    }
-	} else if (op_flags & OPT_D) {
-	    Xapian::Document doc = db->get_document(docid);
-	    string data = doc.get_data();
-	    cout << data << endl;
-	} else if (op_flags & OPT_r) {
-	    wholedoc(db, docid);
-	} else if (op_flags & OPT_X) {
-	    Xapian::Document doc = db->get_document(docid);
-	    string data = doc.get_data();
-	    cout << data << endl;
-	    cout << "Really delete xapian document ?" << endl;
-	    string rep;
-	    cin >> rep;
-	    if (!rep.empty() && (rep[0] == 'y' || rep[0] == 'Y')) {
-		Xapian::WritableDatabase wdb(dbdir,  Xapian::DB_OPEN);
-		cout << "Deleting" << endl;
-		wdb.delete_document(docid);
-	    }
-	} else if (op_flags & OPT_P) {
-	    Xapian::PostingIterator doc;
-	    for (doc = db->postlist_begin(aterm);
-		 doc != db->postlist_end(aterm); doc++) {
-		cout << *doc << "(" << doc.get_wdf() << ") : " ;
-		Xapian::PositionIterator pos;
-		for (pos = doc.positionlist_begin(); 
-		     pos != doc.positionlist_end(); pos++) {
-		    cout << *pos << " " ;
-		}
-		cout << endl;
-	    }
-		
-	} else if (op_flags & OPT_F) {
-	    cout << "FreqFor " << aterm << " : " <<
-		db->get_termfreq(aterm) << endl;
-	} else if (op_flags & OPT_E) {
-	    cout << "Exists [" << aterm << "] : " <<
-		db->term_exists(aterm) << endl;
-	}  else if (op_flags & OPT_q) {
-	    Xapian::Enquire enquire(*db);
+    if (op_flags & OPT_T) {
+        Xapian::TermIterator term;
+        string printable;
+        string op = (op_flags & OPT_n) ? string(): "[";
+        string cl = (op_flags & OPT_n) ? string(): "]";
+        if (op_flags & OPT_i) {
+        for (term = db->termlist_begin(docid); 
+             term != db->termlist_end(docid);term++) {
+            const string& s = *term;
+            if ((op_flags&OPT_l) && has_prefix(s))
+            continue;
+            cout << op << detailstring(s) << cl << endl;
+        }
+        } else {
+        for (term = db->allterms_begin(); 
+             term != db->allterms_end();term++) {
+            const string& s = *term;
+            if ((op_flags&OPT_l) && has_prefix(s))
+            continue;
+            if (op_flags & OPT_f)
+            cout <<  db->get_collection_freq(*term) << " " 
+                 << term.get_termfreq() << " ";
+            cout << op << detailstring(s) << cl << endl;
+        }
+        }
+    } else if (op_flags & OPT_D) {
+        Xapian::Document doc = db->get_document(docid);
+        string data = doc.get_data();
+        cout << data << endl;
+    } else if (op_flags & OPT_r) {
+        wholedoc(db, docid);
+    } else if (op_flags & OPT_X) {
+        Xapian::Document doc = db->get_document(docid);
+        string data = doc.get_data();
+        cout << data << endl;
+        cout << "Really delete xapian document ?" << endl;
+        string rep;
+        cin >> rep;
+        if (!rep.empty() && (rep[0] == 'y' || rep[0] == 'Y')) {
+        Xapian::WritableDatabase wdb(dbdir,  Xapian::DB_OPEN);
+        cout << "Deleting" << endl;
+        wdb.delete_document(docid);
+        }
+    } else if (op_flags & OPT_P) {
+        Xapian::PostingIterator doc;
+        for (doc = db->postlist_begin(aterm);
+         doc != db->postlist_end(aterm); doc++) {
+        cout << *doc << "(" << doc.get_wdf() << ") : " ;
+        Xapian::PositionIterator pos;
+        for (pos = doc.positionlist_begin(); 
+             pos != doc.positionlist_end(); pos++) {
+            cout << *pos << " " ;
+        }
+        cout << endl;
+        }
+        
+    } else if (op_flags & OPT_F) {
+        cout << "FreqFor " << aterm << " : " <<
+        db->get_termfreq(aterm) << endl;
+    } else if (op_flags & OPT_E) {
+        cout << "Exists [" << aterm << "] : " <<
+        db->term_exists(aterm) << endl;
+    }  else if (op_flags & OPT_q) {
+        Xapian::Enquire enquire(*db);
 
-	    Xapian::Query query(Xapian::Query::OP_AND, qterms.begin(), 
-				qterms.end());
-	    cout << "Performing query `" <<
-		query.get_description() << "'" << endl;
-	    enquire.set_query(query);
+        Xapian::Query query(Xapian::Query::OP_AND, qterms.begin(), 
+                qterms.end());
+        cout << "Performing query `" <<
+        query.get_description() << "'" << endl;
+        enquire.set_query(query);
 
-	    Xapian::MSet matches = enquire.get_mset(0, 10);
-	    cout << "Estimated results: " << 
-		matches.get_matches_lower_bound() << endl;
-	    Xapian::MSetIterator i;
-	    for (i = matches.begin(); i != matches.end(); ++i) {
-		cout << "Document ID " << *i << "\t";
-		cout << i.get_percent() << "% ";
-		Xapian::Document doc = i.get_document();
-		cout << "[" << doc.get_data() << "]" << endl;
-	    }
-	}
+        Xapian::MSet matches = enquire.get_mset(0, 10);
+        cout << "Estimated results: " << 
+        matches.get_matches_lower_bound() << endl;
+        Xapian::MSetIterator i;
+        for (i = matches.begin(); i != matches.end(); ++i) {
+        cout << "Document ID " << *i << "\t";
+        cout << i.get_percent() << "% ";
+        Xapian::Document doc = i.get_document();
+        cout << "[" << doc.get_data() << "]" << endl;
+        }
+    }
     } catch (const Xapian::Error &e) {
-	cout << "Exception: " << e.get_msg() << endl;
+    cout << "Exception: " << e.get_msg() << endl;
     } catch (const string &s) {
-	cout << "Exception: " << s << endl;
+    cout << "Exception: " << s << endl;
     } catch (const char *s) {
-	cout << "Exception: " << s << endl;
+    cout << "Exception: " << s << endl;
     } catch (...) {
-	cout << "Caught unknown exception" << endl;
+    cout << "Caught unknown exception" << endl;
     }
     exit(0);
 }

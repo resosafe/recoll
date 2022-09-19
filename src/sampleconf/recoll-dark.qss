@@ -15,29 +15,65 @@
  result list:
    Preferences->GUI configuration->Result list->
                  Edit result page html header insert
- For example:
-   
-<style type="text/css">
- html {
-     background-color: #505050;
-     color: #D8D8D8;
-     selection-background-color: #424e72;
- }
-</style> 
-
+ See recoll-dark.css in src/sampleconf of share/examples
 */
-
 
 /* Light on dark text everywhere*/
 * {
-    background-color: #3c3c3c;
-    color: #D8D8D8;
+    background-color: #373737;
+    color: #ffffff;
     selection-background-color: #424e72;
+    selection-color: #ffffff;
 }
 
-/* Slightly lighter background for text entry areas*/
-QComboBox[editable="true"], QTextEdit, QLineEdit, QTextBrowser, QTableView,
-QWebView, QPlainTextEdit { 
+QTableView {
+    alternate-background-color: #474747;
+    background-color: #373737;
+}
+QHeaderView::section {
+    background-color: #373737;
+}
+
+QToolTip {
+    background-color: yellow;
+    color: black;
+}
+
+QMenuBar::item:selected {
+    background: #424e72;
+}
+
+/* I have used the colour values that were in QTabWidget QTabBar::tab for
+ * QTabWidget QTabBar::tab:selected, and vice-versa. Also, though, I have
+ * brightened the whites.*/
+QTabWidget QTabBar::tab {
+    background: #5f5f5f;
+    color:      #ffffff;
+}
+        
+QTabWidget QTabBar::tab:selected {
+    background: #2f4f4f;
+    color:      #ffffff;
+}
+
+/* Slightly *darker* background for text entry areas. */
+QComboBox[editable="true"], QTextEdit[editable="true"], QLineEdit,
+QPlainTextEdit {
+    background-color: #101010;
+    color: #ffffff;
+}
+
+QPushButton:!enabled {
     background-color: #505050;
-    color: #D8D8D8;
+}
+QToolButton:on {
+    background-color: #505050;
+}
+
+/* Did not find a way to set the background on the indicator/icon part */
+QMenu::item:checked {
+    background: #505050;
+}
+QMenu::item:!enabled {
+    color: #808080;
 }

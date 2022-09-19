@@ -2,6 +2,13 @@
 <!DOCTYPE TS>
 <TS version="2.1">
 <context>
+    <name>ActSearchDLG</name>
+    <message>
+        <source>Menu search</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
     <name>AdvSearch</name>
     <message>
         <source>All clauses</source>
@@ -54,6 +61,18 @@
     <message>
         <source>message</source>
         <translation type="unfinished">邮件</translation>
+    </message>
+    <message>
+        <source>Advanced Search</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Load next stored search</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Load previous stored search</source>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -235,7 +254,7 @@
     </message>
     <message>
         <source>The languages for which stemming expansion&lt;br&gt;dictionaries will be built.</source>
-        <translation type="unfinished">将会针对这些语言&lt;br&gt;构造词根扩展词典。</translation>
+        <translation type="obsolete">将会针对这些语言&lt;br&gt;构造词根扩展词典。</translation>
     </message>
     <message>
         <source>Log file name</source>
@@ -262,10 +281,6 @@
         <translation type="unfinished">这个值调整的是，当积累咯多少索引数据时，才将数据刷新到硬盘上去。&lt;br&gt;用来控制索引进程的内存占用情况。默认为10MB</translation>
     </message>
     <message>
-        <source>Disk full threshold to stop indexing&lt;br&gt;(e.g. 90%, 0 means no limit)</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>This is the percentage of disk usage - total disk usage, not index size - at which indexing will fail and stop.&lt;br&gt;The default value of 0 removes any limit.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -282,10 +297,6 @@
         <translation type="unfinished">Aspell语言</translation>
     </message>
     <message>
-        <source>The language for the aspell dictionary. This should look like &apos;en&apos; or &apos;fr&apos; ...&lt;br&gt;If this value is not set, the NLS environment will be used to compute it, which usually works. To get an idea of what is installed on your system, type &apos;aspell config&apos; and look for .dat files inside the &apos;data-dir&apos; directory. </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Database directory name</source>
         <translation type="unfinished">数据库目录名</translation>
     </message>
@@ -299,10 +310,6 @@
     </message>
     <message>
         <source>&lt;p&gt;These are exceptions to the unac mechanism which, by default, removes all diacritics, and performs canonic decomposition. You can override unaccenting for some characters, depending on your language, and specify additional decompositions, e.g. for ligatures. In each space-separated entry, the first character is the source one, and the rest is the translation.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Process the WEB history queue</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -355,6 +362,50 @@
     </message>
     <message>
         <source>&lt;p&gt;Maximum number of elementary clauses we add to a single Xapian query. In some cases, the result of term expansion can be multiplicative, and we want to avoid using excessive memory. The default of 100 000 should be both high enough in most cases and compatible with current typical hardware configurations.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The languages for which stemming expansion dictionaries will be built.&lt;br&gt;See the Xapian stemmer documentation for possible values. E.g. english, french, german...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The language for the aspell dictionary. The values are are 2-letter language codes, e.g. &apos;en&apos;, &apos;fr&apos; ...&lt;br&gt;If this value is not set, the NLS environment will be used to compute it, which usually works. To get an idea of what is installed on your system, type &apos;aspell config&apos; and look for .dat files inside the &apos;data-dir&apos; directory.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Indexer log file name</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>If empty, the above log file name value will be used. It may useful to have a separate log for diagnostic purposes because the common log will be erased when&lt;br&gt;the GUI starts up.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Disk full threshold percentage at which we stop indexing&lt;br&gt;E.g. 90% to stop at 90% full, 0 or 100 means no limit)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Web history</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Process the Web history queue</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source> (by default, aspell suggests mispellings when a query has no results).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Page recycle interval</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&lt;p&gt;By default, only one instance of an URL is kept in the cache. This can be changed by setting this to a value determining at what frequency we keep multiple instances (&apos;day&apos;, &apos;week&apos;, &apos;month&apos;, &apos;year&apos;). Note that increasing the interval will not erase existing entries.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Note: old pages will be erased to make space for new ones when the maximum size is reached. Current size: %1</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -831,6 +882,30 @@ p, li { white-space: pre-wrap; }
         <source>Next result document</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Preview Window</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Close tab</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Close preview window</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show next result</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show previous result</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Print</source>
+        <translation type="unfinished">打印</translation>
+    </message>
 </context>
 <context>
     <name>PreviewTextEdit</name>
@@ -1003,7 +1078,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>Copy &amp;File Name</source>
-        <translation type="unfinished">复制文件名（&amp;F）</translation>
+        <translation type="obsolete">复制文件名（&amp;F）</translation>
     </message>
     <message>
         <source>Copy &amp;URL</source>
@@ -1023,7 +1098,7 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>&amp;Open Parent document/folder</source>
-        <translation type="unfinished">打开上一级文档/目录（&amp;O）</translation>
+        <translation type="obsolete">打开上一级文档/目录（&amp;O）</translation>
     </message>
     <message>
         <source>Find &amp;similar documents</source>
@@ -1035,6 +1110,26 @@ p, li { white-space: pre-wrap; }
     </message>
     <message>
         <source>Show subdocuments / attachments</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Open Parent document</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>&amp;Open Parent Folder</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Copy Text</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Copy &amp;File Path</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Copy File Name</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -1328,7 +1423,7 @@ Do you want to start the  preferences dialog ?</source>
     </message>
     <message>
         <source>The current indexing process was not started from this interface. Click Ok to kill it anyway, or Cancel to leave it alone</source>
-        <translation>当前索引进程不是由此界面启动的。点击确定以杀死它，或者点击取消以让它自由运行</translation>
+        <translation type="vanished">当前索引进程不是由此界面启动的。点击确定以杀死它，或者点击取消以让它自由运行</translation>
     </message>
     <message>
         <source>Erasing index</source>
@@ -1397,14 +1492,6 @@ Please check the mimeview file</source>
     </message>
     <message>
         <source>The indexer is running so things should improve when it&apos;s done. </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>Duplicate documents</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <source>These Urls ( | ipath) share the same content:</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1613,6 +1700,74 @@ Please check the desktop file</source>
         <source>Could not open/create file</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>F&amp;ilter</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Simple search type</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Any term</source>
+        <translation type="unfinished">任一词语</translation>
+    </message>
+    <message>
+        <source>All terms</source>
+        <translation type="unfinished">全部词语</translation>
+    </message>
+    <message>
+        <source>File name</source>
+        <translation type="unfinished">文件名</translation>
+    </message>
+    <message>
+        <source>Query language</source>
+        <translation type="unfinished">查询语言</translation>
+    </message>
+    <message>
+        <source>Stemming language</source>
+        <translation type="unfinished">词根语言</translation>
+    </message>
+    <message>
+        <source>Main Window</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Clear search</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Move keyboard focus to search entry</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Move keyboard focus to search, alt.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Toggle tabular display</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Move keyboard focus to table</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Flushing</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show menu search dialog</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Duplicates</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Filter directories</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>RclMainBase</name>
@@ -1682,7 +1837,7 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>Advanced/complex  Search</source>
-        <translation>高端/复杂搜索</translation>
+        <translation type="vanished">高端/复杂搜索</translation>
     </message>
     <message>
         <source>&amp;Sort parameters</source>
@@ -1924,6 +2079,42 @@ Please check the desktop file</source>
         <source>E&amp;xport simple search history</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>&amp;Query</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Increase results text font size</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Increase Font Size</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Decrease results text font size</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Decrease Font Size</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Start real time indexer</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Query Language Filters</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Filter dates</source>
+        <translation type="unfinished">过滤日期</translation>
+    </message>
+    <message>
+        <source>Assisted complex search</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>RclTrayIcon</name>
@@ -1988,7 +2179,7 @@ Please check the desktop file</source>
     </message>
     <message>
         <source>Mtime</source>
-        <translation>修改时间</translation>
+        <translation type="vanished">修改时间</translation>
     </message>
     <message>
         <source>Date</source>
@@ -2172,6 +2363,54 @@ Please check the desktop file</source>
         <source>Add &quot;%1&quot; column</source>
         <translation>添加&quot;%1&quot;列</translation>
     </message>
+    <message>
+        <source>Result Table</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Open</source>
+        <translation type="obsolete">打开</translation>
+    </message>
+    <message>
+        <source>Preview</source>
+        <translation type="unfinished">预览</translation>
+    </message>
+    <message>
+        <source>Open current result document</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Open current result and quit</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show snippets</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show header</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show vertical header</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Copy current result text to clipboard</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Use Shift+click to display the text instead.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>%1 bytes copied to clipboard</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Copy result text and quit</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ResTableDetailArea</name>
@@ -2339,10 +2578,6 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>External indexes for stored query: </source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>Autophrase is set but it was unset for stored query</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2482,6 +2717,30 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
         <source>&lt;/table&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Can&apos;t open index</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Could not restore external indexes for stored query:&lt;br&gt; </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>???</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Using current preferences.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Simple search</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>History</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>SSearchBase</name>
@@ -2495,7 +2754,7 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>Ctrl+S</source>
-        <translation>Ctrl+S</translation>
+        <translation type="vanished">Ctrl+S</translation>
     </message>
     <message>
         <source>Erase search entry</source>
@@ -2519,6 +2778,10 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>Show query history</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Main menu</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2598,6 +2861,30 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
         <source>Sort By Page</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Snippets Window</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Find</source>
+        <translation type="unfinished">查找</translation>
+    </message>
+    <message>
+        <source>Find (alt)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Find next</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Find previous</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Close window</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>SpecIdxW</name>
@@ -2639,6 +2926,14 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     </message>
     <message>
         <source>Start directory. Must be part of the indexed tree. Use full indexed area if empty.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Diagnostics output file. Will be truncated and receive indexing diagnostics (reasons for files not being indexed).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Diagnostics file</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2878,6 +3173,26 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
         <source>Value from previous program exit</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Context</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Description</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Shortcut</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Default</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Choose QSS File</source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>ViewAction</name>
@@ -2998,6 +3313,14 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
         <source>Webcache was modified, you will need to run the indexer after closing this window.</source>
         <translation type="unfinished"></translation>
     </message>
+    <message>
+        <source>Save to File</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>File creation failed: </source>
+        <translation type="unfinished"></translation>
+    </message>
 </context>
 <context>
     <name>WebcacheModel</name>
@@ -3008,6 +3331,21 @@ Use &lt;b&gt;Show Query&lt;/b&gt; link when in doubt about result and see manual
     <message>
         <source>Url</source>
         <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Date</source>
+        <translation type="unfinished">日期</translation>
+    </message>
+    <message>
+        <source>Size</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>WinSchedToolW</name>
+    <message>
+        <source>Error</source>
+        <translation type="obsolete">错误</translation>
     </message>
 </context>
 <context>
@@ -3266,7 +3604,7 @@ This will help searching very big text  files (ie: log files).</source>
     </message>
     <message>
         <source>Maximum text size highlighted for preview (megabytes)</source>
-        <translation>在预览中对其进行高亮显示的最大文本尺寸（兆字节）</translation>
+        <translation type="vanished">在预览中对其进行高亮显示的最大文本尺寸（兆字节）</translation>
     </message>
     <message>
         <source>Use desktop preferences to choose document editor.</source>
@@ -3410,7 +3748,7 @@ May be slow for big documents.</source>
     </message>
     <message>
         <source>Opens a dialog to select the style sheet file</source>
-        <translation>打开一个对话框，以选择样式单文件</translation>
+        <translation type="vanished">打开一个对话框，以选择样式单文件</translation>
     </message>
     <message>
         <source>Choose</source>
@@ -3531,10 +3869,6 @@ The default value is 2 (percent). </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Start with simple search mode</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
         <source>User style to apply to the snippets window.&lt;br&gt; Note: the result page header insert is also included in the snippets window header.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3607,7 +3941,135 @@ The default value is 2 (percent). </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <source>Work around QTBUG-78923 by inserting space before anchor text</source>
+        <source>Display a Snippets link even if the document has no pages (needs restart).</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Maximum text size highlighted for preview (kilobytes)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Start with simple search mode: </source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Shortcuts</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Hide result table header.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show result table row headers.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Reset shortcuts defaults</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Use F1 to  access the manual</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Hide some user interface elements.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Hide:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Toolbars</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Status bar</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show button instead.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Menu bar</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Show choice in menu only.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Simple search type</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Clear/Search buttons</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Disable the Ctrl+[0-9]/Shift+[a-z] shortcuts for jumping to table rows.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>None (default)</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Uses the default dark mode style sheet</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Dark mode</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Choose QSS File</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>To display document text instead of metadata in result table detail area, use:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>left mouse click</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Shift+click</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Opens a dialog to select the style sheet file.&lt;br&gt;Look at /usr/share/recoll/examples/recoll[-dark].qss for an example.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Result Table</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Do not display metadata when hovering over rows.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Work around Tamil QTBUG-78923 by inserting space before anchor text</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>The bug causes a strange circle characters to be displayed inside highlighted Tamil words. The workaround inserts an additional space character which appears to fix the problem.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Depth of side filter directory tree</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Zoom factor for the user interface. Useful if the default is not right for your screen resolution.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>Display scale (default 1.0):</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

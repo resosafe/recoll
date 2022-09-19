@@ -80,12 +80,10 @@ void ViewAction::fillLists()
     int row = 0;
     for (const auto& def : defs) {
         actionsLV->setItem(row, 0, new QTableWidgetItem(u8s2qs(def.first)));
-        if (!prefs.useDesktopOpen ||
-            viewerXs.find(def.first) != viewerXs.end()) {
+        if (!prefs.useDesktopOpen || viewerXs.find(def.first) != viewerXs.end()) {
             actionsLV->setItem(row, 1, new QTableWidgetItem(u8s2qs(def.second)));
         } else {
-            actionsLV->setItem(
-                row, 1, new QTableWidgetItem(tr("Desktop Default")));
+            actionsLV->setItem(row, 1, new QTableWidgetItem(tr("Desktop Default")));
         }
         row++;
     }
@@ -97,10 +95,9 @@ void ViewAction::fillLists()
 void ViewAction::selectMT(const QString& mt)
 {
     actionsLV->clearSelection();
-    QList<QTableWidgetItem *>items = 
+    QList<QTableWidgetItem *>items =
         actionsLV->findItems(mt, Qt::MatchFixedString|Qt::MatchCaseSensitive);
-    for (QList<QTableWidgetItem *>::iterator it = items.begin();
-         it != items.end(); it++) {
+    for (QList<QTableWidgetItem *>::iterator it = items.begin(); it != items.end(); it++) {
         (*it)->setSelected(true);
         actionsLV->setCurrentItem(*it, QItemSelectionModel::Columns);
     }
@@ -154,7 +151,7 @@ void ViewAction::onCurrentItemChanged(QTableWidgetItem *item, QTableWidgetItem *
 void ViewAction::editActions()
 {
     QString action0;
-    int except0 = -1;
+    bool except0 = false;
 
     set<string> viewerXs = theconfig->getMimeViewerAllEx();
     vector<string> mtypes;
@@ -173,14 +170,15 @@ void ViewAction::editActions()
             except0 = except;
         } else {
             if ((action != action0 || except != except0) && dowarnmultiple) {
-                switch (QMessageBox::warning(0, "Recoll",
-                                             tr("Changing entries with "
-                                                "different current values"),
-                                             "Continue",
-                                             "Cancel",
-                                             0, 0, 1)) {
-                case 0: dowarnmultiple = false; break;
-                case 1: return;
+                switch (QMessageBox::warning(
+                            0, "Recoll", tr("Changing entries with different current values"),
+                            QMessageBox::Ignore | QMessageBox::Cancel, QMessageBox::Cancel)) {
+                case QMessageBox::Ignore:
+                    dowarnmultiple = false;
+                    break;
+                case QMessageBox::Cancel:
+                default:
+                    return;
                 }
             }
         }
@@ -207,8 +205,19 @@ void ViewAction::editActions()
             }
         }
         // An empty action will restore the default (erase from
-        // topmost conftree)
+        // topmost conftree). IF there is no default in the system
+        // files, and the entry only came from the user file, it will
+        // be erased and the mime will go away from the list, which is
+        // not what we want ! This not trivial to test because
+        // rclconfig has no way to tell us if the value comes from the
+        // system config or the user file. So just check if the value
+        // disappears after setting it, and restore it if it does.
+        string oldvalue = theconfig->getMimeViewerDef(entry, "", 0);
         theconfig->setMimeViewerDef(entry, sact);
+        string newvalue = theconfig->getMimeViewerDef(entry, "", 0);
+        if (!oldvalue.empty() && newvalue.empty()) {
+            theconfig->setMimeViewerDef(entry, oldvalue);
+        }
     }
 
     theconfig->setMimeViewerAllEx(viewerXs);

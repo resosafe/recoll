@@ -34,35 +34,36 @@
  * to enable.
  */
 class MimeHandlerSymlink : public RecollFilter {
- public:
+public:
     MimeHandlerSymlink(RclConfig *cnf, const std::string& id) 
-	: RecollFilter(cnf, id) {
+        : RecollFilter(cnf, id) {
     }
     virtual ~MimeHandlerSymlink() {}
+    MimeHandlerSymlink(const MimeHandlerSymlink&) = delete;
+    MimeHandlerSymlink& operator=(const MimeHandlerSymlink&) = delete;
 
-    virtual bool next_document() 
-    {
-	if (m_havedoc == false)
-	    return false;
-	m_havedoc = false; 
-	m_metaData[cstr_dj_keycontent] = cstr_null;
-	char lc[1024];
-	ssize_t bytes = readlink(m_fn.c_str(), lc, 1024);
-	if (bytes != (ssize_t)-1) {
-	    string slc(lc, bytes);
-	    transcode(path_getsimple(slc), m_metaData[cstr_dj_keycontent], 
-		      m_config->getDefCharset(true), "UTF-8");
-	} else {
-	    LOGDEB("Symlink: readlink [" << m_fn << "] failed, errno " <<
+    virtual bool next_document() {
+        if (m_havedoc == false)
+            return false;
+        m_havedoc = false; 
+        m_metaData[cstr_dj_keycontent] = cstr_null;
+        char lc[1024];
+        ssize_t bytes = readlink(m_fn.c_str(), lc, 1024);
+        if (bytes != (ssize_t)-1) {
+            string slc(lc, bytes);
+            transcode(path_getsimple(slc), m_metaData[cstr_dj_keycontent], 
+                      m_config->getDefCharset(true), "UTF-8");
+        } else {
+            LOGDEB("Symlink: readlink [" << m_fn << "] failed, errno " <<
                    errno << "\n");
-	}
-	m_metaData[cstr_dj_keymt] = cstr_textplain;
-	return true;
+        }
+        m_metaData[cstr_dj_keymt] = cstr_textplain;
+        return true;
     }
 protected:
-    virtual bool set_document_file_impl(const string& mt, const string& fn) {
-	m_fn = fn;
-	return m_havedoc = true;
+    virtual bool set_document_file_impl(const string&, const string& fn) {
+        m_fn = fn;
+        return m_havedoc = true;
     }
 
 private:

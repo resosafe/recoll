@@ -60,12 +60,8 @@
 #include "preview_load.h"
 #include "preview_plaintorich.h"
 #include "rclmain_w.h"
-
-static const QKeySequence closeKS(Qt::Key_Escape);
-static const QKeySequence nextDocInTabKS(Qt::ShiftModifier+Qt::Key_Down);
-static const QKeySequence prevDocInTabKS(Qt::ShiftModifier+Qt::Key_Up);
-static const QKeySequence closeTabKS(Qt::ControlModifier+Qt::Key_W);
-static const QKeySequence printTabKS(Qt::ControlModifier+Qt::Key_P);
+#include "scbase.h"
+#include "appformime.h"
 
 // Make an attempt at trimming wildcard exprs at both ends of string
 static void trimwildcards(string& elt)
@@ -128,11 +124,23 @@ void Preview::init()
         resize(QSize(640, 480).expandedTo(minimumSizeHint()));
     }
 
+    if (prefs.reslistfontfamily != "") {
+        m_font = QFont(prefs.reslistfontfamily);
+    } else {
+        m_font = QFont();
+    }
+    if (prefs.reslistfontsize || prefs.wholeuiscale) {
+        int fs = prefs.reslistfontsize ? prefs.reslistfontsize : m_font.pixelSize();
+        m_font.setPixelSize(round(fs * prefs.wholeuiscale));
+    }
+
     (void)new HelpClient(this);
     HelpClient::installMap((const char *)objectName().toUtf8(), 
                            "RCL.SEARCH.GUI.PREVIEW");
 
     // signals and slots connections
+    connect(new QShortcut(QKeySequence::ZoomIn,this), SIGNAL (activated()), this, SLOT (zoomIn()));
+    connect(new QShortcut(QKeySequence::ZoomOut,this),SIGNAL (activated()), this, SLOT (zoomOut()));
     connect(searchTextCMB, SIGNAL(editTextChanged(const QString&)), 
             this, SLOT(searchTextChanged(const QString&)));
     connect(nextPB, SIGNAL(clicked()), this, SLOT(nextPressed()));
@@ -142,20 +150,71 @@ void Preview::init()
     connect(pvTab, SIGNAL(currentChanged(int)), this, SLOT(currentChanged(int)));
     connect(pvTab, SIGNAL(tabCloseRequested(int)), this, SLOT(closeTab(int)));
 
-    connect(new QShortcut(closeKS, this), SIGNAL (activated()), 
-            this, SLOT (close()));
-    connect(new QShortcut(nextDocInTabKS, this), SIGNAL (activated()), 
-            this, SLOT (emitShowNext()));
-    connect(nextInTabPB, SIGNAL (clicked()), this, SLOT (emitShowNext()));
-    connect(new QShortcut(prevDocInTabKS, this), SIGNAL (activated()), 
-            this, SLOT (emitShowPrev()));
-    connect(prevInTabPB, SIGNAL (clicked()), this, SLOT (emitShowPrev()));
-    connect(new QShortcut(closeTabKS, this), SIGNAL (activated()), 
-            this, SLOT (closeCurrentTab()));
-    connect(new QShortcut(printTabKS, this), SIGNAL (activated()), 
-            this, SIGNAL (printCurrentPreviewRequest()));
+    onNewShortcuts();
+    connect(&SCBase::scBase(), SIGNAL(shortcutsChanged()),
+            this, SLOT(onNewShortcuts()));
 
+    connect(nextInTabPB, SIGNAL (clicked()), this, SLOT (emitShowNext()));
+    connect(prevInTabPB, SIGNAL (clicked()), this, SLOT (emitShowPrev()));
     currentChanged(pvTab->currentIndex());
+}
+
+void Preview::onNewShortcuts()
+{
+    SETSHORTCUT(this, "preview:151", tr("Preview Window"),
+                tr("Close preview window"),
+                "Esc",  m_closewinsc, close);
+    SETSHORTCUT(this, "preview:153",tr("Preview Window"), tr("Show next result"),
+                "Shift+Down", m_nextdocsc, emitShowNext);
+    SETSHORTCUT(this, "preview:155", tr("Preview Window"),
+                tr("Show previous result"),
+                "Shift+Up", m_prevdocsc, emitShowPrev);
+    SETSHORTCUT(this, "preview:159", tr("Preview Window"), tr("Close tab"),
+                "Ctrl+W", m_closetabsc, closeCurrentTab);
+    QKeySequence ks =
+        SCBase::scBase().get("preview:162", tr("Preview Window"),
+                             tr("Print"), "Ctrl+P");
+    if (!ks.isEmpty()) {
+        delete m_printtabsc;
+        m_printtabsc = new QShortcut(
+            ks, this, SIGNAL(printCurrentPreviewRequest()));
+    }
+}
+
+void Preview::zoomIn()
+{
+    m_font.setPointSize(m_font.pointSize()+1);
+    PreviewTextEdit *edit = currentEditor();
+    if (edit) {
+        edit->displayText();
+    }
+}
+
+void Preview::zoomOut()
+{
+    m_font.setPointSize(m_font.pointSize()-1);
+    PreviewTextEdit *edit = currentEditor();
+    if (edit) {
+        edit->displayText();
+    }
+}
+
+void Preview::listShortcuts()
+{
+    LISTSHORTCUT(null, "preview:151", tr("Preview Window"),
+                 tr("Close preview window"),
+                 "Esc",  m_closewinsc, close);
+    LISTSHORTCUT(null, "preview:153", tr("Preview Window"),
+                 tr("Show next result"),
+                 "Shift+Down", m_nextdocsc, emitShowNext);
+    LISTSHORTCUT(null, "preview:155", tr("Preview Window"),
+                 tr("Show previous result"),
+                 "Shift+Up",m_prevdocsc, emitShowPrev);
+    LISTSHORTCUT(null, "preview:159",
+                 tr("Preview Window"), tr("Close tab"),
+                 "Ctrl+W", m_closetabsc, closeCurrentTab);
+    LISTSHORTCUT(null, "preview:162", tr("Preview Window"),
+                 tr("Print"), "Ctrl+P", m_printtabsc, print);
 }
 
 void Preview::emitShowNext()
@@ -354,7 +413,8 @@ void Preview::doSearch(const QString &_text, bool next, bool reverse,
     }
     Chrono chron;
     LOGDEB("Preview::doSearch: first find call\n");
-    QTextDocument::FindFlags flags = 0;
+    // FindFlags is a QFlags class with default constructor to empty.
+    QTextDocument::FindFlags flags;
     if (reverse)
         flags |= QTextDocument::FindBackward;
     if (wordOnly)
@@ -481,9 +541,11 @@ void Preview::setCurTabProps(const Rcl::Doc &doc, int docnum)
     QString title;
     string ctitle;
     if (doc.getmeta(Rcl::Doc::keytt, &ctitle) && !ctitle.empty()) {
-        title = QString::fromUtf8(ctitle.c_str(), ctitle.length());
+        title = u8s2qs(ctitle);
+    } else if (doc.getmeta(Rcl::Doc::keyfn, &ctitle) && !ctitle.empty()) {
+        title = u8s2qs(ctitle);
     } else {
-        title = QString::fromLocal8Bit(path_getsimple(doc.url).c_str());
+        title = path2qs(path_getsimple(doc.url));
     }
     if (title.length() > 20) {
         title = title.left(10) + "..." + title.right(10);
@@ -491,23 +553,21 @@ void Preview::setCurTabProps(const Rcl::Doc &doc, int docnum)
     int curidx = pvTab->currentIndex();
     pvTab->setTabText(curidx, title);
 
-    char datebuf[100];
-    datebuf[0] = 0;
+    string datebuf;
     if (!doc.fmtime.empty() || !doc.dmtime.empty()) {
         time_t mtime = doc.dmtime.empty() ? 
             atoll(doc.fmtime.c_str()) : atoll(doc.dmtime.c_str());
         struct tm *tm = localtime(&mtime);
-        strftime(datebuf, 99, "%Y-%m-%d %H:%M:%S", tm);
+        datebuf = utf8datestring("%Y-%m-%d %H:%M:%S", tm);
     }
     LOGDEB("Doc.url: [" << doc.url << "]\n");
     string url;
     printableUrl(theconfig->getDefCharset(), doc.url, url);
     string tiptxt = url + string("\n");
-    tiptxt += doc.mimetype + " " + string(datebuf) + "\n";
+    tiptxt += doc.mimetype + " " + datebuf + "\n";
     if (!ctitle.empty())
         tiptxt += ctitle + "\n";
-    pvTab->setTabToolTip(curidx,
-                         QString::fromUtf8(tiptxt.c_str(), tiptxt.length()));
+    pvTab->setTabToolTip(curidx, u8s2qs(tiptxt));
 
     PreviewTextEdit *e = currentEditor();
     if (e) {
@@ -574,6 +634,90 @@ void Preview::emitWordSelect(QString word)
     emit(wordSelect(word));
 }
 
+// Display message dialog after load failed
+void Preview::displayLoadError(
+    FileInterner::ErrorPossibleCause explain, bool canGetRawText)
+{
+    // Note that we can't easily check for a readable file
+    // because it's possible that only a region is locked
+    // (e.g. on Windows for an ost file the first block is
+    // readable even if Outlook is running).
+    QString msg;
+    switch (explain) {
+    case FileInterner::FetchMissing:
+        msg = tr("Error loading the document: file missing.");
+        break;
+    case FileInterner::FetchPerm:
+        msg = tr("Error loading the document: no permission.");
+        break;
+    case FileInterner::FetchNoBackend:
+        msg =
+            tr("Error loading: backend not configured.");
+        break;
+    case FileInterner::InternfileOther:
+#ifdef _WIN32
+        msg = tr("Error loading the document: "
+                 "other handler error<br>"
+                 "Maybe the application is locking the file ?");
+#else
+        msg = tr("Error loading the document: other handler error.");
+#endif
+        break;
+    }
+    if (canGetRawText) {
+        msg += tr("<br>Attempting to display from stored text.");
+    }
+    QMessageBox::warning(0, "Recoll", msg);
+}
+
+bool Preview::runLoadThread(LoadThread& lthr, QTimer& tT, QEventLoop& loop,
+                            QProgressDialog& progress, bool canGetRawText)
+{
+    lthr.start();
+    for (int i = 0;;i++) {
+        tT.start(1000); 
+        loop.exec();
+        if (lthr.isFinished())
+            break;
+        if (progress.wasCanceled()) {
+            CancelCheck::instance().setCancel();
+        }
+        if (i == 1)
+            progress.show();
+    }
+
+    LOGDEB("loadDocInCurrentTab: after file load: cancel " <<
+           CancelCheck::instance().cancelState() << " status " << lthr.status <<
+           " text length " << lthr.fdoc.text.length() << "\n");
+
+    if (lthr.status == 0) {
+        return true;
+    }
+
+    if (CancelCheck::instance().cancelState())
+        return false;
+
+    QString explain;
+    if (!lthr.missing.empty()) {
+        explain = QString::fromUtf8("<br>") +
+            tr("Missing helper program: ") +
+            path2qs(lthr.missing);
+        QMessageBox::warning(0, "Recoll",
+                             tr("Can't turn doc into internal "
+                                "representation for ") +
+                             lthr.fdoc.mimetype.c_str() + explain);
+    } else {
+        if (progress.wasCanceled()) {
+            QMessageBox::warning(0, "Recoll", tr("Canceled"));
+        } else {
+            progress.reset();
+            displayLoadError(lthr.explain, canGetRawText);
+        }
+    }
+
+    return false;
+}
+
 /*
   Code for loading a file into an editor window. The operations that
   we call have no provision to indicate progression, and it would be
@@ -616,8 +760,7 @@ bool Preview::loadDocInCurrentTab(const Rcl::Doc &idoc, int docnum)
     setCurTabProps(idoc, docnum);
 
     QString msg = QString("Loading: %1 (size %2 bytes)")
-        .arg(QString::fromLocal8Bit(idoc.url.c_str()))
-        .arg(QString::fromUtf8(idoc.fbytes.c_str()));
+        .arg(path2qs(idoc.url)).arg(u8s2qs(idoc.fbytes));
 
     QProgressDialog progress(msg, tr("Cancel"), 0, 0, this);
     progress.setMinimumDuration(2000);
@@ -627,93 +770,44 @@ bool Preview::loadDocInCurrentTab(const Rcl::Doc &idoc, int docnum)
     connect(&tT, SIGNAL(timeout()), &loop, SLOT(quit()));
 
     ////////////////////////////////////////////////////////////////////////
-    // Load and convert document
-    // idoc came out of the index data (main text and some fields missing). 
-    // fdoc is the complete one what we are going to extract from storage.
+    // Load and convert document 
+    //  - idoc came out of the index data (main text and some fields missing).
+    //  - fdoc is the complete one what we are going to extract from storage.
+    // 
+    // If the preference to use the stored text is set, we still
+    // create the LoadThread object for convenience (using its fdoc
+    // field, but don't start it.
+
     LoadThread lthr(theconfig, idoc, prefs.previewHtml, this);
     connect(&lthr, SIGNAL(finished()), &loop, SLOT(quit()));
 
-    lthr.start();
-    for (int i = 0;;i++) {
-        tT.start(1000); 
-        loop.exec();
-        if (lthr.isFinished())
-            break;
-        if (progress.wasCanceled()) {
-            CancelCheck::instance().setCancel();
+    bool canGetRawText = rcldb && rcldb->storesDocText();
+    bool preferStoredText = std::find(prefs.preferStoredTextMimes.begin(),
+                                      prefs.preferStoredTextMimes.end(),
+                                      idoc.mimetype) != prefs.preferStoredTextMimes.end();
+    bool loadok{false};
+
+    if (!preferStoredText || !canGetRawText) {
+        // Try load from actual document
+        loadok = runLoadThread(lthr, tT, loop, progress, canGetRawText);
+    }
+    
+    if (!loadok && canGetRawText) {
+        // Preferring/able to use stored text or extern load failed
+        lthr.fdoc = idoc;
+        loadok = rcldb->getDocRawText(lthr.fdoc);
+        if (!loadok) {
+            QMessageBox::warning(0,"Recoll",tr("Could not fetch stored text"));
         }
-        if (i == 1)
-            progress.show();
+        lthr.fdoc.mimetype = "text/plain";
     }
 
-    LOGDEB("loadDocInCurrentTab: after file load: cancel " <<
-           CancelCheck::instance().cancelState() << " status " << lthr.status <<
-           " text length " << lthr.fdoc.text.length() << "\n");
-
-    if (CancelCheck::instance().cancelState())
+    if (!loadok) {
+        // Everything failed.
+        progress.close();
         return false;
-    if (lthr.status != 0) {
-        bool canGetRawText = rcldb && rcldb->storesDocText();
-        QString explain;
-        if (!lthr.missing.empty()) {
-            explain = QString::fromUtf8("<br>") +
-                tr("Missing helper program: ") +
-                QString::fromLocal8Bit(lthr.missing.c_str());
-            QMessageBox::warning(0, "Recoll",
-                                 tr("Can't turn doc into internal "
-                                    "representation for ") +
-                                 lthr.fdoc.mimetype.c_str() + explain);
-        } else {
-            if (progress.wasCanceled()) {
-                QMessageBox::warning(0, "Recoll", tr("Canceled"));
-            } else {
-                progress.reset();
-                // Note that we can't easily check for a readable file
-                // because it's possible that only a region is locked
-                // (e.g. on Windows for an ost file the first block is
-                // readable even if Outlook is running).
-                QString msg;
-                switch (lthr.explain) {
-                case FileInterner::FetchMissing:
-                    msg = tr("Error loading the document: file missing.");
-                    break;
-                case FileInterner::FetchPerm:
-                    msg = tr("Error loading the document: no permission.");
-                    break;
-                case FileInterner::FetchNoBackend:
-                    msg =
-                        tr("Error loading: backend not configured.");
-                    break;
-                case FileInterner::InternfileOther:
-#ifdef _WIN32
-                    msg = tr("Error loading the document: "
-                             "other handler error<br>"
-                             "Maybe the application is locking the file ?");
-#else
-                    msg = tr("Error loading the document: other handler error.");
-#endif
-                    break;
-                }
-                if (canGetRawText) {
-                    msg += tr("<br>Attempting to display from stored text.");
-                }
-                QMessageBox::warning(0, "Recoll", msg);
-            }
-        }
-
-
-        if (canGetRawText) {
-            lthr.fdoc = idoc;
-            if (!rcldb->getDocRawText(lthr.fdoc)) {
-                QMessageBox::warning(0, "Recoll",
-                                     tr("Could not fetch stored text"));
-                progress.close();
-                return false;
-            }
-        } else {
-            progress.close();
-        }
     }
+    
     // Reset config just in case.
     theconfig->setKeyDir("");
 
@@ -722,8 +816,8 @@ bool Preview::loadDocInCurrentTab(const Rcl::Doc &idoc, int docnum)
     // We don't do the highlighting for very big texts: too long. We
     // should at least do special char escaping, in case a '&' or '<'
     // somehow slipped through previous processing.
-    bool highlightTerms = lthr.fdoc.text.length() < 
-        (unsigned long)prefs.maxhltextmbs * 1024 * 1024;
+    bool highlightTerms = int(lthr.fdoc.text.length()) < 
+        prefs.maxhltextkbs * 1024;
 
     // Final text is produced in chunks so that we can display the top
     // while still inserting at bottom
@@ -741,18 +835,18 @@ bool Preview::loadDocInCurrentTab(const Rcl::Doc &idoc, int docnum)
     string path = fileurltolocalpath(idoc.url);
     if (!path.empty()) {
         path = path_getfather(path);
-        QStringList paths(QString::fromLocal8Bit(path.c_str()));
+        QStringList paths(path2qs(path));
         editor->setSearchPaths(paths);
     }
 #endif
 
+    editor->setFont(m_font);
     editor->setHtml("");
     editor->m_format = Qt::RichText;
     bool inputishtml = !lthr.fdoc.mimetype.compare("text/html");
     QStringList qrichlst;
     editor->m_plaintorich->set_activatelinks(prefs.previewActiveLinks);
     
-#if 1
     if (highlightTerms) {
         progress.setLabelText(tr("Creating preview text"));
         qApp->processEvents();
@@ -815,17 +909,6 @@ bool Preview::loadDocInCurrentTab(const Rcl::Doc &idoc, int docnum)
             }
         }
     }
-#else // For testing qtextedit bugs...
-    highlightTerms = true;
-    const char *textlist[] =
-        {
-            "Du plain text avec un\n <termtag>termtag</termtag> fin de ligne:",
-            "texte apres le tag\n",
-        };
-    const int listl = sizeof(textlist) / sizeof(char*);
-    for (int i = 0 ; i < listl ; i++)
-        qrichlst.push_back(QString::fromUtf8(textlist[i]));
-#endif
 
 
     ///////////////////////////////////////////////////////////
@@ -867,18 +950,16 @@ bool Preview::loadDocInCurrentTab(const Rcl::Doc &idoc, int docnum)
         editor->displayFields();
 
     // If this is an image, display it instead of the text.
-    if (!idoc.mimetype.compare(0, 6, "image/")) {
+    if (mimeIsImage(idoc.mimetype)) {
         string fn = fileurltolocalpath(idoc.url);
         theconfig->setKeyDir(fn.empty() ? "" : path_getfather(fn));
 
-        // We want a real file, so if this comes from data or we have
-        // an ipath, create it.
+        // We want a real file, so if this comes from data or we have an ipath, create it.
         if (fn.empty() || !idoc.ipath.empty()) {
             TempFile temp = lthr.tmpimg;
             if (temp.ok()) {
                 LOGDEB1("Preview: load: got temp file from internfile\n");
-            } else if (!FileInterner::idocToFile(temp, string(), 
-                                                 theconfig, idoc)) {
+            } else if (!FileInterner::idocToFile(temp, string(), theconfig, idoc)) {
                 temp = TempFile(); // just in case.
             }
             if (temp.ok()) {
@@ -1000,10 +1081,27 @@ void PreviewTextEdit::createPopupMenu(const QPoint& pos)
 void PreviewTextEdit::displayText()
 {
     LOGDEB1("PreviewTextEdit::displayText()\n");
+    // Ensuring that the view does not move when changing the font
+    // size and redisplaying the text: can't find a good way to do
+    // it. The only imperfect way I found was to get the position for
+    // the last line (approximately), and make the position visible
+    // after the change.
+    auto c = cursorForPosition(QPoint(0,height()-20));
+    int pos = c.position();
+    // static int lastpos;
+    // std::cerr << "POSITION: " << pos << " DELTA " << pos -lastpos << "\n";
+    // lastpos = pos;
+    setFont(m_preview->m_font);
     if (m_format == Qt::PlainText)
         setPlainText(m_richtxt);
     else
         setHtml(m_richtxt);
+    if (m_curdsp == PTE_DSPTXT) {
+        auto cursor = textCursor();
+        cursor.setPosition(pos);
+        setTextCursor(cursor);
+        ensureCursorVisible();
+    }
     m_curdsp = PTE_DSPTXT;
 }
 
@@ -1012,17 +1110,18 @@ void PreviewTextEdit::displayFields()
 {
     LOGDEB1("PreviewTextEdit::displayFields()\n");
 
+    setFont(m_preview->m_font);
     QString txt = "<html><head></head><body>\n";
-    txt += "<b>" + QString::fromLocal8Bit(m_url.c_str());
+    txt += "<b>" + path2qs(m_url);
     if (!m_ipath.empty())
-        txt += "|" + QString::fromUtf8(m_ipath.c_str());
+        txt += "|" + u8s2qs(m_ipath);
     txt += "</b><br><br>";
     txt += "<dl>\n";
     for (const auto& entry: m_fdoc.meta) {
-        if (!entry.second.empty())
-            txt += "<dt>" + QString::fromUtf8(entry.first.c_str()) + "</dt> " 
-                + "<dd>" + QString::fromUtf8(escapeHtml(entry.second).c_str()) 
-                + "</dd>\n";
+        if (!entry.second.empty()) {
+            txt += "<dt>" + u8s2qs(entry.first) + "</dt> " 
+                + "<dd>" + u8s2qs(escapeHtml(entry.second)) + "</dd>\n";
+        }
     }
     txt += "</dl></body></html>";
     setHtml(txt);
@@ -1032,6 +1131,7 @@ void PreviewTextEdit::displayFields()
 void PreviewTextEdit::displayImage()
 {
     LOGDEB1("PreviewTextEdit::displayImage()\n");
+    setFont(m_preview->m_font);
     if (m_image.isNull())
         displayText();
 
@@ -1040,10 +1140,8 @@ void PreviewTextEdit::displayImage()
         m_image.height() > height()) {
         m_image = m_image.scaled(width(), height(), Qt::KeepAspectRatio);
     }
-    document()->addResource(QTextDocument::ImageResource, QUrl("image"), 
-                            m_image);
-    QTextCursor cursor = textCursor();
-    cursor.insertImage("image");
+    document()->addResource(QTextDocument::ImageResource, QUrl("image"), m_image);
+    textCursor().insertImage("image");
     m_curdsp = PTE_DSPIMG;
 }
 

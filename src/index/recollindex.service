@@ -1,0 +1,12 @@
+# Contributed by Frank Dana, licensed as Recoll itself
+[Unit]
+Description=Recoll real-time document indexing
+After=gnome-session-manager.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/recollindex -m -D -x -w 30 -c %h/.recoll/
+Restart=on-failure
+
+[Install]
+WantedBy=graphical-session.target

@@ -211,8 +211,6 @@ public:
         }
 
         for (const auto& off : offs) {
-            LOGDEB1("MboxCache::put_offsets: writing value " << off <<
-                    " at offset " << ftello(fp) << endl);
             os.write((char*)&off, sizeof(int64_t));
             if (!os.good()) {
                 LOGSYSERR("MboxCache::put_offsets", "write", "");
@@ -298,7 +296,7 @@ public:
 };
 
 MimeHandlerMbox::MimeHandlerMbox(RclConfig *cnf, const std::string& id) 
-	: RecollFilter(cnf, id)
+    : RecollFilter(cnf, id)
 {
     m = new Internal(this);
 
@@ -323,8 +321,17 @@ void MimeHandlerMbox::clear_impl()
 {
     m->fn.erase();
     m->ipath.erase();
-    m->instream = ifstream();
-    m->msgnum = m->lineno = m->fsize = 0;
+
+    // We used to use m->instream = ifstream() which fails with some compilers, as the copy
+    // constructor is marked deleted in standard c++ (works with many compilers though).
+    if (m->instream.is_open()) {
+        m->instream.close();
+    }
+    m->instream.clear();
+
+    m->msgnum = 0;
+    m->lineno = 0;
+    m->fsize = 0;
     m->offsets.clear();
     m->quirks = 0;
 }
@@ -334,12 +341,12 @@ bool MimeHandlerMbox::skip_to_document(const std::string& ipath) {
     return true;
 }
 
-bool MimeHandlerMbox::set_document_file_impl(const string& mt, const string &fn)
+bool MimeHandlerMbox::set_document_file_impl(const string&, const string &fn)
 {
     LOGDEB("MimeHandlerMbox::set_document_file(" << fn << ")\n");
     clear_impl();
     m->fn = fn;
-    m->instream = ifstream(fn.c_str(), std::ifstream::binary);
+    m->instream.open(fn.c_str(), std::ifstream::binary);
     if (!m->instream.good()) {
         LOGSYSERR("MimeHandlerMail::set_document_file", "ifstream", fn);
         return false;

@@ -1,0 +1,13 @@
+diff --git a/src/kde/kioslave/kio_recoll/dirif.cpp b/src/kde/kioslave/kio_recoll/dirif.cpp
+index 4438a1e7..48284ece 100644
+--- a/kde/kioslave/kio_recoll/dirif.cpp
++++ b/kde/kioslave/kio_recoll/dirif.cpp
+@@ -35,7 +35,7 @@
+ #include <QDebug>
+ #include <QUrl>
+ #include <QStandardPaths>
+-#include <KF5/kio_version.h>
++#include <kio_version.h>
+ 
+ #include "kio_recoll.h"
+ #include "pathut.h"

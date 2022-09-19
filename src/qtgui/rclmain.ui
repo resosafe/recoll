@@ -20,41 +20,97 @@
    <string>Recoll</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QVBoxLayout" name="verticalLayout">
-    <property name="spacing">
-     <number>0</number>
-    </property>
-    <property name="leftMargin">
-     <number>4</number>
-    </property>
-    <property name="topMargin">
-     <number>2</number>
-    </property>
-    <property name="rightMargin">
-     <number>4</number>
-    </property>
-    <property name="bottomMargin">
-     <number>2</number>
-    </property>
+   <layout class="QVBoxLayout" name="verticalLayout_2">
     <item>
-     <widget class="SSearch" name="sSearch" native="true">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <widget class="ResList" name="reslist" native="true">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-        <horstretch>2</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-     </widget>
+     <layout class="QVBoxLayout" name="verticalLayout">
+      <item>
+       <widget class="SSearch" name="sSearch" native="true">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QSplitter" name="sideFiltersSPLT">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <widget class="QFrame" name="frame">
+         <property name="frameShape">
+          <enum>QFrame::StyledPanel</enum>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayoutsidefilt">
+          <item>
+           <widget class="QLabel" name="sideFilterLBL">
+            <property name="text">
+             <string>Query Language Filters</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="Line" name="line2">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="dateFilterCB">
+            <property name="text">
+             <string>Filter dates</string>
+            </property>
+            <property name="checked">
+             <bool>false</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="hLayoutDatesFilter">
+            <item>
+             <widget class="QDateEdit" name="minDateFilterDTEDT">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QDateEdit" name="maxDateFilterDTEDT">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <widget class="QTreeView" name="idxTreeView">
+            <property name="frameShape">
+             <enum>QFrame::NoFrame</enum>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+        <widget class="QWidget" name="resultsLayoutWidget">
+         <layout class="QHBoxLayout" name="resultsHLayout">
+          <item>
+           <widget class="ResList" name="reslist" native="true">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+              <horstretch>2</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </widget>
+      </item>
+     </layout>
     </item>
    </layout>
   </widget>
@@ -65,93 +121,10 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>25</height>
+     <height>22</height>
     </rect>
    </property>
-   <widget class="QMenu" name="fileMenu">
-    <property name="title">
-     <string>&amp;File</string>
-    </property>
-    <addaction name="fileToggleIndexingAction"/>
-    <addaction name="fileRebuildIndexAction"/>
-    <addaction name="actionSpecial_Indexing"/>
-    <addaction name="separator"/>
-    <addaction name="actionSave_last_query"/>
-    <addaction name="actionLoad_saved_query"/>
-    <addaction name="separator"/>
-    <addaction name="fileExportSSearchHistoryAction"/>
-    <addaction name="fileEraseSearchHistoryAction"/>
-    <addaction name="separator"/>
-    <addaction name="fileEraseDocHistoryAction"/>
-    <addaction name="separator"/>
-    <addaction name="fileExitAction"/>
-   </widget>
-   <widget class="QMenu" name="viewMenu">
-    <property name="title">
-     <string>&amp;View</string>
-    </property>
-    <addaction name="showMissingHelpers_Action"/>
-    <addaction name="showActiveTypes_Action"/>
-    <addaction name="actionShow_index_statistics"/>
-    <addaction name="separator"/>
-    <addaction name="toggleFullScreenAction"/>
-   </widget>
-   <widget class="QMenu" name="toolsMenu">
-    <property name="title">
-     <string>&amp;Tools</string>
-    </property>
-    <addaction name="toolsDoc_HistoryAction"/>
-    <addaction name="toolsAdvanced_SearchAction"/>
-    <addaction name="toolsSpellAction"/>
-    <addaction name="actionShowQueryDetails"/>
-    <addaction name="actionQuery_Fragments"/>
-    <addaction name="actionWebcache_Editor"/>
-   </widget>
-   <widget class="QMenu" name="preferencesMenu">
-    <property name="title">
-     <string>&amp;Preferences</string>
-    </property>
-    <addaction name="indexConfigAction"/>
-    <addaction name="indexScheduleAction"/>
-    <addaction name="separator"/>
-    <addaction name="queryPrefsAction"/>
-    <addaction name="extIdxAction"/>
-    <addaction name="separator"/>
-    <addaction name="enbSynAction"/>
-    <addaction name="separator"/>
-   </widget>
-   <widget class="QMenu" name="helpMenu">
-    <property name="title">
-     <string>&amp;Help</string>
-    </property>
-    <addaction name="userManualAction"/>
-    <addaction name="showMissingHelpers_Action"/>
-    <addaction name="showActiveTypes_Action"/>
-    <addaction name="separator"/>
-    <addaction name="helpAbout_RecollAction"/>
-   </widget>
-   <widget class="QMenu" name="menuResults">
-    <property name="title">
-     <string>&amp;Results</string>
-    </property>
-    <addaction name="nextPageAction"/>
-    <addaction name="prevPageAction"/>
-    <addaction name="firstPageAction"/>
-    <addaction name="separator"/>
-    <addaction name="actionSortByDateAsc"/>
-    <addaction name="actionSortByDateDesc"/>
-    <addaction name="separator"/>
-    <addaction name="actionShowResultsAsTable"/>
-    <addaction name="separator"/>
-    <addaction name="actionSaveResultsAsCSV"/>
-   </widget>
-   <addaction name="fileMenu"/>
-   <addaction name="viewMenu"/>
-   <addaction name="toolsMenu"/>
-   <addaction name="menuResults"/>
-   <addaction name="preferencesMenu"/>
    <addaction name="separator"/>
-   <addaction name="helpMenu"/>
   </widget>
   <action name="fileExitAction">
    <property name="text">
@@ -173,14 +146,25 @@
    </property>
   </action>
   <action name="fileBumpIndexingAction">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
    <property name="text">
     <string>Trigger incremental pass</string>
    </property>
    <property name="name" stdset="0">
     <cstring>fileBumpIndexingAction</cstring>
    </property>
+  </action>
+  <action name="fileStartMonitorAction">
    <property name="enabled">
-    <bool>false</bool>
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Start real time indexer</string>
+   </property>
+   <property name="name" stdset="0">
+    <cstring>fileStartMonitorAction</cstring>
    </property>
   </action>
   <action name="fileRebuildIndexAction">
@@ -271,7 +255,7 @@
     <string>&amp;Advanced Search</string>
    </property>
    <property name="toolTip">
-    <string>Advanced/complex  Search</string>
+    <string>Assisted complex search</string>
    </property>
    <property name="name" stdset="0">
     <cstring>toolsAdvanced_SearchAction</cstring>
@@ -427,6 +411,28 @@
    </property>
    <property name="name" stdset="0">
     <cstring>toggleFullScreenAction</cstring>
+   </property>
+  </action>
+  <action name="zoomInAction">
+   <property name="text">
+    <string>Increase results text font size</string>
+   </property>
+   <property name="iconText">
+    <string>Increase Font Size</string>
+   </property>
+   <property name="name" stdset="0">
+    <cstring>zoomInAction</cstring>
+   </property>
+  </action>
+  <action name="zoomOutAction">
+   <property name="text">
+    <string>Decrease results text font size</string>
+   </property>
+   <property name="iconText">
+    <string>Decrease Font Size</string>
+   </property>
+   <property name="name" stdset="0">
+    <cstring>zoomOutAction</cstring>
    </property>
   </action>
   <action name="actionSortByDateAsc">

@@ -1,4 +1,4 @@
-/* Copyright (C) 2004-2019 J.F.Dockes
+/* Copyright (C) 2004-2021 J.F.Dockes
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation; either version 2 of the License, or
@@ -26,7 +26,9 @@
 #include "log.h"
 #include "utf8iter.h"
 
-bool unacmaybefold(const string &in, string &out, 
+using namespace std;
+
+bool unacmaybefold(const string &in, string &out,
                    const char *encoding, UnacOp what)
 {
     char *cout = 0;
@@ -35,16 +37,13 @@ bool unacmaybefold(const string &in, string &out,
 
     switch (what) {
     case UNACOP_UNAC:
-        status = unac_string(encoding, in.c_str(), in.length(), 
-                             &cout, &out_len);
+        status = unac_string(encoding, in.c_str(), in.length(), &cout, &out_len);
         break;
     case UNACOP_UNACFOLD:
-        status = unacfold_string(encoding, in.c_str(), in.length(), 
-                                 &cout, &out_len);
+        status = unacfold_string(encoding, in.c_str(), in.length(), &cout, &out_len);
         break;
     case UNACOP_FOLD:
-        status = fold_string(encoding, in.c_str(), in.length(), 
-                             &cout, &out_len);
+        status = fold_string(encoding, in.c_str(), in.length(), &cout, &out_len);
         break;
     }
 

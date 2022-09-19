@@ -10,15 +10,9 @@ TARGET = librecoll
 TEMPLATE = lib
 
 DEFINES += LIBRECOLL_LIBRARY BUILDING_RECOLL
-DEFINES += UNICODE
-DEFINES += PSAPI_VERSION=1
 DEFINES += READFILE_ENABLE_MINIZ
 DEFINES += READFILE_ENABLE_MD5
 DEFINES += READFILE_ENABLE_ZLIB
-
-# This is necessary to avoid an undefined impl__xmlFree.
-# See comment in libxml/xmlexports.h
-DEFINES += LIBXML_STATIC
 
 SOURCES += \
 ../../aspell/rclaspell.cpp \
@@ -33,14 +27,14 @@ SOURCES += \
 ../../common/rclinit.cpp \
 ../../common/syngroups.cpp \
 ../../common/textsplit.cpp \
+../../common/textsplitko.cpp \
 ../../common/unacpp.cpp \
 ../../common/utf8fn.cpp \
-../../index/webqueue.cpp \
 ../../index/webqueuefetcher.cpp \
 ../../index/fetcher.cpp \
 ../../index/exefetcher.cpp \
 ../../index/fsfetcher.cpp \
-../../index/fsindexer.cpp \
+../../index/idxdiags.cpp \
 ../../index/idxstatus.cpp \
 ../../index/indexer.cpp \
 ../../index/mimetype.cpp \
@@ -65,6 +59,7 @@ SOURCES += \
 ../../query/dynconf.cpp \
 ../../query/filtseq.cpp \
 ../../query/plaintorich.cpp \
+../../query/qresultstore.cpp \
 ../../query/recollq.cpp \
 ../../query/reslistpager.cpp \
 ../../query/sortseq.cpp \
@@ -93,17 +88,17 @@ SOURCES += \
 ../../utils/cancelcheck.cpp \
 ../../utils/chrono.cpp \
 ../../utils/circache.cpp \
+../../utils/closefrom.cpp \
+../../utils/cmdtalk.cpp \
 ../../utils/conftree.cpp \
 ../../utils/copyfile.cpp \
 ../../utils/cpuconf.cpp \
 ../../utils/dlib.cpp \
 ../../utils/ecrontab.cpp \
+../../utils/listmem.cpp \
 ../../utils/utf8iter.cpp \
 ../../utils/zlibut.cpp \
 ../../utils/zlibut.h \
-../../windows/execmd_w.cpp \
-../../windows/fnmatch.c \
-../../windows/wincodepages.cpp \
 ../../utils/fileudi.cpp \
 ../../utils/fstreewalk.cpp \
 ../../utils/hldata.cpp \
@@ -115,40 +110,78 @@ SOURCES += \
 ../../utils/miniz.cpp \
 ../../utils/pathut.cpp \
 ../../utils/pxattr.cpp \
-../../utils/rclionice.cpp \
 ../../utils/rclutil.cpp \
 ../../utils/readfile.cpp \
 ../../utils/smallut.cpp \
 ../../utils/strmatcher.cpp \
 ../../utils/transcode.cpp \
-../../utils/wipedir.cpp \
-../../windows/strptime.cpp
+../../utils/wipedir.cpp
 
 INCLUDEPATH += ../../common ../../index ../../internfile ../../query \
             ../../unac ../../utils ../../aspell ../../rcldb ../../qtgui \
             ../../xaposix ../../confgui ../../bincimapmime 
 
 windows {
-    contains(QMAKE_CC, gcc){
-        # MingW
-        QMAKE_CXXFLAGS += -std=c++11 -pthread -Wno-unused-parameter
-    }
-    contains(QMAKE_CC, cl){
-        # Visual Studio
-    }
-  LIBS += C:/recolldeps/libxslt/libxslt-1.1.29/win32/bin.mingw/libxslt.a \
-          C:/recolldeps/libxml2/libxml2-2.9.4+dfsg1/win32/bin.mingw/libxml2.a \
-          c:/recolldeps/xapian-core-1.4.11/.libs/libxapian-30.dll \
-          c:/recolldeps/zlib-1.2.8/zlib1.dll \
-          -liconv -lshlwapi -lpsapi -lkernel32
-  INCLUDEPATH += ../../windows \
-          C:/recolldeps/xapian-core-1.4.11/include \
-          C:/recolldeps/libxslt/libxslt-1.1.29/ \
-          C:/recolldeps/libxml2/libxml2-2.9.4+dfsg1/include
+  # VC only defines __WIN32, not __WIN32__ . For some reason xapian uses
+  #  __WIN32__ which it actually defines in conf_post.h if __WIN32 is
+  #  set. Reason: mystery.
+  DEFINES += __WIN32__
+  DEFINES += PSAPI_VERSION=1
+  defines += UNICODE
+
+  SOURCES += \
+  ../../windows/execmd_w.cpp \
+  ../../windows/fnmatch.c \
+  ../../windows/wincodepages.cpp \
+  ../../windows/strptime.cpp
+
+  contains(QMAKE_CC, gcc){
+    # MingW
+    # This is necessary to avoid an undefined impl__xmlFree.
+    # See comment in libxml/xmlexports.h
+    DEFINES += LIBXML_STATIC
+    RECOLLDEPS = C:/recolldeps
+    QMAKE_CXXFLAGS += -std=c++11 -pthread -Wno-unused-parameter
+    LIBS += \
+      $$RECOLLDEPS/mingw/libxslt/libxslt-1.1.29/win32/bin.mingw/libxslt.a \
+      $$RECOLLDEPS/mingw/libxml2/libxml2-2.9.4+dfsg1/win32/bin.mingw/libxml2.a \
+      $$RECOLLDEPS/mingw/xapian-core-1.4.11/.libs/libxapian-30.dll \
+      $$RECOLLDEPS/mingw/zlib-1.2.8/zlib1.dll \
+      -luuid -luser32 -lshell32 -liconv -lshlwapi -lpsapi -lkernel32
+    INCLUDEPATH += ../../windows \
+      $$RECOLLDEPS/mingw/xapian-core-1.4.11/include \
+      $$RECOLLDEPS/mingw/libxslt/libxslt-1.1.29/ \
+      $$RECOLLDEPS/mingw/libxml2/libxml2-2.9.4+dfsg1/include
+  }
+
+  contains(QMAKE_CC, cl){
+    # MSVC
+    RECOLLDEPS = ../../../../recolldeps
+    CONFIG += staticlib
+    DEFINES += USING_STATIC_LIBICONV
+    INCLUDEPATH += ../../windows \
+      $$RECOLLDEPS/msvc/xapian-core/include \
+      $$RECOLLDEPS/msvc/zlib-1.2.11/ \
+      $$RECOLLDEPS/msvc/libxslt/libxslt-1.1.29/ \
+      $$RECOLLDEPS/msvc/libxml2/libxml2-2.9.4+dfsg1/include \
+      $$RECOLLDEPS/msvc/wlibiconv/include
+  }
 
 }
 
-unix {
+unix:!mac {
     target.path = /usr/lib
     INSTALLS += target
+}
+
+mac {
+    CONFIG += staticlib
+    QMAKE_APPLE_DEVICE_ARCHS = x86_64 arm64
+    # This is necessary to avoid an undefined impl__xmlFree.
+    # See comment in libxml/xmlexports.h
+    DEFINES += LIBXML_STATIC
+    RECOLLDEPS = ../../../../
+    QMAKE_CXXFLAGS += -std=c++11 -pthread -Wno-unused-parameter
+    INCLUDEPATH += \
+      $$RECOLLDEPS/xapian-core-1.4.18/include 
 }

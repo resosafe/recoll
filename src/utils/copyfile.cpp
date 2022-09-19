@@ -14,8 +14,10 @@
  *   Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
-#ifndef TEST_COPYFILE
+
 #include "autoconfig.h"
+
+#include "copyfile.h"
 
 #include <stdio.h>
 #include <errno.h>
@@ -23,15 +25,15 @@
 #include <sys/types.h>
 #include "safesysstat.h"
 #include "safeunistd.h"
+
 #ifndef _WIN32
 #include <sys/time.h>
 #include <utime.h>
-#define O_BINARY 0
 #endif
 
 #include <cstring>
 
-#include "copyfile.h"
+#include "pathut.h"
 #include "log.h"
 
 using namespace std;
@@ -83,7 +85,7 @@ bool copyfile(const char *src, const char *dst, string &reason, int flags)
     ret = true;
 out:
     if (ret == false && !(flags&COPYFILE_NOERRUNLINK))
-        ::unlink(dst);
+        path_unlink(dst);
     if (sfd >= 0)
         ::close(sfd);
     if (dfd >= 0)
@@ -121,7 +123,7 @@ bool stringtofile(const string& dt, const char *dst, string& reason,
     ret = true;
 out:
     if (ret == false && !(flags&COPYFILE_NOERRUNLINK))
-        ::unlink(dst);
+        path_unlink(dst);
     if (dfd >= 0)
         ::close(dfd);
     return ret;
@@ -133,7 +135,7 @@ bool renameormove(const char *src, const char *dst, string &reason)
     // Windows refuses to rename to an existing file. It appears that
     // there are workarounds (See MoveFile, MoveFileTransacted), but
     // anyway we are not expecting atomicity here.
-    unlink(dst);
+    path_unlink(dst);
 #endif
     
     // First try rename(2). If this succeeds we're done. If this fails
@@ -174,99 +176,19 @@ bool renameormove(const char *src, const char *dst, string &reason)
             reason += string("Chown ") + dst + "Error : " + strerror(errno);
         }
     }
-    struct timeval times[2];
+#endif
+
+    struct path_timeval times[2];
     times[0].tv_sec = st.st_atime;
     times[0].tv_usec = 0;
     times[1].tv_sec = st.st_mtime;
     times[1].tv_usec = 0;
-    utimes(dst, times);
-#endif
+    path_utimes(dst, times);
+
     // All ok, get rid of origin
-    if (unlink(src) < 0) {
+    if (!path_unlink(src)) {
         reason += string("Can't unlink ") + src + "Error : " + strerror(errno);
     }
 
     return true;
 }
-
-
-#else 
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-
-#include <string>
-#include <iostream>
-
-#include "copyfile.h"
-
-using namespace std;
-
-static int     op_flags;
-#define OPT_MOINS 0x1
-#define OPT_m     0x2
-#define OPT_e     0x4
-
-static const char *thisprog;
-static char usage [] =
-    "trcopyfile [-m] src dst\n"
-    " -m : move instead of copying\n"
-    " -e : fail if dest exists (only for copy)\n"
-    "\n"
-    ;
-static void
-Usage(void)
-{
-    fprintf(stderr, "%s: usage:\n%s", thisprog, usage);
-    exit(1);
-}
-
-int main(int argc, const char **argv)
-{
-    thisprog = argv[0];
-    argc--; argv++;
-
-    while (argc > 0 && **argv == '-') {
-        (*argv)++;
-        if (!(**argv))
-            /* Cas du "adb - core" */
-            Usage();
-        while (**argv)
-            switch (*(*argv)++) {
-            case 'm':   op_flags |= OPT_m; break;
-            case 'e':   op_flags |= OPT_e; break;
-            default: Usage();   break;
-            }
-        argc--; argv++;
-    }
-
-    if (argc != 2)
-        Usage();
-    string src = *argv++;argc--;
-    string dst = *argv++;argc--;
-    bool ret;
-    string reason;
-    if (op_flags & OPT_m) {
-        ret = renameormove(src.c_str(), dst.c_str(), reason);
-    } else {
-        int flags = 0;
-        if (op_flags & OPT_e) {
-            flags |= COPYFILE_EXCL;
-        }
-        ret = copyfile(src.c_str(), dst.c_str(), reason, flags);
-    }
-    if (!ret) {
-        cerr << reason << endl;
-        exit(1);
-    }  else {
-        cout << "Succeeded" << endl;
-        if (!reason.empty()) {
-            cout << "Warnings: " << reason << endl;
-        }
-        exit(0);
-    }
-}
-
-#endif
-

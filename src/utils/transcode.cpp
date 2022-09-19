@@ -23,7 +23,6 @@
 
 #include <errno.h>
 #include <iconv.h>
-#include <wchar.h>
 
 #include "transcode.h"
 #include "log.h"
@@ -102,8 +101,8 @@ bool transcode(const string &in, string &out, const string &icode,
 #endif
             if (errno == EILSEQ) {
                 LOGDEB1("transcode:iconv: bad input seq.: shift, retry\n");
-                LOGDEB1(" Input consumed " << ip - in << " output produced " <<
-                        out.length() + OBSIZ - osiz << "\n");
+                LOGDEB1(" Input consumed " << ip - in.c_str() <<
+                        " output produced " << out.length()+OBSIZ-osiz << "\n");
                 out.append(obuf, OBSIZ - osiz);
                 out += "?";
                 mecnt++;
@@ -153,55 +152,3 @@ error:
     return ret;
 }
 
-bool wchartoutf8(const wchar_t *in, std::string& out)
-{
-    static iconv_t ic = (iconv_t)-1;
-    if (ic == (iconv_t)-1) {
-        if((ic = iconv_open("UTF-8", "WCHAR_T")) == (iconv_t)-1) {
-            LOGERR("wchartoutf8: iconv_open failed\n");
-            return false;
-        }
-    }
-    const int OBSIZ = 8192;
-    char obuf[OBSIZ], *op;
-    out.erase();
-    size_t isiz = 2 * wcslen(in);
-    out.reserve(isiz);
-    const char *ip = (const char *)in;
-
-    while (isiz > 0) {
-        size_t osiz;
-        op = obuf;
-        osiz = OBSIZ;
-
-        if(iconv(ic, (ICONV_CONST char **)&ip, &isiz, &op, &osiz) == (size_t)-1
-           && errno != E2BIG) {
-            LOGERR("wchartoutf8: iconv error, errno: " << errno << endl);
-            return false;
-        }
-        out.append(obuf, OBSIZ - osiz);
-    }
-    return true;
-}
-
-bool utf8towchar(const std::string& in, wchar_t *out, size_t obytescap)
-{
-    static iconv_t ic = (iconv_t)-1;
-    if (ic == (iconv_t)-1) {
-        if((ic = iconv_open("WCHAR_T", "UTF-8")) == (iconv_t)-1) {
-            LOGERR("utf8towchar: iconv_open failed\n");
-            return false;
-        }
-    }
-    size_t isiz = in.size();
-    const char *ip = in.c_str();
-    size_t osiz = (size_t)obytescap-2;
-    char *op = (char *)out;
-    if (iconv(ic, (ICONV_CONST char **)&ip, &isiz, &op, &osiz) == (size_t)-1) {
-        LOGERR("utf8towchar: iconv error, errno: " << errno << endl);
-        return false;
-    }
-    *op++ = 0;
-    *op = 0;
-    return true;
-}

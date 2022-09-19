@@ -179,40 +179,42 @@ bool matchGroup(const HighlightData& hldata,
 
     const auto& tg(hldata.index_term_groups[grpidx]);
     bool isphrase =  tg.kind == HighlightData::TermGroup::TGK_PHRASE;
+
+#ifdef DEBUGGROUPS
     string allplterms;
     for (const auto& entry:inplists) {
         allplterms += entry.first + " ";
     }
-    LOGRP("matchGroup: isphrase " << isphrase <<
-          ". Have plists for [" << allplterms << "]\n");
-    LOGRP("matchGroup: hldata: " << hldata.toString() << std::endl);
+    LOGRP("matchGroup: isphrase " << isphrase << ". Have plists for [" << allplterms << "]\n");
+    //LOGRP("matchGroup: hldata: " << hldata.toString() << std::endl);
+#endif
     
     int window = int(tg.orgroups.size() + tg.slack);
     // The position lists we are going to work with. We extract them from the 
     // (string->plist) map
     vector<OrPList> orplists;
 
-    // Find the position list for each term in the group and build the
-    // combined lists for the term or groups (each group is the result
-    // of the exansion of one user term). It is possible that this
-    // particular group was not actually matched by the search, so
-    // that some terms are not found, in which case we bail out.
+    // Find the position list for each term in the group and build the combined lists for the term
+    // or groups (each group is the result of the exansion of one user term). It is possible that
+    // this particular group was not actually matched by the search, so that some terms are not
+    // found, in which case we bail out.
     for (const auto& group : tg.orgroups) {
         orplists.push_back(OrPList());
         for (const auto& term : group) {
             const auto pl = inplists.find(term);
             if (pl == inplists.end()) {
-                LOGRP("TextSplitPTR::matchGroup: term [" << term <<
-                      "] not found in plists\n");
+                LOGRP("TextSplitPTR::matchGroup: term [" << term << "] not found in plists\n");
                 continue;
             }
             orplists.back().addplist(pl->first, &(pl->second));
         }
         if (orplists.back().plists.empty()) {
-            LOGRP("No positions list found for group " <<
-                   stringsToString(group) << std::endl);
-            orplists.pop_back();
-        }
+            LOGRP("No positions list found for OR group [" << stringsToString(group) <<
+                  "] : input has no group match, returning false\n");
+            return false;
+        } else {
+            LOGRP("Created OrPList has " << orplists.back().plists.size() << " members\n");
+        }            
     }
 
     // I think this can't actually happen, was useful when we used to
@@ -256,8 +258,7 @@ bool matchGroup(const HighlightData& hldata,
                 tboffs.push_back(GroupMatchEntry(i1->second.first, 
                                                  i2->second.second, grpidx));
             } else {
-                LOGDEB0("matchGroup: no bpos found for " << sta << " or "
-                        << sto << "\n");
+                LOGDEB0("matchGroup: no bpos found for " << sta << " or " << sto << "\n");
             }
         } else {
             LOGRP("matchGroup: no group match found at this position\n");
@@ -266,6 +267,12 @@ bool matchGroup(const HighlightData& hldata,
 
     return !tboffs.empty();
 }
+
+vector<CharFlags> kindflags {
+    CHARFLAGENTRY(HighlightData::TermGroup::TGK_TERM),
+        CHARFLAGENTRY(HighlightData::TermGroup::TGK_NEAR),
+        CHARFLAGENTRY(HighlightData::TermGroup::TGK_PHRASE),
+        };
 
 string HighlightData::toString() const
 {
@@ -306,8 +313,9 @@ string HighlightData::toString() const
                 }
                 out.append("}");
             }
-            sprintf(cbuf, "%d", tg.slack);
-            out.append("}").append(cbuf);
+            out.append(" ");
+            out.append(valToString(kindflags, tg.kind)).append("-").append(lltodecstr(tg.slack));
+            out.append(" }");
         }
     }
     out.append("\n");

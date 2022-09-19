@@ -77,9 +77,9 @@ struct HighlightData {
     std::vector<TermGroup> index_term_groups;
 
     void clear() {
-	uterms.clear();
-	ugroups.clear();
-	index_term_groups.clear();
+        uterms.clear();
+        ugroups.clear();
+        index_term_groups.clear();
     }
     void append(const HighlightData&);
 

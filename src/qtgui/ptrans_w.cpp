@@ -1,4 +1,4 @@
-/* Copyright (C) 2006 J.F.Dockes 
+/* Copyright (C) 2006-2022 J.F.Dockes 
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation; either version 2 of the License, or
@@ -44,11 +44,11 @@ void EditTrans::init(const string& dbdir)
 {
     m_dbdir = path_canon(dbdir);
     connect(transTW, SIGNAL(itemDoubleClicked(QTableWidgetItem *)),
-	    this, SLOT(onItemDoubleClicked(QTableWidgetItem *)));
+            this, SLOT(onItemDoubleClicked(QTableWidgetItem *)));
     connect(cancelPB, SIGNAL(clicked()), this, SLOT(close()));
 
     QString lab = whatIdxLA->text();
-    lab.append(QString::fromLocal8Bit(m_dbdir.c_str()));
+    lab.append(path2qs(m_dbdir));
     whatIdxLA->setText(lab);
 
     QStringList labels(tr("Source path"));
@@ -57,20 +57,17 @@ void EditTrans::init(const string& dbdir)
 
     ConfSimple *conftrans = theconfig->getPTrans();
     if (!conftrans)
-	return;
+        return;
 
     int row = 0;
     vector<string> opaths = conftrans->getNames(m_dbdir);
-    for (vector<string>::const_iterator it = opaths.begin(); 
-	 it != opaths.end(); it++) {
-	transTW->setRowCount(row+1);
-	transTW->setItem(row, 0, new QTableWidgetItem(
-			     QString::fromLocal8Bit(it->c_str())));
-	string npath;
-	conftrans->get(*it, npath, m_dbdir);
-	transTW->setItem(row, 1, new QTableWidgetItem(
-			     QString::fromLocal8Bit(npath.c_str())));
-	row++;
+    for (const auto& opath : opaths) {
+        transTW->setRowCount(row+1);
+        transTW->setItem(row, 0, new QTableWidgetItem(path2qs(opath)));
+        string npath;
+        conftrans->get(opath, npath, m_dbdir);
+        transTW->setItem(row, 1, new QTableWidgetItem(path2qs(npath)));
+        row++;
     }
 
     resize(QSize(640, 300).expandedTo(minimumSizeHint()));
@@ -85,18 +82,18 @@ void EditTrans::on_savePB_clicked()
 {
     ConfSimple *conftrans = theconfig->getPTrans();
     if (!conftrans) {
-	QMessageBox::warning(0, "Recoll", tr("Config error"));
-	return;
+        QMessageBox::warning(0, "Recoll", tr("Config error"));
+        return;
     }
     conftrans->holdWrites(true);
     conftrans->eraseKey(m_dbdir);
 
     for (int row = 0; row < transTW->rowCount(); row++) {
-	QTableWidgetItem *item0 = transTW->item(row, 0);
-	string from = path_canon((const char *)item0->text().toLocal8Bit());
-	QTableWidgetItem *item1 = transTW->item(row, 1);
-	string to = path_canon((const char*)item1->text().toLocal8Bit());
-	conftrans->set(from, to, m_dbdir);
+        QTableWidgetItem *item0 = transTW->item(row, 0);
+        string from = qs2path(item0->text());
+        QTableWidgetItem *item1 = transTW->item(row, 1);
+        string to = qs2path(item1->text());
+        conftrans->set(from, to, m_dbdir);
     }
     conftrans->holdWrites(false);
     // The rcldb does not use the same configuration object, but a
@@ -120,12 +117,12 @@ void EditTrans::on_delPB_clicked()
     QModelIndexList indexes = transTW->selectionModel()->selectedIndexes();
     vector<int> rows;
     for (int i = 0; i < indexes.size(); i++) {
-	rows.push_back(indexes.at(i).row());
+        rows.push_back(indexes.at(i).row());
     }
     sort(rows.begin(), rows.end());
     rows.resize(unique(rows.begin(), rows.end()) - rows.begin());
     for (int i = rows.size()-1; i >= 0; i--) {
-	transTW->removeRow(rows[i]);
+        transTW->removeRow(rows[i]);
     }
 }
 
@@ -133,8 +130,8 @@ void EditTrans::on_transTW_itemSelectionChanged()
 {
     QModelIndexList indexes = transTW->selectionModel()->selectedIndexes();
     if(indexes.size() < 1)
-	delPB->setEnabled(0);
+        delPB->setEnabled(0);
     else 
-	delPB->setEnabled(1);
+        delPB->setEnabled(1);
 }
 

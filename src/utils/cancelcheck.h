@@ -41,12 +41,12 @@ class CancelCheck {
  public:
     static CancelCheck& instance();
     void setCancel(bool on = true) {
-	cancelRequested = on;
+    cancelRequested = on;
     }
     void checkCancel() {
-	if (cancelRequested) {
-	    throw CancelExcept();
-	}
+    if (cancelRequested) {
+        throw CancelExcept();
+    }
     }
     bool cancelState() {return cancelRequested;}
  private:

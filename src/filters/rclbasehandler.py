@@ -18,8 +18,6 @@
 # Base for extractor classes. With some common generic implementations
 # for the boilerplate functions.
 
-from __future__ import print_function
-
 import os
 import sys
 import rclexecm
@@ -37,15 +35,15 @@ class RclBaseHandler(object):
 
 
     def extractone(self, params):
-        #self.em.rclog("extractone fn %s mt %s" % (params["filename:"], \
-        #                                          params["mimetype:"]))
-        if not "filename:" in params:
+        #self.em.rclog("extractone fn %s mt %s" % (params["filename"], \
+        #                                          params["mimetype"]))
+        if not "filename" in params:
             self.em.rclog("extractone: no file name")
             return (False, "", "", rclexecm.RclExecM.eofnow)
-        fn = params["filename:"]
+        fn = params["filename"]
 
-        if "mimetype:" in params:
-            self.inputmimetype = params["mimetype:"]
+        if "mimetype" in params:
+            self.inputmimetype = params["mimetype"]
         else:
             self.inputmimetype = None
 

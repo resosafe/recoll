@@ -1,4 +1,4 @@
-/*
+/* Copyright (C) 2005-2020 J.F.Dockes
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation; either version 2 of the License, or
@@ -22,14 +22,13 @@
 
 class IdxSchedW : public QDialog, public Ui::IdxSchedW {
     Q_OBJECT
-    public:
+public:
     IdxSchedW(QWidget * parent = 0) 
-	: QDialog(parent)
-    {
-	setupUi(this);
-	(void)new HelpClient(this);
-	HelpClient::installMap((const char *)this->objectName().toUtf8(), 
-			   "RCL.INDEXING");
+        : QDialog(parent) {
+        setupUi(this);
+        (void)new HelpClient(this);
+        HelpClient::installMap((const char *)this->objectName().toUtf8(), 
+                               "RCL.INDEXING");
     }
 };
 

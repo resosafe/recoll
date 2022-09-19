@@ -1,0 +1,16 @@
+# Instantiate with a username as argument
+# e.g. `systemctl enable recollindex@myuser.service`
+[Unit]
+Description=Recollindex indexing for %i
+After=network-online.target
+RequiresMountsFor=/home/%i
+
+[Service]
+Type=simple
+Restart=on-failure
+RestartSec=30
+ExecStart=/usr/bin/recollindex -m -D -x -w 10 -c /home/%i/.recoll
+User=%i
+
+[Install]
+WantedBy=multi-user.target

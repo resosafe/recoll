@@ -72,8 +72,7 @@ public:
             }
             cout << "}, ";
         }
-        cout << "} slack: " << tgp.slack << " kind " <<
-            valToString(kindflags, tgp.kind) << endl;
+        cout << "} slack: " << tgp.slack << " kind " << valToString(kindflags, tgp.kind) << endl;
     }
 };
 

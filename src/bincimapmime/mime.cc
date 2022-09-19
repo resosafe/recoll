@@ -23,6 +23,8 @@
  *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *  --------------------------------------------------------------------
  */
+#include "autoconfig.h"
+
 #include <string.h>
 #include <ctype.h>
 #include <stdio.h>
@@ -33,14 +35,12 @@
 #include <map>
 #include <exception>
 #include <iostream>
-#ifndef NO_NAMESPACES
-using namespace ::std;
-#endif /* NO_NAMESPACES */
-
 
 #include "mime.h"
 #include "convert.h"
 #include "mime-inputsource.h"
+
+using namespace std;
 
 //------------------------------------------------------------------------
 Binc::MimeDocument::MimeDocument(void)

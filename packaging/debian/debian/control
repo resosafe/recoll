@@ -3,17 +3,19 @@ Section: x11
 Priority: optional
 Maintainer: Jean-Francois Dockes <jfd@recoll.org>
 Build-Depends: bison,
-               debhelper (>= 9),
+               debhelper (>= 10),
                dh-python,
                dpkg-dev (>= 1.16.1~),
                libaspell-dev,
                libchm-dev,
+#               qtwebengine5-dev,
                libqt5webkit5-dev,
                libx11-dev,
                libxapian-dev (>= 1.2.0),
                libxslt1-dev,
                libz-dev,
-               python-dev (>= 2.6.6-3~),
+               pkg-config,
+               python2-dev (>= 2.6.6-3~),
                python-setuptools,
                python3-all-dev,
                python3-setuptools,
@@ -53,13 +55,12 @@ Package: recollcmd
 Architecture: any
 Breaks: recoll (<< 1.23.7-2)
 Replaces: recoll (<< 1.23.7-2)
-Depends: python, python3, ${misc:Depends}, ${shlibs:Depends}
+Depends: python3, ${misc:Depends}, ${shlibs:Depends}
 Recommends: antiword,
             aspell,
             groff,
             libimage-exiftool-perl,
             poppler-utils,
-            python-recoll,
             python3-lxml,
             python3-recoll,
             python3-six,
@@ -86,7 +87,7 @@ Description: GUI program and elements for recoll
 Package: python-recoll
 Architecture: any
 Section: python
-Depends: python,
+Depends: python2,
          recollcmd (= ${binary:Version}),
          ${misc:Depends},
          ${python:Depends},

@@ -416,7 +416,7 @@ Chapter 2. Indexing
 
    The generated indexes can be queried concurrently in a transparent manner.
 
-   For index generation, multiple configurations are totally independant from
+   For index generation, multiple configurations are totally independent from
    each other. When multiple indexes need to be used for a single search,
    some parameters should be consistent among the configurations.
 
@@ -457,7 +457,7 @@ Chapter 2. Indexing
    for subdirectories.
 
    You can also define an exclusive list of MIME types to be indexed (no
-   others will be indexed), by settting the indexedmimetypes configuration
+   others will be indexed), by setting the indexedmimetypes configuration
    variable. Example:
 
  indexedmimetypes = text/html application/pdf
@@ -801,7 +801,7 @@ Chapter 2. Indexing
    After such an interruption, the index will be somewhat inconsistent
    because some operations which are normally performed at the end of the
    indexing pass will have been skipped (for example, the stemming and
-   spelling databases will be inexistant or out of date). You just need to
+   spelling databases will be inexistent or out of date). You just need to
    restart indexing at a later time to restore consistency. The indexing will
    restart at the interruption point (the full file tree will be traversed,
    but files that were indexed up to the interruption and for which the index
@@ -977,7 +977,7 @@ Chapter 3. Searching
    In most cases, you can enter the terms as you think them, even if they
    contain embedded punctuation or other non-textual characters. For example,
    Recoll can handle things like email addresses, or arbitrary cut and paste
-   from another text window, punctation and all.
+   from another text window, punctuation and all.
 
    The main case where you should enter text differently from how it is
    printed is for east-asian languages (Chinese, Japanese, Korean). Words
@@ -1015,7 +1015,7 @@ Chapter 3. Searching
    File name will specifically look for file names. The point of having a
    separate file name search is that wild card expansion can be performed
    more efficiently on a small subset of the index (allowing wild cards on
-   the left of terms without excessive penality). Things to know:
+   the left of terms without excessive penalty). Things to know:
 
      o White space in the entry should match white space in the file name,
        and is not treated specially.
@@ -1340,7 +1340,7 @@ Chapter 3. Searching
            search term (the next highlighted zone). If you select a search
            group from the dropdown list and click Next or Previous, the match
            list for this group will be walked. This is not the same as a text
-           search, because the occurences will include non-exact matches (as
+           search, because the occurrences will include non-exact matches (as
            caused by stemming or wildcards). The search will revert to the
            text mode as soon as you edit the entry area.
 
@@ -1433,7 +1433,7 @@ Chapter 3. Searching
    Click on the Show query details link at the top of the result page to see
    the query expansion.
 
-    3.1.8.1. Avanced search: the "find" tab
+    3.1.8.1. Advanced search: the "find" tab
 
    This part of the dialog lets you constructc a query by combining multiple
    clauses of different types. Each entry field is configurable for the
@@ -1473,7 +1473,7 @@ Chapter 3. Searching
    search for quick fox with the default slack will match the latter, and
    also a fox is a cunning and quick animal.
 
-    3.1.8.2. Avanced search: the "filter" tab
+    3.1.8.2. Advanced search: the "filter" tab
 
    This part of the dialog has several sections which allow filtering the
    results of a search according to a number of criteria
@@ -1507,7 +1507,7 @@ Chapter 3. Searching
        dirA/dirB would match either /dir1/dirA/dirB/myfile1 or
        /dir2/dirA/dirB/someother/myfile2.
 
-    3.1.8.3. Avanced search history
+    3.1.8.3. Advanced search history
 
    The advanced search tool memorizes the last 100 searches performed. You
    can walk the saved searches by using the up and down arrow keys while the
@@ -1541,7 +1541,7 @@ Chapter 3. Searching
    Regular expression
 
            This mode will accept a regular expression as input. Example:
-           word[0-9]+. The expression is implicitely anchored at the
+           word[0-9]+. The expression is implicitly anchored at the
            beginning. Ie: press will match pression but not expression. You
            can use .*press to match the latter, but be aware that this will
            cause a full index term list scan, which can be quite long.
@@ -1725,7 +1725,7 @@ Chapter 3. Searching
    IBM. Searching for the word inside a phrase (ie: "the IBM company") will
    only match the dotted abrreviation if you increase the phrase slack (using
    the advanced search panel control, or the o query language modifier).
-   Literal occurences of the word will be matched normally.
+   Literal occurrences of the word will be matched normally.
 
     3.1.13.3. Others
 
@@ -1734,7 +1734,7 @@ Chapter 3. Searching
    with email, for example only searching emails from a specific originator:
    search tips from:helpfulgui
 
-   Ajusting the result table columns. When displaying results in table mode,
+   Adjusting the result table columns. When displaying results in table mode,
    you can use a right click on the table headers to activate a pop-up menu
    which will let you adjust what columns are displayed. You can drag the
    column headers to adjust their order. You can click them to sort by the
@@ -2218,7 +2218,7 @@ Chapter 3. Searching
    occur in a number of circumstances:
 
      o When using multiple indexes it is a relatively common occurrence that
-       some will actually reside on a remote volume, for exemple mounted via
+       some will actually reside on a remote volume, for example mounted via
        NFS. In this case, the paths used to access the documents on the local
        machine are not necessarily the same than the ones used while indexing
        on the remote machine. For example, /home/me may have been used as a
@@ -2230,7 +2230,7 @@ Chapter 3. Searching
        disk, but it may happen that the disk is not mounted at the same place
        so that the documents paths from the index are invalid.
 
-     o As a last exemple, one could imagine that a big directory has been
+     o As a last example, one could imagine that a big directory has been
        moved, but that it is currently inconvenient to run the indexer.
 
    More generally, the path translation facility may be useful whenever the
@@ -2567,7 +2567,7 @@ Chapter 3. Searching
 
    Due to the way that Recoll processes wildcards inside dir path filtering
    clauses, they will have a multiplicative effect on the query size. A
-   clause containg wildcards in several paths elements, like, for example,
+   clause containing wildcards in several paths elements, like, for example,
    dir:/home/me/*/*/docdir, will almost certainly fail if your indexed tree
    is of any realistic size.
 
@@ -2609,7 +2609,7 @@ Chapter 3. Searching
 
 3.8. Desktop integration
 
-   Being independant of the desktop type has its drawbacks: Recoll desktop
+   Being independent of the desktop type has its drawbacks: Recoll desktop
    integration is minimal. However there are a few tools available:
 
      o The KDE KIO Slave was described in a previous section.
@@ -2763,8 +2763,8 @@ Chapter 4. Programming interface
 
    If you can program and want to write an execm handler, it should not be
    too difficult to make sense of one of the existing modules. For example,
-   look at rclzip which uses Zip file paths as identifiers (ipath), and
-   rclics, which uses an integer index. Also have a look at the comments
+   look at rclzip.py which uses Zip file paths as identifiers (ipath), and
+   rclics.py, which uses an integer index. Also have a look at the comments
    inside the internfile/mh_execm.h file and possibly at the corresponding
    module.
 
@@ -2819,7 +2819,7 @@ Chapter 4. Programming interface
 
  text/rtf = exec unrtf --nopict --html; charset=iso-8859-1; mimetype=text/html
 
- application/x-chm = execm rclchm
+ application/x-chm = execm rclchm.py
 
    The fragment specifies that:
 
@@ -2834,7 +2834,7 @@ Chapter 4. Programming interface
        iso-8859-1 encoding is specified because it is not the utf-8 default,
        and not output by unrtf in the HTML header section.
 
-     o application/x-chm is processed by a persistant handler. This is
+     o application/x-chm is processed by a persistent handler. This is
        determined by the execm keyword.
 
   4.1.4. Input handler HTML output
@@ -2962,7 +2962,7 @@ Chapter 4. Programming interface
        using the appropriate directive in the definition of the result list
        paragraph format. All fields are displayed on the fields screen of the
        preview window (which you can reach through the right-click menu).
-       This is independant of the fact that the search which produced the
+       This is independent of the fact that the search which produced the
        results used the field or not.
 
    You can find more information in the section about the fields file, or in
@@ -3337,9 +3337,9 @@ Chapter 5. Installation and configuration
    exist any more.
 
    The package management tools will usually automatically deal with hard
-   dependancies for packages obtained from a proper package repository. You
+   dependencies for packages obtained from a proper package repository. You
    will have to deal with them by hand for downloaded packages (for example,
-   when dpkg complains about missing dependancies).
+   when dpkg complains about missing dependencies).
 
    In all cases, you will have to check or install supporting applications
    for the file types that you want to index beyond those that are natively
@@ -3362,7 +3362,7 @@ Chapter 5. Installation and configuration
 
    A list of common file types which need external commands follows. Many of
    the handlers need the iconv command, which is not always listed as a
-   dependancy.
+   dependency.
 
    Please note that, due to the relatively dynamic nature of this
    information, the most up to date version is now kept on
@@ -3615,7 +3615,7 @@ Chapter 5. Installation and configuration
    RECOLL_CONFTOP and RECOLL_CONFMID environment variables. Values from
    configuration files inside the top directory will override user ones,
    values from configuration files inside the middle directory will override
-   system ones and be overriden by user ones. These two variables may be of
+   system ones and be overridden by user ones. These two variables may be of
    use to applications which augment Recoll functionality, and need to add
    configuration data without disturbing the user's files. Please note that
    the two, currently single, values will probably be interpreted as
@@ -3755,7 +3755,7 @@ Chapter 5. Installation and configuration
 
    skippedNames
 
-           A space-separated list of wilcard patterns for names of files or
+           A space-separated list of wildcard patterns for names of files or
            directories that should be completely ignored. The list defined in
            the default file is:
 
@@ -4344,7 +4344,7 @@ Chapter 5. Installation and configuration
 
    mhmboxquirks
 
-           This allows definining location-related quirks for the mailbox
+           This allows defining location-related quirks for the mailbox
            handler. Currently only the tbird flag is defined, and it should
            be set for directories which hold Thunderbird data, as their
            folder format is weird.
@@ -4539,7 +4539,7 @@ Chapter 5. Installation and configuration
    The file has a section for any index which needs translations, either the
    main one or additional query indexes. The sections are named with the
    Xapian index directory names. No slash character should exist at the end
-   of the paths (all comparisons are textual). An exemple should make things
+   of the paths (all comparisons are textual). An example should make things
    sufficiently clear
 
            [/home/me/.recoll/xapiandb]

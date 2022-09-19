@@ -18,6 +18,9 @@
 #include "autoconfig.h"
 #else
 #include "config.h"
+#ifndef PRETEND_USE
+#define PRETEND_USE(expr) ((void)(expr))
+#endif
 #endif
 
 #include "readfile.h"
@@ -29,11 +32,10 @@
 #include "safefcntl.h"
 #include "safesysstat.h"
 #include "safeunistd.h"
-#include "transcode.h"
 #define OPEN _wopen
 
 #else
-#define O_BINARY 0
+
 #include <fcntl.h>
 #include <sys/stat.h>
 #include <unistd.h>
@@ -68,9 +70,9 @@ public:
     // usage almost by 2 on both linux i586 and macosx (compared to
     // just append()) Also tried a version with mmap, but it's
     // actually slower on the mac and not faster on linux.
-    virtual bool init(int64_t size, string *reason) {
+    virtual bool init(int64_t size, string *) {
         if (size > 0) {
-            m_data.reserve(size);
+            m_data.reserve((size_t)size);
         }
         return true;
     }
@@ -169,6 +171,18 @@ private:
 
 #if defined(READFILE_ENABLE_ZLIB)
 #include <zlib.h>
+#include <vector>
+static const vector<CharFlags> inflateErrors{
+    CHARFLAGENTRY(Z_OK),
+    CHARFLAGENTRY(Z_STREAM_END),
+    CHARFLAGENTRY(Z_NEED_DICT),
+    CHARFLAGENTRY(Z_ERRNO),
+    CHARFLAGENTRY(Z_STREAM_ERROR),
+    CHARFLAGENTRY(Z_DATA_ERROR),
+    CHARFLAGENTRY(Z_MEM_ERROR),
+    CHARFLAGENTRY(Z_BUF_ERROR),
+    CHARFLAGENTRY(Z_VERSION_ERROR),
+};
 
 class GzFilter : public FileScanFilter {
 public:
@@ -229,8 +243,13 @@ public:
         while (m_stream.avail_in != 0) {
             m_stream.next_out = (Bytef*)m_obuf;
             m_stream.avail_out = m_obs;
-            if ((error = inflate(&m_stream, Z_SYNC_FLUSH)) < Z_OK) {
-                LOGERR("inflate error: " << error << endl);
+            error = inflate(&m_stream, Z_SYNC_FLUSH);
+            if (error != Z_OK && 
+                !(error == Z_STREAM_END && m_stream.avail_in == 0)) {
+                // Note that Z_STREAM_END with avail_in!=0 is an error,
+                // we still have data: something is wrong with the file.
+                LOGERR("inflate error: " << valToString(inflateErrors, error)
+                       << " remaining bytes: " << m_stream.avail_in << endl);
                 if (reason) {
                     *reason += " Zlib inflate failed";
                     if (m_stream.msg && *m_stream.msg) {
@@ -247,10 +266,10 @@ public:
         return true;
     }
     
-    static voidpf alloc_func(voidpf opaque, uInt items, uInt size) {
+    static voidpf alloc_func(voidpf, uInt items, uInt size) {
         return malloc(items * size);
     }
-    static void free_func(voidpf opaque, voidpf address) {
+    static void free_func(voidpf, voidpf address) {
         free(address);
     }
 
@@ -268,19 +287,19 @@ public:
     FileScanMd5(string& d) : digest(d) {}
     virtual bool init(int64_t size, string *reason) override {
         LOGDEB1("FileScanMd5: init\n");
-	MD5Init(&ctx);
+        MD5Init(&ctx);
         if (out()) {
             return out()->init(size, reason);
         }
-	return true;
+        return true;
     }
     virtual bool data(const char *buf, int cnt, string *reason) override {
         LOGDEB1("FileScanMd5: data. cnt " << cnt << endl);
-	MD5Update(&ctx, (const unsigned char*)buf, cnt);
+        MD5Update(&ctx, (const unsigned char*)buf, cnt);
         if (out() && !out()->data(buf, cnt, reason)) {
             return false;
         }
-	return true;
+        return true;
     }
     bool finish() {
         LOGDEB1("FileScanMd5: finish\n");
@@ -302,7 +321,7 @@ public:
 
     virtual bool scan() {
         LOGDEB1("FileScanSourceFile: reading " << m_fn << " offs " <<
-               m_startoffs<< " cnt " << m_cnttoread << " out " << out() << endl);
+                m_startoffs<< " cnt " << m_cnttoread << " out " << out() << endl);
         const int RDBUFSZ = 8192;
         bool ret = false;
         bool noclosing = true;
@@ -313,7 +332,12 @@ public:
 
         // If we have a file name, open it, else use stdin.
         if (!m_fn.empty()) {
-            SYSPATH(m_fn, realpath);
+#ifdef _WIN32
+            auto buf = utf8towchar(m_fn);
+            auto realpath = buf.get();
+#else
+            auto realpath = m_fn.c_str();
+#endif
             fd = OPEN(realpath, O_RDONLY | O_BINARY);
             if (fd < 0 || fstat(fd, &st) < 0) {
                 catstrerror(m_reason, "open/stat", errno);
@@ -355,7 +379,7 @@ public:
             }
 
             if (m_cnttoread != -1) {
-                toread = MIN(toread, (uint64_t)(m_cnttoread - totread));
+                toread = (size_t)MIN(toread, (uint64_t)(m_cnttoread - totread));
             }
             ssize_t n = static_cast<ssize_t>(read(fd, buf, toread));
             if (n < 0) {
@@ -420,7 +444,12 @@ public:
         if (m_fn.empty()) {
             ret1 = mz_zip_reader_init_mem(&zip, m_data, m_cnt, 0);
         } else {
-            SYSPATH(m_fn, realpath);
+#ifdef _WIN32
+            auto buf = utf8towchar(m_fn);
+            auto realpath = buf.get();
+#else
+            auto realpath = m_fn.c_str();
+#endif
             ret1 = mz_zip_reader_init_file(&zip, realpath, 0);
         }
         if (!ret1) {
@@ -474,6 +503,7 @@ public:
     static size_t write_cb(void *pOpaque, mz_uint64 file_ofs,
                            const void *pBuf, size_t n) {
         const char *cp = (const char*)pBuf;
+        PRETEND_USE(file_ofs);
         LOGDEB1("write_cb: ofs " << file_ofs << " cnt " << n << " data: " <<
                 string(cp, n) << endl);
         FileScanSourceZip *ths = (FileScanSourceZip *)pOpaque;
@@ -499,12 +529,12 @@ bool file_scan(const std::string& filename, const std::string& membername,
     if (membername.empty()) {
         return file_scan(filename, doer, 0, -1, reason
 #ifdef READFILE_ENABLE_MD5
-, nullptr
+                         , nullptr
 #endif
             );
     } else {
-            FileScanSourceZip source(doer, filename, membername, reason);
-            return source.scan();
+        FileScanSourceZip source(doer, filename, membername, reason);
+        return source.scan();
     }
 }
 
@@ -514,7 +544,7 @@ bool string_scan(const char *data, size_t cnt, const std::string& membername,
     if (membername.empty()) {
         return string_scan(data, cnt, doer, reason
 #ifdef READFILE_ENABLE_MD5
-, nullptr
+                           , nullptr
 #endif
             );                           
     } else {
@@ -542,7 +572,7 @@ bool file_scan(const string& fn, FileScanDo* doer, int64_t startoffs,
     
     FileScanSourceFile source(doer, fn, startoffs, cnttoread, reason);
     FileScanUpstream *up = &source;
-    up = up;
+    PRETEND_USE(up);
     
 #if defined(READFILE_ENABLE_ZLIB)
     GzFilter gzfilter;
@@ -578,7 +608,7 @@ bool file_scan(const string& fn, FileScanDo* doer, string *reason)
 {
     return file_scan(fn, doer, 0, -1, reason
 #ifdef READFILE_ENABLE_MD5
-, nullptr
+                     , nullptr
 #endif
         );                           
 }
@@ -616,7 +646,7 @@ bool string_scan(const char *data, size_t cnt, FileScanDo* doer,
 {
     FileScanSourceBuffer source(doer, data, cnt, reason);
     FileScanUpstream *up = &source;
-    up = up;
+    PRETEND_USE(up);
     
 #ifdef READFILE_ENABLE_MD5
     string digest;

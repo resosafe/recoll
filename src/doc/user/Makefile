@@ -13,6 +13,7 @@
 #XSLDIR="/opt/local/share/xsl/docbook-xsl/"
 #Linux
 XSLDIR="/usr/share/xml/docbook/stylesheet/docbook-xsl/"
+UTILBUILDS=/home/dockes/tmp/builds/medocutils/
 
 
 # Options common to the single-file and chunked versions
@@ -48,11 +49,10 @@ index.html: usermanual.xml recoll.conf.xml
 usermanual.pdf: usermanual.xml recoll.conf.xml
 	dblatex --xslt-opts="--xinclude" -tpdf $<
 
-UTILBUILDS=/home/dockes/tmp/builds/medocutils/
-recoll-conf-xml:
-	$(UTILBUILDS)/confxml --docbook \
+recoll.conf.xml: ../../sampleconf/recoll.conf
+	test -x $(UTILBUILDS)/confxml && $(UTILBUILDS)/confxml --docbook \
         --idprefix=RCL.INSTALL.CONFIG.RECOLLCONF  \
-        ../../sampleconf/recoll.conf  > recoll.conf.xml
+        ../../sampleconf/recoll.conf  > recoll.conf.xml || touch recoll.conf.xml
 
 # Generating a restructured text version, for uploading to readthedocs.
 # Does not really work, the internal links are botched. pandoc
@@ -65,7 +65,7 @@ recoll-conf-xml:
 # script. 
 # Also could not get readthedocs to generate the left pane TOC? could
 # probably be fixed...
-#usermanual-rst: recoll-conf-xml
+#usermanual-rst: recoll.conf.xml
 #	tail -n +2 recoll.conf.xml > rcl-conf-tail.xml
 #	sed -e '/xi:include/r rcl-conf-tail.xml' \
 #		< usermanual.xml > full-man.xml

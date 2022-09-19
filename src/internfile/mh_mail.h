@@ -37,6 +37,8 @@ class MimeHandlerMail : public RecollFilter {
 public:
     MimeHandlerMail(RclConfig *cnf, const std::string &id);
     virtual ~MimeHandlerMail();
+    MimeHandlerMail(const MimeHandlerMail&) = delete;
+    MimeHandlerMail& operator=(const MimeHandlerMail&) = delete;
     virtual bool is_data_input_ok(DataInput input) const override {
         return (input == DOCUMENT_FILE_NAME || input == DOCUMENT_STRING);
     }

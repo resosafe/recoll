@@ -1,4 +1,4 @@
-/* Copyright (C) 2013 J.F.Dockes
+/* Copyright (C) 2013-2022 J.F.Dockes
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation; either version 2 of the License, or
@@ -14,10 +14,7 @@
  *   Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
-#ifndef TEST_CPUCONF
-
 #include "autoconfig.h"
-
 
 #include "cpuconf.h"
 
@@ -39,25 +36,3 @@ bool getCpuConf(CpuConf& cpus)
     
     return true;
 }
-
-#else // TEST_CPUCONF
-
-#include <stdlib.h>
-
-#include <iostream>
-using namespace std;
-
-#include "cpuconf.h"
-
-// Test driver
-int main(int argc, const char **argv)
-{
-    CpuConf cpus;
-    if (!getCpuConf(cpus)) {
-	cerr << "getCpuConf failed" << endl;
-	exit(1);
-    }
-    cout << "Cpus: " << cpus.ncpus << endl;
-    exit(0);
-}
-#endif // TEST_CPUCONF

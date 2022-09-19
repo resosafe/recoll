@@ -283,7 +283,7 @@ bool Db::termMatch(int typ_sens, const string &lang, const string &_term,
                         LOGDEB("Db::TermMatch: syngroups out: " <<
                                term << " -> " << stringsToString(sg) << "\n");
                         for (const auto& synonym : sg) {
-                            if (synonym.find_first_of(" ") != string::npos) {
+                            if (synonym.find(' ') != string::npos) {
                                 if (multiwords) {
                                     multiwords->push_back(synonym);
                                 }
@@ -334,7 +334,7 @@ bool Db::termMatch(int typ_sens, const string &lang, const string &_term,
 }
 
 bool Db::Native::idxTermMatch_p(
-    int typ, const string &lang, const string &root,
+    int typ, const string&, const string& root,
     std::function<bool(const string& term,
                        Xapian::termcount colfreq,
                        Xapian::doccount termfreq)> client,
@@ -467,6 +467,91 @@ bool Db::idxTermMatch(int typ_sens, const string &lang, const string &root,
         }, prefix);
 
     return ret;
+}
+
+// Compute list of directories in index at given depth under the common root (which we also compute)
+// This is used for the GUI directory side filter tree.
+//
+// This is more complicated than it seems because there could be extra_dbs so we can't use topdirs
+// (which we did with an fstreewalk() initially), and also inode/directory might be excluded from
+// the index (for example by an onlymimetypes parameter).
+//
+// We look at all the paths, compute a common prefix, and truncate at the given depth under the
+// prefix and insert into an std::unordered_set for deduplication.
+//
+// unordered_set was the (slightly) fastest of "insert all then sort and truncate", std::set,
+// std::unordered_set. Other approaches may exist, for example, by skipping same prefix in the list
+// (which is sorted). Did not try, as the current approach is reasonably fast.
+//
+// This is admittedly horrible, and might be too slow on very big indexes, or actually fail if the
+// requested depth is such that we reach the max term length and the terms are
+// truncated-hashed. We'd need to look at the doc data for the full URLs, but this would be much
+// slower.
+//
+// Still I have no other idea of how to do this, other than disable the side filter if directories
+// are not indexed?
+//
+// We could use less memory by not computing a full list and walking the index twice instead (we
+// need two passes in any case because of the common root computation).
+//
+
+bool Db::dirlist(int depth, std::string& root, std::vector<std::string>& dirs)
+{
+    // Build a full list of filesystem paths.
+    Xapian::Database xdb = m_ndb->xrdb;
+    auto prefix = wrap_prefix("Q");
+    std::vector<std::string> listall;
+    for (int tries = 0; tries < 2; tries++) { 
+        try {
+            Xapian::TermIterator it = xdb.allterms_begin(); 
+            it.skip_to(prefix.c_str());
+            for (; it != xdb.allterms_end(); it++) {
+                string ixterm{*it};
+                // If we're beyond the Q terms end
+                if (ixterm.find(prefix) != 0)
+                    break;
+                ixterm = strip_prefix(ixterm);
+                // Skip non-paths like Web entries etc.
+                if (!path_isabsolute(ixterm))
+                    continue;
+                // Skip subdocs
+                auto pos = ixterm.find_first_of('|');
+                if (pos < ixterm.size() - 1)
+                    continue;
+                listall.push_back(ixterm);
+            }
+            break;
+        } catch (const Xapian::DatabaseModifiedError &e) {
+            m_reason = e.get_msg();
+            xdb.reopen();
+            continue;
+        } XCATCHERROR(m_reason);
+        break;
+    }
+    if (!m_reason.empty()) {
+        LOGERR("Db::dirlist: exception while accessing index: " << m_reason << "\n");
+        return false;
+    }
+
+    root = commonprefix(listall);
+    std::unordered_set<std::string> unics;
+    for (auto& entry : listall) {
+        string::size_type pos = root.size();
+        for (int i = 0; i < depth; i++) {
+            auto npos = entry.find("/", pos+1);
+            if (npos == std::string::npos) {
+                break;
+            }
+            pos = npos;
+        }
+        entry.erase(pos);
+        unics.insert(entry);
+    }
+
+    dirs.clear();
+    dirs.insert(dirs.begin(), unics.begin(), unics.end());
+    sort(dirs.begin(), dirs.end());
+    return true;
 }
 
 /** Term list walking. */

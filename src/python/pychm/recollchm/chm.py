@@ -364,7 +364,7 @@ class CHMFile:
         '''
         if self.file:
             # path = os.path.abspath(document) # wtf?? the index contents
-                                               # are independant of the os !
+                                               # are independent of the os !
             path = document
             return chmlib.chm_resolve_object(self.file, path)
         else:

@@ -16,7 +16,6 @@
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 # Code to extract XMP tags using libexempi and python-xmp
-from __future__ import print_function
 
 can_xmp = True
 try:

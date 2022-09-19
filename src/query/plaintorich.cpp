@@ -1,4 +1,4 @@
-/* Copyright (C) 2005 J.F.Dockes
+/* Copyright (C) 2005-2021 J.F.Dockes
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation; either version 2 of the License, or
@@ -14,6 +14,7 @@
  *   Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
+#include "autoconfig.h"
 
 #include <limits.h>
 #include <string>
@@ -30,6 +31,8 @@ using std::list;
 using std::pair;
 using std::set;
 using std::unordered_map;
+
+// #define LOGGER_LOCAL_LOGINC 3
 
 #include "rcldb.h"
 #include "rclconfig.h"
@@ -77,18 +80,17 @@ public:
         string dumb = term;
         if (o_index_stripchars) {
             if (!unacmaybefold(term, dumb, "UTF-8", UNACOP_UNACFOLD)) {
-                LOGINFO("PlainToRich::takeword: unac failed for [" << term <<
-                        "]\n");
+                LOGINFO("PlainToRich::takeword: unac failed for [" << term << "]\n");
                 return true;
             }
         }
 
-        LOGDEB2("Input dumbbed term: '" << dumb << "' " <<  pos << " " << bts
-                << " " << bte << "\n");
+        LOGDEB2("Input dumbbed term: '" << dumb << "' " <<  pos << " " << bts << " " << bte << "\n");
 
         // If this word is a search term, remember its byte-offset span. 
         map<string, size_t>::const_iterator it = m_terms.find(dumb);
         if (it != m_terms.end()) {
+            LOGDEB1("search term [" << dumb << "] at bytepos(" << bts << ", " << bte << ")\n");
             m_tboffs.push_back(GroupMatchEntry(bts, bte, it->second));
         }
         
@@ -97,8 +99,8 @@ public:
             // Term group (phrase/near) handling
             m_plists[dumb].push_back(pos);
             m_gpostobytes[pos] = pair<int,int>(bts, bte);
-            LOGDEB2("Recorded bpos for " << pos << ": " << bts << " " <<
-                    bte << "\n");
+            LOGDEB1("Group term [" << dumb << "] at pos " << pos <<
+                    " bytepos(" << bts << ", " << bte << ")\n");
         }
 
         // Check for cancellation request
@@ -135,8 +137,7 @@ private:
 bool TextSplitPTR::matchGroups()
 {
     for (unsigned int i = 0; i < m_hdata.index_term_groups.size(); i++) {
-        if (m_hdata.index_term_groups[i].kind !=
-            HighlightData::TermGroup::TGK_TERM) {
+        if (m_hdata.index_term_groups[i].kind != HighlightData::TermGroup::TGK_TERM) {
             matchGroup(m_hdata, i, m_plists, m_gpostobytes, m_tboffs);
         }
     }
@@ -153,6 +154,7 @@ bool TextSplitPTR::matchGroups()
     return true;
 }
 
+#ifndef NO_STD_REGEX
 // Replace HTTP(s) urls in text/plain with proper HTML anchors so that
 // they become clickable in the preview. We don't make a lot of effort
 // for validating, or catching things which are probably urls but miss
@@ -164,31 +166,32 @@ static string activate_urls(const string& in)
 {
     return std::regex_replace(in, url_re, urlRep);
 }
+#else
+static string activate_urls(const string& in)
+{
+    return in;
+}
+#endif
 
-// Fix result text for display inside the gui text window.
+// Enrich result text for display inside the gui text window.
 //
-// We call overridden functions to output header data, beginnings and ends of
-// matches etc.
+// We call overridden functions to output header data, beginnings and ends of matches etc.
 //
-// If the input is text, we output the result in chunks, arranging not
-// to cut in the middle of a tag, which would confuse qtextedit. If
-// the input is html, the body is always a single output chunk.
-bool PlainToRich::plaintorich(const string& in, 
-                              list<string>& out, // Output chunk list
-                              const HighlightData& hdata,
-                              int chunksize)
+// If the input is text, we output the result in chunks, arranging not to cut in the middle of a
+// tag, which would confuse qtextedit. If the input is html, the body is always a single output
+// chunk.
+bool PlainToRich::plaintorich(
+    const string& in, list<string>& out, const HighlightData& hdata, int chunksize)
 {
     Chrono chron;
     bool ret = true;
-    LOGDEB1("plaintorichich: in: [" << in << "]\n");
+    LOGDEB1("plaintorich: hdata: [" << hdata.toString() << "] in: [" << in << "]\n");
 
     m_hdata = &hdata;
-    // Compute the positions for the query terms.  We use the text
-    // splitter to break the text into words, and compare the words to
-    // the search terms,
+    // Compute the positions for the query terms.  We use the text splitter to break the text into
+    // words, and compare the words to the search terms,
     TextSplitPTR splitter(hdata);
-    // Note: the splitter returns the term locations in byte, not
-    // character, offsets.
+    // Note: the splitter returns the term locations in byte, not character, offsets.
     splitter.text_to_words(in);
     LOGDEB2("plaintorich: split done " << chron.millis() << " mS\n");
     // Compute the positions for NEAR and PHRASE groups.
@@ -197,7 +200,7 @@ bool PlainToRich::plaintorich(const string& in,
 
     out.clear();
     out.push_back("");
-    list<string>::iterator olit = out.begin();
+    auto olit = out.begin();
 
     // Rich text output
     *olit = header();
@@ -217,9 +220,10 @@ bool PlainToRich::plaintorich(const string& in,
     vector<GroupMatchEntry>::iterator tPosEnd = splitter.m_tboffs.end();
 
 #if 0
-    for (vector<pair<int, int> >::const_iterator it = splitter.m_tboffs.begin();
-         it != splitter.m_tboffs.end(); it++) {
-        LOGDEB2("plaintorich: region: " << it->first << " "<<it->second<< "\n");
+    for (const auto& region : splitter.m_tboffs) {
+        auto st = region.offs.first;
+        auto nd = region.offs.second;
+        LOGDEB0("plaintorich: region: " << st << " " << nd << "\n");
     }
 #endif
 
@@ -268,8 +272,7 @@ bool PlainToRich::plaintorich(const string& in,
                 }
                 // Skip all highlight areas that would overlap this one
                 int crend = tPosIt->offs.second;
-                while (tPosIt != splitter.m_tboffs.end() && 
-                       tPosIt->offs.first < crend)
+                while (tPosIt != splitter.m_tboffs.end() && tPosIt->offs.first < crend)
                     tPosIt++;
                 inrcltag = 0;
             }

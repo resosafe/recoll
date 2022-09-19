@@ -33,7 +33,6 @@
 #include "pathut.h"
 #include "idxstatus.h"
 #include "execmd.h"
-#include "safesysstat.h"
 
 #ifdef RCL_USE_ASPELL
 #include "rclaspell.h"
@@ -42,10 +41,6 @@
 using std::list;
 using std::string;
 using std::vector;
-
-// Global stop request flag. This is checked in a number of place in the
-// indexing routines.
-int stopindexing;
 
 // This would more logically live in recollindex.cpp, but then librecoll would
 // have an undefined symbol
@@ -64,63 +59,46 @@ bool runWebFilesMoverScript(RclConfig *config)
     static string downloadsdir;
     if (downloadsdir.empty()) {
         if (!config->getConfParam("webdownloadsdir", downloadsdir)) {
-            downloadsdir = path_tildexpand("~/Downloads");
+            downloadsdir = "~/Downloads";
         }
+        downloadsdir = path_tildexpand(downloadsdir);
     }
-    static string cmdpath;
-    vector<string> args;
-#ifdef _WIN32
-    const static string cmdnm{"python"};
-    args.push_back(config->findFilter("recoll-we-move-files.py"));
-#else
-    const static string cmdnm{"recoll-we-move-files.py"};
-#endif
-    if (cmdpath.empty()) {
-        cmdpath = config->findFilter(cmdnm);
-        if (cmdpath.empty()) {
-            LOGERR("runWFMoverScript: recoll-we-move-files.py not found\n");
-            return false;
-        }
-    }
-
     /* Arrange to not actually run the script if the directory did not change */
     static time_t dirmtime;
     time_t ndirmtime = 0;
-    struct stat st;
+    struct PathStat st;
     if (path_fileprops(downloadsdir.c_str(), &st) == 0) {
-        ndirmtime = st.st_mtime;
+        ndirmtime = st.pst_mtime;
     }
-    /* If stat fails, presumably Downloads does not exist or is not
-       accessible, dirmtime and mdirmtime stay at 0, and we never
-       execute the script, which is the right thing. */
+    // If stat fails, presumably Downloads does not exist or is not accessible, dirmtime and
+    // mdirmtime stay at 0, and we never execute the script, which is the right thing.
     if (dirmtime != ndirmtime) {
-        /* The script is going to change the directory, so updating
-           dirmtime before it runs means that we are going to execute
-           it one time too many (it will run without doing anything),
-           but we can't set the mtime to after the run in case files
-           are created during the run. */
+        // The script is going to change the directory, so updating dirmtime before it runs means
+        // that we are going to execute it one time too many (it will run without doing anything),
+        // but we can't set the mtime to after the run in case files are created during the run.
         dirmtime = ndirmtime;
+        vector<string> cmdvec;
+        config->pythonCmd("recoll-we-move-files.py", cmdvec);
         ExecCmd cmd;
-        int status = cmd.doexec(cmdpath, args);
+        cmd.putenv("RECOLL_CONFDIR", config->getConfDir());
+        int status = cmd.doexec1(cmdvec);
         return status == 0;
     }
     return true;
 }
 #endif
 
-ConfIndexer::ConfIndexer(RclConfig *cnf, DbIxStatusUpdater *updfunc)
-    : m_config(cnf), m_db(cnf), m_fsindexer(0), 
-      m_doweb(false), m_webindexer(0),
-      m_updater(updfunc)
+ConfIndexer::ConfIndexer(RclConfig *cnf)
+    : m_config(cnf), m_db(cnf)
 {
     m_config->getConfParam("processwebqueue", &m_doweb);
 }
 
 ConfIndexer::~ConfIndexer()
 {
-     deleteZ(m_fsindexer);
+    deleteZ(m_fsindexer);
 #ifndef DISABLE_WEB_INDEXER
-     deleteZ(m_webindexer);
+    deleteZ(m_webindexer);
 #endif
 }
 
@@ -133,14 +111,14 @@ bool ConfIndexer::runFirstIndexing()
 {
     // Indexing status file existing and not empty ?
     if (path_filesize(m_config->getIdxStatusFile()) > 0) {
-	LOGDEB0("ConfIndexer::runFirstIndexing: no: status file not empty\n");
-	return false;
+        LOGDEB0("ConfIndexer::runFirstIndexing: no: status file not empty\n");
+        return false;
     }
     // And only do this if the user has kept the default topdirs (~). 
     vector<string> tdl = m_config->getTopdirs();
     if (tdl.size() != 1 || tdl[0].compare(path_canon(path_tildexpand("~")))) {
-	LOGDEB0("ConfIndexer::runFirstIndexing: no: not home only\n");
-	return false;
+        LOGDEB0("ConfIndexer::runFirstIndexing: no: not home only\n");
+        return false;
     }
     return true;
 }
@@ -149,9 +127,9 @@ bool ConfIndexer::firstFsIndexingSequence()
 {
     LOGDEB("ConfIndexer::firstFsIndexingSequence\n");
     deleteZ(m_fsindexer);
-    m_fsindexer = new FsIndexer(m_config, &m_db, m_updater);
+    m_fsindexer = new FsIndexer(m_config, &m_db);
     if (!m_fsindexer) {
-	return false;
+        return false;
     }
     int flushmb = m_db.getFlushMb();
     m_db.setFlushMb(2);
@@ -165,26 +143,33 @@ bool ConfIndexer::index(bool resetbefore, ixType typestorun, int flags)
 {
     Rcl::Db::OpenMode mode = resetbefore ? Rcl::Db::DbTrunc : Rcl::Db::DbUpd;
     if (!m_db.open(mode)) {
-	LOGERR("ConfIndexer: error opening database " << m_config->getDbDir() <<
+        LOGERR("ConfIndexer: error opening database " << m_config->getDbDir() <<
                " : " << m_db.getReason() << "\n");
         addIdxReason("indexer", m_db.getReason());
-	return false;
+        return false;
     }
-
+    std::string logloc;
+    if (Logger::getTheLog()->logisstderr()) {
+        logloc = "program error output.";
+    } else {
+        logloc = std::string(" log in ") +
+            Logger::getTheLog()->getlogfilename() + ".";
+    }
+    
     m_config->setKeyDir(cstr_null);
     if (typestorun & IxTFs) {
-	if (runFirstIndexing()) {
-	    firstFsIndexingSequence();
-	}
+        if (runFirstIndexing()) {
+            firstFsIndexingSequence();
+        }
         deleteZ(m_fsindexer);
-        m_fsindexer = new FsIndexer(m_config, &m_db, m_updater);
+        m_fsindexer = new FsIndexer(m_config, &m_db);
         if (!m_fsindexer || !m_fsindexer->index(flags)) {
             if (stopindexing) {
                 addIdxReason("indexer", "Indexing was interrupted.");
             } else {
-                addIdxReason("indexer", "Index creation failed. See log.");
+                addIdxReason("indexer", "Index creation failed. See" + logloc);
             }
-	    m_db.close();
+            m_db.close();
             return false;
         }
     }
@@ -192,10 +177,10 @@ bool ConfIndexer::index(bool resetbefore, ixType typestorun, int flags)
     if (m_doweb && (typestorun & IxTWebQueue)) {
         runWebFilesMoverScript(m_config);
         deleteZ(m_webindexer);
-        m_webindexer = new WebQueueIndexer(m_config, &m_db, m_updater);
+        m_webindexer = new WebQueueIndexer(m_config, &m_db);
         if (!m_webindexer || !m_webindexer->index()) {
-	    m_db.close();
-            addIdxReason("indexer", "Web index creation failed. See log");
+            m_db.close();
+            addIdxReason("indexer", "Web index creation failed. See" + logloc);
             return false;
         }
     }
@@ -203,42 +188,40 @@ bool ConfIndexer::index(bool resetbefore, ixType typestorun, int flags)
     if (typestorun == IxTAll) {
         // Get rid of all database entries that don't exist in the
         // filesystem anymore. Only if all *configured* indexers ran.
-        if (m_updater && !m_updater->update(DbIxStatus::DBIXS_PURGE, "")) {
-	    m_db.close();
-            addIdxReason("indexer", "Index purge failed. See log");
-	    return false;
-	}
+        if (!statusUpdater()->update(DbIxStatus::DBIXS_PURGE, string())) {
+            m_db.close();
+            addIdxReason("indexer", "Index purge failed. See" + logloc);
+            return false;
+        }
         m_db.purge();
     }
 
     // The close would be done in our destructor, but we want status
     // here. Makes no sense to check for cancel, we'll have to close
     // anyway
-    if (m_updater)
-	m_updater->update(DbIxStatus::DBIXS_CLOSING, string());
+    statusUpdater()->update(DbIxStatus::DBIXS_CLOSING, string());
     if (!m_db.close()) {
-	LOGERR("ConfIndexer::index: error closing database in " <<
+        LOGERR("ConfIndexer::index: error closing database in " <<
                m_config->getDbDir() << "\n");
-        addIdxReason("indexer", "Index close/flush failed. See log");
-	return false;
+        addIdxReason("indexer", "Index close/flush failed. See" +logloc);
+        return false;
     }
 
-    if (m_updater && !m_updater->update(DbIxStatus::DBIXS_CLOSING, string()))
-	return false;
+    if (!statusUpdater()->update(DbIxStatus::DBIXS_CLOSING, string()))
+        return false;
     bool ret = true;
     if (!createStemmingDatabases()) {
-	ret = false;
+        ret = false;
     }
-    if (m_updater && !m_updater->update(DbIxStatus::DBIXS_CLOSING, string()))
-	return false;
+    if (!statusUpdater()->update(DbIxStatus::DBIXS_CLOSING, string()))
+        return false;
 
     // Don't fail indexing because of an aspell issue: we ignore the status.
     // Messages were written to the reasons output
     (void)createAspellDict();
     
     clearMimeHandlerCache();
-    if (m_updater)
-	m_updater->update(DbIxStatus::DBIXS_DONE, string());
+    statusUpdater()->update(DbIxStatus::DBIXS_DONE, string());
     return ret;
 }
 
@@ -247,19 +230,19 @@ bool ConfIndexer::indexFiles(list<string>& ifiles, int flag)
     list<string> myfiles;
     string origcwd = m_config->getOrigCwd();
     for (const auto& entry : ifiles) {
-	myfiles.push_back(path_canon(entry, &origcwd));
+        myfiles.push_back(path_canon(entry, &origcwd));
     }
     myfiles.sort();
 
     if (!m_db.open(Rcl::Db::DbUpd)) {
-	LOGERR("ConfIndexer: indexFiles error opening database " <<
+        LOGERR("ConfIndexer: indexFiles error opening database " <<
                m_config->getDbDir() << "\n");
-	return false;
+        return false;
     }
     m_config->setKeyDir(cstr_null);
     bool ret = false;
     if (!m_fsindexer)
-        m_fsindexer = new FsIndexer(m_config, &m_db, m_updater);
+        m_fsindexer = new FsIndexer(m_config, &m_db);
     if (m_fsindexer)
         ret = m_fsindexer->indexFiles(myfiles, flag);
     LOGDEB2("ConfIndexer::indexFiles: fsindexer returned " << ret << ", " <<
@@ -268,7 +251,7 @@ bool ConfIndexer::indexFiles(list<string>& ifiles, int flag)
 
     if (m_doweb && !myfiles.empty() && !(flag & IxFNoWeb)) {
         if (!m_webindexer)
-            m_webindexer = new WebQueueIndexer(m_config, &m_db, m_updater);
+            m_webindexer = new WebQueueIndexer(m_config, &m_db);
         if (m_webindexer) {
             ret = ret && m_webindexer->indexFiles(myfiles);
         } else {
@@ -281,9 +264,9 @@ bool ConfIndexer::indexFiles(list<string>& ifiles, int flag)
     }
     // The close would be done in our destructor, but we want status here
     if (!m_db.close()) {
-	LOGERR("ConfIndexer::index: error closing database in " <<
+        LOGERR("ConfIndexer::index: error closing database in " <<
                m_config->getDbDir() << "\n");
-	return false;
+        return false;
     }
     ifiles = myfiles;
     clearMimeHandlerCache();
@@ -298,7 +281,7 @@ bool ConfIndexer::updateDocs(vector<Rcl::Doc> &docs, IxFlag flag)
     docsToPaths(docs, paths);
     list<string> files(paths.begin(), paths.end());
     if (!files.empty()) {
-	return indexFiles(files, flag);
+        return indexFiles(files, flag);
     }
     return true;
 }
@@ -308,26 +291,26 @@ bool ConfIndexer::purgeFiles(list<string> &files, int flag)
     list<string> myfiles;
     string origcwd = m_config->getOrigCwd();
     for (const auto& entry : files) {
-	myfiles.push_back(path_canon(entry, &origcwd));
+        myfiles.push_back(path_canon(entry, &origcwd));
     }
     myfiles.sort();
 
     if (!m_db.open(Rcl::Db::DbUpd)) {
-	LOGERR("ConfIndexer: purgeFiles error opening database " <<
+        LOGERR("ConfIndexer: purgeFiles error opening database " <<
                m_config->getDbDir() << "\n");
-	return false;
+        return false;
     }
     bool ret = false;
     m_config->setKeyDir(cstr_null);
     if (!m_fsindexer)
-        m_fsindexer = new FsIndexer(m_config, &m_db, m_updater);
+        m_fsindexer = new FsIndexer(m_config, &m_db);
     if (m_fsindexer)
         ret = m_fsindexer->purgeFiles(myfiles);
 
 #ifndef DISABLE_WEB_INDEXER
     if (m_doweb && !myfiles.empty() && !(flag & IxFNoWeb)) {
         if (!m_webindexer)
-            m_webindexer = new WebQueueIndexer(m_config, &m_db, m_updater);
+            m_webindexer = new WebQueueIndexer(m_config, &m_db);
         if (m_webindexer) {
             ret = ret && m_webindexer->purgeFiles(myfiles);
         } else {
@@ -338,9 +321,9 @@ bool ConfIndexer::purgeFiles(list<string> &files, int flag)
 
     // The close would be done in our destructor, but we want status here
     if (!m_db.close()) {
-	LOGERR("ConfIndexer::purgefiles: error closing database in " <<
+        LOGERR("ConfIndexer::purgefiles: error closing database in " <<
                m_config->getDbDir() << "\n");
-	return false;
+        return false;
     }
     return ret;
 }
@@ -357,18 +340,18 @@ bool ConfIndexer::createStemmingDatabases()
             addIdxReason("stemming", "could not open db");
             return false;
         }
-	vector<string> langs;
-	stringToStrings(slangs, langs);
+        vector<string> langs;
+        stringToStrings(slangs, langs);
 
-	// Get the list of existing stem dbs from the database (some may have 
-	// been manually created, we just keep those from the config
-	vector<string> dblangs = m_db.getStemLangs();
-	vector<string>::const_iterator it;
-	for (it = dblangs.begin(); it != dblangs.end(); it++) {
-	    if (find(langs.begin(), langs.end(), *it) == langs.end())
-		m_db.deleteStemDb(*it);
-	}
-	ret = ret && m_db.createStemDbs(langs);
+        // Get the list of existing stem dbs from the database (some may have 
+        // been manually created, we just keep those from the config
+        vector<string> dblangs = m_db.getStemLangs();
+        vector<string>::const_iterator it;
+        for (it = dblangs.begin(); it != dblangs.end(); it++) {
+            if (find(langs.begin(), langs.end(), *it) == langs.end())
+                m_db.deleteStemDb(*it);
+        }
+        ret = ret && m_db.createStemDbs(langs);
         if (!ret) {
             addIdxReason("stemming", "stem db creation failed");
         }
@@ -380,7 +363,7 @@ bool ConfIndexer::createStemmingDatabases()
 bool ConfIndexer::createStemDb(const string &lang)
 {
     if (!m_db.open(Rcl::Db::DbUpd))
-	return false;
+        return false;
     vector<string> langs;
     stringToStrings(lang, langs);
     return m_db.createStemDbs(langs);
@@ -398,32 +381,32 @@ bool ConfIndexer::createAspellDict()
     // it forever.
     static int noaspell = -12345;
     if (noaspell == -12345) {
-	noaspell = false;
-	m_config->getConfParam("noaspell", &noaspell);
+        noaspell = false;
+        m_config->getConfParam("noaspell", &noaspell);
     }
     if (noaspell)
-	return true;
+        return true;
 
     if (!m_db.open(Rcl::Db::DbRO)) {
         LOGERR("ConfIndexer::createAspellDict: could not open db\n");
-	return false;
+        return false;
     }
 
     Aspell aspell(m_config);
     string reason;
     if (!aspell.init(reason)) {
-	LOGERR("ConfIndexer::createAspellDict: aspell init failed: " <<
+        LOGERR("ConfIndexer::createAspellDict: aspell init failed: " <<
                reason << "\n");
-	noaspell = true;
-	return false;
+        noaspell = true;
+        return false;
     }
     LOGDEB("ConfIndexer::createAspellDict: creating dictionary\n");
     if (!aspell.buildDict(m_db, reason)) {
-	LOGERR("ConfIndexer::createAspellDict: aspell buildDict failed: " <<
+        LOGERR("ConfIndexer::createAspellDict: aspell buildDict failed: " <<
                reason << "\n");
         addIdxReason("aspell", reason);
-	noaspell = true;
-	return false;
+        noaspell = true;
+        return false;
     }
 #endif
     return true;
@@ -433,4 +416,3 @@ vector<string> ConfIndexer::getStemmerNames()
 {
     return Rcl::Db::getStemmerNames();
 }
-

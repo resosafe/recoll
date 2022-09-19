@@ -1,4 +1,4 @@
-/* Copyright (C) 2006 J.F.Dockes
+/* Copyright (C) 2006-2020 J.F.Dockes
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation; either version 2 of the License, or
@@ -22,6 +22,7 @@
 #include <vector>
 
 #include "smallut.h"
+#include "rclutil.h"
 
 namespace Rcl {
 
@@ -191,23 +192,12 @@ public:
 
     // Create entry or append text to existing entry.
     bool addmeta(const std::string& nm, const std::string& value) {
-        auto mit = meta.find(nm);
-        if (mit == meta.end()) {
-            meta[nm] = value;
-        } else if (mit->second.empty()) {
-            mit->second = value;
-        } else {
-            // It may happen that the same attr exists several times
-            // in the internfile stack. Avoid duplicating values.
-            if (mit->second != value)
-                mit->second += std::string(" - ") + value;
-        }
+        ::addmeta(meta, nm, value);
         return true;
     }
 
-    /* Is this document stored as a regular filesystem file ?
-     * (as opposed to e.g. a webcache file), not a subdoc, 
-     */
+    /* Is this document stored in a regular filesystem file ?
+     * (as opposed to e.g. a webcache file). */
     bool isFsFile() {
         std::string backend;
         getmeta(keybcknd, &backend);
@@ -243,7 +233,7 @@ public:
     // given top level container. It is not indexed by default but
     // stored in the document record keyfn field if this is still
     // empty when we create it, for display purposes.
-    static const std::string keytcfn;
+    static const std::string keyctfn;
     static const std::string keyipt; // ipath
     static const std::string keytp;  // mime type
     static const std::string keyfmt; // file mtime

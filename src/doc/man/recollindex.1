@@ -8,25 +8,25 @@ recollindex \- indexing command for the Recoll full text search system
 .B recollindex
 [
 .B \-c
-<configdir>
-]
+<cfdir>]
 [
 .B \-z|\-Z
 ]
 [
 .B \-k
 ]
+[
+.B \--diagsfile
+<diagpath> ]
 .br
 .B recollindex
 [
 .B \-c
-<cd>
-]
+<cfd>]
 .B \-m
 [
 .B \-w
-<secs>
-]
+<secs>]
 [
 .B \-D
 ]
@@ -43,8 +43,7 @@ recollindex \- indexing command for the Recoll full text search system
 .B recollindex
 [
 .B \-c
-<cd>
-]
+<cfdir>]
 .B \-i
 [
 .B \-Z \-k \-f \-P
@@ -54,8 +53,7 @@ recollindex \- indexing command for the Recoll full text search system
 .B recollindex 
 [
 .B \-c
-<cd>
-]
+<cfdir>]
 .B \-r
 [
 .B \-Z \-K \-e \-f
@@ -69,39 +67,41 @@ pattern
 .B recollindex 
 [
 .B \-c
-<configdir>
-]
+<cfdir>]
 .B \-e 
 [<path [path ...]>]
 .br
 .B recollindex
 [
 .B \-c
-<configdir>
-]
-.B \-l
+<cfdir>]
+.B \-l|-S|-E
 .br
 .B recollindex
 [
 .B \-c
-<configdir>
-]
+<cfdir>]
 .B \-s 
 <lang>
 .br
 .B recollindex
 [
 .B \-c
-<configdir>
-]
-.B \-S
+<cfdir>]
+.B \--webcache-compact
 .br
 .B recollindex
 [
 .B \-c
-<configdir>
-]
-.B \-E
+<cfdir>]
+.B \--webcache-burst
+<destdir>
+.B recollindex
+[
+.B \-c
+<cfdir>]
+.B \--notindexed
+[path [path ...]]
 
 .SH DESCRIPTION
 The
@@ -115,7 +115,7 @@ properly flush and close the index. This can also be done from the recoll
 GUI (menu entry: File/Stop_Indexing). After such an interruption, the index
 will be somewhat inconsistent because some operations which are normally
 performed at the end of the indexing pass will have been skipped (for
-example, the stemming and spelling databases will be inexistant or out of
+example, the stemming and spelling databases will be inexistent or out of
 date). You just need to restart indexing at a later time to restore
 consistency. The indexing will restart at the interruption point (the full
 file tree will be traversed, but files that were indexed up to the
@@ -151,7 +151,44 @@ will try again to process all failed files. Please note that
 .B recollindex
 may also decide to retry failed files if the auxiliary checking script
 defined by the "checkneedretryindexscript" configuration variable indicates
-that this should happen. 
+that this should happen.
+.PP
+If option
+.B \--diagsfile
+is given, the path given as parameter will be truncated and indexing
+diagnostics will be written to it. Each line in the file will have a
+diagnostic type (reason for the file not to be indexed), the file path, and
+a possible additional piece of information, which can be the MIME type or
+the archive internal path depending on the issue. The following diagnostic
+types are currently defined:
+.IP
+.B Skipped
+: the path matches an element of
+.B skippedPaths or
+.B skippedNames.
+.IP
+.B NoContentSuffix
+: the file name suffix is found in the
+.B noContentSuffixes
+list.
+.IP
+.B MissingHelper
+: a helper program is missing.
+.IP
+.B Error
+: general error (see the log).
+.IP
+.B NoHandler: no handler is defined for the MIME type.
+.IP
+.B ExcludedMime
+: the MIME type is part of the
+.B excludedmimetypes
+list.
+.IP
+.B NotIncludedMime
+: the
+.B onlymimetypes
+list is not empty and the the MIME type is not in it.
 .PP
 If option 
 .B
@@ -297,6 +334,21 @@ package, which must be installed on the system.
 .B recollindex \-E
 will check the configuration file for topdirs and other relevant paths
 existence (to help catch typos).
+.PP
+.B recollindex \--webcache-compact
+will recover the space wasted by erased page instances inside the Web
+cache. It may temporarily need to use twice the disk space used by the Web
+cache.
+.PP
+.B recollindex \--webcache-burst <destdir>
+will extract all entries from the Web cache to files created inside
+<destdir>. Each cache entry is extracted as two files, for the data and metadata.
+.PP
+.B recollindex \--notindexed [path [path ...]]
+will check each path and print out those which are absent from the index
+(with an "ABSENT" prefix), or caused an indexing error (with an "ERROR"
+prefix). If no paths are given on the command line, the command will read
+them, one per line, from stdin.
 
 .SH SEE ALSO
 .PP 

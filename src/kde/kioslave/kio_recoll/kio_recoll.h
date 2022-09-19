@@ -40,15 +40,15 @@ public:
         m_parent = proto;
     }
 
-    virtual bool append(const std::string& data);
-    virtual bool append(const std::string& data, int, const Rcl::Doc&) {
+    virtual bool append(const std::string& data) override;
+    virtual bool append(const std::string& data, int, const Rcl::Doc&) override {
         return append(data);
     }
-    virtual std::string detailsLink();
-    virtual const std::string& parFormat();
-    virtual std::string nextUrl();
-    virtual std::string prevUrl();
-    virtual std::string pageTop();
+    virtual std::string detailsLink() override;
+    virtual const std::string& parFormat() override;
+    virtual std::string nextUrl() override;
+    virtual std::string prevUrl() override;
+    virtual std::string pageTop() override;
 
 private:
     RecollProtocol *m_parent;
@@ -151,12 +151,12 @@ class RecollProtocol : public KIO::SlaveBase {
 public:
     RecollProtocol(const QByteArray& pool, const QByteArray& app);
     virtual ~RecollProtocol();
-    virtual void mimetype(const QUrl& url);
-    virtual void get(const QUrl& url);
+    virtual void mimetype(const QUrl& url) override;
+    virtual void get(const QUrl& url) override;
     // The directory mode is not available with KDE 4.0, I could find
     // no way to avoid crashing kdirmodel
-    virtual void stat(const QUrl& url);
-    virtual void listDir(const QUrl& url);
+    virtual void stat(const QUrl& url) override;
+    virtual void listDir(const QUrl& url) override;
 
     static RclConfig  *o_rclconfig;
 

@@ -1,4 +1,4 @@
-/* Copyright (C) 2005 J.F.Dockes
+/* Copyright (C) 2005-2022 J.F.Dockes
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation; either version 2 of the License, or
@@ -18,19 +18,19 @@
 
 #include <cstdlib>
 #include <list>
+#include <iostream>
 
 #include <qapplication.h>
 #include <qtranslator.h>
-#include <qtextcodec.h> 
 #include <qtimer.h>
 #include <qthread.h>
 #include <qmessagebox.h>
 #include <qcheckbox.h>
-#include <qcombobox.h>
 #include <QLocale>
 #include <QLibraryInfo>
 #include <QFileDialog>
 #include <QUrl>
+#include <memory>
 
 #include "rcldb.h"
 #include "rclconfig.h"
@@ -96,22 +96,25 @@ void startManual(const string& helpindex)
 
 bool maybeOpenDb(string &reason, bool force, bool *maindberror)
 {
-    LOGDEB2("maybeOpenDb: force " << force << "\n");
+    LOGDEB1("maybeOpenDb: force " << force << "\n");
 
-    if (force) {
-        rcldb = std::shared_ptr<Rcl::Db>(new Rcl::Db(theconfig));
+    if (force || nullptr == rcldb) {
+        rcldb = std::make_shared<Rcl::Db>(theconfig);
     }
     rcldb->rmQueryDb("");
-    for (const auto& dbdir : prefs.activeExtraDbs) {
-        LOGDEB("main: adding [" << dbdir << "]\n");
-        rcldb->addQueryDb(dbdir);
+    auto edbs = &prefs.activeExtraDbs;
+    if (prefs.useTmpActiveExtraDbs) {
+        edbs = &prefs.tmpActiveExtraDbs;
     }
+    if (!edbs->empty()) {
+        rcldb->setExtraQueryDbs(*edbs);
+    }
+    
     Rcl::Db::OpenError error;
     if (!rcldb->isopen() && !rcldb->open(Rcl::Db::DbRO, &error)) {
         reason = "Could not open database";
         if (maindberror) {
-            reason +=  " in " +  theconfig->getDbDir() + 
-                " wait for indexing to complete?";          
+            reason +=  " in " +  theconfig->getDbDir() + " : " + rcldb->getReason();
             *maindberror = (error == Rcl::Db::DbOpenMainDb) ? true : false;
         }
         return false;
@@ -128,7 +131,7 @@ bool getStemLangs(vector<string>& vlangs)
 {
     // Try from db
     string reason;
-    if (maybeOpenDb(reason)) {
+    if (maybeOpenDb(reason, false)) {
         vlangs = rcldb->getStemLangs();
         LOGDEB0("getStemLangs: from index: " << stringsToString(vlangs) <<"\n");
         return true;
@@ -155,17 +158,19 @@ static void recollCleanup()
     LOGDEB2("recollCleanup: done\n" );
 }
 
-void applyStyleSheet(const QString& ssfname)
+void applyStyleSheet(const QString& qssfn)
 {
-    const char *cfname = (const char *)ssfname.toLocal8Bit();
-    LOGDEB0("Applying style sheet: ["  << (cfname) << "]\n" );
-    if (cfname && *cfname) {
-        string stylesheet;
-        file_to_string(cfname, stylesheet);
-        qApp->setStyleSheet(QString::fromUtf8(stylesheet.c_str()));
-    } else {
-        qApp->setStyleSheet(QString());
+    auto comfn = path_cat(path_cat(theconfig->getDatadir(), "examples"), "recoll-common.qss");
+    std::string qss;
+    file_to_string(comfn, qss);
+    if (!qssfn.isEmpty()) {
+        LOGDEB0("Using custom style sheet: [" << qs2path(qssfn) << "]\n");
+        string customqss;
+        file_to_string(qs2path(qssfn), customqss);
+        qss += customqss;
     }
+    qss = prefs.scaleFonts(qss, prefs.wholeuiscale);
+    qApp->setStyleSheet(u8s2qs(qss));
 }
 
 extern void qInitImages_recoll();
@@ -337,7 +342,12 @@ int main(int argc, char **argv)
     }
     QTranslator qt_trans(0);
     qt_trans.load(QString("qt_%1").arg(slang), 
-                  QLibraryInfo::location(QLibraryInfo::TranslationsPath));
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 0, 0))
+                  QLibraryInfo::path
+#else
+                  QLibraryInfo::location
+#endif
+                      (QLibraryInfo::TranslationsPath));
     app.installTranslator(&qt_trans);
 
     // Translations for Recoll
@@ -354,7 +364,7 @@ int main(int argc, char **argv)
         QString msg = app.translate
             ("Main",
              "\"history\" file is damaged, please check "
-             "or remove it: ") + QString::fromLocal8Bit(historyfile.c_str());
+             "or remove it: ") + path2qs(historyfile);
         QMessageBox::critical(0, "Recoll",  msg);
         exit(1);
     }
@@ -364,9 +374,8 @@ int main(int argc, char **argv)
     rwSettings(false);
     //    fprintf(stderr, "Settings done\n");
 
-    if (!prefs.qssFile.isEmpty()) {
-        applyStyleSheet(prefs.qssFile);
-    }
+    applyStyleSheet(prefs.qssFile);
+    
     QIcon icon;
     icon.addFile(QString::fromUtf8(":/images/recoll.png"));
     app.setWindowIcon(icon);
@@ -374,11 +383,6 @@ int main(int argc, char **argv)
     // Create main window and set its size to previous session's
     RclMain w;
     mainWindow = &w;
-
-    if (prefs.mainwidth > 100) {
-        QSize s(prefs.mainwidth, prefs.mainheight);
-        mainWindow->resize(s);
-    }
 
     string dbdir = theconfig->getDbDir();
     if (dbdir.empty()) {
@@ -388,7 +392,7 @@ int main(int argc, char **argv)
         exit(1);
     }
 
-    maybeOpenDb(reason);
+    maybeOpenDb(reason, false);
 
     if (op_flags & OPT_w) {
         mainWindow->showMinimized();
@@ -401,13 +405,8 @@ int main(int argc, char **argv)
     }
     QTimer::singleShot(0, mainWindow, SLOT(initDbOpen()));
 
-    // Connect exit handlers etc.. Beware, apparently this must come
-    // after mainWindow->show()?
-    app.connect(&app, SIGNAL(lastWindowClosed()), &app, SLOT(quit()));
-    app.connect(&app, SIGNAL(aboutToQuit()), mainWindow, SLOT(close()));
-
     mainWindow->sSearch->searchTypCMB->setCurrentIndex(prefs.ssearchTyp);
-    mainWindow->sSearch->searchTypeChanged(prefs.ssearchTyp);
+    mainWindow->sSearch->onSearchTypeChanged(prefs.ssearchTyp);
     if (op_flags & OPT_q) {
         SSearch::SSearchType stype;
         if (op_flags & OPT_o) {
@@ -429,18 +428,27 @@ int main(int argc, char **argv)
     return app.exec();
 }
 
-QString myGetFileName(bool isdir, QString caption, bool filenosave,
-                      QString dirloc, QString dfltnm)
+QString myGetFileName(bool isdir, QString caption, bool filenosave, QString dirloc, QString dfltnm)
 {
-    LOGDEB1("myFileDialog: isdir " << isdir << "\n");
-    QFileDialog dialog(0, caption);
+    MyGFNParams parms;
+    parms.caption = caption;
+    parms.filenosave = filenosave;
+    parms.dirlocation = dirloc;
+    parms.dfltnm = dfltnm;
+    return myGetFileName(isdir, parms);
+}
+
+QString myGetFileName(bool isdir, MyGFNParams &parms)
+{
+    LOGDEB1("myGetFileName: isdir " << isdir << "\n");
+    QFileDialog dialog(0, parms.caption);
 
 #ifdef _WIN32
-    // The default initial directory on WIndows is the Recoll install,
+    // The default initial directory on Windows is the Recoll install,
     // which is not appropriate. Change it, only for the first call
     // (next will start with the previous selection).
     static bool first{true};
-    if (first) {
+    if (first && parms.dirlocation.isEmpty()) {
         first = false;
         // See https://doc.qt.io/qt-5/qfiledialog.html#setDirectoryUrl
         // about the clsid magic (this one points to the desktop).
@@ -448,22 +456,29 @@ QString myGetFileName(bool isdir, QString caption, bool filenosave,
             QUrl("clsid:B4BFCC3A-DB2C-424C-B029-7FE99A87C641"));
     }
 #endif
-    if (!dirloc.isEmpty()) {
-        dialog.setDirectory(dirloc);
+    if (!parms.dirlocation.isEmpty()) {
+        dialog.setDirectory(parms.dirlocation);
     }
-    if (!dfltnm.isEmpty()) {
-        dialog.selectFile(dfltnm);
+    if (!parms.dfltnm.isEmpty()) {
+        dialog.selectFile(parms.dfltnm);
+    }
+
+    // DontUseNativeDialog is needed for sidebarurls
+    QFileDialog::Options opts = QFileDialog::DontUseNativeDialog;
+    if (parms.readonly) {
+        opts |= QFileDialog::ReadOnly;
     }
     if (isdir) {
         dialog.setFileMode(QFileDialog::Directory);
-        dialog.setOptions(QFileDialog::ShowDirsOnly);
+        opts |= QFileDialog::ShowDirsOnly;
     } else {
         dialog.setFileMode(QFileDialog::AnyFile);
-        if (filenosave)
+        if (parms.filenosave)
             dialog.setAcceptMode(QFileDialog::AcceptOpen);
         else
             dialog.setAcceptMode(QFileDialog::AcceptSave);
     }
+    dialog.setOptions(opts);
     dialog.setViewMode(QFileDialog::List);
     QFlags<QDir::Filter> flags = QDir::NoDotAndDotDot | QDir::Hidden; 
     if (isdir)
@@ -472,7 +487,15 @@ QString myGetFileName(bool isdir, QString caption, bool filenosave,
         flags |= QDir::Dirs | QDir::Files;
     dialog.setFilter(flags);
 
+    if (!parms.sidedirs.empty()) {
+        QList<QUrl> sidebarurls;
+        for (const auto& dir : parms.sidedirs) {
+            sidebarurls.push_back(QUrl::fromLocalFile(path2qs(dir)));
+        }
+        dialog.setSidebarUrls(sidebarurls);
+    }
     if (dialog.exec() == QDialog::Accepted) {
+        parms.dirlocation = dialog.directory().absolutePath();
         return dialog.selectedFiles().value(0);
     }
     return QString();

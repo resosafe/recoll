@@ -73,7 +73,7 @@ text/plainData: 10
  *      time). Absent during indexing (ipaths are generated and sent back from
  *      the script)
  *  - Mimetype: this is the mime type for the (possibly container) file. 
- *    Can be useful to filters which handle multiple types, like rclaudio.
+ *    Can be useful to filters which handle multiple types, like rclaudio.py.
  *      
  * The script answers with messages having the following fields:
  *   - Document: translated document data.
@@ -107,6 +107,8 @@ class MimeHandlerExecMultiple : public MimeHandlerExec {
     }
     // No resources to clean up, the ExecCmd destructor does it.
     virtual ~MimeHandlerExecMultiple() {}
+    MimeHandlerExecMultiple(const MimeHandlerExecMultiple&) = delete;
+    MimeHandlerExecMultiple& operator=(const MimeHandlerExecMultiple&) = delete;
 
     virtual bool next_document() override;
 

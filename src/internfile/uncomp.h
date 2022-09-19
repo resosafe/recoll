@@ -29,6 +29,8 @@ class Uncomp {
 public:
     explicit Uncomp(bool docache = false);
     ~Uncomp();
+    Uncomp(const Uncomp&) = delete;
+    Uncomp& operator=(const Uncomp&) = delete;
 
     /** Uncompress the input file into a temporary one, by executing the
      * script given as input. 
@@ -36,8 +38,8 @@ public:
      * temporary directory).
      */
     bool uncompressfile(const std::string& ifn, 
-			const std::vector<std::string>& cmdv,
-			std::string& tfile);
+                        const std::vector<std::string>& cmdv,
+                        std::string& tfile);
     static void clearcache();
     
 private:
@@ -48,14 +50,16 @@ private:
 
     class UncompCache {
     public:
-	UncompCache() {}
-	~UncompCache() {
-	    delete m_dir;
-	}
+        UncompCache() {}
+        ~UncompCache() {
+            delete m_dir;
+        }
+        UncompCache(const UncompCache&) = delete;
+        UncompCache& operator=(const UncompCache&) = delete;
         std::mutex m_lock;
-	TempDir *m_dir{0};
-	std::string   m_tfile;
-	std::string   m_srcpath;
+        TempDir *m_dir{0};
+        std::string   m_tfile;
+        std::string   m_srcpath;
     };
     static UncompCache o_cache;
 };

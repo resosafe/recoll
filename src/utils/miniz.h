@@ -1097,11 +1097,18 @@ mz_bool mz_zip_reader_init_mem(mz_zip_archive *pZip, const void *pMem, size_t si
 /* Read a archive from a disk file. */
 /* file_start_ofs is the file offset where the archive actually begins, or 0. */
 /* actual_archive_size is the true total size of the archive, which may be smaller than the file's actual size on disk. If zero the entire file is treated as the archive. */
+
+/* Partial conversion to wchar_t on Windows. This is necessary to
+   access Windows file names in a reasonably sane way. Only the very
+   few calls used by Recoll have been converted though. A full
+   conversion would be much more work. The original miniz does not use
+   wchar_t at all */
 #ifdef _WIN32
 #define WCHAR_TYPE wchar_t
 #else
 #define WCHAR_TYPE char
 #endif
+
 mz_bool mz_zip_reader_init_file(mz_zip_archive *pZip, const WCHAR_TYPE *pFilename, mz_uint32 flags);
 mz_bool mz_zip_reader_init_file_v2(mz_zip_archive *pZip, const WCHAR_TYPE *pFilename, mz_uint flags, mz_uint64 file_start_ofs, mz_uint64 archive_size);
 /* Read an archive from an already opened FILE, beginning at the current file position. */
@@ -1208,13 +1215,13 @@ mz_bool mz_zip_reader_extract_file_to_cfile(mz_zip_archive *pZip, const char *pA
 
 #if 0
 /* TODO */
-	typedef void *mz_zip_streaming_extract_state_ptr;
-	mz_zip_streaming_extract_state_ptr mz_zip_streaming_extract_begin(mz_zip_archive *pZip, mz_uint file_index, mz_uint flags);
-	uint64_t mz_zip_streaming_extract_get_size(mz_zip_archive *pZip, mz_zip_streaming_extract_state_ptr pState);
-	uint64_t mz_zip_streaming_extract_get_cur_ofs(mz_zip_archive *pZip, mz_zip_streaming_extract_state_ptr pState);
-	mz_bool mz_zip_streaming_extract_seek(mz_zip_archive *pZip, mz_zip_streaming_extract_state_ptr pState, uint64_t new_ofs);
-	size_t mz_zip_streaming_extract_read(mz_zip_archive *pZip, mz_zip_streaming_extract_state_ptr pState, void *pBuf, size_t buf_size);
-	mz_bool mz_zip_streaming_extract_end(mz_zip_archive *pZip, mz_zip_streaming_extract_state_ptr pState);
+    typedef void *mz_zip_streaming_extract_state_ptr;
+    mz_zip_streaming_extract_state_ptr mz_zip_streaming_extract_begin(mz_zip_archive *pZip, mz_uint file_index, mz_uint flags);
+    uint64_t mz_zip_streaming_extract_get_size(mz_zip_archive *pZip, mz_zip_streaming_extract_state_ptr pState);
+    uint64_t mz_zip_streaming_extract_get_cur_ofs(mz_zip_archive *pZip, mz_zip_streaming_extract_state_ptr pState);
+    mz_bool mz_zip_streaming_extract_seek(mz_zip_archive *pZip, mz_zip_streaming_extract_state_ptr pState, uint64_t new_ofs);
+    size_t mz_zip_streaming_extract_read(mz_zip_archive *pZip, mz_zip_streaming_extract_state_ptr pState, void *pBuf, size_t buf_size);
+    mz_bool mz_zip_streaming_extract_end(mz_zip_archive *pZip, mz_zip_streaming_extract_state_ptr pState);
 #endif
 
 /* This function compares the archive's local headers, the optional local zip64 extended information block, and the optional descriptor following the compressed data vs. the data in the central directory. */

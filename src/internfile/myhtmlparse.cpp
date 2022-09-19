@@ -39,6 +39,7 @@
 #include "cancelcheck.h"
 #include "log.h"
 #include "transcode.h"
+#include "rclutil.h"
 
 static const string cstr_html_charset("charset");
 static const string cstr_html_content("content");
@@ -161,19 +162,19 @@ map<string, string> my_named_ents;
 class NamedEntsInitializer {
 public:
     NamedEntsInitializer()
-    {
-	for (int i = 0;;) {
-	    const char *ent;
-	    const char *val;
-	    ent = epairs[i++];
-	    if (ent == 0) 
-		break;
-	    val = epairs[i++];
-	    if (val == 0) 
-		break;
-	    my_named_ents[string(ent)] = val;
-	}
-    }
+        {
+            for (int i = 0;;) {
+                const char *ent;
+                const char *val;
+                ent = epairs[i++];
+                if (ent == 0) 
+                    break;
+                val = epairs[i++];
+                if (val == 0) 
+                    break;
+                my_named_ents[string(ent)] = val;
+            }
+        }
 };
 static NamedEntsInitializer namedEntsInitializerInstance;
 
@@ -193,63 +194,63 @@ MyHtmlParser::MyHtmlParser()
 
 void MyHtmlParser::decode_entities(string &s)
 {
-    LOGDEB2("MyHtmlParser::decode_entities\n" );
+    LOGDEB2("MyHtmlParser::decode_entities\n");
     // This has no meaning whatsoever if the character encoding is unknown,
     // so don't do it. If charset known, caller has converted text to utf-8, 
     // and this is also how we translate entities
     //    if (tocharset != "utf-8")
-    //    	return;
+    //      return;
 
     // We need a const_iterator version of s.end() - otherwise the
     // find() and find_if() templates don't work...
     string::const_iterator amp = s.begin(), s_end = s.end();
     while ((amp = find(amp, s_end, '&')) != s_end) {
-	unsigned int val = 0;
-	string::const_iterator end, p = amp + 1;
-	string subs;
-	if (p != s_end && *p == '#') {
-	    p++;
-	    if (p != s_end && (*p == 'x' || *p == 'X')) {
-		// hex
-		p++;
-		end = find_if(p, s_end, p_notxdigit);
-		sscanf(s.substr(p - s.begin(), end - p).c_str(), "%x", &val);
-	    } else {
-		// number
-		end = find_if(p, s_end, p_notdigit);
-		val = atoi(s.substr(p - s.begin(), end - p).c_str());
-	    }
-	} else {
-	    end = find_if(p, s_end, p_notalnum);
-	    string code = s.substr(p - s.begin(), end - p);
-	    map<string, string>::const_iterator i;
-	    i = my_named_ents.find(code);
-	    if (i != my_named_ents.end()) 
-		subs = i->second;
-	}
+        unsigned int val = 0;
+        string::const_iterator end, p = amp + 1;
+        string subs;
+        if (p != s_end && *p == '#') {
+            p++;
+            if (p != s_end && (*p == 'x' || *p == 'X')) {
+                // hex
+                p++;
+                end = find_if(p, s_end, p_notxdigit);
+                sscanf(s.substr(p - s.begin(), end - p).c_str(), "%x", &val);
+            } else {
+                // number
+                end = find_if(p, s_end, p_notdigit);
+                val = atoi(s.substr(p - s.begin(), end - p).c_str());
+            }
+        } else {
+            end = find_if(p, s_end, p_notalnum);
+            string code = s.substr(p - s.begin(), end - p);
+            map<string, string>::const_iterator i;
+            i = my_named_ents.find(code);
+            if (i != my_named_ents.end()) 
+                subs = i->second;
+        }
 
-	if (end < s_end && *end == ';') 
-	    end++;
-	
-	if (val) {
-	    // The code is the code position for a unicode char. We need
-	    // to translate it to an utf-8 string.
-	    string utf16be;
-	    utf16be += char(val / 256);
-	    utf16be += char(val % 256);
-	    transcode(utf16be, subs, "UTF-16BE", "UTF-8");
-	} 
+        if (end < s_end && *end == ';') 
+            end++;
+    
+        if (val) {
+            // The code is the code position for a unicode char. We need
+            // to translate it to an utf-8 string.
+            string utf16be;
+            utf16be += char(val / 256);
+            utf16be += char(val % 256);
+            transcode(utf16be, subs, "UTF-16BE", "UTF-8");
+        } 
 
-	if (subs.length() > 0) {
-	    string::size_type amp_pos = amp - s.begin();
-	    s.replace(amp_pos, end - amp, subs);
-	    s_end = s.end();
-	    // We've modified the string, so the iterators are no longer
-	    // valid...
-	    amp = s.begin() + amp_pos + subs.length();
-	} else {
-	    amp = end;
-	}
+        if (subs.length() > 0) {
+            string::size_type amp_pos = amp - s.begin();
+            s.replace(amp_pos, end - amp, subs);
+            s_end = s.end();
+            // We've modified the string, so the iterators are no longer
+            // valid...
+            amp = s.begin() + amp_pos + subs.length();
+        } else {
+            amp = end;
+        }
     }
 }
 
@@ -261,219 +262,223 @@ void MyHtmlParser::decode_entities(string &s)
 void
 MyHtmlParser::process_text(const string &text)
 {
-    LOGDEB2("process_text: title "  << (in_title_tag) << " script "  << (in_script_tag) << " style "  << (in_style_tag) << " pre "  << (in_pre_tag) << " pending_space "  << (pending_space) << " txt ["  << (text) << "]\n" );
+    LOGDEB2("process_text: title " << in_title_tag << " script " <<
+            in_script_tag << " style " << in_style_tag << " pre " <<
+            in_pre_tag << " pending_space " << pending_space << " txt [" <<
+            text << "]\n");
     CancelCheck::instance().checkCancel();
 
     if (!in_script_tag && !in_style_tag) {
-	if (in_title_tag) {
-	    titledump += text;
-	} else if (!in_pre_tag) {
-	    string::size_type b = 0;
-	    bool only_space = true;
-	    while ((b = text.find_first_not_of(WHITESPACE, b)) != string::npos) {
-		only_space = false;
-		// If space specifically needed or chunk begins with
-		// whitespace, add exactly one space
-		if (pending_space || b != 0) {
-			dump += ' ';
-		}
-		pending_space = true;
-		string::size_type e = text.find_first_of(WHITESPACE, b);
-		if (e == string::npos) {
-		    dump += text.substr(b);
-		    pending_space = false;
-		    break;
-		}
-		dump += text.substr(b, e - b);
-		b = e + 1;
-	    }
-	    if (only_space)
-		pending_space = true;
-	} else {
-	    if (pending_space)
-		dump += ' ';
-	    dump += text;
-	}
+        if (in_title_tag) {
+            titledump += text;
+        } else if (!in_pre_tag) {
+            string::size_type b = 0;
+            bool only_space = true;
+            while ((b = text.find_first_not_of(WHITESPACE, b)) != string::npos) {
+                only_space = false;
+                // If space specifically needed or chunk begins with
+                // whitespace, add exactly one space
+                if (pending_space || b != 0) {
+                    dump += ' ';
+                }
+                pending_space = true;
+                string::size_type e = text.find_first_of(WHITESPACE, b);
+                if (e == string::npos) {
+                    dump += text.substr(b);
+                    pending_space = false;
+                    break;
+                }
+                dump += text.substr(b, e - b);
+                b = e + 1;
+            }
+            if (only_space)
+                pending_space = true;
+        } else {
+            if (pending_space)
+                dump += ' ';
+            dump += text;
+        }
     }
 }
 
 bool
 MyHtmlParser::opening_tag(const string &tag)
 {
-    LOGDEB2("opening_tag: ["  << (tag) << "]\n" );
+    LOGDEB2("opening_tag: [" << tag << "]\n");
 #if 0
     cout << "TAG: " << tag << ": " << endl;
     map<string, string>::const_iterator x;
     for (x = p.begin(); x != p.end(); x++) {
-	cout << "  " << x->first << " -> '" << x->second << "'" << endl;
+        cout << "  " << x->first << " -> '" << x->second << "'" << endl;
     }
 #endif
     if (tag.empty()) return true;
     switch (tag[0]) {
-	case 'a':
-	    if (tag == "address") pending_space = true;
-	    break;
-	case 'b':
-	    // body: some bad docs have several opening body tags and
-	    // even text before the body is displayed by Opera and
-	    // Firefox.  We used to reset the dump each time we saw a
-	    // body tag, but I can't see any reason to do so.
+    case 'a':
+        if (tag == "address") pending_space = true;
+        break;
+    case 'b':
+        // body: some bad docs have several opening body tags and
+        // even text before the body is displayed by Opera and
+        // Firefox.  We used to reset the dump each time we saw a
+        // body tag, but I can't see any reason to do so.
 
-	    if (tag == "blockquote" || tag == "br") {
-		dump += '\n';
-		pending_space = true;
-	    }
-	    break;
-	case 'c':
-	    if (tag == "center") pending_space = true;
-	    break;
-	case 'd':
-	    if (tag == "dd" || tag == "dir" || tag == "div" || tag == "dl" ||
-		tag == "dt") pending_space = true;
-	    if (tag == "dt")
-		dump += '\n';
-	    break;
-	case 'e':
-	    if (tag == "embed") pending_space = true;
-	    break;
-	case 'f':
-	    if (tag == "fieldset" || tag == "form") pending_space = true;
-	    break;
-	case 'h':
-	    // hr, and h1, ..., h6
-	    if (tag.length() == 2 && strchr("r123456", tag[1])) {
-		dump += '\n';
-		pending_space = true;
-	    }
-	    break;
-	case 'i':
-	    if (tag == "iframe" || tag == "img" || tag == "isindex" ||
-		tag == "input") pending_space = true;
-	    break;
-	case 'k':
-	    if (tag == "keygen") pending_space = true;
-	    break;
-	case 'l':
-	    if (tag == "legend" || tag == "li" || tag == "listing") {
-		dump += '\n';
-		pending_space = true;
-	    }
-	    break;
-	case 'm':
-	    if (tag == "meta") {
-		string content;
-		if (get_parameter(cstr_html_content, content)) {
-		    string name;
-		    if (get_parameter("name", name)) {
-			lowercase_term(name);
-			if (name == "date") {
-			    // Specific to Recoll filters.
-			    decode_entities(content);
-			    struct tm tm;
-                            memset(&tm, 0, sizeof(tm));
-			    if (strptime(content.c_str(), 
-					 " %Y-%m-%d %H:%M:%S ", &tm) ||
-				strptime(content.c_str(), 
-					 "%Y-%m-%dT%H:%M:%S", &tm)
-				) {
-				char ascuxtime[100];
-				sprintf(ascuxtime, "%ld", (long)mktime(&tm));
-				dmtime = ascuxtime;
-			    }
-			} else if (name == "robots") {
-			} else {
-			    string markup;
-			    bool ishtml = false;
-			    if (get_parameter("markup", markup)) {
-				if (!stringlowercmp("html", markup)) {
-				    ishtml = true;
-				}
-			    }
-			    if (!meta[name].empty())
-				meta[name] += ' ';
-			    decode_entities(content);
-			    meta[name] += content;
-			    if (ishtml && 
-				meta[name].compare(0, cstr_fldhtm.size(), 
-						   cstr_fldhtm)) {
-				meta[name].insert(0, cstr_fldhtm);
-			    }
-			}
-		    } 
-		    string hdr;
-		    if (get_parameter("http-equiv", hdr)) {
-			lowercase_term(hdr);
-			if (hdr == "content-type") {
-			    MimeHeaderValue p;
-			    parseMimeHeaderValue(content, p);
-			    map<string, string>::const_iterator k;
-			    if ((k = p.params.find(cstr_html_charset)) != 
-				p.params.end()) {
-				charset = k->second;
-				if (!charset.empty() && 
-				    !samecharset(charset, fromcharset)) {
-				    LOGDEB1("Doc http-equiv charset '"  << (charset) << "' differs from dir deflt '"  << (fromcharset) << "'\n" );
-				    throw false;
-				}
-			    }
-			}
-		    }
-		}
-		string newcharset;
-		if (get_parameter(cstr_html_charset, newcharset)) {
-		    // HTML5 added: <meta charset="...">
-		    lowercase_term(newcharset);
-		    charset = newcharset;
-		    if (!charset.empty() && 
-			!samecharset(charset, fromcharset)) {
-			LOGDEB1("Doc html5 charset '"  << (charset) << "' differs from dir deflt '"  << (fromcharset) << "'\n" );
-			throw false;
-		    }
-		}
-		break;
-	    } else if (tag == "marquee" || tag == "menu" || tag == "multicol")
-		pending_space = true;
-	    break;
-	case 'o':
-	    if (tag == "ol" || tag == "option") pending_space = true;
-	    break;
-	case 'p':
-	    if (tag == "p" || tag == "plaintext") {
-		dump += '\n';
-		pending_space = true;
-	    } else if (tag == "pre") {
-		in_pre_tag = true;
-		dump += '\n';
-		pending_space = true;
-	    }
-	    break;
-	case 'q':
-	    if (tag == "q") pending_space = true;
-	    break;
-	case 's':
-	    if (tag == "style") {
-		in_style_tag = true;
-		break;
-	    } else if (tag == "script") {
-		in_script_tag = true;
-		break;
-	    } else if (tag == "select") 
-		pending_space = true;
-	    break;
-	case 't':
-	    if (tag == "table" || tag == "td" || tag == "textarea" ||
-		tag == "th") {
-		pending_space = true;
-	    } else if (tag == "title") {
-		in_title_tag = true;
-	    }
-	    break;
-	case 'u':
-	    if (tag == "ul") pending_space = true;
-	    break;
-	case 'x':
-	    if (tag == "xmp") pending_space = true;
-	    break;
+        if (tag == "blockquote" || tag == "br") {
+            dump += '\n';
+            pending_space = true;
+        }
+        break;
+    case 'c':
+        if (tag == "center") pending_space = true;
+        break;
+    case 'd':
+        if (tag == "dd" || tag == "dir" || tag == "div" || tag == "dl" ||
+            tag == "dt") pending_space = true;
+        if (tag == "dt")
+            dump += '\n';
+        break;
+    case 'e':
+        if (tag == "embed") pending_space = true;
+        break;
+    case 'f':
+        if (tag == "fieldset" || tag == "form") pending_space = true;
+        break;
+    case 'h':
+        // hr, and h1, ..., h6
+        if (tag.length() == 2 && strchr("r123456", tag[1])) {
+            dump += '\n';
+            pending_space = true;
+        }
+        break;
+    case 'i':
+        if (tag == "iframe" || tag == "img" || tag == "isindex" ||
+            tag == "input") pending_space = true;
+        break;
+    case 'k':
+        if (tag == "keygen") pending_space = true;
+        break;
+    case 'l':
+        if (tag == "legend" || tag == "li" || tag == "listing") {
+            dump += '\n';
+            pending_space = true;
+        }
+        break;
+    case 'm':
+        if (tag == "meta") {
+            string content;
+            if (get_parameter(cstr_html_content, content)) {
+                string name;
+                if (get_parameter("name", name)) {
+                    lowercase_term(name);
+                    if (name == "date") {
+                        // Specific to Recoll filters.
+                        decode_entities(content);
+                        struct tm tm;
+                        memset(&tm, 0, sizeof(tm));
+                        if (strptime(content.c_str(), 
+                                     " %Y-%m-%d %H:%M:%S ", &tm) ||
+                            strptime(content.c_str(), 
+                                     "%Y-%m-%dT%H:%M:%S", &tm)
+                            ) {
+                            char ascuxtime[100];
+                            sprintf(ascuxtime, "%ld", (long)mktime(&tm));
+                            dmtime = ascuxtime;
+                        }
+                    } else if (name == "robots") {
+                    } else {
+                        string markup;
+                        bool ishtml = false;
+                        if (get_parameter("markup", markup)) {
+                            if (!stringlowercmp("html", markup)) {
+                                ishtml = true;
+                            }
+                        }
+                        decode_entities(content);
+                        if (ishtml && 
+                            content.compare(0, cstr_fldhtm.size(),
+                                            cstr_fldhtm)) {
+                            content.insert(0, cstr_fldhtm);
+                        }
+                        addmeta(meta, name, content);
+                    }
+                } 
+                string hdr;
+                if (get_parameter("http-equiv", hdr)) {
+                    lowercase_term(hdr);
+                    if (hdr == "content-type") {
+                        MimeHeaderValue p;
+                        parseMimeHeaderValue(content, p);
+                        map<string, string>::const_iterator k;
+                        if ((k = p.params.find(cstr_html_charset)) != 
+                            p.params.end()) {
+                            charset = k->second;
+                            if (!charset.empty() && 
+                                !samecharset(charset, fromcharset)) {
+                                LOGDEB1("Doc http-equiv charset '" << charset <<
+                                        "' differs from dir deflt '" <<
+                                        fromcharset << "'\n");
+                                throw false;
+                            }
+                        }
+                    }
+                }
+            }
+            string newcharset;
+            if (get_parameter(cstr_html_charset, newcharset)) {
+                // HTML5 added: <meta charset="...">
+                lowercase_term(newcharset);
+                charset = newcharset;
+                if (!charset.empty() && 
+                    !samecharset(charset, fromcharset)) {
+                    LOGDEB1("Doc html5 charset '" << charset <<
+                            "' differs from dir deflt '"<<fromcharset <<"'\n");
+                    throw false;
+                }
+            }
+            break;
+        } else if (tag == "marquee" || tag == "menu" || tag == "multicol")
+            pending_space = true;
+        break;
+    case 'o':
+        if (tag == "ol" || tag == "option") pending_space = true;
+        break;
+    case 'p':
+        if (tag == "p" || tag == "plaintext") {
+            dump += '\n';
+            pending_space = true;
+        } else if (tag == "pre") {
+            in_pre_tag = true;
+            dump += '\n';
+            pending_space = true;
+        }
+        break;
+    case 'q':
+        if (tag == "q") pending_space = true;
+        break;
+    case 's':
+        if (tag == "style") {
+            in_style_tag = true;
+            break;
+        } else if (tag == "script") {
+            in_script_tag = true;
+            break;
+        } else if (tag == "select") 
+            pending_space = true;
+        break;
+    case 't':
+        if (tag == "table" || tag == "td" || tag == "textarea" ||
+            tag == "th") {
+            pending_space = true;
+        } else if (tag == "title") {
+            in_title_tag = true;
+        }
+        break;
+    case 'u':
+        if (tag == "ul") pending_space = true;
+        break;
+    case 'x':
+        if (tag == "xmp") pending_space = true;
+        break;
     }
     return true;
 }
@@ -481,88 +486,88 @@ MyHtmlParser::opening_tag(const string &tag)
 bool
 MyHtmlParser::closing_tag(const string &tag)
 {
-    LOGDEB2("closing_tag: ["  << (tag) << "]\n" );
+    LOGDEB2("closing_tag: [" << tag << "]\n");
     if (tag.empty()) return true;
     switch (tag[0]) {
-	case 'a':
-	    if (tag == "address") pending_space = true;
-	    break;
-	case 'b':
-	    // body: We used to signal and end of doc here by returning
-	    // false but the browsers just ignore body and html
-	    // closing tags if there is further text, so it seems right
-	    // to do the same
+    case 'a':
+        if (tag == "address") pending_space = true;
+        break;
+    case 'b':
+        // body: We used to signal and end of doc here by returning
+        // false but the browsers just ignore body and html
+        // closing tags if there is further text, so it seems right
+        // to do the same
 
-	    if (tag == "blockquote" || tag == "br") pending_space = true;
-	    break;
-	case 'c':
-	    if (tag == "center") pending_space = true;
-	    break;
-	case 'd':
-	    if (tag == "dd" || tag == "dir" || tag == "div" || tag == "dl" ||
-		tag == "dt") pending_space = true;
-	    break;
-	case 'f':
-	    if (tag == "fieldset" || tag == "form") pending_space = true;
-	    break;
-	case 'h':
-	    // hr, and h1, ..., h6
-	    if (tag.length() == 2 && strchr("r123456", tag[1]))
-		pending_space = true;
-	    break;
-	case 'i':
-	    if (tag == "iframe") pending_space = true;
-	    break;
-	case 'l':
-	    if (tag == "legend" || tag == "li" || tag == "listing")
-		pending_space = true;
-	    break;
-	case 'm':
-	    if (tag == "marquee" || tag == "menu") pending_space = true;
-	    break;
-	case 'o':
-	    if (tag == "ol" || tag == "option") pending_space = true;
-	    break;
-	case 'p':
-	    if (tag == "p") {
-		pending_space = true;
-	    } else if  (tag == "pre") {
-		pending_space = true;
-		in_pre_tag = false;
-	    }
-	    break;
-	case 'q':
-	    if (tag == "q") pending_space = true;
-	    break;
-	case 's':
-	    if (tag == "style") {
-		in_style_tag = false;
-		break;
-	    }
-	    if (tag == "script") {
-		in_script_tag = false;
-		break;
-	    }
-	    if (tag == "select") pending_space = true;
-	    break;
-	case 't':
-	    if (tag == "title") {
-		in_title_tag = false;
-		if (meta.find("title") == meta.end()|| meta["title"].empty()) {
-		    meta["title"] = titledump;
-		    titledump.clear();
-		}
-		break;
-	    }
-	    if (tag == "table" || tag == "td" || tag == "textarea" ||
-		tag == "th") pending_space = true;
-	    break;
-	case 'u':
-	    if (tag == "ul") pending_space = true;
-	    break;
-	case 'x':
-	    if (tag == "xmp") pending_space = true;
-	    break;
+        if (tag == "blockquote" || tag == "br") pending_space = true;
+        break;
+    case 'c':
+        if (tag == "center") pending_space = true;
+        break;
+    case 'd':
+        if (tag == "dd" || tag == "dir" || tag == "div" || tag == "dl" ||
+            tag == "dt") pending_space = true;
+        break;
+    case 'f':
+        if (tag == "fieldset" || tag == "form") pending_space = true;
+        break;
+    case 'h':
+        // hr, and h1, ..., h6
+        if (tag.length() == 2 && strchr("r123456", tag[1]))
+            pending_space = true;
+        break;
+    case 'i':
+        if (tag == "iframe") pending_space = true;
+        break;
+    case 'l':
+        if (tag == "legend" || tag == "li" || tag == "listing")
+            pending_space = true;
+        break;
+    case 'm':
+        if (tag == "marquee" || tag == "menu") pending_space = true;
+        break;
+    case 'o':
+        if (tag == "ol" || tag == "option") pending_space = true;
+        break;
+    case 'p':
+        if (tag == "p") {
+            pending_space = true;
+        } else if  (tag == "pre") {
+            pending_space = true;
+            in_pre_tag = false;
+        }
+        break;
+    case 'q':
+        if (tag == "q") pending_space = true;
+        break;
+    case 's':
+        if (tag == "style") {
+            in_style_tag = false;
+            break;
+        }
+        if (tag == "script") {
+            in_script_tag = false;
+            break;
+        }
+        if (tag == "select") pending_space = true;
+        break;
+    case 't':
+        if (tag == "title") {
+            in_title_tag = false;
+            if (meta.find("title") == meta.end()|| meta["title"].empty()) {
+                meta["title"] = titledump;
+                titledump.clear();
+            }
+            break;
+        }
+        if (tag == "table" || tag == "td" || tag == "textarea" ||
+            tag == "th") pending_space = true;
+        break;
+    case 'u':
+        if (tag == "ul") pending_space = true;
+        break;
+    case 'x':
+        if (tag == "xmp") pending_space = true;
+        break;
     }
     return true;
 }

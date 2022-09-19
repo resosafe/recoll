@@ -22,9 +22,9 @@ class ListDialog : public QDialog, public Ui::ListDialog {
     Q_OBJECT
     public:
     ListDialog(QWidget * parent = 0) 
-	: QDialog(parent)
+    : QDialog(parent)
     {
-	setupUi(this);
+    setupUi(this);
     }
 };
 

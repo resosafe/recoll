@@ -22,11 +22,14 @@
 /** 
  * The WEB queue cache fetcher: 
  */
-class WQDocFetcher : public DocFetcher{
+class WQDocFetcher : public DocFetcher {
+public:
     virtual bool fetch(RclConfig* cnf, const Rcl::Doc& idoc, RawDoc& out);
-    virtual bool makesig(RclConfig* cnf, const Rcl::Doc& idoc,
-                         std::string& sig);
+    virtual bool makesig(RclConfig* cnf, const Rcl::Doc& idoc, std::string& sig);
+    WQDocFetcher() {}
     virtual ~WQDocFetcher() {}
+    WQDocFetcher(const WQDocFetcher&) = delete;
+    WQDocFetcher& operator=(const WQDocFetcher&) = delete;
 };
 
 #endif /* _WEBQUEUEFETCHER_H_INCLUDED_ */

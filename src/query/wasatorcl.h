@@ -19,16 +19,16 @@
 #define _WASATORCL_H_INCLUDED_
 
 #include <string>
+#include <memory>
 
 namespace Rcl {
     class SearchData;
 }
 class RclConfig;
 
-extern Rcl::SearchData *wasaStringToRcl(const RclConfig *, 
-                                        const std::string& stemlang,
-                                        const std::string& query, 
-                                        std::string &reason,
-                                        const std::string& autosuffs = "");
+extern std::shared_ptr<Rcl::SearchData>wasaStringToRcl(
+    const RclConfig *, const std::string& stemlang,
+    const std::string& query, std::string &reason,
+    const std::string& autosuffs = "");
 
 #endif /* _WASATORCL_H_INCLUDED_ */

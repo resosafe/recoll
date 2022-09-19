@@ -30,19 +30,19 @@
 #include "fstreewalk.h"
 #include "rcldoc.h"
 
-class DbIxStatusUpdater;
 class CirCache;
 class RclConfig;
 class WebStore;
 namespace Rcl {
-    class Db;
+class Db;
 }
 
 class WebQueueIndexer : public FsTreeWalkerCB {
 public:
-    WebQueueIndexer(RclConfig *cnf, Rcl::Db *db,
-                       DbIxStatusUpdater *updfunc = 0);
+    WebQueueIndexer(RclConfig *cnf, Rcl::Db *db);
     ~WebQueueIndexer();
+    WebQueueIndexer(const WebQueueIndexer&) = delete;
+    WebQueueIndexer& operator=(const WebQueueIndexer&) = delete;
 
     /** This is called by the top indexer in recollindex. 
      *  Does the walking and the talking */
@@ -50,7 +50,7 @@ public:
 
     /** Called when we fstreewalk the queue dir */
     FsTreeWalker::Status 
-    processone(const string &, const struct stat *, FsTreeWalker::CbFlag);
+    processone(const std::string &, const struct PathStat *, FsTreeWalker::CbFlag);
 
     /** Index a list of files. No db cleaning or stemdb updating. 
      *  Used by the real time monitor */
@@ -58,22 +58,27 @@ public:
     /** Purge a list of files. No way to do this currently and dont want
      *  to do anything as this is mostly called by the monitor when *I* delete
      *  files inside the queue dir */
-    bool purgeFiles(std::list<std::string>& files) {return true;}
+    bool purgeFiles(std::list<std::string>&) {return true;}
 
     /** Called when indexing data from the cache, and from internfile for
      * search result preview */
-    bool getFromCache(const string& udi, Rcl::Doc &doc, string& data,
-                      string *hittype = 0);
+    bool getFromCache(const std::string& udi, Rcl::Doc &doc, std::string& data,
+                      std::string *hittype = 0);
 private:
-    RclConfig *m_config;
-    Rcl::Db   *m_db;
-    WebStore  *m_cache;
-    string     m_queuedir;
-    DbIxStatusUpdater *m_updater;
-    bool       m_nocacheindex;
-
-    bool indexFromCache(const string& udi);
-    void updstatus(const string& udi);
+    RclConfig *m_config{nullptr};
+    Rcl::Db   *m_db{nullptr};
+    WebStore  *m_cache{nullptr};
+    std::string     m_queuedir;
+    // Don't process the cache. Set by indexFiles().
+    bool       m_nocacheindex{false};
+    // Config: page erase interval. We normally keep only one
+    // instance. This can be set to "day", "week", "month", "year" to
+    // keep more.
+    enum KeepInterval {WQKI_NONE, WQKI_DAY, WQKI_WEEK, WQKI_MONTH, WQKI_YEAR};
+    KeepInterval  m_keepinterval{WQKI_NONE};
+    
+    bool indexFromCache(const std::string& udi);
+    void updstatus(const std::string& udi);
 };
 
 #endif /* _webqueue_h_included_ */

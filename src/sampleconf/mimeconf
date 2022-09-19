@@ -53,9 +53,6 @@ application/x-zstd = uncompress rcluncomp "unzstd --rm -q" %f %t
 # A different format (ie text/plain), and a character set can be defined for
 # each filter, see the exemples below (ie: msword)
 [index]
-application/epub+zip = execm rclepub
-# Returned by xdg-mime for .js. Future-proofing
-application/javascript = internal text/plain
 
 # MSWORD: the rcldoc script handles a number of marginal case that raw
 # antiword won't:
@@ -67,127 +64,179 @@ application/msword = execm rcldoc.py
 #application/msword = exec antiword -t -i 1 -m UTF-8;mimetype=text/plain
 # You can also use wvware directly but it's much slower.
 # application/msword = exec wvWare --charset=utf-8 --nographics
-
+application/vnd.ms-excel = execm rclxls.py
+application/vnd.ms-outlook = execm rclpst.py
+application/vnd.ms-powerpoint = execm rclppt.py
 # Also Handle the mime type returned by "file -i" for a suffix-less word
 # file. This could probably just as well be an excel file, but we have to
 # chose one.
 application/vnd.ms-office = execm rcldoc.py
 
-application/ogg = execm rclaudio
-application/pdf = execm rclpdf.py
-application/postscript = exec rclps
-application/sql = internal text/plain
-application/vnd.ms-excel = execm rclxls.py
-application/vnd.ms-outlook = execm rclpst.py
-application/vnd.ms-powerpoint = execm rclppt.py
-application/vnd.oasis.opendocument.text = internal xsltproc meta.xml opendoc-meta.xsl content.xml opendoc-body.xsl
-application/vnd.oasis.opendocument.text-template = internal xsltproc meta.xml opendoc-meta.xsl content.xml opendoc-body.xsl
-application/vnd.oasis.opendocument.presentation = internal xsltproc meta.xml opendoc-meta.xsl content.xml opendoc-body.xsl
-application/vnd.oasis.opendocument.spreadsheet = internal xsltproc meta.xml opendoc-meta.xsl content.xml opendoc-body.xsl
-application/vnd.oasis.opendocument.graphics = internal xsltproc meta.xml opendoc-meta.xsl content.xml opendoc-body.xsl
-application/vnd.oasis.opendocument.presentation-flat-xml = internal xsltproc opendoc-flat.xsl
-application/vnd.oasis.opendocument.text-flat-xml = internal xsltproc opendoc-flat.xsl
-application/vnd.oasis.opendocument.spreadsheet-flat-xml = internal xsltproc opendoc-flat.xsl
+application/vnd.oasis.opendocument.text = \
+ internal xsltproc meta meta.xml opendoc-meta.xsl \
+ body content.xml opendoc-body.xsl
+application/vnd.oasis.opendocument.text-template = \
+ internal xsltproc meta meta.xml opendoc-meta.xsl \
+ body content.xml opendoc-body.xsl
+application/vnd.oasis.opendocument.presentation = \
+ internal xsltproc meta meta.xml opendoc-meta.xsl \
+ body content.xml opendoc-body.xsl
+application/vnd.oasis.opendocument.spreadsheet = \
+ internal xsltproc meta meta.xml opendoc-meta.xsl \
+ body content.xml opendoc-body.xsl
+application/vnd.oasis.opendocument.graphics = \
+ internal xsltproc meta meta.xml opendoc-meta.xsl \
+ body content.xml opendoc-body.xsl
+application/vnd.oasis.opendocument.presentation-flat-xml = \
+ internal xsltproc opendoc-flat.xsl
+application/vnd.oasis.opendocument.text-flat-xml = \
+ internal xsltproc opendoc-flat.xsl
+application/vnd.oasis.opendocument.spreadsheet-flat-xml = \
+ internal xsltproc opendoc-flat.xsl
+
 application/vnd.openxmlformats-officedocument.wordprocessingml.document = \
- internal xsltproc docProps/core.xml openxml-meta.xsl word/document.xml openxml-word-body.xsl
+ internal xsltproc meta docProps/core.xml openxml-meta.xsl \
+ body word/document.xml openxml-word-body.xsl \
+ body word/footnotes.xml openxml-word-body.xsl \
+ body word/endnotes.xml openxml-word-body.xsl 
 application/vnd.openxmlformats-officedocument.wordprocessingml.template = \
- internal xsltproc docProps/core.xml openxml-meta.xsl word/document.xml openxml-word-body.xsl
+ internal xsltproc meta docProps/core.xml openxml-meta.xsl \
+ body word/document.xml openxml-word-body.xsl \
+ body word/footnotes.xml openxml-word-body.xsl \
+ body word/endnotes.xml openxml-word-body.xsl 
 application/vnd.openxmlformats-officedocument.presentationml.template = \
  execm rclopxml.py
 application/vnd.openxmlformats-officedocument.presentationml.presentation = \
  execm rclopxml.py
+application/vnd.ms-visio.drawing = execm rclopxml.py
 application/vnd.openxmlformats-officedocument.spreadsheetml.sheet = \
- internal xsltproc docProps/core.xml openxml-meta.xsl xl/sharedStrings.xml openxml-xls-body.xsl
+ internal xsltproc meta docProps/core.xml openxml-meta.xsl \
+ body xl/sharedStrings.xml openxml-xls-body.xsl
 application/vnd.openxmlformats-officedocument.spreadsheetml.template =\
- internal xsltproc docProps/core.xml openxml-meta.xsl xl/sharedStrings.xml openxml-xls-body.xsl
-application/vnd.sun.xml.calc = internal xsltproc meta.xml opendoc-meta.xsl content.xml opendoc-body.xsl
-application/vnd.sun.xml.calc.template = internal xsltproc meta.xml opendoc-meta.xsl content.xml opendoc-body.xsl
-application/vnd.sun.xml.draw = internal xsltproc meta.xml opendoc-meta.xsl content.xml opendoc-body.xsl
-application/vnd.sun.xml.draw.template = internal xsltproc meta.xml opendoc-meta.xsl content.xml opendoc-body.xsl
-application/vnd.sun.xml.impress = internal xsltproc meta.xml opendoc-meta.xsl content.xml opendoc-body.xsl
-application/vnd.sun.xml.impress.template = internal xsltproc meta.xml opendoc-meta.xsl content.xml opendoc-body.xsl
-application/vnd.sun.xml.math = internal xsltproc meta.xml opendoc-meta.xsl content.xml opendoc-body.xsl
-application/vnd.sun.xml.writer = internal xsltproc meta.xml opendoc-meta.xsl content.xml opendoc-body.xsl
-application/vnd.sun.xml.writer.global = internal xsltproc meta.xml opendoc-meta.xsl content.xml opendoc-body.xsl
-application/vnd.sun.xml.writer.template = internal xsltproc meta.xml opendoc-meta.xsl content.xml opendoc-body.xsl
+ internal xsltproc meta docProps/core.xml openxml-meta.xsl \
+ body xl/sharedStrings.xml openxml-xls-body.xsl
+
+application/vnd.sun.xml.calc = \
+ internal xsltproc meta meta.xml opendoc-meta.xsl \
+ body content.xml opendoc-body.xsl
+application/vnd.sun.xml.calc.template = \
+ internal xsltproc meta meta.xml opendoc-meta.xsl \
+ body content.xml opendoc-body.xsl
+application/vnd.sun.xml.draw = \
+ internal xsltproc meta meta.xml opendoc-meta.xsl \
+ body content.xml opendoc-body.xsl
+application/vnd.sun.xml.draw.template = \
+ internal xsltproc meta meta.xml opendoc-meta.xsl \
+ body content.xml opendoc-body.xsl
+application/vnd.sun.xml.impress = \
+ internal xsltproc meta meta.xml opendoc-meta.xsl \
+ body content.xml opendoc-body.xsl
+application/vnd.sun.xml.impress.template = \
+ internal xsltproc meta meta.xml opendoc-meta.xsl \
+ body content.xml opendoc-body.xsl
+application/vnd.sun.xml.math = \
+  internal xsltproc meta meta.xml opendoc-meta.xsl \
+  body content.xml opendoc-body.xsl
+application/vnd.sun.xml.writer = \
+  internal xsltproc meta meta.xml opendoc-meta.xsl \
+  body content.xml opendoc-body.xsl
+application/vnd.sun.xml.writer.global = \
+ internal xsltproc meta meta.xml opendoc-meta.xsl \
+ body content.xml opendoc-body.xsl
+application/vnd.sun.xml.writer.template = \
+ internal xsltproc meta meta.xml opendoc-meta.xsl \
+ body content.xml opendoc-body.xsl
+
+#application/x-mobipocket-ebook = execm rclmobi
+#application/x-tar = execm rcltar.py
+
+application/epub+zip = execm rclepub.py
+application/x-ipynb+json = exec jupyter nbconvert --to script --stdout ; mimetype = text/plain
+application/javascript = internal text/plain
+application/ogg = execm rclaudio.py
+application/pdf = execm rclpdf.py
+application/postscript = exec rclps
+application/sql = internal text/plain
 application/vnd.wordperfect = exec wpd2html;mimetype=text/html
+application/x-7z-compressed = execm rcl7z.py
 application/x-abiword = internal xsltproc abiword.xsl
 application/x-awk = internal text/plain
-application/x-chm = execm rclchm
-application/x-dia-diagram = execm rcldia;mimetype=text/plain
+application/x-chm = execm rclchm.py
+application/x-dia-diagram = execm rcldia.py;mimetype=text/plain
 application/x-dvi = exec rcldvi
-application/x-flac = execm rclaudio
+audio/flac =  execm rclaudio.py
 application/x-gnote = execm rclxml.py
-application/x-gnuinfo = execm rclinfo
+application/x-gnuinfo = execm rclinfo.py
 application/x-gnumeric = internal xsltproc gnumeric.xsl
+application/x-hwp = execm rclhwp.py
 application/x-kword = exec rclkwd
 application/x-lyx = exec rcllyx
 application/x-mimehtml = internal message/rfc822
-#application/x-mobipocket-ebook = execm rclmobi
 application/x-okular-notes = internal xsltproc okular-note.xsl
 application/x-perl = internal text/plain
-# Returned by xdg-mime for .php. Future-proofing                   
 application/x-php = internal text/plain
-application/x-rar = execm rclrar;charset=default
+application/x-rar = execm rclrar.py;charset=default
 application/x-ruby = internal text/plain
 application/x-scribus = exec rclscribus
 application/x-shellscript = internal text/plain
-#application/x-tar = execm rcltar
 application/x-tex = exec rcltex
-application/x-webarchive = execm rclwar
-application/zip = execm rclzip;charset=default
-application/x-7z-compressed = execm rcl7z
-audio/ape = execm rclaudio
-audio/mpeg = execm rclaudio
-audio/mp4 = execm rclaudio
-video/mp4 = execm rclaudio
-video/x-msvideo = execm rclimg
-audio/aac = execm rclaudio
-audio/x-karaoke = execm rclkar
-audio/x-wavpack = execm rclaudio
-audio/x-musepack = execm rclaudio
+application/x-webarchive = execm rclwar.py
+application/x-zerosize = internal
+application/zip = execm rclzip.py;charset=default
+audio/aac = execm rclaudio.py
+audio/ape = execm rclaudio.py
+audio/mp4 = execm rclaudio.py
+audio/mpeg = execm rclaudio.py
+audio/ogg = execm rclaudio.py
+audio/x-karaoke = execm rclkar.py
+audio/x-musepack = execm rclaudio.py
+audio/x-wavpack = execm rclaudio.py
 image/gif = execm rclimg
 image/jp2 = execm rclimg
 image/jpeg = execm rclimg
 image/png = execm rclimg
+image/svg+xml = internal xsltproc svg.xsl
 image/tiff = execm rclimg
 image/vnd.djvu = execm rcldjvu.py
-image/svg+xml = internal xsltproc svg.xsl
-image/x-xcf = execm rclimg
 image/x-nikon-nef = execm rclimg
+image/x-xcf = execm rclimg
 inode/symlink = internal
-application/x-zerosize = internal
 inode/x-empty = internal application/x-zerosize
 message/rfc822 = internal
-text/calendar = execm rclics;mimetype=text/plain
+text/calendar = execm rclics.py;mimetype=text/plain
+text/css = internal text/plain
 text/html  = internal 
 text/plain = internal 
+text/plain1 = internal 
 text/rtf = exec unrtf --nopict --html;mimetype=text/html
-text/x-c = internal
-text/x-c++ = internal
-text/x-c+ = internal
-text/x-csharp = internal text/plain
-text/css = internal text/plain
-application/javascript = internal text/plain
+application/rtf = exec unrtf --nopict --html;mimetype=text/html
 text/x-bibtex = exec rclbibtex.sh ; mimetype = text/plain
+text/x-c = internal
+text/x-c+ = internal
+text/x-c++ = internal
+text/x-chm-html = internal text/html
+text/x-csharp = internal text/plain
 text/x-csv = internal text/plain
 text/x-fictionbook = internal xsltproc fb2.xsl
 text/x-gaim-log = exec rclgaim
 text/x-html-aptosid-man = exec rclaptosidman
-text/x-lua = internal
-text/x-chm-html = internal text/html
 text/x-ini = internal text/plain
 text/x-java = internal text/plain
+text/x-lua = internal
 text/x-mail = internal
-text/x-man = exec rclman
+text/x-man = exec rclman;maxseconds=30
+text/x-orgmode = execm rclorgmode.py
+text/x-orgmode-sub = internal text/plain
 text/x-perl = internal text/plain
-text/x-purple-log = exec rclpurple
 text/x-purple-html-log = internal text/html
-text/x-python = exec rclpython
+text/x-purple-log = exec rclpurple
+text/x-python = execm rclpython.py
 text/x-ruby = internal
 text/x-shellscript = internal text/plain
 text/x-srt = internal text/plain
 text/x-tex = exec rcltex
+video/mp4 = execm rclaudio.py
+video/x-msvideo = execm rclimg
 
 
 # Generic XML is best indexed as text, else it generates too many errors
@@ -210,6 +259,7 @@ application/ogg = sownd
 application/pdf = pdf
 application/postscript = postscript
 application/sql = source
+application/x-ipynb+json = document
 application/vnd.ms-excel = spreadsheet
 application/vnd.ms-office = document
 application/vnd.ms-outlook = document
@@ -228,6 +278,7 @@ application/vnd.openxmlformats-officedocument.spreadsheetml.sheet = spreadsheet
 application/vnd.openxmlformats-officedocument.spreadsheetml.template = spreadsheet
 application/vnd.openxmlformats-officedocument.wordprocessingml.document = wordprocessing
 application/vnd.openxmlformats-officedocument.wordprocessingml.template = wordprocessing
+application/vnd.ms-visio.drawing = document
 application/vnd.sun.xml.calc = spreadsheet
 application/vnd.sun.xml.calc.template = spreadsheet
 application/vnd.sun.xml.draw = drawing
@@ -246,6 +297,8 @@ application/x-chm = book
 application/x-dia-diagram = drawing
 application/x-dvi = document
 application/x-flac = sownd
+audio/x-flac = sownd
+audio/flac = sownd
 application/x-fsdirectory = folder
 application/x-gnote = document
 application/x-gnuinfo = book
@@ -271,6 +324,7 @@ audio/aac = sownd
 audio/ape = sownd
 audio/mp4 = sownd
 audio/mpeg = sownd
+audio/ogg = sownd
 audio/x-karaoke = sownd
 audio/x-musepack = sownd
 audio/x-wavpack = sownd
@@ -295,6 +349,7 @@ text/html|epub = bookchap
 text/html|gnuinfo = bookchap
 text/plain = txt
 text/rtf = wordprocessing
+application/rtf = wordprocessing
 text/x-bibtex = txt
 text/x-c = source
 text/x-c+ = source
@@ -309,6 +364,7 @@ text/x-java = source
 text/x-lua = source
 text/x-mail = message
 text/x-man = document
+text/x-orgmode = document
 text/x-perl = source
 text/x-php = source
 text/x-purple-html-log = pidgin
@@ -359,13 +415,14 @@ text = \
       application/x-dvi \
       application/x-gnote \
       application/x-gnuinfo \
+      application/x-ipynb+json \
       application/x-kword \
       application/x-lyx \
       application/x-mobipocket-ebook \
       application/x-okular-notes \
       application/x-perl \
       application/x-php \
-	  application/x-ruby \
+      application/x-ruby \
       application/x-scribus \
       application/x-shellscript \
       application/x-tex \
@@ -379,6 +436,7 @@ text = \
       text/html \
       text/plain \
       text/rtf \
+      application/rtf \
       text/x-bibtex \
       text/x-c \
       text/x-c++ \
@@ -392,6 +450,7 @@ text = \
       text/x-ini \
       text/x-java \
       text/x-man \
+      text/x-orgmode \
       text/x-perl \
       text/x-php \
       text/x-python \
@@ -418,6 +477,7 @@ presentation = \
   application/vnd.openxmlformats-officedocument.presentationml.template \
   application/vnd.sun.xml.impress \
   application/vnd.sun.xml.impress.template \
+  application/vnd.ms-visio.drawing
 
 media = \
       application/ogg \

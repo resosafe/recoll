@@ -53,17 +53,17 @@ extern "C" {
  * Each transformed char has 3 possible outputs: unaccented, unaccented and
  * folded, or just folded. These are kept at offset 0,1,2 in the position table
  */ 
-#define unac_uf_char_utf16_(c,p,l,o)					\
-    {									\
-	unsigned short index = unac_indexes[(c) >> UNAC_BLOCK_SHIFT];   \
-	unsigned char position = 3*((c) & UNAC_BLOCK_MASK) + (o);	\
-	(p) = &(unac_data_table[index][unac_positions[index][position]]); \
-	(l) = unac_positions[index][position + 1]			\
-	    - unac_positions[index][position];				\
-	if((l) == 1 && *(p) == 0xFFFF) {				\
-	    (p) = 0;							\
-	    (l) = 0;							\
-	}								\
+#define unac_uf_char_utf16_(c,p,l,o)                    \
+    {                                    \
+    unsigned short index = unac_indexes[(c) >> UNAC_BLOCK_SHIFT];   \
+    unsigned char position = 3*((c) & UNAC_BLOCK_MASK) + (o);    \
+    (p) = &(unac_data_table[index][unac_positions[index][position]]); \
+    (l) = unac_positions[index][position + 1]            \
+        - unac_positions[index][position];                \
+    if((l) == 1 && *(p) == 0xFFFF) {                \
+        (p) = 0;                            \
+        (l) = 0;                            \
+    }                                \
     }
 
 #define unac_char_utf16(c,p,l) unac_uf_char_utf16_((c),(p),(l),0)
@@ -84,11 +84,11 @@ extern "C" {
  * corresponding error code.
  */
 int unac_string_utf16(const char* in, size_t in_length,
-		char** out, size_t* out_length);
+        char** out, size_t* out_length);
 int unacfold_string_utf16(const char* in, size_t in_length,
-			  char** out, size_t* out_length);
+              char** out, size_t* out_length);
 int fold_string_utf16(const char* in, size_t in_length,
-		      char** out, size_t* out_length);
+              char** out, size_t* out_length);
 
 /*
  * The semantic of this function is stricly equal to the function
@@ -102,14 +102,14 @@ int fold_string_utf16(const char* in, size_t in_length,
  * the errno variable is set to the corresponding error code.
  */
 int unac_string(const char* charset,
-		const char* in, size_t in_length,
-		char** out, size_t* out_length);
+        const char* in, size_t in_length,
+        char** out, size_t* out_length);
 int unacfold_string(const char* charset,
-		const char* in, size_t in_length,
-		char** out, size_t* out_length);
+        const char* in, size_t in_length,
+        char** out, size_t* out_length);
 int fold_string(const char* charset,
-		const char* in, size_t in_length,
-		char** out, size_t* out_length);
+        const char* in, size_t in_length,
+        char** out, size_t* out_length);
 
 #ifdef BUILDING_RECOLL
 #include <string>
@@ -132,8 +132,8 @@ void unac_set_except_translations(const char *spectrans);
  */
 const char* unac_version(void);
 
-#define UNAC_DEBUG_NONE	0x00
-#define UNAC_DEBUG_LOW	0x01
+#define UNAC_DEBUG_NONE    0x00
+#define UNAC_DEBUG_LOW    0x01
 #define UNAC_DEBUG_HIGH 0x02
 
 #ifdef HAVE_VSNPRINTF

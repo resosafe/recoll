@@ -3,12 +3,12 @@
 PortSystem          1.0
 PortGroup           app 1.0
 PortGroup           qt5 1.0
-PortGroup           cxx11 1.1
 
+compiler.cxx_standard  2011
 qt5.depends_component qtwebkit
 
 name                recoll
-version             1.26.3
+version             1.26.7
 categories          textproc
 platforms           darwin
 license             GPL-2+
@@ -18,12 +18,12 @@ description         Desktop full text search
 
 long_description    Recoll is a desktop search tool based on Xapian
 
-homepage            http://www.recoll.org/
+homepage            https://www.lesbonscomptes.com/recoll/
 master_sites        ${homepage}
 
-checksums           rmd160  5fa96d54a8f835105afb51f24296f3bffc74ad55 \
-                    sha256  396bebfc94c3df13ca9a65ef6ed08096eb6b48c08812465a907c028f6f3fe93d \
-                    size 2978628
+checksums           rmd160  50f25961709ff3ee0ab39c72812f4c46a86dfdbc \
+                    sha256  0c7f6e420e345f0c7ea36c6898518f183cf97ab648d25ebe3ff16417b588e1a2 \
+                    size 3075386
 
 depends_lib         port:xapian-core \
                     port:aspell \
@@ -31,15 +31,16 @@ depends_lib         port:xapian-core \
                     port:zlib
 
 depends_run         port:antiword \
-                    port:python37 \
-                    port:py37-lxml \
+                    port:python39 \
+                    port:py39-lxml \
                     port:poppler \
                     port:unrtf \
                     port:unzip
 
 patchfiles          patch-sampleconf-mimeview.diff \
     patch-mkin-no-no-undefined.diff \
-    patch-recoll-pro-stdlib.diff
+    patch-recoll-pro-stdlib.diff \
+    patch-internfile-mh_xslt.diff
 
 post-patch {
     set clang_stdlib ""

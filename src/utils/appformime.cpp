@@ -14,7 +14,7 @@
  *   Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
-#ifndef TEST_APPFORMIME
+
 #include <conftree.h>
 #include <fstreewalk.h>
 
@@ -33,16 +33,14 @@ static DesktopDb *theDb;
 class FstCb : public FsTreeWalkerCB {
 public:
     FstCb(DesktopDb::AppMap *appdefs)
-        : m_appdefs(appdefs)
-        {
-        }
+        : m_appdefs(appdefs) {}
     virtual FsTreeWalker::Status 
-    processone(const string &, const struct stat *, FsTreeWalker::CbFlag);
+    processone(const string &, const struct PathStat *, FsTreeWalker::CbFlag);
     DesktopDb::AppMap *m_appdefs;
 };
 
-FsTreeWalker::Status FstCb::processone(const string& fn, const struct stat *, 
-                                       FsTreeWalker::CbFlag flg) 
+FsTreeWalker::Status FstCb::processone(
+    const string& fn, const struct PathStat*, FsTreeWalker::CbFlag flg) 
 {
     if (flg != FsTreeWalker::FtwRegular)
         return FsTreeWalker::FtwOk;
@@ -172,64 +170,8 @@ const string& DesktopDb::getReason()
     return m_reason;
 }
 
-#else // TEST_APPFORMIME
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <errno.h>
-#include <string.h>
-
-#include <string>
-#include <iostream>
-#include <vector>
-using namespace std;
-
-#include "appformime.h"
-
-static char *thisprog;
-
-static char usage [] =
-"  appformime <mime type>\n\n"
-;
-static void
-Usage(void)
+bool mimeIsImage(const std::string& tp)
 {
-    fprintf(stderr, "%s: usage:\n%s", thisprog, usage);
-    exit(1);
+    return !tp.compare(0, 6, "image/") &&
+        tp.compare("image/vnd.djvu") && tp.compare("image/svg+xml");
 }
-
-int main(int argc, char **argv)
-{
-  thisprog = argv[0];
-  argc--; argv++;
-
-  if (argc != 1)
-    Usage();
-  string mime = *argv++;argc--;
-
-  string reason;
-  vector<DesktopDb::AppDef> appdefs;
-  DesktopDb *ddb = DesktopDb::getDb();
-  if (ddb == 0) {
-      cerr << "Could not create desktop db\n";
-      exit(1);
-  }
-  if (!ddb->appForMime(mime, &appdefs, &reason)) {
-      cerr << "appForMime failed: " << reason << endl;
-      exit(1);
-  }
-  if (appdefs.empty()) {
-      cerr << "No application found for [" << mime << "]" << endl;
-      exit(1);
-  }
-  cout << mime << " -> ";
-  for (vector<DesktopDb::AppDef>::const_iterator it = appdefs.begin();
-       it != appdefs.end(); it++) {
-      cout << "[" << it->name << ", " << it->command << "], ";
-  }
-  cout << endl;
-
-  exit(0);
-}
-
-#endif //TEST_APPFORMIME

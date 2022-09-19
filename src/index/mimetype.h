@@ -17,8 +17,9 @@
 #ifndef _MIMETYPE_H_INCLUDED_
 #define _MIMETYPE_H_INCLUDED_
 
-#include "safesysstat.h"
 #include <string>
+
+#include "pathut.h"
 
 class RclConfig;
 
@@ -32,7 +33,7 @@ class RclConfig;
  * @param cfg recoll config
  * @param usfc Use system's 'file' command as last resort (or not)
  */
-std::string mimetype(const std::string &filename, const struct stat *stp,
+std::string mimetype(const std::string &filename, const struct PathStat *stp,
                      RclConfig *cfg, bool usfc);
 
 

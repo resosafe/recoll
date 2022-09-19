@@ -3,7 +3,7 @@
 
 Summary:        Desktop full text search tool with Qt GUI
 Name:           recoll
-Version:        1.25.22
+Version:        1.32.7
 Release:        2%{?dist}
 Group:          Applications/Databases
 License:        GPLv2+
@@ -13,15 +13,26 @@ Source10:       qmake-qt5.sh
 BuildRequires:  aspell-devel
 BuildRequires:  bison
 BuildRequires:  desktop-file-utils
-# kio
-BuildRequires:  kdelibs4-devel
+
+#BuildRequires:  kdelibs4-devel
+
+# Fedora
 BuildRequires:  qt5-qtbase-devel
 BuildRequires:  qt5-qtwebkit-devel
-BuildRequires:  extra-cmake-modules
-BuildRequires:  kf5-kio-devel
-BuildRequires:  python2-devel
+#BuildRequires: qt5-qtwebengine-devel
 BuildRequires:  python3-devel
 BuildRequires:  xapian-core-devel
+BuildRequires:  kf5-kio-devel
+
+# Opensuse
+#BuildRequires:  libQt5Gui-devel
+#BuildRequires:  libqt5-qtwebengine-devel
+#BuildRequires:  python310-devel
+#BuildRequires:  libxapian-devel
+#BuildRequires:  kio-devel
+
+BuildRequires:  extra-cmake-modules
+BuildRequires:  python2-devel
 BuildRequires:  zlib-devel
 BuildRequires:  chmlib-devel
 BuildRequires:  libxslt-devel
@@ -29,7 +40,7 @@ Requires:       xdg-utils
 
 %description
 Recoll is a personal full text search package for Linux, FreeBSD and
-other Unix systems. It is based on a very strong back end (Xapian), for
+other Unix systems. It is based on the powerful Xapian backend, for
 which it provides an easy to use, feature-rich, easy administration
 interface.
 
@@ -55,7 +66,7 @@ LDFLAGS="%{?__global_ldflags}"; export LDFLAGS
 install -m755 -D %{SOURCE10} qmake-qt5.sh
 export QMAKE=qmake-qt5
 
-%configure
+%configure --enable-webengine
 make %{?_smp_mflags}
 
 %install
@@ -70,7 +81,7 @@ rm -f %{buildroot}/usr/share/recoll/filters/xdg-open
 
 # kio_recoll -kde5
 (
-mkdir kde/kioslave/kio_recoll/build && pushd kde/kioslave/kio_recoll/build
+#mkdir kde/kioslave/kio_recoll/build && pushd kde/kioslave/kio_recoll/build
 %cmake ..
 make %{?_smp_mflags} VERBOSE=1
 make install DESTDIR=%{buildroot}
@@ -132,17 +143,17 @@ exit 0
 %{_bindir}/%{name}
 %{_bindir}/%{name}index
 %{_datadir}/%{name}
-%{_datadir}/appdata/%{name}.appdata.xml
+%{_datadir}/metainfo/%{name}.appdata.xml
 %{_datadir}/applications/%{name}-searchgui.desktop
 %{_datadir}/icons/hicolor/48x48/apps/%{name}.png
 %{_datadir}/pixmaps/%{name}.png
 %{_libdir}/recoll
-%{python_sitearch}/recoll
-%{python_sitearch}/Recoll*.egg-info
+%{python2_sitearch}/recoll
+%{python2_sitearch}/Recoll*.egg-info
 %{python3_sitearch}/recoll
 %{python3_sitearch}/Recoll*.egg-info
-%{python_sitearch}/recollchm
-%{python_sitearch}/recollchm*.egg-info
+%{python2_sitearch}/recollchm
+%{python2_sitearch}/recollchm*.egg-info
 %{python3_sitearch}/recollchm
 %{python3_sitearch}/recollchm*.egg-info
 %{_mandir}/man1/%{name}.1*

@@ -19,9 +19,13 @@
 # Use xallexcepts- and xallexcepts+ in a user file to add or remove from
 # the default xallexcepts list
 
+# Visio xml is in there because the desktops tend to try and open it as an
+# archive
 xallexcepts = application/pdf application/postscript application/x-dvi \
  text/html|gnuinfo text/html|chm text/html|epub text/html|rclman \
- application/x-fsdirectory|parentopen inode/directory|parentopen
+ application/x-fsdirectory|parentopen inode/directory|parentopen \
+ application/vnd.ms-visio.drawing application/x-ipynb+json \
+ text/x-orgmode text/x-orgmode-sub
 
 
 [view]
@@ -37,17 +41,22 @@ application/epub+zip = ebook-viewer %f
 # html documents. This is almost always what we want.
 text/html|epub = ebook-viewer %F;ignoreipath=1
 
+application/x-ipynb+json = jupyter notebook %f
+
 application/x-gnote = gnote %f
 
 application/x-mobipocket-ebook = ebook-viewer %f
 
 application/x-kword = kword %f
 application/x-abiword = abiword %f
+application/x-hwp = libreoffice
 
 # Note: the Linux Mint evince clones, atril and xread, have the same options
 application/pdf  = evince --page-index=%p --find=%s %f
 # Or:
 #application/pdf  = qpdfview --search %s %f#%p
+# Or okular, but it does not take a search string on the command line.
+#application/pdf  = okular --unique -p %p %f
 
 application/postscript = evince --page-index=%p --find=%s %f
 application/x-dvi = evince --page-index=%p --find=%s  %f
@@ -74,6 +83,7 @@ application/vnd.openxmlformats-officedocument.wordprocessingml.template = \
  libreoffice %f
 application/vnd.openxmlformats-officedocument.presentationml.template = \
  libreoffice %f
+application/vnd.ms-visio.drawing = libreoffice %f
 application/vnd.openxmlformats-officedocument.presentationml.presentation = \
  libreoffice %f
 application/vnd.openxmlformats-officedocument.spreadsheetml.sheet = \
@@ -92,6 +102,7 @@ application/vnd.sun.xml.writer.global = libreoffice %f
 application/vnd.sun.xml.writer.template = libreoffice %f
 application/vnd.wordperfect = libreoffice %f
 text/rtf = libreoffice %f
+application/rtf = libreoffice %f
 
 application/x-dia-diagram = dia %f
 
@@ -110,10 +121,12 @@ application/x-gnuinfo = xterm -e "info -f %f"
 application/x-gnumeric = gnumeric %f
 
 application/x-flac = rhythmbox %f
+audio/flac = rhythmbox %f
 audio/mpeg = rhythmbox %f
 audio/aac = rhythmbox %f
 audio/ape = rhythmbox %f
 audio/mp4 = rhythmbox %f
+audio/ogg = rhythmbox %f
 audio/x-musepack = rhythmbox %f
 audio/x-wavpack = rhythmbox %f
 application/ogg = rhythmbox %f
@@ -209,6 +222,8 @@ text/x-c++ = emacsclient --no-wait  %f
 text/x-csv = libreoffice %f
 text/x-html-sidux-man = konqueror %f
 text/x-html-aptosid-man = iceweasel %f
+text/x-orgmode-sub = emacsclient --no-wait  %F
+text/x-orgmode = emacsclient --no-wait  %f
 
 application/x-chm = kchmviewer %f
 # Html pages inside a chm have a chm rclaptg set by the filter. Kchmviewer

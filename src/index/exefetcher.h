@@ -40,6 +40,8 @@ public:
     class Internal;
     EXEDocFetcher(const Internal&);
     virtual ~EXEDocFetcher() {}
+    EXEDocFetcher(const EXEDocFetcher&) = delete;
+    EXEDocFetcher& operator=(const EXEDocFetcher&) = delete;
 
     virtual bool fetch(RclConfig* cnf, const Rcl::Doc& idoc, RawDoc& out);
     /** Calls stat to retrieve file signature data */
@@ -51,7 +53,6 @@ private:
 };
 
 // Lookup bckid in the config and create an appropriate fetcher.
-std::unique_ptr<EXEDocFetcher> exeDocFetcherMake(RclConfig *config,
-                                                 const std::string& bckid);
+std::unique_ptr<EXEDocFetcher> exeDocFetcherMake(RclConfig *config, const std::string& bckid);
 
 #endif /* _EXEFETCHER_H_INCLUDED_ */

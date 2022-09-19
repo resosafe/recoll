@@ -5,8 +5,9 @@ topdir=`dirname $0`/..
 
 initvariables $0
 
-recollq Scribus_sla_uniqueterm OR Chaturbhuja 2> $mystderr | 
-	egrep -v '^Recoll query: ' > $mystdout
+(
+    recollq -S url Scribus_sla_uniqueterm OR Chaturbhuja
+)  2> $mystderr | egrep -v '^Recoll query: ' > $mystdout
 
 diff -w ${myname}.txt $mystdout > $mydiffs 2>&1
 

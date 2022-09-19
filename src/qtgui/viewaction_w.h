@@ -36,6 +36,8 @@ public:
         init();
     }
     ~ViewAction() {}
+    ViewAction(const ViewAction&) = delete;
+    ViewAction& operator=(const ViewAction&) = delete;
     void selectMT(const QString& mt);
 
 public slots:

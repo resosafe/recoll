@@ -54,15 +54,39 @@ class RclConfig:
             self.datadir = os.environ["RECOLL_DATADIR"]
         else:
             if platsys == "Windows":
+                dirs = (os.path.join(os.path.dirname(sys.argv[0]), "..", ".."),
+                        "C:/Program Files (X86)/Recoll/",
+                        "C:/Program Files/Recoll/",
+                        "C:/install/recoll/")
+                for dir in dirs:
+                    if os.path.exists(os.path.join(dir, "Share")):
+                        self.datadir = os.path.join(dir, "Share")
+                        break
+            elif platsys == "Darwin":
+                # Actually, I'm not sure why we don't do this on all platforms
                 self.datadir = os.path.join(os.path.dirname(sys.argv[0]), "..")
+                #print("Mac datadir: [%s]" % self.datadir, file=sys.stderr)
             else:
-                dirs = ("/opt/local", "/usr", "/usr/local")
+                dirs = ("/opt/local", "/opt", "/usr", "/usr/local")
                 for dir in dirs:
                     dd = os.path.join(dir, "share/recoll")
                     if os.path.exists(dd):
                         self.datadir = dd
         if self.datadir is None:
             self.datadir = "/usr/share/recoll"
+        f = None
+        try:
+            f = open(os.path.join(self.datadir, "examples", "recoll.conf"), "r")
+        except:
+            pass
+        if f is None:
+            raise(Exception(
+                "Can't open default/system recoll.conf. " +
+                "Please set RECOLL_DATADIR in the environment to point " +
+                "to the installed recoll data files."))
+        else:
+            f.close()
+
         #print("Datadir: [%s]" % self.datadir, file=sys.stderr)
         self.cdirs = []
         
@@ -81,7 +105,14 @@ class RclConfig:
         return self.confdir
     def getDataDir(self):
         return self.datadir
-    
+    def getDbDir(self):
+        dir = self.getConfParam("dbdir")
+        if os.path.isabs(dir):
+            return dir
+        cachedir = self.getConfParam("cachedir")
+        if not cachedir:
+            cachedir = self.confdir
+        return os.path.join(cachedir, dir)
     def setKeyDir(self, dir):
         self.keydir = dir
 

@@ -32,13 +32,11 @@
  * Inside the file. the UDIs are stored inside the entry dictionary
  * under the key "udi".
  *
- * It is assumed that the dictionary are small (they are routinely read/parsed)
- *
+ * It is assumed that the dictionaries are small (they are routinely
+ * read/parsed)
  */
 
-#include <sys/types.h>
-#include <stdint.h>
-
+#include <cstdint>
 #include <string>
 
 class ConfSimple;
@@ -48,6 +46,8 @@ class CirCache {
 public:
     CirCache(const std::string& dir);
     virtual ~CirCache();
+    CirCache(const CirCache&) = delete;
+    CirCache& operator=(const CirCache&) = delete;
 
     virtual std::string getReason();
 
@@ -63,14 +63,22 @@ public:
     enum OpMode {CC_OPREAD, CC_OPWRITE};
     virtual bool open(OpMode mode);
 
+    virtual int64_t size();
+    virtual int64_t maxsize();
+    virtual int64_t writepos();
+    virtual bool    uniquentries();
+    
     virtual std::string getpath();
 
     // Set data to 0 if you just want the header
+    // instance == -1 means get latest. Otherwise specify from 1+
     virtual bool get(const std::string& udi, std::string& dic,
                      std::string *data = 0, int instance = -1);
 
     // Note: the dicp MUST have an udi entry
-    enum PutFlags {NoCompHint = 1};
+    enum PutFlags {
+        NoCompHint = 1, // Do not attempt compression.
+    };
     virtual bool put(const std::string& udi, const ConfSimple *dicp,
                      const std::string& data, unsigned int flags = 0);
 
@@ -98,24 +106,37 @@ public:
 
     /* Utility: append all entries from sdir to ddir. 
      * 
-     * This does not need to be a member at all, just using the namespace here.
+     * ddir must already exist. It will be appropriately resized if
+     * needed to avoid recycling while writing the new entries. 
+     * ** Note that if dest is not currently growing, this action
+     *   will recycle old dest entries between the current write
+     *   point and EOF (or up to wherever we need to write to store
+     *   the source data) **
+     * Also note that if the objective is just to compact (reuse the erased
+     * entries space) you should first create the new circache with the
+     * same maxsize as the old one, else the new maxsize will be the
+     * current file size (current erased+active entries, with
+     * available space corresponding to the old erased entries).
      *
-     * @param ddir destination circache (must be previously created
-     *     with appropriate size)
+     * @param ddir destination circache (must exist)
      * @param sdir source circache
      * @ret number of entries copied or -a
      */
-    static int append(const std::string ddir, const std::string& sdir,
-                      std::string *reason = 0);
+    static int appendCC(const std::string& ddir, const std::string& sdir,
+                        std::string *reason = 0);
 
+    /* Rewrite the cache so that the space wasted to erased
+     * entries is recovered. This may need to use temporarily twice
+     * the current cache disk space.
+     */
+    static bool compact(const std::string& dir, std::string *reason = 0);
+
+    /* Extract all entries as metadata/data file pairs */
+    static bool burst(const std::string& ccdir, const std::string destdir, std::string *reason = 0);
+    
 protected:
     CirCacheInternal *m_d;
     std::string m_dir;
-private:
-    CirCache(const CirCache&) {}
-    CirCache& operator=(const CirCache&) {
-        return *this;
-    }
 };
 
 #endif /* _circache_h_included_ */

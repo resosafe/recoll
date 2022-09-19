@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 #################################
 # Copyright (C) 2019 J.F.Dockes
 #   This program is free software; you can redistribute it and/or modify
@@ -28,12 +28,14 @@ import os
 import pathlib
 import email.parser
 import email.policy
+import email.message
 import mailbox
 import subprocess
 import rclexecm
 import rclconfig
 import conftree
 import base64
+import traceback
 
 _mswindows = (sys.platform == "win32" or sys.platform == "msys")
 if _mswindows:
@@ -95,14 +97,26 @@ class EmailBuilder(object):
         newmsg = email.message.EmailMessage(policy=email.policy.default)
         headerstr = self.headers.decode("UTF-8", errors='replace')
         # print("%s" % headerstr)
-        headers = self.parser.parsestr(headerstr, headersonly=True)
+        try:
+            headers = self.parser.parsestr(headerstr, headersonly=True)
+        except:
+            # This sometimes fails, for example with 'day is out of range for month'. Try to go on
+            # without headers
+            headers = email.message.EmailMessage()
+            
         #self.log("EmailBuilder: content-type %s" % headers['content-type'])
-        for nm in ('from', 'subject'):
+        for nm in ('from', 'subject', 'date'):
             if nm in headers:
-                newmsg.add_header(nm, headers[nm])
+                try:
+                    newmsg.add_header(nm, headers[nm])
+                except:
+                    pass
 
         for h in ('to', 'cc'):
-            tolist = headers.get_all(h)
+            try:
+                tolist = headers.get_all(h)
+            except:
+                tolist = []
             if not tolist:
                 continue
             alldests = ""
@@ -113,7 +127,10 @@ class EmailBuilder(object):
                     alldests += sd + ", "
             if alldests:
                 alldests = alldests.rstrip(", ")
-                newmsg.add_header(h, alldests)
+                try:
+                    newmsg.add_header(h, alldests)
+                except:
+                    pass
 
 # Decoding the body: the .pst contains the text value decoded from qp
 # or base64 (at least that's what libpff sends). Unfortunately, it
@@ -135,8 +152,13 @@ class EmailBuilder(object):
                 charset = headers.get_content_charset()
                 body = ''
                 if charset:
-                    body = self.body.decode(charset, errors='replace')
-                    #self.log("DECODE FROM HEADER CHARSET %s SUCCEEDED"% charset)
+                    if charset == 'unicode':
+                        charset = 'utf-16'
+                    try:
+                        body = self.body.decode(charset, errors='replace')
+                        #self.log("DECODE FROM HEADER CHARSET %s SUCCEEDED"% charset)
+                    except:
+                        pass
                 else:
                     try:
                         body = self.body.decode('utf-8')
@@ -330,13 +352,13 @@ class PstExtractor(object):
         if not self.pffexport:
             print("RECFILTERROR HELPERNOTFOUND pffexport")
             sys.exit(1);
-        self.filename = params["filename:"]
+        self.filename = params["filename"]
         self.generator = None
         return True
 
     def getipath(self, params):
         ipath = met_join(self.target + ".export",
-                         params["ipath:"].decode("UTF-8"))
+                         params["ipath"].decode("UTF-8"))
         self.em.rclog("getipath: [%s]" % ipath)
         if not self.startCmd(self.filename, ipath=ipath):
             return (False, "", "", rclexecm.RclExecM.eofnow) 
@@ -377,6 +399,7 @@ class PstExtractor(object):
                 return(False, "", "", rclexecm.RclExecM.eofnow)
         except Exception as ex:
             self.em.rclog("getnext: exception: %s" % ex)
+            traceback.print_exc()
             return(False, "", "", rclexecm.RclExecM.eofnow)
             
         return (True, doc, ipath, rclexecm.RclExecM.noteof)

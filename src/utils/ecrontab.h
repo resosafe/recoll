@@ -52,8 +52,8 @@ using std::vector;
  * Only ascii capital letters, numbers and _ before the '='
  */
 bool editCrontab(const string& marker, const string& id, 
-		 const string& sched, const string& cmd,
-		 string& reason
+         const string& sched, const string& cmd,
+         string& reason
     );
 
 /**
@@ -66,6 +66,6 @@ bool checkCrontabUnmanaged(const string& marker, const string& data);
 
 /** Retrieve the scheduling for a crontab entry */
 bool getCrontabSched(const string& marker, const string& id, 
-		     vector<string>& sched);
+             vector<string>& sched);
 
 #endif /* _ECRONTAB_H_INCLUDED_ */

@@ -23,11 +23,9 @@
 // Current status of an indexing operation. This is updated in
 // $RECOLL_CONFDIR/idxstatus.txt
 class DbIxStatus {
- public:
-    enum Phase {DBIXS_NONE,
-		DBIXS_FILES, DBIXS_PURGE, DBIXS_STEMDB, DBIXS_CLOSING, 
-		DBIXS_MONITOR,
-		DBIXS_DONE};
+public:
+    enum Phase {DBIXS_NONE, DBIXS_FILES, DBIXS_FLUSH, DBIXS_PURGE, DBIXS_STEMDB, DBIXS_CLOSING, 
+                DBIXS_MONITOR, DBIXS_DONE};
     Phase phase;
     std::string fn;   // Last file processed
     int docsdone;  // Documents actually updated
@@ -43,14 +41,39 @@ class DbIxStatus {
     bool hasmonitor{false};
     
     void reset() {
-	phase = DBIXS_FILES;
-	fn.erase();
-	docsdone = filesdone = fileerrors = dbtotdocs = totfiles = 0;
+        phase = DBIXS_FILES;
+        fn.erase();
+        docsdone = filesdone = fileerrors = dbtotdocs = totfiles = 0;
     }
     DbIxStatus() {reset();}
 };
 
 class RclConfig;
 extern void readIdxStatus(RclConfig *config, DbIxStatus &status);
+
+/** Callback to say what we're doing. If the update func returns false, we
+ * stop as soon as possible without corrupting state */
+class DbIxStatusUpdater {
+public:
+    DbIxStatusUpdater(const RclConfig *config, bool nox11monitor);
+    virtual ~DbIxStatusUpdater(){}
+    DbIxStatusUpdater(const DbIxStatusUpdater&) = delete;
+    DbIxStatusUpdater& operator=(const DbIxStatusUpdater&) = delete;
+
+    enum Incr {IncrNone, IncrDocsDone = 0x1, IncrFilesDone = 0x2, IncrFileErrors = 0x4};
+    // Change phase/fn and update
+    virtual bool update(DbIxStatus::Phase phase, const std::string& fn, int incr = IncrNone);
+
+    void setMonitor(bool onoff);
+    void setDbTotDocs(int totdocs);
+    
+    class Internal;
+private:
+    Internal *m;
+};
+
+// We use the updater as a singleton everywhere. It is instanciated in
+// idxstatus.cpp. Must be called once with non-null config at first.
+extern DbIxStatusUpdater *statusUpdater(RclConfig *config=nullptr, bool nox11monitor=false);
 
 #endif /* _IDXSTATUS_H_INCLUDED_ */

@@ -1,5 +1,4 @@
-#!/usr/bin/env python
-from __future__ import print_function
+#!/usr/bin/env python3
 
 import sys
 import xapian
@@ -13,30 +12,37 @@ def wrap_prefix(prefix):
     if o_index_stripchars:
         return prefix
     else:
-        return ":" + prefix + ":"
+        return b":" + prefix + b":"
 
 def init_stripchars(xdb):
     global o_index_stripchars
     global md5wpref
     t = xdb.allterms()
-    t.skip_to(":")
+    t.skip_to(b":")
     for term in t:
-        if term.term.find(":") == 0:
+        if term.term.find(b":") == 0:
             o_index_stripchars = False
         break
-    md5wpref = wrap_prefix("XM")
+    md5wpref = wrap_prefix(b"XM")
     
 
 # Retrieve named value from document data record.
 # The record format is a sequence of nm=value lines
-def get_attribute(xdb, docid, fld):
+def get_attributes(xdb, docid, flds, decode=True):
     doc = xdb.get_document(docid)
     data = doc.get_data()
-    s = data.find(fld+"=")
-    if s == -1:
-        return ""
-    e = data.find("\n", s)
-    return data[s+len(fld)+1:e]
+    res = []
+    for fld in flds:
+        s = data.find(fld + b"=")
+        if s == -1:
+            res.append(None)
+        else:
+            e = data.find(b"\n", s)
+            if decode:
+                res.append(data[s+len(fld)+1:e].decode('UTF-8'))
+            else:
+                res.append(data[s+len(fld)+1:e])
+    return res
 
 # Convenience: retrieve postings as Python list
 def get_postlist(xdb, term):
@@ -45,6 +51,7 @@ def get_postlist(xdb, term):
         ret.append(posting.docid)
     return ret
     
+
 # Return list of docids having same md5 including self
 def get_dups(xdb, docid):
     doc = xdb.get_document(int(docid))
@@ -76,11 +83,11 @@ def find_all_dups(xdb):
             alldups.append(dups)
     return alldups
 
+
 # Print docid url ipath for list of docids
 def print_urlipath(xdb, doclist):
     for docid in doclist:
-        url = get_attribute(xdb, docid, "url")
-        ipath = get_attribute(xdb, docid, "ipath")
+        url,ipath = get_attributes(xdb, docid, [b"url", b"ipath"])
         print("%s %s %s" % (docid, url, ipath))
 
 def msg(s):
@@ -106,6 +113,7 @@ try:
     if len(sys.argv) == 2:
         # No docid args, 
         alldups = find_all_dups(xdb)
+
         for dups in alldups:
             print_urlipath(xdb, dups)
             print("")
@@ -116,5 +124,5 @@ try:
                 print_urlipath(xdb, dups)
                 
 except Exception as e:
-    msg("Xapian error: %s" % str(e))
+    msg("Error: %s" % str(e))
     sys.exit(1)

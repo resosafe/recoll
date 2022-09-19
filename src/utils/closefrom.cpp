@@ -57,9 +57,11 @@
  *   - Has nothing. The method we initially used (listing /dev/fd) could
  *     deadlock in multithread fork/exec context. We now use a close()
  *     loop but there is no completely reliable way to determine the high limit.
- *     glibc maintainers think that closefrom() is a bad idea
- *     *especially* because it is implemented on *BSD and Solaris. Go
- *     figure...: https://sourceware.org/bugzilla/show_bug.cgi?id=10353
+ *       The glibc maintainer (drepper) thinks that closefrom() is a bad idea
+ *       *especially* because it is implemented on *BSD and Solaris. Go figure... 
+ *     https://sourceware.org/bugzilla/show_bug.cgi?id=10353
+ *     Bug updated 2021/07/08, apparently fixed in glibc 2.35 (not yet available 2022-01, fed35 and
+ *     tumble are at 2.34).
  *
  * Interface:
  *
@@ -68,17 +70,17 @@
  *       values will be closed. fd needs not be a valid descriptor.
  *  @return 0 for success, -1 for error.
  */
-#ifndef TEST_CLOSEFROM
-
 #include "closefrom.h"
 
 #include <stdio.h>
-#include <unistd.h>
+#include "safeunistd.h"
 #include <fcntl.h>
 #include <string.h>
+#ifndef _WIN32
 #include <sys/param.h>
 #include <sys/time.h>
 #include <sys/resource.h>
+#endif
 
 
 /* #define DEBUG_CLOSEFROM */
@@ -95,7 +97,7 @@
 
 /* closefrom() exists on Solaris, netbsd and openbsd, but someone will
  * have to provide me the appropriate macro to test */
-#if ((defined(__FreeBSD__) && __FreeBSD_version >= 702104)) || \
+#if ((defined(__FreeBSD__) && __FreeBSD_version >= 702104)) ||  \
     defined(__DragonFly__)
 /* Use closefrom() system call */
 int libclf_closefrom(int fd0)
@@ -165,6 +167,7 @@ int libclf_closefrom(int fd0)
 }
 
 /*************************************************************************/
+
 #else 
 
 /* System has no native support for this functionality.
@@ -199,7 +202,7 @@ int libclf_closefrom(int fd0)
         maxfd = libclf_maxfd();
     }
     if (maxfd < 0)
-	maxfd = OPEN_MAX;
+        maxfd = OPEN_MAX;
 
     DPRINT((stderr, "libclf_closefrom: using loop to %d\n", maxfd));
 
@@ -218,56 +221,13 @@ int libclf_closefrom(int fd0)
 // both POSIX.1-2001?
 int libclf_maxfd(int)
 {
+#ifdef _WIN32
+    // https://docs.microsoft.com/en-us/cpp/c-runtime-library/reference/setmaxstdio?view=msvc-170
+    return 8192;
+#else
     struct rlimit lim;
     getrlimit(RLIMIT_NOFILE, &lim);
     return int(lim.rlim_cur);
-}
-
-#else /* TEST_CLOSEFROM */
-
-#include <stdio.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include <stdlib.h>
-
-#include "closefrom.h"
-
-int main(int argc, char **argv)
-{
-    int i;
-
-    int fd0 = open("/etc/group", 0);
-    if (fd0 < 0) {
-        perror("open /etc/group");
-        exit(1);
-    }
-    
-    if (dup2(fd0, 11) < 0) {
-        perror("dup2->11");
-        exit(1);
-    }
-    if (dup2(fd0, 19) < 0) {
-        perror("dup2->19");
-        exit(1);
-    }
-    if (dup2(fd0, 99)< 0) {
-        perror("dup2->99 (ok)");
-    }
-    if (dup2(fd0, 999) < 0) {
-        perror("dup3->999 (ok)");
-    }
-
-    libclf_closefrom(11);
-    for (i = 0; i < 10000; i++) {
-        if (fcntl(i, F_GETFL) != -1) {
-            fprintf(stderr, "Descriptor %d is still open", i);
-            if (i < 11)
-                fprintf(stderr, " (OK)\n");
-            else
-                fprintf(stderr, " (BAD)\n");
-        }
-    }
-    exit(0);
-}
-
 #endif
+}
+

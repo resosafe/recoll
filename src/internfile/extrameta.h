@@ -30,7 +30,7 @@ namespace Rcl {class Doc;};
 /** Read external attributes, possibly ignore some or change the names
    according to the fields configuration */
 extern void reapXAttrs(const RclConfig* config, const std::string& path, 
-		       std::map<std::string, std::string>& xfields);
+               std::map<std::string, std::string>& xfields);
 
 /** Turn the pre-processed extended file attributes into doc fields */
 extern void docFieldsFromXattrs(
@@ -39,7 +39,7 @@ extern void docFieldsFromXattrs(
 
 /** Get metadata by executing commands */
 extern void reapMetaCmds(RclConfig* config, const std::string& path, 
-			 std::map<std::string, std::string>& xfields);
+             std::map<std::string, std::string>& xfields);
 
 /** Turn the pre-processed ext cmd metadata into doc fields */
 extern void docFieldsFromMetaCmds(

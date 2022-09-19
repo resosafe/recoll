@@ -1,0 +1,22 @@
+diff --git a/kde/kioslave/kio_recoll/dirif.cpp b/kde/kioslave/kio_recoll/dirif.cpp
+index b1f38fb4..4438a1e7 100644
+--- a/kde/kioslave/kio_recoll/dirif.cpp
++++ b/kde/kioslave/kio_recoll/dirif.cpp
+@@ -35,12 +35,17 @@
+ #include <QDebug>
+ #include <QUrl>
+ #include <QStandardPaths>
++#include <KF5/kio_version.h>
+ 
+ #include "kio_recoll.h"
+ #include "pathut.h"
+ 
+ using namespace KIO;
+ 
++#if KIO_VERSION < ((5<<16)|(49<<8)|(0))
++#define fastInsert insert
++#endif
++
+ static const QString resultBaseName("recollResult");
+ 
+ // Check if the input URL is of the form that konqueror builds by

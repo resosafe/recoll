@@ -71,12 +71,14 @@ class QSorter : public Xapian::KeyMaker
 public:
     QSorter(const string& f) 
         : m_fld(docfToDatf(f) + "=") {
-        m_ismtime = !m_fld.compare("dmtime=");
-        if (m_ismtime)
-            m_issize = false;
-        else 
-            m_issize = !m_fld.compare("fbytes=") || !m_fld.compare("dbytes=") ||
-                !m_fld.compare("pcbytes=");
+        if (m_fld == "dmtime=") {
+            m_ismtime = true;
+        } else if (m_fld == "fbytes=" || m_fld == "dbytes=" || 
+                   m_fld == "pcbytes=") {
+            m_issize = true;
+        } else if (m_fld == "mtype=") {
+            m_ismtype = true;
+        }
     }
 
     virtual std::string operator()(const Xapian::Document& xdoc) const {
@@ -111,6 +113,14 @@ public:
             // Left zeropad values for appropriate numeric sorting
             leftzeropad(term, 12);
             return term;
+        } else if (m_ismtype) {
+            // Arrange for directories to always sort first
+            if (term == "inode/directory" ||
+                term == "application/x-fsdirectory") {
+                term.insert(0, 1, ' ');
+            }
+            // No further processing needed for mtype
+            return term;
         }
 
         // Process data for better sorting. We should actually do the
@@ -136,13 +146,13 @@ public:
 
 private:
     string m_fld;
-    bool   m_ismtime;
-    bool   m_issize;
+    bool   m_ismtime{false};
+    bool   m_issize{false};
+    bool   m_ismtype{false};
 };
 
 Query::Query(Db *db)
-    : m_nq(new Native(this)), m_db(db), m_sorter(0), m_sortAscending(true),
-      m_collapseDuplicates(false), m_resCnt(-1), m_snipMaxPosWalk(1000000)
+    : m_nq(new Native(this)), m_db(db)
 {
     if (db)
         db->getConf()->getConfParam("snippetMaxPosWalk", &m_snipMaxPosWalk);
@@ -168,6 +178,27 @@ void Query::setSortBy(const string& fld, bool ascending) {
             (m_sortAscending ? "ascending" : "descending") << "\n");
 }
 
+static const string parent_prefix{"F"};
+
+class SubdocDecider : public Xapian::MatchDecider {
+public:
+    SubdocDecider(bool sel) : MatchDecider(), m_select(sel) {}
+    virtual ~SubdocDecider() {}
+    
+    virtual bool operator()(const Xapian::Document &doc) const {
+        bool hasparent{false};
+        try {
+            Xapian::TermIterator xit = doc.termlist_begin();
+            xit.skip_to(wrap_prefix(parent_prefix));
+            hasparent = (xit != doc.termlist_end()) && (get_prefix(*xit) == parent_prefix);
+        } catch (...) {
+        }
+        return hasparent == m_select;
+    }
+
+    bool m_select;
+};
+    
 // Prepare query out of user search data
 bool Query::setQuery(std::shared_ptr<SearchData> sdata)
 {
@@ -188,8 +219,13 @@ bool Query::setQuery(std::shared_ptr<SearchData> sdata)
         m_reason += sdata->getReason();
         return false;
     }
-
     m_nq->xquery = xq;
+    
+    if (sdata->getSubSpec() == SearchData::SUBDOC_NO) {
+        m_nq->subdecider = new SubdocDecider(false);
+    } else if (sdata->getSubSpec() == SearchData::SUBDOC_YES) {
+        m_nq->subdecider = new SubdocDecider(true);
+    }
 
     string d;
     for (int tries = 0; tries < 2; tries++) {
@@ -286,15 +322,18 @@ bool Query::makeDocAbstract(const Doc &doc, vector<string>& abstract)
     vector<Snippet> vpabs;
     if (!makeDocAbstract(doc, vpabs))
         return false;
-    for (vector<Snippet>::const_iterator it = vpabs.begin();
-         it != vpabs.end(); it++) {
+    for (const auto& snippet : vpabs) {
         string chunk;
-        if (it->page > 0) {
+        if (snippet.page > 0) {
             ostringstream ss;
-            ss << it->page;
-            chunk += string(" [p ") + ss.str() + "] ";
+            ss << snippet.page;
+            chunk += string(" [P. ") + ss.str() + "] ";
+        } else if (snippet.line > 0) {
+            ostringstream ss;
+            ss << snippet.line;
+            chunk += string(" [L. ") + ss.str() + "] ";
         }
-        chunk += it->snippet;
+        chunk += snippet.snippet;
         abstract.push_back(chunk);
     }
     return true;
@@ -305,9 +344,8 @@ bool Query::makeDocAbstract(const Doc &doc, string& abstract)
     vector<Snippet> vpabs;
     if (!makeDocAbstract(doc, vpabs))
         return false;
-    for (vector<Snippet>::const_iterator it = vpabs.begin(); 
-         it != vpabs.end(); it++) {
-        abstract.append(it->snippet);
+    for (const auto& snippet : vpabs) {
+        abstract.append(snippet.snippet);
         abstract.append(cstr_ellipsis);
     }
     return m_reason.empty() ? true : false;
@@ -326,9 +364,12 @@ int Query::getFirstMatchPage(const Doc &doc, string& term)
     return m_reason.empty() ? pagenum : -1;
 }
 
-
 // Mset size
-static const int qquantum = 50;
+// Note: times for retrieving (multiple times)all docs from a sample
+// 25k docs db (q: mime:*)
+// qqantum: 10 50  100 150 200 1000
+// Seconds: 21 8.5 6.7 6.4 5.8 6.0
+static const int qquantum = 100;
 
 // Get estimated result count for query. Xapian actually does most of
 // the search job in there, this can be long
@@ -348,7 +389,8 @@ int Query::getResCnt(int checkatleast, bool useestimate)
         Chrono chron;
         XAPTRY(if (checkatleast == -1)
                    checkatleast = m_db->docCnt();
-               m_nq->xmset = m_nq->xenquire->get_mset(0, qquantum, checkatleast),
+               m_nq->xmset = m_nq->xenquire->get_mset(
+                   0, qquantum, checkatleast, 0, m_nq->subdecider),
                m_db->m_ndb->xrdb, m_reason);
         if (!m_reason.empty()) {
             LOGERR("xenquire->get_mset: exception: " << m_reason << "\n");
@@ -388,10 +430,9 @@ bool Query::getDoc(int xapi, Doc &doc, bool fetchtext)
     if (!(xapi >= first && xapi <= last)) {
         LOGDEB("Fetching for first " << xapi << ", count " << qquantum << "\n");
 
-        XAPTRY(m_nq->xmset = m_nq->xenquire->get_mset(xapi, qquantum,  
-                                                      (const Xapian::RSet *)0),
+        XAPTRY(m_nq->xmset = m_nq->xenquire->get_mset(
+                   xapi, qquantum, nullptr, m_nq->subdecider),
                m_db->m_ndb->xrdb, m_reason);
-
         if (!m_reason.empty()) {
             LOGERR("enquire->get_mset: exception: " << m_reason << "\n");
             return false;
@@ -473,8 +514,7 @@ vector<string> Query::expand(const Doc &doc)
             Xapian::ESet eset = m_nq->xenquire->get_eset(20, rset, false);
             LOGDEB("ESet terms:\n");
             // We filter out the special terms
-            for (Xapian::ESetIterator it = eset.begin(); 
-                 it != eset.end(); it++) {
+            for (Xapian::ESetIterator it = eset.begin(); it != eset.end(); it++) {
                 LOGDEB(" [" << (*it) << "]\n");
                 if ((*it).empty() || has_prefix(*it))
                     continue;

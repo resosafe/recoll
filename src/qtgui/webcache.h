@@ -1,4 +1,4 @@
-/* Copyright (C) 2016 J.F.Dockes
+/* Copyright (C) 2016-2021 J.F.Dockes
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation; either version 2 of the License, or
@@ -35,16 +35,19 @@ class WebcacheModel : public QAbstractTableModel {
 public:
     WebcacheModel(QObject *parent = 0);
     ~WebcacheModel();
+    WebcacheModel(const WebcacheModel&) = delete;
+    WebcacheModel& operator=(const WebcacheModel&) = delete;
 
     // Reimplemented methods
     virtual int rowCount (const QModelIndex& = QModelIndex()) const;
     virtual int columnCount(const QModelIndex& = QModelIndex()) const;
     virtual QVariant headerData (int col, Qt::Orientation orientation, 
-				 int role = Qt::DisplayRole) const;
+                                 int role = Qt::DisplayRole) const;
     virtual QVariant data(const QModelIndex& index, 
-			   int role = Qt::DisplayRole ) const;
+                          int role = Qt::DisplayRole ) const;
     bool deleteIdx(unsigned int idx);
     std::string getURL(unsigned int idx);
+    std::string getData(unsigned int idx);
 
 public slots:
     void setSearchFilter(const QString&);
@@ -66,6 +69,7 @@ public slots:
     void createPopupMenu(const QPoint&);
     void deleteSelected();
     void copyURL();
+    void saveToFile();
 protected:
     void closeEvent(QCloseEvent *);
 private:

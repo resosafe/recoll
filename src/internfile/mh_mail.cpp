@@ -85,7 +85,7 @@ void MimeHandlerMail::clear_impl()
     m_attachments.clear();
 }
 
-bool MimeHandlerMail::set_document_file_impl(const string& mt, const string &fn)
+bool MimeHandlerMail::set_document_file_impl(const string&, const string &fn)
 {
     LOGDEB("MimeHandlerMail::set_document_file(" << fn << ")\n");
     if (m_fd >= 0) {
@@ -125,7 +125,7 @@ bool MimeHandlerMail::set_document_file_impl(const string& mt, const string &fn)
     return true;
 }
 
-bool MimeHandlerMail::set_document_string_impl(const string& mt, 
+bool MimeHandlerMail::set_document_string_impl(const string&,
                                                const string& msgtxt)
 {
     LOGDEB1("MimeHandlerMail::set_document_string\n");

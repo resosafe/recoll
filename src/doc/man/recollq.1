@@ -25,6 +25,9 @@ recollq \- command line / standard output Recoll query command.
 .B \-A
 ]
 [
+.B \-p
+]
+[
 .B \-e
 ]
 [
@@ -55,6 +58,10 @@ recollq \- command line / standard output Recoll query command.
 [
 .B \-F
 <quoted space separated field name list>
+]
+[
+.B \--extract-to
+<file path>
 ]
 <query string>
 
@@ -106,7 +113,9 @@ is set, the whole metadata array will be dumped for each document.
 .PP
 If 
 .B \-A
-is set, the document abstracts will be printed.
+is set, the document abstracts will be printed. With an additional
+.B \-p
+option, snippets with page numbers (when available) will be shown instead.
 .PP
 .B \-S
 <fieldname>
@@ -115,9 +124,10 @@ sorts the results according to the specified field. Use
 for descending order.
 .PP
 .B \-n
-<cnt>
+<[first-]cnt>
 can be used to set the maximum number of results that should be
-printed. The default is 2000. Use a value of 0 for no limit.
+printed. The default is 2000. Use a value of 0 for no limit. If the argument is of the form
+first-cnt, it also defines the first result to output (from 0).
 .PP
 .B \-s
 <language>
@@ -138,6 +148,11 @@ exactly the fields requested on the command line. Fields are encoded in
 base64 and separated by one space character. Empty fields are indicated by
 consecutive space characters. There is one additional space character at
 the end of each line.
+.PP
+.B \--extract-to
+<file path>
+Will extract the first result document of the query to the argument path, which must not exist. Use
+-n first-cnt to select the document.
 .PP
 .B recollq \-P
 (Period) will print the minimum and maximum modification years for

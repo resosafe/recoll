@@ -102,19 +102,19 @@ December 28, 2000
       
        The dmoz loading process has been dramatically simplified. It is
           now only available as a command. No more fancy web interface that
-	  confuses everyone. In addition the convert_dmoz script now generates
-	  text files that can be directly loaded into Catalog instead of the
-	  intermediate XML file. The whole loading process now takes from 
-	  one to two hours depending on your machine. It took around 10 hours
-	  with the previous version. 
+      confuses everyone. In addition the convert_dmoz script now generates
+      text files that can be directly loaded into Catalog instead of the
+      intermediate XML file. The whole loading process now takes from 
+      one to two hours depending on your machine. It took around 10 hours
+      with the previous version. 
        The -exclude option was added to convert_dmoz to get rid of 
           a whole branch of the catalog at load time. Typical usage would
-	  be convert_dmoz -exclude '^/Adult' -what content content.rdf.gz.
+      be convert_dmoz -exclude '^/Adult' -what content content.rdf.gz.
        A lot more sanity checks and repair have been added to deal with
           duplicates, category id conflicts and the like.
        Hopefully this new method will also be more understandable and 
           generate less traffic on the mailing list. There is room for 
-	  improvements and contributors are welcome. 
+      improvements and contributors are welcome. 
       
       A new set of software is available in the 
       download directory under the RedHat-6.1 section. These
@@ -128,19 +128,19 @@ December 28, 2000
       This is a maintainance release.
       
         Various bug fixes. All easy
-	  to fix bugs have been fixed. Take a look at Bug Track to see what hasn't been fixed.
+      to fix bugs have been fixed. Take a look at Bug Track to see what hasn't been fixed.
         The _PATHTEXT_ and _PATHFILE_ 
-	  tags syntax has been extended to specify a range of path component.
+      tags syntax has been extended to specify a range of path component.
           
         Graham Barr added a recursive
-	  template feature for a catalog root page. This allows to show sub-categories
-	  of the root categories in the root page of a catalog.
+      template feature for a catalog root page. This allows to show sub-categories
+      of the root categories in the root page of a catalog.
           
       
       Don't hesitate to submit bugs
         or ideas to bug track. Hopefully the next version of Catalog will have
-	a fast full text indexing mechanism and I'll be able to implement new
-	functionalities.
+    a fast full text indexing mechanism and I'll be able to implement new
+    functionalities.
         
       Have fun !
       July 3, 1999
@@ -307,19 +307,19 @@ December 28, 2000
       
        The dmoz loading process has been dramatically simplified. It is
           now only available as a command. No more fancy web interface that
-	  confuses everyone. In addition the convert_dmoz script now generates
-	  text files that can be directly loaded into Catalog instead of the
-	  intermediate XML file. The whole loading process now takes from 
-	  one to two hours depending on your machine. It took around 10 hours
-	  with the previous version. 
+      confuses everyone. In addition the convert_dmoz script now generates
+      text files that can be directly loaded into Catalog instead of the
+      intermediate XML file. The whole loading process now takes from 
+      one to two hours depending on your machine. It took around 10 hours
+      with the previous version. 
        The -exclude option was added to convert_dmoz to get rid of 
           a whole branch of the catalog at load time. Typical usage would
-	  be convert_dmoz -exclude '^/Adult' -what content content.rdf.gz.
+      be convert_dmoz -exclude '^/Adult' -what content content.rdf.gz.
        A lot more sanity checks and repair have been added to deal with
           duplicates, category id conflicts and the like.
        Hopefully this new method will also be more understandable and 
           generate less traffic on the mailing list. There is room for 
-	  improvements and contributors are welcome. 
+      improvements and contributors are welcome. 
       
       A new set of software is available in the 
       download directory under the RedHat-6.1 section. These
@@ -333,19 +333,19 @@ December 28, 2000
       This is a maintainance release.
       
         Various bug fixes. All easy
-	  to fix bugs have been fixed. Take a look at Bug Track to see what hasn't been fixed.
+      to fix bugs have been fixed. Take a look at Bug Track to see what hasn't been fixed.
         The _PATHTEXT_ and _PATHFILE_ 
-	  tags syntax has been extended to specify a range of path component.
+      tags syntax has been extended to specify a range of path component.
           
         Graham Barr added a recursive
-	  template feature for a catalog root page. This allows to show sub-categories
-	  of the root categories in the root page of a catalog.
+      template feature for a catalog root page. This allows to show sub-categories
+      of the root categories in the root page of a catalog.
           
       
       Don't hesitate to submit bugs
         or ideas to bug track. Hopefully the next version of Catalog will have
-	a fast full text indexing mechanism and I'll be able to implement new
-	functionalities.
+    a fast full text indexing mechanism and I'll be able to implement new
+    functionalities.
         
       Have fun !
       July 3, 1999

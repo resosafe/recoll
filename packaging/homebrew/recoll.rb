@@ -60,40 +60,40 @@ index f41a9f39..dc3085a4 100755
  #
  # This Source Code Form is subject to the terms of the Mozilla Public
  # License, v. 2.0. If a copy of the MPL was not distributed with this
-diff --git filters/rcl7z filters/rcl7z
+diff --git filters/rcl7z.py filters/rcl7z.py
 index c68c8bcb..ac50c4ec 100755
---- filters/rcl7z
-+++ filters/rcl7z
+--- filters/rcl7z.py
++++ filters/rcl7z.py
 @@ -1,4 +1,4 @@
 -#!/usr/bin/env python2
 +#!/usr/bin/env python2.7
  
  # 7-Zip file filter for Recoll
  
-diff --git filters/rclaudio filters/rclaudio
+diff --git filters/rclaudio.py filters/rclaudio.py
 index 94ca0be7..08d6375a 100755
---- filters/rclaudio
-+++ filters/rclaudio
+--- filters/rclaudio.py
++++ filters/rclaudio.py
 @@ -1,4 +1,4 @@
 -#!/usr/bin/env python2
 +#!/usr/bin/env python2.7
  
  # Audio tag filter for Recoll, using mutagen
  
-diff --git filters/rclchm filters/rclchm
+diff --git filters/rclchm.py filters/rclchm.py
 index f9811c37..3bc9b16d 100755
---- filters/rclchm
-+++ filters/rclchm
+--- filters/rclchm.py
++++ filters/rclchm.py
 @@ -1,4 +1,4 @@
 -#!/usr/bin/env python2
 +#!/usr/bin/env python2.7
  """Extract Html files from a Microsoft Compiled Html Help file (.chm)
  Needs at least python 2.2 for HTMLParser (chmlib needs 2.2 too)"""
  
-diff --git filters/rcldia filters/rcldia
+diff --git filters/rcldia.py filters/rcldia.py
 index 282148eb..a480294b 100755
---- filters/rcldia
-+++ filters/rcldia
+--- filters/rcldia.py
++++ filters/rcldia.py
 @@ -1,4 +1,4 @@
 -#!/usr/bin/env python2
 +#!/usr/bin/env python2.7
@@ -120,30 +120,30 @@ index e8fa1831..b92b185d 100755
  from __future__ import print_function
  
  import rclexecm
-diff --git filters/rclepub filters/rclepub
+diff --git filters/rclepub.py filters/rclepub.py
 index 8042d7f9..51786af1 100755
---- filters/rclepub
-+++ filters/rclepub
+--- filters/rclepub.py
++++ filters/rclepub.py
 @@ -1,4 +1,4 @@
 -#!/usr/bin/env python2
 +#!/usr/bin/env python2.7
  """Extract Html content from an EPUB file (.epub)"""
  from __future__ import print_function
  
-diff --git filters/rclepub1 filters/rclepub1
+diff --git filters/rclepub.py1 filters/rclepub.py1
 index bd44f635..a7ea6c06 100755
---- filters/rclepub1
-+++ filters/rclepub1
+--- filters/rclepub.py1
++++ filters/rclepub.py1
 @@ -1,4 +1,4 @@
 -#!/usr/bin/env python2
 +#!/usr/bin/env python2.7
  """Extract Html content from an EPUB file (.chm), concatenating all sections"""
  from __future__ import print_function
  
-diff --git filters/rclics filters/rclics
+diff --git filters/rclics.py filters/rclics.py
 index 0ef04f2d..de177024 100755
---- filters/rclics
-+++ filters/rclics
+--- filters/rclics.py
++++ filters/rclics.py
 @@ -1,4 +1,4 @@
 -#!/usr/bin/env python2
 +#!/usr/bin/env python2.7
@@ -160,20 +160,20 @@ index 7eb1da91..4eb6c9b0 100755
  
  # Python-based Image Tag extractor for Recoll. This is less thorough
  # than the Perl-based rclimg script, but useful if you don't want to
-diff --git filters/rclinfo filters/rclinfo
+diff --git filters/rclinfo.py filters/rclinfo.py
 index f353d19e..36cf34e0 100755
---- filters/rclinfo
-+++ filters/rclinfo
+--- filters/rclinfo.py
++++ filters/rclinfo.py
 @@ -1,4 +1,4 @@
 -#!/usr/bin/env python2
 +#!/usr/bin/env python2.7
  
  # Read a file in GNU info format and output its nodes as subdocs,
  # interfacing with recoll execm
-diff --git filters/rclkar filters/rclkar
+diff --git filters/rclkar.py filters/rclkar.py
 index d6570dd5..34b8d2a2 100755
---- filters/rclkar
-+++ filters/rclkar
+--- filters/rclkar.py
++++ filters/rclkar.py
 @@ -1,4 +1,4 @@
 -#!/usr/bin/env python2
 +#!/usr/bin/env python2.7
@@ -230,10 +230,10 @@ index 615455b3..1e411890 100755
  # -*- coding: iso-8859-1 -*-
  """
      MoinMoin - Python source parser and colorizer
-diff --git filters/rclrar filters/rclrar
+diff --git filters/rclrar.py filters/rclrar.py
 index 8f723fa5..5f6adfb0 100755
---- filters/rclrar
-+++ filters/rclrar
+--- filters/rclrar.py
++++ filters/rclrar.py
 @@ -1,4 +1,4 @@
 -#!/usr/bin/env python2
 +#!/usr/bin/env python2.7
@@ -280,10 +280,10 @@ index 8c1b8aea..cee17324 100755
  # Copyright (C) 2014 J.F.Dockes
  #   This program is free software; you can redistribute it and/or modify
  #   it under the terms of the GNU General Public License as published by
-diff --git filters/rcltar filters/rcltar
+diff --git filters/rcltar.py filters/rcltar.py
 index d8bf100d..ab4b306e 100755
---- filters/rcltar
-+++ filters/rcltar
+--- filters/rcltar.py
++++ filters/rcltar.py
 @@ -1,4 +1,4 @@
 -#!/usr/bin/env python2
 +#!/usr/bin/env python2.7
@@ -320,10 +320,10 @@ index 32a11c1a..eab3b257 100644
  from __future__ import print_function
  
  import rclexecm
-diff --git filters/rclwar filters/rclwar
+diff --git filters/rclwar.py filters/rclwar.py
 index b654f3b3..301e28e9 100755
---- filters/rclwar
-+++ filters/rclwar
+--- filters/rclwar.py
++++ filters/rclwar.py
 @@ -1,4 +1,4 @@
 -#!/usr/bin/env python2
 +#!/usr/bin/env python2.7
@@ -360,10 +360,10 @@ index 158e1222..602769af 100755
  # Copyright (C) 2016 J.F.Dockes
  #   This program is free software; you can redistribute it and/or modify
  #   it under the terms of the GNU General Public License as published by
-diff --git filters/rclzip filters/rclzip
+diff --git filters/rclzip.py filters/rclzip.py
 index 35739625..0c597fbd 100755
---- filters/rclzip
-+++ filters/rclzip
+--- filters/rclzip.py
++++ filters/rclzip.py
 @@ -1,4 +1,4 @@
 -#!/usr/bin/env python2
 +#!/usr/bin/env python2.7

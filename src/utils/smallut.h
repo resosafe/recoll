@@ -1,4 +1,4 @@
-/* Copyright (C) 2006-2016 J.F.Dockes
+/* Copyright (C) 2006-2022 J.F.Dockes
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -18,13 +18,16 @@
 #ifndef _SMALLUT_H_INCLUDED_
 #define _SMALLUT_H_INCLUDED_
 
-#include <sys/types.h>
 #include <stdint.h>
-
+#include <time.h>
 #include <string>
 #include <vector>
 #include <map>
-#include <set>
+#include <functional>
+
+struct tm;
+
+namespace MedocUtils {
 
 // Miscellaneous mostly string-oriented small utilities
 // Note that none of the following code knows about utf-8.
@@ -42,6 +45,16 @@ void smallut_init_mt();
 #ifndef deleteZ
 #define deleteZ(X) {delete X;X = 0;}
 #endif
+#ifndef PRETEND_USE
+#define PRETEND_USE(var) ((void)(var))
+#endif
+#ifndef VERSION_AT_LEAST
+#define VERSION_AT_LEAST(LIBMAJ,LIBMIN,LIBREV,TARGMAJ,TARGMIN,TARGREV)  \
+    ((LIBMAJ) > (TARGMAJ) ||                                            \
+     ((LIBMAJ) == (TARGMAJ) &&                                          \
+      ((LIBMIN) > (TARGMIN) ||                                          \
+       ((LIBMIN) == (TARGMIN) && (LIBREV) >= (TARGREV)))))
+#endif
 #endif /* SMALLUT_DISABLE_MACROS */
 
 // Case-insensitive compare. ASCII ONLY !
@@ -58,27 +71,16 @@ struct StringIcmpPred {
     const std::string& m_s1;
 };
 
-extern int stringlowercmp(const std::string& alreadylower,
+extern int stringlowercmp(const std::string& s1, // already lower
                           const std::string& s2);
-extern int stringuppercmp(const std::string& alreadyupper,
+extern int stringuppercmp(const std::string& s1, // already upper
                           const std::string& s2);
 
 extern void stringtolower(std::string& io);
 extern std::string stringtolower(const std::string& io);
 extern void stringtoupper(std::string& io);
 extern std::string stringtoupper(const std::string& io);
-extern bool beginswith(const std::string& big, const std::string& small);
-
-// Is one string the end part of the other ?
-extern int stringisuffcmp(const std::string& s1, const std::string& s2);
-
-// Divine language from locale
-extern std::string localelang();
-// Divine 8bit charset from language
-extern std::string langtocode(const std::string& lang);
-
-// Compare charset names, removing the more common spelling variations
-extern bool samecharset(const std::string& cs1, const std::string& cs2);
+extern bool beginswith(const std::string& bg, const std::string& sml);
 
 // Parse date interval specifier into pair of y,m,d dates.  The format
 // for the time interval is based on a subset of iso 8601 with
@@ -102,8 +104,18 @@ struct DateInterval {
 extern bool parsedateinterval(const std::string& s, DateInterval *di);
 extern int monthdays(int mon, int year);
 
+
+/** Note for all templated functions: 
+ * By default, smallut.cpp has explicit instantiations for common
+ * containers (list, vector, set, etc.). If this is not enough, or
+ * conversely, if you want to minimize the module size, you can chose
+ * the instantiations by defining the SMALLUT_EXTERNAL_INSTANTIATIONS
+ * compilation flag, and defining the instances in a file named
+ * smallut_instantiations.h
+ */
+
 /**
- * Parse input string into list of strings.
+ * Parse input string into list of strings. See instantiation note above.
  *
  * Token delimiter is " \t\n" except inside dquotes. dquote inside
  * dquotes can be escaped with \ etc...
@@ -116,7 +128,7 @@ template <class T> bool stringToStrings(const std::string& s, T& tokens,
                                         const std::string& addseps = "");
 
 /**
- * Inverse operation:
+ * Inverse operation. See instantiation note above.
  */
 template <class T> void stringsToString(const T& tokens, std::string& s);
 template <class T> std::string stringsToString(const T& tokens);
@@ -124,17 +136,20 @@ template <class T> std::string stringsToString(const T& tokens);
 /**
  * Strings to CSV string. tokens containing the separator are quoted (")
  * " inside tokens is escaped as "" ([word "quote"] =>["word ""quote"""]
+ * See instantiation note above.
  */
-template <class T> void stringsToCSV(const T& tokens, std::string& s,
-                                     char sep = ',');
+template <class T> void stringsToCSV(const T& tokens, std::string& s, char sep = ',');
+
+/** Find longest common prefix for bunch of strings */
+template <class T> std::string commonprefix(const T& values);
 
 /**
- * Split input string. No handling of quoting
+ * Split input string. No handling of quoting.
  */
 extern void stringToTokens(const std::string& s,
                            std::vector<std::string>& tokens,
                            const std::string& delims = " \t",
-                           bool skipinit = true);
+                           bool skipinit = true, bool allowempty = false);
 
 /** Like toTokens but with multichar separator */
 extern void stringSplitString(const std::string& str,
@@ -164,12 +179,11 @@ extern void neutchars(const std::string& str, std::string& out,
 
 /** Turn string into something that won't be expanded by a shell. In practise
  *  quote with double-quotes and escape $`\ */
-extern std::string escapeShell(const std::string& str);
+extern std::string escapeShell(const std::string& in);
 
 /** Truncate a string to a given maxlength, avoiding cutting off midword
  *  if reasonably possible. */
-extern std::string truncate_to_word(const std::string& input,
-                                    std::string::size_type maxlen);
+extern std::string truncate_to_word(const std::string& input, std::string::size_type maxlen);
 
 void ulltodecstr(uint64_t val, std::string& buf);
 void lltodecstr(int64_t val, std::string& buf);
@@ -180,22 +194,22 @@ std::string ulltodecstr(uint64_t val);
 std::string displayableBytes(int64_t size);
 
 /** Break big string into lines */
-std::string breakIntoLines(const std::string& in, unsigned int ll = 100,
-                           unsigned int maxlines = 50);
+std::string breakIntoLines(const std::string& in, unsigned int ll = 100, unsigned int maxlines = 50);
 
 /** Small utility to substitute printf-like percents cmds in a string */
-bool pcSubst(const std::string& in, std::string& out,
-             const std::map<char, std::string>& subs);
+bool pcSubst(const std::string& in, std::string& out, const std::map<char, std::string>& subs);
 /** Substitute printf-like percents and also %(key) */
 bool pcSubst(const std::string& in, std::string& out,
              const std::map<std::string, std::string>& subs);
+/** Substitute printf-like percents and %(nm), using result of function call */
+bool pcSubst(const std::string& i, std::string& o, std::function<std::string(const std::string&)>);
+
 
 /** Append system error message */
 void catstrerror(std::string *reason, const char *what, int _errno);
 
 /** Portable timegm. MS C has _mkgmtime, but there is a bug in Gminw which
  * makes it inaccessible */
-struct tm;
 time_t portable_timegm(struct tm *tm);
 
 inline void leftzeropad(std::string& s, unsigned len)
@@ -205,6 +219,11 @@ inline void leftzeropad(std::string& s, unsigned len)
     }
 }
 
+// Print binary string in hexa, separate bytes with character separ if not zero
+// (e.g. ac:23:0c:4f:46:fd)
+extern std::string hexprint(const std::string& in, char separ= 0);
+
+#ifndef SMALLUT_NO_REGEX
 // A class to solve platorm/compiler issues for simple regex
 // matches. Uses the appropriate native lib under the hood.
 // This always uses extended regexp syntax.
@@ -214,26 +233,33 @@ public:
     /// @param nmatch must be >= the number of parenthesed subexp in exp
     SimpleRegexp(const std::string& exp, int flags, int nmatch = 0);
     ~SimpleRegexp();
+    SimpleRegexp(const SimpleRegexp&) = delete;
+    SimpleRegexp& operator=(const SimpleRegexp&) = delete;
     /// Match input against exp, return true if matches
     bool simpleMatch(const std::string& val) const;
     /// After simpleMatch success, get nth submatch, 0 is the whole
     /// match, 1 first parentheses, etc.
-    std::string getMatch(const std::string& val, int matchidx) const;
+    std::string getMatch(const std::string& val, int i) const;
     /// Calls simpleMatch()
     bool operator() (const std::string& val) const;
+
+    /// Replace the first occurrence of regexp. 
+    std::string simpleSub(const std::string& input, const std::string& repl);
+
     /// Check after construction
     bool ok() const;
-    
+
     class Internal;
 private:
     Internal *m;
 };
+#endif // SMALLUT_NO_REGEX
 
 /// Utilities for printing names for defined values (Ex: O_RDONLY->"O_RDONLY")
 
 /// Entries for the descriptive table
 struct CharFlags {
-    CharFlags(int v, const char *y, const char *n=0)
+    CharFlags(int v, const char *y, const char *n=nullptr)
         : value(v), yesname(y), noname(n) {}
     unsigned int value; // Flag or value
     const char *yesname;// String to print if flag set or equal
@@ -245,15 +271,13 @@ struct CharFlags {
 #define CHARFLAGENTRY(NM) {NM, #NM}
 
 /// Translate a bitfield into string description
-extern std::string flagsToString(const std::vector<CharFlags>&,
-                                 unsigned int flags);
+extern std::string flagsToString(const std::vector<CharFlags>&, unsigned int val);
 
 /// Translate a value into a name
 extern std::string valToString(const std::vector<CharFlags>&, unsigned int val);
 
-/// Reverse operation: translate string into bitfield
-extern unsigned int
-stringToFlags(const std::vector<CharFlags>&, const std::string& input,
-              const char *sep = "|");
+} // End namespace MedocUtils
+
+using namespace MedocUtils;
 
 #endif /* _SMALLUT_H_INCLUDED_ */

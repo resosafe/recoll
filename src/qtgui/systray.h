@@ -1,4 +1,4 @@
-/*
+/* Copyright (C) 2005-2020 J.F.Dockes
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation; either version 2 of the License, or
@@ -25,7 +25,7 @@ class RclMain;
 class RclTrayIcon : public QSystemTrayIcon {
     Q_OBJECT
 
-    public:
+public:
 
     RclTrayIcon(RclMain *mainw, const QIcon& icon, QObject* parent = 0)
         : QSystemTrayIcon(icon, parent), m_mainw(mainw) { 

@@ -18,13 +18,11 @@
 #include "autoconfig.h"
 
 #include <stdio.h>
-#include <dirent.h>
+
 #include <errno.h>
 #include <fnmatch.h>
-#include "safesysstat.h"
 #include <cstring>
 #include <algorithm>
-
 #include <sstream>
 #include <vector>
 #include <deque>
@@ -34,7 +32,6 @@
 #include "log.h"
 #include "pathut.h"
 #include "fstreewalk.h"
-#include "transcode.h"
 
 using namespace std;
 
@@ -47,6 +44,7 @@ const int FsTreeWalker::FtwTravMask = FtwTravNatural|
 #ifndef _WIN32
 // dev/ino means nothing on Windows. It seems that FileId could replace it
 // but we only use this for cycle detection which we just disable.
+#include <sys/stat.h>
 class DirId {
 public:
     dev_t dev;
@@ -221,15 +219,10 @@ bool FsTreeWalker::inSkippedPaths(const string& path, bool ckparents)
 
 static inline int slashcount(const string& p)
 {
-    int n = 0;
-    for (unsigned int i = 0; i < p.size(); i++)
-        if (p[i] == '/')
-            n++;
-    return n;
+    return std::count(p.begin(), p.end(), '/');
 }
 
-FsTreeWalker::Status FsTreeWalker::walk(const string& _top, 
-                                        FsTreeWalkerCB& cb)
+FsTreeWalker::Status FsTreeWalker::walk(const string& _top, FsTreeWalkerCB& cb)
 {
     string top = (data->options & FtwNoCanon) ? _top : path_canon(_top);
 
@@ -238,7 +231,7 @@ FsTreeWalker::Status FsTreeWalker::walk(const string& _top,
     }
 
     data->basedepth = slashcount(top); // Only used for breadthxx
-    struct stat st;
+    struct PathStat st;
     // We always follow symlinks at this point. Makes more sense.
     if (path_fileprops(top, &st) == -1) {
         // Note that we do not return an error if the stat call
@@ -306,9 +299,11 @@ FsTreeWalker::Status FsTreeWalker::walk(const string& _top,
                 data->logsyserr("stat", nfather);
                 return errno == ENOENT ? FtwOk : FtwError;
             }
-            if ((status = cb.processone(nfather, &st, FtwDirReturn)) & 
-                (FtwStop|FtwError)) {
-                return status;
+            if (!(data->options & FtwOnlySkipped)) {
+                if ((status = cb.processone(nfather, &st, FtwDirReturn)) & 
+                    (FtwStop|FtwError)) {
+                    return status;
+                }
             }
         }
 
@@ -325,38 +320,30 @@ FsTreeWalker::Status FsTreeWalker::walk(const string& _top,
     return FtwOk;
 }
 
-#ifdef _WIN32
-#define DIRENT _wdirent
-#define DIRHDL _WDIR
-#define OPENDIR _wopendir
-#define CLOSEDIR _wclosedir
-#define READDIR _wreaddir
-#else
-#define DIRENT dirent
-#define DIRHDL DIR
-#define OPENDIR opendir
-#define CLOSEDIR closedir
-#define READDIR readdir
-#endif
-
 // Note that the 'norecurse' flag is handled as part of the directory read. 
 // This means that we always go into the top 'walk()' parameter if it is a 
 // directory, even if norecurse is set. Bug or Feature ?
 FsTreeWalker::Status FsTreeWalker::iwalk(const string &top, 
-                                         struct stat *stp,
+                                         struct PathStat *stp,
                                          FsTreeWalkerCB& cb)
 {
     Status status = FtwOk;
     bool nullpush = false;
 
     // Tell user to process the top entry itself
-    if (S_ISDIR(stp->st_mode)) {
-        if ((status = cb.processone(top, stp, FtwDirEnter)) & 
-            (FtwStop|FtwError)) {
+    if (stp->pst_type == PathStat::PST_DIR) {
+        if (!(data->options & FtwOnlySkipped)) {
+            if ((status = cb.processone(top, stp, FtwDirEnter)) & 
+                (FtwStop|FtwError)) {
+                return status;
+            }
+        }
+    } else if (stp->pst_type == PathStat::PST_REGULAR) {
+        if (!(data->options & FtwOnlySkipped)) {
+            return cb.processone(top, stp, FtwRegular);
+        } else {
             return status;
         }
-    } else if (S_ISREG(stp->st_mode)) {
-        return cb.processone(top, stp, FtwRegular);
     } else {
         return status;
     }
@@ -377,7 +364,7 @@ FsTreeWalker::Status FsTreeWalker::iwalk(const string &top,
     // For now, we'll ignore the "other kind of cycle" part and only monitor
     // this is FtwFollow is set
     if (data->options & FtwFollow) {
-        DirId dirid(stp->st_dev, stp->st_ino);
+        DirId dirid(stp->pst_dev, stp->pst_ino);
         if (data->donedirs.find(dirid) != data->donedirs.end()) {
             LOGINFO("Not processing [" << top <<
                     "] (already seen as other path)\n");
@@ -387,20 +374,9 @@ FsTreeWalker::Status FsTreeWalker::iwalk(const string &top,
     }
 #endif
 
-    SYSPATH(top, systop);
-    DIRHDL *d = OPENDIR(systop);
-    if (nullptr == d) {
+    PathDirContents dc(top);
+    if (!dc.opendir()) {
         data->logsyserr("opendir", top);
-#ifdef _WIN32
-        int rc = GetLastError();
-        LOGERR("opendir failed: LastError " << rc << endl);
-        if (rc == ERROR_NETNAME_DELETED) {
-            // 64: share disconnected.
-            // Not too sure of the errno in this case.
-            // Make sure it's not one of the permissible ones
-            errno = ENODEV;
-        }
-#endif
         switch (errno) {
         case EPERM:
         case EACCES:
@@ -417,33 +393,45 @@ FsTreeWalker::Status FsTreeWalker::iwalk(const string &top,
         }
     }
 
-    struct DIRENT *ent;
-    while (errno = 0, ((ent = READDIR(d)) != 0)) {
+    const struct PathDirContents::Entry *ent;
+    while (errno = 0, ((ent = dc.readdir()) != nullptr)) {
         string fn;
-        struct stat st;
-#ifdef _WIN32
-        string sdname;
-        if (!wchartoutf8(ent->d_name, sdname)) {
-            LOGERR("wchartoutf8 failed in " << top << endl);
+        struct PathStat st;
+        const string& dname{ent->d_name};
+        if (dname.empty()) {
+            // ???
             continue;
         }
-        const char *dname = sdname.c_str();
-#else
-        const char *dname = ent->d_name;
-#endif
         // Maybe skip dotfiles
         if ((data->options & FtwSkipDotFiles) && dname[0] == '.')
             continue;
         // Skip . and ..
-        if (!strcmp(dname, ".") || !strcmp(dname, "..")) 
+        if (dname == "." || dname == "..") 
             continue;
 
         // Skipped file names match ?
         if (!data->skippedNames.empty()) {
-            if (inSkippedNames(dname))
+            if (inSkippedNames(dname)) {
+                cb.processone(path_cat(top, dname), nullptr, FtwSkipped);
                 continue;
+            }
         }
+
         fn = path_cat(top, dname);
+
+        // Skipped file paths match ?
+        if (!data->skippedPaths.empty()) {
+            // We do not check the ancestors. This means that you can have
+            // a topdirs member under a skippedPath, to index a portion of
+            // an ignored area. This is the way it had always worked, but
+            // this was broken by 1.13.00 and the systematic use of 
+            // FNM_LEADING_DIR
+            if (inSkippedPaths(fn, false)) {
+                cb.processone(fn, nullptr, FtwSkipped);
+                continue;
+            }
+        }
+
         int statret =  path_fileprops(fn.c_str(), &st, data->options&FtwFollow);
         if (statret == -1) {
             data->logsyserr("stat", fn);
@@ -458,22 +446,17 @@ FsTreeWalker::Status FsTreeWalker::iwalk(const string &top,
             continue;
         }
 
-        if (!data->skippedPaths.empty()) {
-            // We do not check the ancestors. This means that you can have
-            // a topdirs member under a skippedPath, to index a portion of
-            // an ignored area. This is the way it had always worked, but
-            // this was broken by 1.13.00 and the systematic use of 
-            // FNM_LEADING_DIR
-            if (inSkippedPaths(fn, false))
-                continue;
-        }
 
-        if (S_ISDIR(st.st_mode)) {
+        if (st.pst_type == PathStat::PST_DIR) {
             if (!o_nowalkfn.empty() && path_exists(path_cat(fn, o_nowalkfn))) {
                 continue;
             }
             if (data->options & FtwNoRecurse) {
-                status = cb.processone(fn, &st, FtwDirEnter);
+                if (!(data->options & FtwOnlySkipped)) {
+                    status = cb.processone(fn, &st, FtwDirEnter);
+                } else {
+                    status = FtwOk;
+                }
             } else {
                 if (data->options & FtwTravNatural) {
                     status = iwalk(fn, &st, cb);
@@ -495,18 +478,23 @@ FsTreeWalker::Status FsTreeWalker::iwalk(const string &top,
             if (status & (FtwStop|FtwError))
                 goto out;
             if (!(data->options & FtwNoRecurse)) 
-                if ((status = cb.processone(top, &st, FtwDirReturn)) 
-                    & (FtwStop|FtwError))
-                    goto out;
-        } else if (S_ISREG(st.st_mode) || S_ISLNK(st.st_mode)) {
+                if (!(data->options & FtwOnlySkipped)) {
+                    if ((status = cb.processone(top, &st, FtwDirReturn)) 
+                        & (FtwStop|FtwError))
+                        goto out;
+                }
+        } else if (st.pst_type == PathStat::PST_REGULAR ||
+                   st.pst_type == PathStat::PST_SYMLINK) {
             // Filtering patterns match ?
             if (!data->onlyNames.empty()) {
                 if (!inOnlyNames(dname))
                     continue;
             }
-            if ((status = cb.processone(fn, &st, FtwRegular)) & 
-                (FtwStop|FtwError)) {
-                goto out;
+            if (!(data->options & FtwOnlySkipped)) {
+                if ((status = cb.processone(fn, &st, FtwRegular)) & 
+                    (FtwStop|FtwError)) {
+                    goto out;
+                }
             }
         }
         // We ignore other file types (devices etc...)
@@ -525,8 +513,6 @@ FsTreeWalker::Status FsTreeWalker::iwalk(const string &top,
     }
 
 out:
-    if (d)
-        CLOSEDIR(d);
     return status;
 }
 
@@ -535,15 +521,15 @@ int64_t fsTreeBytes(const string& topdir)
 {
     class bytesCB : public FsTreeWalkerCB {
     public:
-        FsTreeWalker::Status processone(const string &path, 
-                                        const struct stat *st,
+        FsTreeWalker::Status processone(const string &, 
+                                        const struct PathStat *st,
                                         FsTreeWalker::CbFlag flg) {
             if (flg == FsTreeWalker::FtwDirEnter ||
                 flg == FsTreeWalker::FtwRegular) {
 #ifdef _WIN32
-                totalbytes += st->st_size;
+                totalbytes += st->pst_size;
 #else
-                totalbytes += st->st_blocks * 512;
+                totalbytes += st->pst_blocks * 512;
 #endif
             }
             return FsTreeWalker::FtwOk;

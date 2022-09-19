@@ -1,4 +1,4 @@
-/* Copyright (C) 2005-2016 J.F.Dockes
+/* Copyright (C) 2005-2021 J.F.Dockes
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
  *   the Free Software Foundation; either version 2.1 of the License, or
@@ -57,19 +57,27 @@ using namespace std;
 
 namespace confgui {
 
+// Main layout spacing
 static const int spacing = 3;
+
 // left,top,right, bottom
 static QMargins margin(4,3,4,3);
 
-ConfTabsW::ConfTabsW(QWidget *parent, const QString& title,
-                     ConfLinkFact *fact)
+// Margin around text to explicitely set pushbutton sizes lower than
+// the default min (80?). Different on Mac OS for some reason
+#ifdef __APPLE__
+static const int pbTextMargin = 30;
+#else
+static const int pbTextMargin = 15;
+#endif
+
+ConfTabsW::ConfTabsW(QWidget *parent, const QString& title, ConfLinkFact *fact)
     : QDialog(parent), m_makelink(fact)
 {
     setWindowTitle(title);
     tabWidget = new QTabWidget;
 
-    buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok
-                                     | QDialogButtonBox::Cancel);
+    buttonBox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel);
 
     QVBoxLayout *mainLayout = new QVBoxLayout;
     mainLayout->setSpacing(spacing);
@@ -132,7 +140,7 @@ int ConfTabsW::addForeignPanel(ConfPanelWIF* w, const QString& title)
     m_widgets.push_back(w);
     QWidget *qw = dynamic_cast<QWidget *>(w);
     if (qw == 0) {
-        qDebug() << "Can't cast panel to QWidget";
+        qDebug() << "addForeignPanel: can't cast panel to QWidget";
         abort();
     }
     return tabWidget->addTab(qw, title);
@@ -212,6 +220,7 @@ ConfParamW *ConfTabsW::addParam(
         cp = new ConfParamCSLW(varname, this, lnk, label, tooltip, *sl);
         break;
     }
+    cp->setToolTip(tooltip);
     panel->addParam(cp);
     return cp;
 }
@@ -225,11 +234,14 @@ ConfParamW *ConfTabsW::findParamW(const QString& varname)
     }
     return nullptr;
 }
+
 void ConfTabsW::endOfList(int tabindex)
 {
-    ConfPanelW *panel = (ConfPanelW*)tabWidget->widget(tabindex);
-    if (nullptr == panel) 
+    ConfPanelW *panel = dynamic_cast<ConfPanelW*>(tabWidget->widget(tabindex));
+    // panel may be null if this is a foreign panel (not a conftabsw)
+    if (nullptr == panel) {
         return;
+    }
     panel->endOfList();
 }
 
@@ -336,7 +348,11 @@ static QString myGetFileName(bool isdir, QString caption, bool filenosave)
 void ConfParamW::setValue(const QString& value)
 {
     if (m_fsencoding) {
+#ifdef _WIN32
+        m_cflink->set(string((const char *)value.toUtf8()));
+#else
         m_cflink->set(string((const char *)value.toLocal8Bit()));
+#endif
     } else {
         m_cflink->set(string((const char *)value.toUtf8()));
     }
@@ -371,7 +387,7 @@ void setSzPol(QWidget *w, QSizePolicy::Policy hpol,
     w->setSizePolicy(policy);
 }
 
-bool ConfParamW::createCommon(const QString& lbltxt, const QString& tltptxt)
+bool ConfParamW::createCommon(const QString& lbltxt, const QString&)
 {
     m_hl = new QHBoxLayout(this);
     m_hl->setSpacing(spacing);
@@ -380,7 +396,6 @@ bool ConfParamW::createCommon(const QString& lbltxt, const QString& tltptxt)
     QLabel *tl = new QLabel(this);
     setSzPol(tl, QSizePolicy::Preferred, QSizePolicy::Fixed, 0, 0);
     tl->setText(lbltxt);
-    tl->setToolTip(tltptxt);
 
     m_hl->addWidget(tl);
 
@@ -460,9 +475,15 @@ void ConfParamStrW::storeValue()
 void ConfParamStrW::loadValue()
 {
     string s;
-    m_cflink->get(s);
+    if (!m_cflink->get(s)) {
+        s = m_strdefault;
+    }
     if (m_fsencoding) {
+#ifdef _WIN32
+        m_le->setText(m_origvalue = QString::fromUtf8(s.c_str()));
+#else
         m_le->setText(m_origvalue = QString::fromLocal8Bit(s.c_str()));
+#endif
     } else {
         m_le->setText(m_origvalue = QString::fromUtf8(s.c_str()));
     }
@@ -510,10 +531,16 @@ void ConfParamCStrW::storeValue()
 void ConfParamCStrW::loadValue()
 {
     string s;
-    m_cflink->get(s);
+    if (!m_cflink->get(s)) {
+        s = m_strdefault;
+    }
     QString cs;
     if (m_fsencoding) {
+#ifdef _WIN32
+        cs = QString::fromUtf8(s.c_str());
+#else
         cs = QString::fromLocal8Bit(s.c_str());
+#endif        
     } else {
         cs = QString::fromUtf8(s.c_str());
     }
@@ -535,7 +562,7 @@ void ConfParamCStrW::setImmediate()
 
 ConfParamBoolW::ConfParamBoolW(
     const QString& varnm, QWidget *parent, ConfLink cflink,
-    const QString& lbltxt, const QString& tltptxt, bool deflt)
+    const QString& lbltxt, const QString&, bool deflt)
     : ConfParamW(varnm, parent, cflink), m_dflt(deflt)
 {
     // No createCommon because the checkbox has a label
@@ -545,7 +572,6 @@ ConfParamBoolW::ConfParamBoolW(
 
     m_cb = new QCheckBox(lbltxt, this);
     setSzPol(m_cb, QSizePolicy::Fixed, QSizePolicy::Fixed, 0, 0);
-    m_cb->setToolTip(tltptxt);
     m_hl->addWidget(m_cb);
 
     QFrame *fr = new QFrame(this);
@@ -599,7 +625,7 @@ ConfParamFNW::ConfParamFNW(
 
     QString text = tr("Choose");
     m_pb->setText(text);
-    int width = m_pb->fontMetrics().boundingRect(text).width() + 15;
+    int width = m_pb->fontMetrics().boundingRect(text).width() + pbTextMargin;
     m_pb->setMaximumWidth(width);
     setSzPol(m_pb, QSizePolicy::Minimum, QSizePolicy::Fixed, 0, 0);
     m_hl->addWidget(m_pb);
@@ -618,8 +644,14 @@ void ConfParamFNW::storeValue()
 void ConfParamFNW::loadValue()
 {
     string s;
-    m_cflink->get(s);
+    if (!m_cflink->get(s)) {
+        s = m_strdefault;
+    }
+#ifdef _WIN32
+    m_le->setText(m_origvalue = QString::fromUtf8(s.c_str()));
+#else
     m_le->setText(m_origvalue = QString::fromLocal8Bit(s.c_str()));
+#endif
 }
 
 void ConfParamFNW::showBrowserDialog()
@@ -647,7 +679,7 @@ public:
 
 ConfParamSLW::ConfParamSLW(
     const QString& varnm, QWidget *parent, ConfLink cflink,
-    const QString& lbltxt, const QString& tltptxt)
+    const QString& lbltxt, const QString&)
     : ConfParamW(varnm, parent, cflink)
 {
     // Can't use createCommon here cause we want the buttons below the label
@@ -665,14 +697,13 @@ ConfParamSLW::ConfParamSLW(
     QLabel *tl = new QLabel(this);
     setSzPol(tl, QSizePolicy::Preferred, QSizePolicy::Fixed, 0, 0);
     tl->setText(lbltxt);
-    tl->setToolTip(tltptxt);
     vl1->addWidget(tl);
 
     QPushButton *pbA = new QPushButton(this);
     QString text = tr("+");
     pbA->setText(text);
     pbA->setToolTip(tr("Add entry"));
-    int width = pbA->fontMetrics().boundingRect(text).width() + 15;
+    int width = pbA->fontMetrics().boundingRect(text).width() + pbTextMargin;
     pbA->setMaximumWidth(width);
     setSzPol(pbA, QSizePolicy::Minimum, QSizePolicy::Fixed, 0, 0);
     hl1->addWidget(pbA);
@@ -682,7 +713,7 @@ ConfParamSLW::ConfParamSLW(
     text = tr("-");
     pbD->setText(text);
     pbD->setToolTip(tr("Delete selected entries"));
-    width = pbD->fontMetrics().boundingRect(text).width() + 15;
+    width = pbD->fontMetrics().boundingRect(text).width() + pbTextMargin;
     pbD->setMaximumWidth(width);
     setSzPol(pbD, QSizePolicy::Minimum, QSizePolicy::Fixed, 0, 0);
     hl1->addWidget(pbD);
@@ -692,7 +723,7 @@ ConfParamSLW::ConfParamSLW(
     text = tr("~");
     m_pbE->setText(text);
     m_pbE->setToolTip(tr("Edit selected entries"));
-    width = m_pbE->fontMetrics().boundingRect(text).width() + 15;
+    width = m_pbE->fontMetrics().boundingRect(text).width() + pbTextMargin;
     m_pbE->setMaximumWidth(width);
     setSzPol(m_pbE, QSizePolicy::Minimum, QSizePolicy::Fixed, 0, 0);
     hl1->addWidget(m_pbE);
@@ -727,12 +758,18 @@ string ConfParamSLW::listToString()
 {
     vector<string> ls;
     for (int i = 0; i < m_lb->count(); i++) {
-        // General parameters are encoded as utf-8. File names as
-        // local8bit There is no hope for 8bit file names anyway
-        // except for luck: the original encoding is unknown.
+        // General parameters are encoded as utf-8.
+        // Linux file names as local8bit There is no hope for 8bit
+        // file names anyway except for luck: the original encoding is
+        // unknown. In most modern configs, local8Bits will be UTF-8.
+        // Except on Windows: we store file names as UTF-8
         QString text = m_lb->item(i)->text();
         if (m_fsencoding) {
+#ifdef _WIN32
+            ls.push_back((const char *)(text.toUtf8()));
+#else
             ls.push_back((const char *)(text.toLocal8Bit()));
+#endif
         } else {
             ls.push_back((const char *)(text.toUtf8()));
         }
@@ -753,13 +790,19 @@ void ConfParamSLW::storeValue()
 void ConfParamSLW::loadValue()
 {
     m_origvalue.clear();
-    m_cflink->get(m_origvalue);
+    if (!m_cflink->get(m_origvalue)) {
+        m_origvalue = m_strdefault;
+    }
     vector<string> ls;
     stringToStrings(m_origvalue, ls);
     QStringList qls;
     for (const auto& str : ls) {
         if (m_fsencoding) {
+#ifdef _WIN32
+            qls.push_back(QString::fromUtf8(str.c_str()));
+#else
             qls.push_back(QString::fromLocal8Bit(str.c_str()));
+#endif
         } else {
             qls.push_back(QString::fromUtf8(str.c_str()));
         }

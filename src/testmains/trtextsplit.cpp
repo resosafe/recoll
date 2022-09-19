@@ -41,19 +41,22 @@
 
 using namespace std;
 
-#define OPT_s     0x1 
-#define OPT_w     0x2
-#define OPT_q     0x4
-#define OPT_c     0x8
-#define OPT_k     0x10
-#define OPT_C     0x20
-#define OPT_n     0x40
-#define OPT_S     0x80
-#define OPT_u     0x100
-#define OPT_p     0x200
-#define OPT_I     0x400
-#define OPT_d     0x800
-#define OPT_l     0x1000
+#define OPT_C 0x1   
+#define OPT_c 0x2       
+#define OPT_d 0x4       
+#define OPT_I 0x8       
+#define OPT_k 0x10      
+#define OPT_l 0x20  
+#define OPT_L 0x40  
+#define OPT_n 0x80      
+#define OPT_p 0x100     
+#define OPT_q 0x200     
+#define OPT_S 0x400     
+#define OPT_s 0x800 
+#define OPT_t 0x1000
+#define OPT_u 0x2000     
+#define OPT_w 0x4000    
+
 
 static string thisprog;
 
@@ -68,12 +71,14 @@ static string usage =
     "   -k :  preserve wildcards (?*)\n"
     "   -c : just count words\n"
     "   -u : use unac\n"
+    "   -t [tagger] : korean tagger name (Mecab/Okt/Komoran)\n"
     "   -C [charset] : input charset\n"
     "   -S [stopfile] : stopfile to use for commongrams\n"
     "   -l <maxtermlen> : set max term length (bytes)\n"
-    "    if filename is 'stdin', will read stdin for data (end with ^D)\n\n"
+    "   -L <loglevel> : set max term length (bytes)\n"
     "   -p somephrase : display results from stringToStrings()\n"
-    "  \n"
+    "\n"
+    "    if filename is 'stdin', will read stdin for data (end with ^D)\n"
     ;
 
 static void
@@ -155,14 +160,14 @@ bool dosplit(const string& data, TextSplit::Flags flags, int op_flags)
     }
 
 #ifdef TEXTSPLIT_STATS
-        TextSplit::Stats::Values v = splitter.getStats();
-        cout << "Average length: " 
-             <<  v.avglen
-             << " Standard deviation: " 
-             << v.sigma
-             << " Coef of variation "
-             << v.sigma / v.avglen
-             << endl;
+    TextSplit::Stats::Values v = splitter.getStats();
+    cout << "Average length: " 
+         <<  v.avglen
+         << " Standard deviation: " 
+         << v.sigma
+         << " Coef of variation "
+         << v.sigma / v.avglen
+         << endl;
 #endif
     return true;
 }
@@ -197,7 +202,8 @@ static string teststring1 = " nouvel-an ";
 
 int main(int argc, char **argv)
 {
-    string charset, stopfile;
+    string charset, stopfile, kotagger;
+    int loglevel = 4;
     int maxtermlen{-1};
 
     thisprog = argv[0];
@@ -212,21 +218,22 @@ int main(int argc, char **argv)
             switch (*(*argv)++) {
             case 'c':   op_flags |= OPT_c; break;
             case 'C':   op_flags |= OPT_C; if (argc < 2)  Usage();
-                charset = *(++argv); argc--; 
-                goto b1;
+                charset = *(++argv); argc--;  goto b1;
             case 'd':   op_flags |= OPT_d|OPT_q; break;
             case 'I':   op_flags |= OPT_I; break;
             case 'k':   op_flags |= OPT_k; break;
             case 'l':   op_flags |= OPT_l; if (argc < 2)  Usage();
-                maxtermlen = atoi(*(++argv)); argc--; 
-                goto b1;
+                maxtermlen = atoi(*(++argv)); argc--; goto b1;
+            case 'L':   op_flags |= OPT_L; if (argc < 2)  Usage();
+                loglevel = atoi(*(++argv)); argc--; goto b1;
             case 'n':   op_flags |= OPT_n; break;
             case 'p':   op_flags |= OPT_p; break;
             case 'q':   op_flags |= OPT_q; break;
             case 's':   op_flags |= OPT_s; break;
             case 'S':   op_flags |= OPT_S; if (argc < 2)  Usage();
-                stopfile = *(++argv); argc--; 
-                goto b1;
+                stopfile = *(++argv); argc--; goto b1;
+            case 't':   op_flags |= OPT_t; if (argc < 2)  Usage();
+                kotagger = *(++argv); argc--; goto b1;
             case 'u':   op_flags |= OPT_u; break;
             case 'w':   op_flags |= OPT_w; break;
             default: Usage();   break;
@@ -248,20 +255,27 @@ int main(int argc, char **argv)
     TempDir tmpconf;
     string cffn(path_cat(tmpconf.dirname(), "recoll.conf"));
     FILE *fp = fopen(cffn.c_str(), "w");
+    fprintf(fp, "loglevel = %d\n", loglevel);
     if (op_flags & OPT_n) {
         fprintf(fp, "nonumbers = 1\n");
     }
     if (op_flags & OPT_l) {
         fprintf(fp, "maxtermlength = %d\n", maxtermlen);
     }
+    if (!kotagger.empty()) {
+        fprintf(fp, "hangultagger = %s\n", kotagger.c_str());
+    }
+    fprintf(fp, "underscoreasletter = 0\n");
     fclose(fp);
+
+    Logger::getTheLog("")->setLogLevel(Logger::LogLevel(loglevel));
 
     string dn(tmpconf.dirname());
     RclConfig *config = new RclConfig(&dn);
     if (!config->ok()) {
         cerr << "Could not build configuration: " << config->getReason() <<endl;
     }
-    Logger::getTheLog("stderr")->setLogLevel(Logger::LLDEB0);
+
     TextSplit::staticConfInit(config);
     LOGDEB("Trtextsplit starting up\n");
     

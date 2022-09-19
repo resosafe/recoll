@@ -1,4 +1,4 @@
-/*
+/* Copyright (C) 2005-2020 J.F.Dockes
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation; either version 2 of the License, or
@@ -23,12 +23,11 @@ class QPushButton;
 
 class RTIToolW : public QDialog, public Ui::RTIToolW {
     Q_OBJECT
-    public:
+public:
     RTIToolW(QWidget * parent = 0) 
-	: QDialog(parent)
-    {
-	setupUi(this);
-	init();
+        : QDialog(parent) {
+        setupUi(this);
+        init();
     }
 public slots:
 #ifdef _WIN32

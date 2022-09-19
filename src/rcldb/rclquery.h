@@ -36,21 +36,19 @@ enum abstract_result {
     ABSRES_TERMMISS = 4
 };
 
-// Snippet entry for makeDocAbstract
+// Snippet data out of makeDocAbstract
 class Snippet {
 public:
-    Snippet(int page, const std::string& snip) 
-	: page(page), snippet(snip)
-    {
-    }
-    Snippet& setTerm(const std::string& trm)
-    {
+    Snippet(int page, const std::string& snip, int ln = 0) 
+        : page(page), snippet(snip), line(ln) {}
+    Snippet& setTerm(const std::string& trm) {
         term = trm;
         return *this;
     }
-    int page;
-    std::string term;
+    int page{0};
     std::string snippet;
+    int line{0};
+    std::string term;
 };
 
         
@@ -64,6 +62,9 @@ class Query {
 public:
     Query(Db *db);
     ~Query();
+
+    Query(const Query &) = delete;
+    Query& operator=(const Query &) = delete;
 
     /** Get explanation about last error */
     std::string getReason() const {
@@ -114,11 +115,19 @@ public:
     bool makeDocAbstract(const Doc &doc, std::vector<std::string>& abstract);
     // Returned as a vector of pair<page,snippet> page is 0 if unknown
     int makeDocAbstract(const Doc &doc, std::vector<Snippet>& abst, 
-                        int maxoccs= -1, int ctxwords = -1, bool sortbypage=false);
-    /** Retrieve page number for first match for "significant" query term 
-     *  @param term returns the chosen term */
+                        int maxoccs= -1, int ctxwords= -1,bool sortbypage=false);
+
+    /** Choose most interesting term and return the page number for its first match
+     *  @param term returns the chosen term 
+     *  @return page number or -1 if term not found or other issue
+     */
     int getFirstMatchPage(const Doc &doc, std::string& term);
 
+    /** Compute line number for first match of term. Only works if doc.text has text.
+     * This uses a text split. Both this and the above getFirstMaxPage() could be done and saved
+     * while we compute the abstracts, quite a lot of waste here. */
+    int getFirstMatchLine(const Doc &doc, const std::string& term);
+    
     /** Retrieve a reference to the searchData we are using */
     std::shared_ptr<SearchData> getSD() {
         return m_sd;
@@ -139,17 +148,13 @@ public:
 private:
     std::string m_reason; // Error explanation
     Db    *m_db;
-    void  *m_sorter;
+    void  *m_sorter{nullptr};
     std::string m_sortField;
-    bool   m_sortAscending;
-    bool   m_collapseDuplicates;     
-    int    m_resCnt;
+    bool   m_sortAscending{true};
+    bool   m_collapseDuplicates{false};     
+    int    m_resCnt{-1};
     std::shared_ptr<SearchData> m_sd;
-    int    m_snipMaxPosWalk;
-
-    /* Copyconst and assignement private and forbidden */
-    Query(const Query &) {}
-    Query & operator=(const Query &) {return *this;};
+    int    m_snipMaxPosWalk{1000000};
 };
 
 #ifndef NO_NAMESPACES

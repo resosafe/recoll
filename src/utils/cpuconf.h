@@ -21,7 +21,7 @@
     threads */
 struct CpuConf {
     CpuConf()
-	: ncpus(1)
+    : ncpus(1)
     {}
     // Virtual ones, including hyperthreading, we only care about this for now
     int ncpus; 

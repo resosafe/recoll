@@ -14,7 +14,6 @@
  *   Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
-
 #include "autoconfig.h"
 
 #include "circache.h"
@@ -29,15 +28,15 @@
 #include <assert.h>
 #include <memory.h>
 #include <inttypes.h>
-
 #include <memory>
-
-#include "chrono.h"
-#include "zlibut.h"
+#include <functional>
+#include <utility>
+#include <sstream>
+#include <iostream>
+#include <map>
 
 #ifndef _WIN32
 #include <sys/uio.h>
-#define O_BINARY 0
 #else
 struct iovec {
     void *iov_base;
@@ -59,41 +58,19 @@ static ssize_t writev(int fd, const struct iovec *iov, int iovcnt)
 }
 #endif
 
-
-#include <sstream>
-#include <iostream>
-#include <map>
-
-#include "cstr.h"
-#include "circache.h"
+#include "chrono.h"
 #include "conftree.h"
+#include "copyfile.h"
+#include "cstr.h"
 #include "log.h"
-#include "smallut.h"
 #include "md5.h"
+#include "pathut.h"
+#include "smallut.h"
+#include "wipedir.h"
+#include "zlibut.h"
 
 using namespace std;
-
-/** Temp buffer with automatic deallocation */
-struct TempBuf {
-    TempBuf()
-        : m_buf(0) {
-    }
-    TempBuf(int n) {
-        m_buf = (char *)malloc(n);
-    }
-    ~TempBuf() {
-        if (m_buf) {
-            free(m_buf);
-        }
-    }
-    char *setsize(int n) {
-        return (m_buf = (char *)realloc(m_buf, n));
-    }
-    char *buf() {
-        return m_buf;
-    }
-    char *m_buf;
-};
+using namespace std::placeholders;
 
 /*
  * File structure:
@@ -255,10 +232,8 @@ public:
         return true;
     }
     void khDump() {
-        for (kh_type::const_iterator it = m_ofskh.begin();
-             it != m_ofskh.end(); it++) {
-            LOGDEB("Circache::KHDUMP: " << it->first.asHexString() << " " <<
-                   it->second << "\n");
+        for (const auto& e : m_ofskh) {
+            LOGDEB("Circache::KHDUMP: " << e.first.asHexString() << " " << e.second << "\n");
         }
     }
 
@@ -270,8 +245,7 @@ public:
 
         UdiH h(udi);
 
-        LOGDEB2("Circache::khFind: h " << h.asHexString() << " udi [" << udi <<
-                "]\n");
+        LOGDEB2("Circache::khFind: h " << h.asHexString() << " udi [" << udi << "]\n");
 
         pair<kh_type::iterator, kh_type::iterator> p = m_ofskh.equal_range(h);
 
@@ -312,9 +286,8 @@ public:
     }
     // Clear entries for vector of udi/offs
     bool khClear(const vector<pair<string, int64_t> >& udis) {
-        for (vector<pair<string, int64_t> >::const_iterator it = udis.begin();
-             it != udis.end(); it++) {
-            khClear(*it);
+        for (const auto& udioffs : udis) {
+            khClear(udioffs);
         }
         return true;
     }
@@ -455,8 +428,9 @@ public:
                 m_reason << "CirCache::weh: erase requested but not empty";
                 return false;
             }
-            string buf(d.padsize, ' ');
-            if (write(m_fd, buf.c_str(), d.padsize) != (ssize_t)d.padsize) {
+            string buf((size_t)d.padsize, ' ');
+            if (write(m_fd, buf.c_str(), (size_t)d.padsize) !=
+                (ssize_t)d.padsize) {
                 m_reason << "CirCache::weh: write failed. errno " << errno;
                 return false;
             }
@@ -498,8 +472,7 @@ public:
         return CCScanHook::Continue;
     }
 
-    CCScanHook::status scan(int64_t startoffset, CCScanHook *user,
-                            bool fold = false) {
+    CCScanHook::status scan(int64_t startoffset, CCScanHook *user, bool fold = false) {
         if (m_fd < 0) {
             m_reason << "scan: not open ";
             return CCScanHook::Error;
@@ -588,15 +561,13 @@ public:
         return true;
     }
 
-    bool readDicData(int64_t hoffs, EntryHeaderData& hd, string& dic,
-                     string* data) {
+    bool readDicData(int64_t hoffs, EntryHeaderData& hd, string& dic, string* data) {
         int64_t offs = hoffs + CIRCACHE_HEADER_SIZE;
         // This syscall could be avoided in some cases if we saved the offset
         // at each seek. In most cases, we just read the header and we are
         // at the right position
         if (lseek(m_fd, offs, 0) != offs) {
-            m_reason << "CirCache::get: lseek(" << offs << ") failed: " <<
-                errno;
+            m_reason << "CirCache::get: lseek(" << offs << ") failed: " << errno;
             return false;
         }
         char *bf = 0;
@@ -675,7 +646,7 @@ public:
     CCScanHookRecord()
         : headoffs(0), padsize(0) {
     }
-    virtual status takeone(int64_t offs, const string& udi,
+    virtual status takeone(int64_t offs, const string&,
                            const EntryHeaderData& d) {
         headoffs = offs;
         padsize = d.padsize;
@@ -786,6 +757,57 @@ bool CirCache::open(OpMode mode)
     return m_d->readfirstblock();
 }
 
+int64_t CirCache::size()
+{
+    if (m_d == 0) {
+        LOGERR("CirCache::open: null data\n");
+        return -1;
+    }
+    struct stat st;
+    if (m_d->m_fd < 0) {
+        if (stat(m_d->datafn(m_dir).c_str(), &st) < 0) {
+            m_d->m_reason << "CirCache::size: stat(" << m_d->datafn(m_dir) <<
+                ") failed " << "errno " << errno;
+            return -1;
+        }
+    } else {
+        if (fstat(m_d->m_fd, &st) < 0) {
+            m_d->m_reason << "CirCache::open: fstat(" << m_d->datafn(m_dir) <<
+                ") failed " << "errno " << errno;
+            return -1;
+        }
+    }
+    return st.st_size;
+}
+
+int64_t CirCache::maxsize()
+{
+    if (m_d == 0) {
+        LOGERR("CirCache::open: null data\n");
+        return -1;
+    }
+    return m_d->m_maxsize;
+}
+
+int64_t CirCache::writepos()
+{
+    if (m_d == 0) {
+        LOGERR("CirCache::open: null data\n");
+        return -1;
+    }
+    return m_d->m_nheadoffs;
+}
+
+bool CirCache::uniquentries()
+{
+    if (m_d == 0) {
+        LOGERR("CirCache::open: null data\n");
+        return false;
+    }
+    return m_d->m_uniquentries;
+}
+
+
 class CCScanHookDump : public  CCScanHook {
 public:
     virtual status takeone(int64_t offs, const string& udi,
@@ -839,9 +861,9 @@ public:
 
     virtual status takeone(int64_t offs, const string& udi,
                            const EntryHeaderData& d) {
-        LOGDEB2("Circache:Scan: off " << offs << " udi [" << udi << "] dcsz " <<
-                d.dicsize << " dtsz " << d.datasize <<
-                " pdsz " << d.padsize << " flgs " << d.flags << "\n");
+        LOGDEB1("Circache:Scan: off " << offs << " udi [" << udi << "] dcsz " <<
+                d.dicsize << " dtsz " << d.datasize << " pdsz " << d.padsize <<
+               " flgs " << d.flags << " previnst " << m_instance << "\n");
         if (!m_udi.compare(udi)) {
             m_instance++;
             m_offs = offs;
@@ -854,7 +876,6 @@ public:
     }
 };
 
-// instance == -1 means get latest. Otherwise specify from 1+
 bool CirCache::get(const string& udi, string& dic, string *data, int instance)
 {
     Chrono chron;
@@ -875,12 +896,11 @@ bool CirCache::get(const string& udi, string& dic, string *data, int instance)
             int finst = 1;
             EntryHeaderData d_good;
             int64_t           o_good = 0;
-            for (vector<int64_t>::iterator it = ofss.begin();
-                 it != ofss.end(); it++) {
-                LOGDEB1("Circache::get: trying offs " << *it << "\n");
+            for (const auto& offset : ofss) {
+                LOGDEB1("Circache::get: trying offs " << offset << "\n");
                 EntryHeaderData d;
                 string fudi;
-                if (!m_d->readHUdi(*it, d, fudi)) {
+                if (!m_d->readHUdi(offset, d, fudi)) {
                     return false;
                 }
                 if (!fudi.compare(udi)) {
@@ -888,7 +908,7 @@ bool CirCache::get(const string& udi, string& dic, string *data, int instance)
                     // matches, else go on. If instance is -1 need to
                     // go to the end anyway
                     d_good = d;
-                    o_good = *it;
+                    o_good = offset;
                     if (finst == instance) {
                         break;
                     } else {
@@ -922,6 +942,10 @@ bool CirCache::get(const string& udi, string& dic, string *data, int instance)
     return bret;
 }
 
+// It would be possible to have an option to only erase if this is the
+// last entry in the file, by comparing the offsets from khFind() with
+// m_oheadoffs. Read the last offset < m_oheadoffs and check that
+// offset+sizes == oheadoffs
 bool CirCache::erase(const string& udi, bool reallyclear)
 {
     if (m_d == 0) {
@@ -953,22 +977,22 @@ bool CirCache::erase(const string& udi, bool reallyclear)
         return true;
     }
 
-    for (vector<int64_t>::iterator it = ofss.begin(); it != ofss.end(); it++) {
-        LOGDEB2("CirCache::erase: reading at " << *it << "\n");
+    for (const auto& offset : ofss) {
+        LOGDEB2("CirCache::erase: reading at " << offset << "\n");
         EntryHeaderData d;
         string fudi;
-        if (!m_d->readHUdi(*it, d, fudi)) {
+        if (!m_d->readHUdi(offset, d, fudi)) {
             return false;
         }
         LOGDEB2("CirCache::erase: found fudi [" << fudi << "]\n");
         if (!fudi.compare(udi)) {
             EntryHeaderData nd;
             nd.padsize = d.dicsize + d.datasize + d.padsize;
-            LOGDEB2("CirCache::erase: rewrite at " << *it << "\n");
-            if (*it == m_d->m_nheadoffs) {
+            LOGDEB2("CirCache::erase: rewrite at " << offset << "\n");
+            if (offset == m_d->m_nheadoffs) {
                 m_d->m_npadsize = nd.padsize;
             }
-            if (!m_d->writeEntryHeader(*it, nd, reallyclear)) {
+            if (!m_d->writeEntryHeader(offset, nd, reallyclear)) {
                 LOGERR("CirCache::erase: write header failed\n");
                 return false;
             }
@@ -1273,10 +1297,10 @@ bool CirCache::getCurrent(string& udi, string& dic, string *data)
     return true;
 }
 
-// Copy all entries from occ to ncc. Both are already open.
+// Send all entries from occ to callback. occ is already open.
 static bool copyall(std::shared_ptr<CirCache> occ,
-                    std::shared_ptr<CirCache> ncc, int& nentries,
-                    ostringstream& msg)
+                    std::function<bool(const std::string, ConfSimple*, const std::string&)> cb,
+                    int& nentries, ostringstream& msg)
 {
     bool eof = false;
     if (!occ->rewind(eof)) {
@@ -1304,9 +1328,10 @@ static bool copyall(std::shared_ptr<CirCache> occ,
             return false;
         }
         //cerr << "UDI: " << udi << endl;
-        if (!ncc->put(udi, &dic, data)) {
-            msg << "put failed: " << ncc->getReason() << " sdic [" << sdic <<
-                "]" << endl;
+        if (!cb(udi, &dic, data)) {
+            string err;
+            catstrerror(&err, "", errno);
+            msg << "put failed: errno " << err << " for [" << sdic << "]" << endl;
             return false;
         }
         nentries++;
@@ -1315,33 +1340,71 @@ static bool copyall(std::shared_ptr<CirCache> occ,
     return true;
 }
 
-// Append all entries from sdir to ddir
-int CirCache::append(const string ddir, const string& sdir, string *reason)
+int CirCache::appendCC(const string& ddir, const string& sdir, string *reason)
 {
     ostringstream msg;
     // Open source file
     std::shared_ptr<CirCache> occ(new CirCache(sdir));
     if (!occ->open(CirCache::CC_OPREAD)) {
         if (reason) {
-            msg << "Open failed in " << sdir << " : " <<
-                occ->getReason() << endl;
+            msg << "Open failed in " << sdir << " : " << occ->getReason() << endl;
             *reason = msg.str();
         }
         return -1;
     }
+
+    // Possibly resize dest. If the dest is currently recycling, it
+    // will keep on. This only avoids erasing entries in dest if it is
+    // currently writing at EOF (growing), which will be the case if
+    // we are using this to compact existing file (the dest was just
+    // created for the purpose).
+    int64_t dstavail{0}, dstmaxsize{0};
+    bool isunique;
+    // Check dest size
+    {
+        std::shared_ptr<CirCache> ncc(new CirCache(ddir));
+        if (!ncc->open(CirCache::CC_OPREAD)) {
+            if (reason) {
+                msg << "Open failed in " << ddir << " : " << ncc->getReason() << endl;
+                *reason = msg.str();
+            }
+            return -1;
+        }
+        dstmaxsize = ncc->m_d->m_maxsize;
+        dstavail =  dstmaxsize - ncc->m_d->m_nheadoffs;
+        isunique = ncc->m_d->m_uniquentries;
+    }
+    if (dstavail < occ->size()) {
+        std::shared_ptr<CirCache> ncc(new CirCache(ddir));
+        auto nsize = dstmaxsize + (occ->size() - dstavail) + 5*1000*1000;
+        LOGDEB1("CirCache::appendCC: Dstmaxsize " << displayableBytes(dstmaxsize) << " dstavail "<<
+                displayableBytes(dstavail) << " org size " << displayableBytes(occ->size()) <<
+                " nsize " << displayableBytes(nsize) << "\n");
+        if (!ncc->create(nsize, isunique ? CC_CRUNIQUE : CC_CRNONE)) {
+            if (reason) {
+                msg << "Open failed in " << ddir << " : " << ncc->getReason() << endl;
+                *reason = msg.str();
+            }
+            return -1;
+        }
+    }
+    
     // Open dest file
     std::shared_ptr<CirCache> ncc(new CirCache(ddir));
     if (!ncc->open(CirCache::CC_OPWRITE)) {
         if (reason) {
-            msg << "Open failed in " << ddir << " : " <<
-                ncc->getReason() << endl;
+            msg << "Open failed in " << ddir << " : " << ncc->getReason() << endl;
             *reason = msg.str();
         }
         return -1;
     }
 
     int nentries;
-    if (!copyall(occ, ncc, nentries, msg)) {
+    std::function<bool(const std::string, ConfSimple*, const std::string&)> cb =
+        std::bind(&CirCache::put, ncc, _1, _2, _3, 0);
+    if (!copyall(occ, cb, nentries, msg)) {
+        msg << " " << ncc->getReason() << "\n";
+        LOGERR(msg.str());
         if (reason) {
             *reason = msg.str();
         }
@@ -1350,3 +1413,170 @@ int CirCache::append(const string ddir, const string& sdir, string *reason)
 
     return nentries;
 }
+
+bool CirCache::compact(const std::string& dir, std::string *reason)
+{
+    ostringstream msg;
+    msg << "CirCache::compact: ";
+    // Open source file
+    std::shared_ptr<CirCache> occ(new CirCache(dir));
+    if (!occ->open(CirCache::CC_OPREAD)) {
+        msg << "open failed in " << dir << " : " << occ->getReason() << "\n";
+        LOGERR(msg.str());
+        if (reason) {
+            *reason = msg.str();
+        }
+        return false;
+    }
+    long long avmbs;
+    if (fsocc(dir, nullptr, &avmbs) && avmbs * 1024 * 1024 < 1.2 * occ->size()) {
+        msg << "not enough space on file system";
+        LOGERR(msg.str() <<"\n");
+        if (reason) {
+            *reason = msg.str();
+        }
+        return false;
+    }
+    std::string ndir = path_cat(dir, "tmpcopy");
+    if (!path_makepath(dir, 0700)) {
+        msg << "path_makepath failed with errno " << errno;
+        LOGERR(msg.str() << "\n");
+        if (reason) {
+            *reason = msg.str();
+        }
+        return false;
+    }
+        
+    std::shared_ptr<CirCache> ncc(new CirCache(ndir));
+    if (!ncc->create(occ->size(), occ->uniquentries() ? CC_CRUNIQUE : CC_CRNONE)) {
+        msg << "open failed in " << ndir << " : " << ncc->getReason();
+        LOGERR(msg.str() << "\n");
+        if (reason) {
+            *reason = msg.str();
+        }
+        return false;
+    }
+    int nentries;
+    std::function<bool(const std::string, ConfSimple*, const std::string&)> cb =
+        std::bind(&CirCache::put, ncc, _1, _2, _3, 0);
+    if (!copyall(occ, cb, nentries, msg)) {
+        msg << " " << ncc->getReason();
+        LOGERR(msg.str() << "\n");
+        if (reason) {
+            *reason = msg.str();
+        }
+        return false;
+    }
+
+    // Close both
+    occ.reset();
+    ncc.reset();
+    // Rename new to old
+    std::string r;
+    std::string nfile = path_cat(ndir, "circache.crch").c_str();
+    std::string ofile = path_cat(dir, "circache.crch").c_str();
+    if (!renameormove(nfile.c_str(), ofile.c_str(), r)) {
+        msg << "rename: " << r;
+        LOGERR(msg.str() << "\n");
+        if (reason) {
+            *reason = msg.str();
+        }
+        return false;
+    }
+
+    // Cleanup
+    wipedir(ndir, true);
+    return true;
+}
+
+class CCDataToFile {
+public:
+    CCDataToFile(const std::string dd)
+        : m_dir(dd) {}
+    bool putFile(const std::string& udi, const ConfSimple *dicp, const std::string& data);
+    std::string& getReason() {return m_reason;}
+private:
+    std::string m_dir;
+    std::string m_reason;
+};
+
+bool CCDataToFile::putFile(const std::string& udi, const ConfSimple *dicp, const std::string& data)
+{
+#if 0
+    std::ostringstream deb;
+    dicp->write(deb);
+    LOGDEB("CCDataToFile::putFile: udi " << udi << " dic " << deb.str() <<
+           " datasize " << data.size() << "\n");
+#endif
+    std::string hash = MD5Hex(udi);
+    std::string dsuff;
+    std::string mt;
+    dicp->get("mimetype", mt);
+    if (mt == "text/html") {
+        dsuff = ".html";
+    } else if (mt == "application/pdf") {
+        dsuff = ".pdf";
+    } else {
+        dsuff = ".xxx";
+    }
+
+    std::string fn = path_cat(m_dir, "circache-" + hash + dsuff);
+    if (!stringtofile(data, fn.c_str(), m_reason)) {
+        return false;
+    }
+    fn = path_cat(m_dir, "circache-" + hash + ".dic");
+    std::ostringstream str;
+    dicp->write(str);
+    if (!stringtofile(str.str(), fn.c_str(), m_reason)) {
+        return false;
+    }
+    return true;
+}
+
+bool CirCache::burst(const std::string& ccdir, const std::string destdir, std::string *reason)
+{
+    ostringstream msg;
+    msg << "CirCache::burst: ";
+    // Open source file
+    std::shared_ptr<CirCache> occ(new CirCache(ccdir));
+    if (!occ->open(CirCache::CC_OPREAD)) {
+        msg << "open failed in " << ccdir << " : " << occ->getReason() << "\n";
+        LOGERR(msg.str());
+        if (reason) {
+            *reason = msg.str();
+        }
+        return false;
+    }
+    long long avmbs;
+    if (fsocc(destdir, nullptr, &avmbs) && avmbs * 1024 * 1024 < 1.2 * occ->size()) {
+        msg << "not enough space on file system";
+        LOGERR(msg.str() <<"\n");
+        if (reason) {
+            *reason = msg.str();
+        }
+        return false;
+    }
+    if (!path_makepath(destdir, 0700)) {
+        msg << "path_makepath failed with errno " << errno;
+        LOGERR(msg.str() << "\n");
+        if (reason) {
+            *reason = msg.str();
+        }
+        return false;
+    }
+    int nentries;
+    CCDataToFile copier(destdir);
+    std::function<bool(const std::string, ConfSimple*, const std::string&)> cb =
+        std::bind(&CCDataToFile::putFile, copier, _1, _2, _3);
+    if (!copyall(occ, cb, nentries, msg)) {
+        msg << " " << copier.getReason();
+        LOGERR(msg.str() << "\n");
+        if (reason) {
+            *reason = msg.str();
+        }
+        return false;
+    }
+
+    return true;
+}
+

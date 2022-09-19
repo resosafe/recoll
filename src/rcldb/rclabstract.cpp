@@ -131,7 +131,7 @@ void Query::Native::setDbWideQTermsFreqs()
 // retrieving the Within Document Frequencies and multiplying by
 // overal term frequency, then using log-based thresholds.
 // 2012: it's not too clear to me why exactly we do the log thresholds thing.
-//  Preferring terms wich are rare either or both in the db and the document 
+//  Preferring terms which are rare either or both in the db and the document 
 //  seems reasonable though
 // To avoid setting a high quality for a low frequency expansion of a
 // common stem, which seems wrong, we group the terms by
@@ -254,7 +254,7 @@ double Query::Native::qualityTerms(Xapian::docid docid,
 }
 
 
-// Return page number for first match of "significant" term.
+// Choose most interesting term and return the page number for its first match
 int Query::Native::getFirstMatchPage(Xapian::docid docid, string& term)
 {
     LOGDEB("Query::Native::getFirstMatchPage\n");
@@ -286,9 +286,7 @@ int Query::Native::getFirstMatchPage(Xapian::docid docid, string& term)
     qualityTerms(docid, terms, byQ);
 
     for (auto mit = byQ.rbegin(); mit != byQ.rend(); mit++) {
-        for (vector<string>::const_iterator qit = mit->second.begin();
-             qit != mit->second.end(); qit++) {
-            string qterm = *qit;
+        for (const auto& qterm : mit->second) {
             Xapian::PositionIterator pos;
             string emptys;
             try {
@@ -395,7 +393,7 @@ void Query::Native::abstractPopulateQTerm(
 // the neighboring positions marked, populate the neighbours: for each
 // term in the document, walk its position list and populate slots
 // around the query terms. We arbitrarily truncate the list to avoid
-// taking forever. If we do cutoff, the abstract may be inconsistant
+// taking forever. If we do cutoff, the abstract may be inconsistent
 // (missing words, potentially altering meaning), which is bad.
 void Query::Native::abstractPopulateContextTerms(
     Xapian::Database& xrdb,
@@ -478,7 +476,7 @@ void Query::Native::abstractCreateSnippetsVector(
         }
         Utf8Iter uit(ent.second);
         bool newcjk = false;
-        if (TextSplit::isCJK(*uit))
+        if (TextSplit::isNGRAMMED(*uit))
             newcjk = true;
         if (!incjk || (incjk && !newcjk))
             chunk += " ";
@@ -502,7 +500,7 @@ void Query::Native::abstractCreateSnippetsVector(
 int Query::Native::abstractFromIndex(
     Rcl::Db::Native *ndb,
     Xapian::docid docid,
-    const vector<string>& matchTerms,
+    const vector<string>&,
     const multimap<double, vector<string>> byQ,
     double totalweight,
     int ctxwords,
@@ -524,7 +522,7 @@ int Query::Native::abstractFromIndex(
     // populating the adjacent slots.
     unsigned int maxpos = 0;
 
-    // Total number of occurences for all terms. We stop when we have too much
+    // Total number of occurrences for all terms. We stop when we have too much
     unsigned int totaloccs = 0;
 
     // First pass to populate the sparse document: we walk the term
@@ -585,7 +583,7 @@ int Query::Native::abstractFromIndex(
     LOGABS("makeAbstract:" << chron.millis() <<
            "mS:chosen number of positions " << totaloccs << "\n");
 
-    // This can happen if there are term occurences in the keywords
+    // This can happen if there are term occurrences in the keywords
     // etc. but not elsewhere ?
     if (totaloccs == 0) {
         LOGDEB("makeAbstract: no occurrences\n");
@@ -615,13 +613,12 @@ int Query::Native::abstractFromIndex(
 // query terms.  This can either uses the index position lists, or the
 // stored document text, with very different implementations.
 //
-// DatabaseModified and other general exceptions are catched and
+// DatabaseModified and other general exceptions are caught and
 // possibly retried by our caller.
 //
 // @param[out] vabs the abstract is returned as a vector of snippets.
-int Query::Native::makeAbstract(Xapian::docid docid,
-                                vector<Snippet>& vabs, 
-                                int imaxoccs, int ictxwords, bool sortbypage)
+int Query::Native::makeAbstract(
+    Xapian::docid docid, vector<Snippet>& vabs, int imaxoccs, int ictxwords, bool sortbypage)
 {
     chron.restart();
     LOGDEB("makeAbstract: docid " << docid << " imaxoccs " <<

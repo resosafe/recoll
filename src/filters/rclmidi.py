@@ -23,27 +23,15 @@
 # CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 # 
-from __future__ import print_function
 
 import sys
 from struct import unpack, pack
 import six
 
-def debug(s):
-    print("%s"%s, file=sys.stderr)
-
-PY3 = sys.version > '3'
-
-if PY3:
-    def next_byte_as_int(data):
-        return next(data)
-    def next_byte_as_char(data):
-        return bytes([next(data)])
-else:
-    def next_byte_as_int(data):
-        return ord(data.next())
-    def next_byte_as_char(data):
-        return next(data)
+def next_byte_as_int(data):
+    return next(data)
+def next_byte_as_char(data):
+    return bytes([next(data)])
 
 ##
 ## Constants
@@ -273,12 +261,8 @@ class NoteEvent(Event):
                                 self.velocity)
 
     def decode_data(self):
-        if PY3:
-            self.pitch = self.data[0]
-            self.velocity = self.data[1]
-        else:
-            self.pitch = ord(self.data[0])
-            self.velocity = ord(self.data[1])
+        self.pitch = self.data[0]
+        self.velocity = self.data[1]
 
 
 class NoteOnEvent(NoteEvent):
@@ -312,12 +296,8 @@ class ControlChangeEvent(Event):
                                 hex(ord(self.data[1])))
 
     def decode_data(self):
-        if PY3:
-            self.control = self.data[0]
-            self.value = self.data[1]
-        else:
-            self.control = ord(self.data[0])
-            self.value = ord(self.data[1])
+        self.control = self.data[0]
+        self.value = self.data[1]
 
 
 class ProgramChangeEvent(Event):
@@ -331,10 +311,7 @@ class ProgramChangeEvent(Event):
                                 hex(ord(self.data[0])))
 
     def decode_data(self):
-        if PY3:
-            self.value = self.data[0]
-        else:
-            self.value = ord(self.data[0])
+        self.value = self.data[0]
 
 
 class ChannelAfterTouchEvent(Event):
@@ -359,12 +336,8 @@ class PitchWheelEvent(Event):
                                 hex(ord(self.data[1])))
 
     def decode_data(self):
-        if PY3:
-            first = self.data[0]
-            second = self.data[1]
-        else:
-            first = ord(self.data[0]) 
-            second = ord(self.data[1])
+        first = self.data[0]
+        second = self.data[1]
         self.value = ((second << 7) | first) - 0x2000
 
 
@@ -464,10 +437,7 @@ class PortEvent(MetaEvent):
 
     def decode_data(self):
         assert(len(self.data) == 1)
-        if PY3:
-            self.port = self.data[0]
-        else:
-            self.port = ord(self.data[0])
+        self.port = self.data[0]
 
 class TrackLoopEvent(MetaEvent):
     name = 'Track Loop'
@@ -501,13 +471,7 @@ class SetTempoEvent(MetaEvent):
 
     def decode_data(self):
         assert(len(self.data) == 3)
-        if PY3:
-            self.mpqn = (self.data[0] << 16) + (self.data[1] << 8) \
-                        + self.data[2]
-        else:
-            self.mpqn = (ord(self.data[0]) << 16) + (ord(self.data[1]) << 8) \
-                        + ord(self.data[2])
-
+        self.mpqn = (self.data[0] << 16) + (self.data[1] << 8) + self.data[2]
         self.tempo = float(6e7) / self.mpqn
 
 
@@ -526,22 +490,13 @@ class TimeSignatureEvent(MetaEvent):
                             (super(TimeSignatureEvent, self).__str__(),
                                 self.numerator, self.denominator,
                                 self.metronome, self.thirtyseconds)
-    if PY3:
-        def decode_data(self):
-            assert(len(self.data) == 4)
-            self.numerator = self.data[0]
-            # Weird: the denominator is two to the power of the data variable
-            self.denominator = 2 ** self.data[1]
-            self.metronome = self.data[2]
-            self.thirtyseconds = self.data[3]
-    else:
-        def decode_data(self):
-            assert(len(self.data) == 4)
-            self.numerator = ord(self.data[0])
-            # Weird: the denominator is two to the power of the data variable
-            self.denominator = 2 ** ord(self.data[1])
-            self.metronome = ord(self.data[2])
-            self.thirtyseconds = ord(self.data[3])
+    def decode_data(self):
+        assert(len(self.data) == 4)
+        self.numerator = self.data[0]
+        # Weird: the denominator is two to the power of the data variable
+        self.denominator = 2 ** self.data[1]
+        self.metronome = self.data[2]
+        self.thirtyseconds = self.data[3]
 
 
 class KeySignatureEvent(MetaEvent):

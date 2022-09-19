@@ -32,7 +32,7 @@ enum CopyfileFlags {COPYFILE_NONE = 0,
  * is set.
  */
 extern bool copyfile(const char *src, const char *dst, std::string &reason,
-		     int flags = 0);
+             int flags = 0);
 
 /** Save c++ string to file */
 extern bool stringtofile(const std::string& dt, const char *dst, 

@@ -1,7 +1,7 @@
-AC_INIT([Recoll], m4_esyscmd_s(cat VERSION))
+AC_INIT([Recoll],[m4_esyscmd_s(cat RECOLL-VERSION.txt)])
 AC_CONFIG_HEADERS([common/autoconfig.h])
 AH_BOTTOM([#include "conf_post.h"])
-AC_PREREQ(2.53)
+AC_PREREQ([2.69])
 AC_CONFIG_SRCDIR(index/recollindex.cpp)
 
 AM_INIT_AUTOMAKE([1.10 no-define subdir-objects foreign])
@@ -21,15 +21,28 @@ if test C$CXX = C ; then
    AC_MSG_ERROR([C++ compiler needed. Please install one (ie: gnu g++)])
 fi
 AC_LANG_PUSH([C++])
-AC_TRY_LINK([],[], rcl_link_ok=yes, rcl_link_ok=no)
+AC_LINK_IFELSE([AC_LANG_PROGRAM([[]], [[]])],[rcl_link_ok=yes],[rcl_link_ok=no])
 if test "$rcl_link_ok" = "no" ; then
    AC_MSG_ERROR([No working C++ compiler was found])
 fi
 AC_LANG_POP([C++])
 
+AC_CANONICAL_HOST
+
+# We want librecoll.so to have no undefined symbols because it makes our
+# life easier when building the loadable modules for, e.g. Python Can't
+# make sense of the libtool -no-undefined flag. It seems to do nothing on
+# Linux. Otoh, -Wl,--no-undefined or -z,defs is not portable (e.g. does not
+# work on the mac). So set this link flag as a system-dependant value here
+case $host_os in
+  linux*)
+    NO_UNDEF_LINK_FLAG=-Wl,--no-undefined
+    ;;
+esac
+
 AC_PROG_YACC
 
-AC_PROG_LIBTOOL
+LT_INIT
 AC_C_BIGENDIAN
 
 AC_SYS_LARGEFILE
@@ -37,52 +50,28 @@ AC_SYS_LARGEFILE
 # OpenBSD needs sys/param.h for mount.h to compile
 AC_CHECK_HEADERS([sys/param.h, spawn.h])
 
-AC_CHECK_FUNCS([posix_spawn setrlimit kqueue vsnprintf])
 
 if test "x$ac_cv_func_posix_spawn" = xyes; then :
    AC_ARG_ENABLE(posix_spawn,
-    AC_HELP_STRING([--enable-posix_spawn],
-   [Enable the use of posix_spawn().]),
+    AS_HELP_STRING([--enable-posix_spawn],[Enable the use of posix_spawn().]),
         posixSpawnEnabled=$enableval, posixSpawnEnabled=no)
 fi
 if test X$posixSpawnEnabled = Xyes ; then
   AC_DEFINE(USE_POSIX_SPAWN, 1, [Use posix_spawn()])
 fi
 
-# Check for where to find unordered_map etc.
-AC_LANG_PUSH([C++])
-AC_CHECK_HEADER(tr1/unordered_map,[AC_DEFINE([HAVE_TR1_UNORDERED],
-    [],["Have tr1"])],[])
-AC_CHECK_HEADER(unordered_map,[AC_DEFINE([HAVE_CXX0X_UNORDERED],
-    [],["Have C++0x"])],[])
-AC_TRY_COMPILE([
-    #include <memory>
-  ],[
-    std::shared_ptr<int> ptr;
-  ], rcl_shared_ptr_std="1", rcl_shared_ptr_std="0")
-AC_TRY_COMPILE([
-    #include <tr1/memory>
-  ],[
-    std::tr1::shared_ptr<int> ptr;
-  ], rcl_shared_ptr_tr1="1", rcl_shared_ptr_tr1="0")
-if test X$rcl_shared_ptr_std = X1; then 
-   AC_DEFINE(HAVE_SHARED_PTR_STD, [], [Has std::shared_ptr])
-elif test X$rcl_shared_ptr_tr1 = X1; then 
-   AC_DEFINE(HAVE_SHARED_PTR_TR1, [], [Has std::tr1::shared_ptr])
-fi
-AC_LANG_POP([C++])
-
-AC_CHECK_HEADERS([sys/mount.h sys/statfs.h sys/statvfs.h sys/vfs.h], [], [],
+AC_CHECK_HEADERS([sys/mount.h sys/statfs.h sys/statvfs.h sys/vfs.h malloc.h malloc/malloc.h], [], [],
 [#ifdef HAVE_SYS_PARAM_H
 # include <sys/param.h>
 #endif
 ])
 
+AC_CHECK_FUNCS([posix_spawn setrlimit kqueue vsnprintf malloc_trim posix_fadvise])
+
 # Use specific 'file' command ? (Useful on solaris to specify
 # /usr/local/bin/file instead of the system's which doesn't understand '-i'
 AC_ARG_WITH(file-command, 
-    AC_HELP_STRING([--with-file-command],
-   [Specify version of 'file' command (ie: --with-file-command=/usr/local/bin/file)]),
+    AS_HELP_STRING([--with-file-command],[Specify version of 'file' command (ie: --with-file-command=/usr/local/bin/file)]),
         withFileCommand=$withval, withFileCommand=file)
 case $withFileCommand in
   file)
@@ -105,8 +94,7 @@ AC_DEFINE(USE_SYSTEM_FILE_COMMAND, 1,
 # we do compile the aspell module using an internal copy of aspell.h
 # Only --with-aspell=no will completely disable aspell support
 AC_ARG_WITH(aspell, 
-    AC_HELP_STRING([--without-aspell],
-   [Disable use of aspell spelling package to provide term expansion to other spellings]),
+    AS_HELP_STRING([--without-aspell],[Disable use of aspell spelling package to provide term expansion to other spellings]),
         withAspell=$withval, withAspell=yes)
 case $withAspell in
      no);;
@@ -123,20 +111,8 @@ if test X$withAspell != Xno ; then
    if test X$aspellProg != X ; then
       aspellBase=`dirname $aspellProg`
       aspellBase=`dirname $aspellBase`
-      AC_DEFINE_UNQUOTED(ASPELL_PROG, "$aspellProg",
-	[Path to the aspell program])
-      if test -f $aspellBase/include/aspell.h ; then	
-          AC_DEFINE_UNQUOTED(ASPELL_INCLUDE, "$aspellBase/include/aspell.h",
-	    [Path to the aspell api include file])
-      else
-	AC_MSG_NOTICE([aspell support enabled but aspell package not found. Compiling with internal aspell interface file])
-	 AC_DEFINE(ASPELL_INCLUDE, ["aspell-local.h"])
-      fi
-   else
-     # aspell support enabled but no aspell install yet
-	AC_MSG_NOTICE([aspell support enabled but aspell package not found. Compiling with internal aspell interface file])
-	AC_DEFINE(ASPELL_INCLUDE, ["aspell-local.h"])
-   fi
+      AC_DEFINE_UNQUOTED(ASPELL_PROG, "$aspellProg", [Path to the aspell program])
+   fi   
 fi
 
 if test -f /usr/include/sys/inotify.h -o -f /usr/include/linux/inotify.h; then
@@ -147,8 +123,7 @@ fi
 
 # Real time monitoring with inotify
 AC_ARG_WITH(inotify, 
-    AC_HELP_STRING([--with-inotify],
-   [Use inotify for almost real time indexing of modified files (the default
+    AS_HELP_STRING([--with-inotify],[Use inotify for almost real time indexing of modified files (the default
     is yes on Linux).]),
         withInotify=$withval, withInotify=$inot_default)
 
@@ -162,8 +137,7 @@ fi
 
 # Real time monitoring with FAM
 AC_ARG_WITH(fam, 
-    AC_HELP_STRING([--with-fam],
-   [Use File Alteration Monitor for almost real time indexing of modified files. Give the fam/gamin library as argument (ie: /usr/lib/libfam.so) if configure does not find the right one.]),
+    AS_HELP_STRING([--with-fam],[Use File Alteration Monitor for almost real time indexing of modified files. Give the fam/gamin library as argument (ie: /usr/lib/libfam.so) if configure does not find the right one.]),
         withFam=$withval, withFam=yes)
 
 if test X$withFam != Xno -a X$withInotify != Xno ; then
@@ -228,10 +202,14 @@ if test X$idxthreadsEnabled = Xyes ; then
 fi
 
 AC_ARG_ENABLE(testmains,
-    AC_HELP_STRING([--enable-testmains],
-   [Enable building small test drivers. These are not unit tests.]),
+    AS_HELP_STRING([--enable-testmains],[Enable building small test drivers. These are not unit tests.]),
         buildtestmains=$enableval, buildtestmains=no)
 AM_CONDITIONAL([COND_TESTMAINS], [test "$buildtestmains" = yes])
+
+AC_ARG_ENABLE(rclgrep,
+    AS_HELP_STRING([--enable-rclgrep],[Enable building the index-less search tool.]),
+        buildrclgrep=$enableval, buildrclgrep=no)
+AM_CONDITIONAL([COND_RCLGREP], [test "$buildrclgrep" = yes])
 
 # Enable CamelCase word splitting. This is optional because it causes 
 # problems with phrases: with camelcase enabled, "MySQL manual"
@@ -239,8 +217,7 @@ AM_CONDITIONAL([COND_TESTMAINS], [test "$buildtestmains" = yes])
 # "mysql manual" (which would need increased slack as manual is now at pos
 # 2 instead of 1
 AC_ARG_ENABLE(camelcase,
-    AC_HELP_STRING([--enable-camelcase],
-   [Enable splitting camelCase words. This is not enabled by default as
+    AS_HELP_STRING([--enable-camelcase],[Enable splitting camelCase words. This is not enabled by default as
    this makes phrase matches more difficult: you need to use matching
    case in the phrase query to get a match. Ie querying for 
    "MySQL manual" and "my sql manual" are the same, but not the same as
@@ -253,15 +230,13 @@ fi
 
 # Disable building the python module.
 AC_ARG_ENABLE(python-module,
-    AC_HELP_STRING([--disable-python-module],
-    [Do not build the Python module.]),
+    AS_HELP_STRING([--disable-python-module],[Do not build the Python module.]),
         pythonEnabled=$enableval, pythonEnabled=yes)
 
 AM_CONDITIONAL(MAKEPYTHON, [test X$pythonEnabled = Xyes])
 
 # Disable building the libchm python wrapper
-AC_ARG_ENABLE(python-chm, AC_HELP_STRING([--disable-python-chm],
-    [Do not build the libchm Python wrapper.]),
+AC_ARG_ENABLE(python-chm, AS_HELP_STRING([--disable-python-chm],[Do not build the libchm Python wrapper.]),
     pythonChmEnabled=$enableval, pythonChmEnabled=yes)
 
 if test X$pythonChmEnabled = Xyes; then
@@ -283,11 +258,11 @@ AC_CHECK_LIB([z], [zlibVersion], [], [])
 ############# Putenv
 AC_MSG_CHECKING(for type of string parameter to putenv)
 AC_LANG_PUSH([C++])
-AC_TRY_COMPILE([
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
     #include <stdlib.h>
-  ],[
+  ]], [[
     putenv((const char *)0);
-  ], rcl_putenv_string_const="1", rcl_putenv_string_const="0")
+  ]])],[rcl_putenv_string_const="1"],[rcl_putenv_string_const="0"])
 if test X$rcl_putenv_string_const = X1 ; then
   AC_DEFINE(PUTENV_ARG_CONST, 1, [putenv parameter is const])
 fi
@@ -343,49 +318,15 @@ XAPIANCXXFLAGS=`$XAPIAN_CONFIG --cxxflags`
 #echo XAPIANCXXFLAGS: $XAPIANCXXFLAGS
 
 
- AC_ARG_WITH(xalan,
-    AC_HELP_STRING([--with-xalan],
-      [Enable the use of the xalan library instead libxml2.]),
-        withXalan=$withval, withXalan="no")
-
-  case "$withXalan" in 
-    no)  
-      XSLT_CONFIG=${XSLT_CONFIG:-no}
-      if test "$XSLT_CONFIG" = "no"; then 
-          AC_PATH_PROG(XSLT_CONFIG0, [xslt-config], no)
-          XSLT_CONFIG=$XSLT_CONFIG0
-      fi
-      if test "$XSLT_CONFIG" = "no" ; then
-        AC_MSG_ERROR([Cannot find xslt-config command in $PATH. Is
-      libxslt installed ?])
-        exit 1
-      fi
-
-      XSLT_CFLAGS=`xslt-config --cflags`
-      XSLT_LINKADD=`xslt-config --libs`
-    ;;
-    yes) 
-      AC_DEFINE(USE_XALAN, 1, [Use Xalan support])
-      XSLT_LINKADD="-lxerces-c -lxalan-c"
-    ;;
-    *)   AC_DEFINE(USE_XALAN, 1, [Use Xalan support]) 
-         LIBXALANDIR=$withXalan
-         XSLT_CFLAGS=="$LIBXALANDIR/include"
-         XSLT_LINKADD="$LIBXALANDIR/lib -lxerces-c -lxalan-c"
-    ;;
-esac	
-
-
+PKG_CHECK_MODULES([XSLT], [libxslt], [], AC_MSG_ERROR([libxslt]))
 
 AC_ARG_ENABLE(xadump, 
-    AC_HELP_STRING([--enable-xadump],
-   [Enable building the xadump low level Xapian access program.]),
+    AS_HELP_STRING([--enable-xadump],[Enable building the xadump low level Xapian access program.]),
         enableXADUMP=$enableval, enableXADUMP="no")
 AM_CONDITIONAL(MAKEXADUMP, [test X$enableXADUMP = Xyes])
 
 AC_ARG_ENABLE(userdoc,
-    AC_HELP_STRING([--disable-userdoc],
-       [Disable building the user manual. (Avoids the need for docbook xml/xsl files and TeX tools.]),
+    AS_HELP_STRING([--disable-userdoc],[Disable building the user manual. (Avoids the need for docbook xml/xsl files and TeX tools.]),
         enableUserdoc=$enableval, enableUserdoc="yes")
 AM_CONDITIONAL(MAKEUSERDOC, [test X$enableUserdoc = Xyes])
 
@@ -413,14 +354,12 @@ AM_CONDITIONAL(MAKEUSERDOC, [test X$enableUserdoc = Xyes])
 # will have failed, and we tell the user to check his environment.
 #
 AC_ARG_ENABLE(qtgui, 
-    AC_HELP_STRING([--disable-qtgui],
-   [Disable the QT-based graphical user interface.]),
+    AS_HELP_STRING([--disable-qtgui],[Disable the QT-based graphical user interface.]),
         enableQT=$enableval, enableQT="yes")
 AM_CONDITIONAL(MAKEQT, [test X$enableQT = Xyes])
 
 AC_ARG_ENABLE(recollq, 
-    AC_HELP_STRING([--enable-recollq],
-   [Enable building the recollq command line query tool (recoll -t without
+    AS_HELP_STRING([--enable-recollq],[Enable building the recollq command line query tool (recoll -t without
    need for Qt). This is done by default if --disable-qtgui is set but this
    option enables forcing it.]),
         enableRECOLLQ=$enableval, enableRECOLLQ="no")
@@ -451,28 +390,11 @@ if test X$enableQT = Xyes ; then
   qt development files and tools and/or set the QTDIR environment variable?])
   fi
   QMAKE=$QMAKEPATH
-  
-  # Check Qt version
-  qmakevers="`${QMAKE} --version 2>&1`"
-  #echo "qmake version: $qmakevers"
-  v4=`expr "$qmakevers" : '.*Qt[ ][ ]*version[ ][ ]*4.*'`
-  v5=`expr "$qmakevers" : '.*Qt[ ][ ]*version[ ][ ]*5.*'`
-  if test X$v4 = X0 -a X$v5 = X0; then 
-     AC_MSG_ERROR([Bad qt/qmake version string (not 4 or 5?): $qmakevers])
-  else
-    if test X$v4 != X0 ; then
-       AC_MSG_ERROR([Qt version (from qmake found with QMAKE/QTDIR/PATH) is 4 but Recoll now needs version 5])
-    else
-       AC_MSG_NOTICE([using qt version 5 user interface])
-    fi
-    QTGUI=qtgui
-  fi
-
+  QTGUI=qtgui
 
  ##### Using Qt webkit for reslist display? Else Qt textbrowser
   AC_ARG_ENABLE(webkit,
-    AC_HELP_STRING([--disable-webkit],
-      [Disable use of qt-webkit (only meaningful if qtgui is enabled).]),
+    AS_HELP_STRING([--disable-webkit],[Disable use of qt-webkit (only meaningful if qtgui is enabled).]),
         enableWebkit=$enableval, enableWebkit="yes")
 
   if test "$enableWebkit" = "yes" ; then
@@ -484,8 +406,7 @@ if test X$enableQT = Xyes ; then
   fi
 
   AC_ARG_ENABLE(webengine,
-    AC_HELP_STRING([--enable-webengine],
-      [Enable use of qt-webengine (only meaningful if qtgui is enabled), in
+    AS_HELP_STRING([--enable-webengine],[Enable use of qt-webengine (only meaningful if qtgui is enabled), in
       place or qt-webkit.]),
         enableWebengine=$enableval, enableWebengine="no")
 
@@ -501,8 +422,7 @@ if test X$enableQT = Xyes ; then
 
  ##### Using QZeitGeist lib ? Default no for now
   AC_ARG_WITH(qzeitgeist,
-    AC_HELP_STRING([--with-qzeitgeist],
-      [Enable the use of the qzeitgeist library to send zeitgeist events.]),
+    AS_HELP_STRING([--with-qzeitgeist],[Enable the use of the qzeitgeist library to send zeitgeist events.]),
         withQZeitgeist=$withval, withQZeitgeist="no")
 
   case "$withQZeitgeist" in 
@@ -519,16 +439,62 @@ if test X$enableQT = Xyes ; then
    QMAKE_DISABLE_ZEITGEIST=""
   fi
 
+ # Retain debugging symbols in GUI recoll ? This makes it enormous (~50MB)
+  AC_ARG_ENABLE(guidebug,
+    AS_HELP_STRING([--enable-guidebug],[Generate and retain debug symbols in GUI program (makes the file very big).]),
+        enableGuiDebug=$enableval, enableGuiDebug="no")
+
+  if test "$enableGuiDebug" = "yes" ; then
+   QMAKE_ENABLE_GUIDEBUG=""
+  else
+   QMAKE_ENABLE_GUIDEBUG="#"
+  fi
+
   AC_CONFIG_FILES($QTGUI/recoll.pro)
 
   ##################### End QT stuff
 fi
 
+dnl Borrow a macro definition from pkg.config,
+dnl for older installs that lack it.
+m4_ifndef([PKG_CHECK_VAR], [
+dnl PKG_CHECK_VAR(VARIABLE, MODULE, CONFIG-VARIABLE,
+dnl [ACTION-IF-FOUND], [ACTION-IF-NOT-FOUND])
+dnl -------------------------------------------
+dnl Retrieves the value of the pkg-config variable for the given module.
+AC_DEFUN([PKG_CHECK_VAR],
+[AC_REQUIRE([PKG_PROG_PKG_CONFIG])dnl
+AC_ARG_VAR([$1], [value of $3 for $2, overriding pkg-config])dnl
+
+_PKG_CONFIG([$1], [variable="][$3]["], [$2])
+AS_VAR_COPY([$1], [pkg_cv_][$1])
+
+AS_VAR_IF([$1], [""], [$5], [$4])dnl
+])dnl PKG_CHECK_VAR
+])
+
+### Systemd
+AC_ARG_WITH([systemd],
+    AS_HELP_STRING([--without-systemd],[Disable installation of the systemd unit files.]))
+AC_ARG_WITH([system-unit-dir],
+    AS_HELP_STRING([--with-system-unit-dir=DIR],[Install location for systemd system unit files]),
+    [SYSTEMD_SYSTEM_UNIT_DIR="$withval"],
+    [PKG_CHECK_VAR([SYSTEMD_SYSTEM_UNIT_DIR], [systemd], [systemdsystemunitdir])])
+AC_ARG_WITH([user-unit-dir],
+    AS_HELP_STRING([--with-user-unit-dir=DIR],[Install location for systemd user unit files]),
+    [SYSTEMD_USER_UNIT_DIR="$withval"],
+    [PKG_CHECK_VAR([SYSTEMD_USER_UNIT_DIR], [systemd], [systemduserunitdir])])
+
+if test "x$SYSTEMD_SYSTEM_UNIT_DIR" = "x" -o \
+        "x$SYSTEMD_USER_UNIT_DIR" = "x"; then
+    with_systemd="no"
+fi
+
+AM_CONDITIONAL([INSTALL_SYSTEMD_UNITS], [test "X$with_systemd" != "Xno"])
 
 ### X11: this is needed for the session monitoring code (in recollindex -m)
 AC_ARG_ENABLE(x11mon, 
-    AC_HELP_STRING([--disable-x11mon],
-   [Disable recollindex support for X11 session monitoring.]),
+    AS_HELP_STRING([--disable-x11mon],[Disable recollindex support for X11 session monitoring.]),
         enableX11mon=$enableval, enableX11mon="yes")
 
 if test X$withInotify = Xno -a X$withFam = Xno ; then
@@ -559,6 +525,7 @@ RECOLL_DATADIR=${m_datadir}/recoll
 RCLVERSION=$PACKAGE_VERSION
 RCLLIBVERSION=$RCLVERSION
 
+AC_SUBST(NO_UNDEF_LINK_FLAG)
 AC_SUBST(RECOLL_DATADIR)
 AC_SUBST(X_CFLAGS)
 AC_SUBST(X_PRE_LIBS)
@@ -578,19 +545,26 @@ AC_SUBST(QMAKE_ENABLE_WEBKIT)
 AC_SUBST(QMAKE_DISABLE_WEBKIT)
 AC_SUBST(QMAKE_ENABLE_WEBENGINE)
 AC_SUBST(QMAKE_DISABLE_WEBENGINE)
+AC_SUBST(QMAKE_ENABLE_GUIDEBUG)
+AC_SUBST(QMAKE_DISABLE_GUIDEBUG)
 AC_SUBST(QMAKE_ENABLE_ZEITGEIST)
 AC_SUBST(QMAKE_DISABLE_ZEITGEIST)
 AC_SUBST(LIBQZEITGEIST)
 AC_SUBST(RCLVERSION)
 AC_SUBST(RCLLIBVERSION)
 AC_SUBST(XSLT_CFLAGS)
-AC_SUBST(XSLT_LINKADD)
+AC_SUBST(XSLT_LIBS)
+AC_SUBST([SYSTEMD_SYSTEM_UNIT_DIR])
+AC_SUBST([SYSTEMD_USER_UNIT_DIR])
 
 AC_CONFIG_FILES([Makefile python/recoll/setup.py
  python/pychm/setup.py])
 
 if test X$buildtestmains = Xyes ; then
    AC_CONFIG_FILES([testmains/Makefile])
+fi
+if test X$buildrclgrep = Xyes ; then
+   AC_CONFIG_FILES([rclgrep/Makefile])
 fi
 
 AC_OUTPUT

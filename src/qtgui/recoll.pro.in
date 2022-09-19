@@ -3,6 +3,7 @@ LANGUAGE        = C++
 
 VPATH = @srcdir@
 DEFINES += BUILDING_RECOLL
+DEFINES += BUILDING_RECOLLGUI
 
 @QMAKE_ENABLE_WEBKIT@ QT += webkit
 @QMAKE_ENABLE_WEBKIT@ DEFINES += USING_WEBKIT
@@ -21,9 +22,12 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets printsupport
 @QMAKE_ENABLE_WEBKIT@ greaterThan(QT_MAJOR_VERSION, 4): QT += webkitwidgets
 @QMAKE_ENABLE_WEBENGINE@ greaterThan(QT_MAJOR_VERSION, 4): QT += webenginewidgets
 
-CONFIG  += qt warn_on thread release 
+CONFIG  += qt warn_on thread release
+@QMAKE_ENABLE_GUIDEBUG@ CONFIG += force_debug_info
+
 
 HEADERS += \
+        actsearch_w.h \
         advsearch_w.h \
         advshist.h \
         confgui/confgui.h \
@@ -31,6 +35,7 @@ HEADERS += \
         crontool.h \
         firstidx.h \
         fragbuts.h \
+        idxmodel.h \
         idxsched.h \
         preview_load.h \
         preview_plaintorich.h \
@@ -41,6 +46,7 @@ HEADERS += \
         reslist.h \
         restable.h \
         rtitool.h \
+        scbase.h \
         searchclause_w.h \
         snippets_w.h \
         specialindex.h \
@@ -55,6 +61,7 @@ HEADERS += \
         widgets/qxtconfirmationmessage.h
 
 SOURCES += \
+        actsearch_w.cpp \
         advsearch_w.cpp \
         advshist.cpp \
         confgui/confgui.cpp \
@@ -62,6 +69,7 @@ SOURCES += \
         crontool.cpp \
         fragbuts.cpp \
         guiutils.cpp \
+		idxmodel.cpp \
         main.cpp \
         multisave.cpp \
         preview_load.cpp \
@@ -70,8 +78,10 @@ SOURCES += \
         ptrans_w.cpp \
         rclhelp.cpp \
         rclm_idx.cpp \
+        rclm_menus.cpp \
         rclm_preview.cpp \
         rclm_saveload.cpp \
+        rclm_sidefilters.cpp \
         rclm_view.cpp \
         rclm_wins.cpp \
         rclmain_w.cpp \
@@ -80,6 +90,7 @@ SOURCES += \
         respopup.cpp \
         restable.cpp \
         rtitool.cpp \
+        scbase.cpp \
         searchclause_w.cpp \
         snippets_w.cpp \
         spell_w.cpp \
@@ -92,6 +103,7 @@ SOURCES += \
         xmltosd.cpp
 
 FORMS   = \
+        actsearch.ui \
         advsearch.ui \
         crontool.ui \
         firstidx.ui \
@@ -109,7 +121,7 @@ FORMS   = \
         viewaction.ui \
         webcache.ui \
         widgets/editdialog.ui \
-        widgets/listdialog.ui 
+        widgets/listdialog.ui
         
 RESOURCES = recoll.qrc
 
@@ -118,7 +130,10 @@ unix {
   MOC_DIR = .moc
   OBJECTS_DIR = .obj
   LIBS += -L../.libs -lrecoll
-
+  # You will need LD_PRELOAD=/path/to/libasan.xx because -lasan need to be
+  # first in libs, so can't use LIBS +=
+  #  QMAKE_CXXFLAGS += -fsanitize=address -fno-omit-frame-pointer
+  
   !macx {
     # Note: libdir may be substituted with sthing like $(exec_prefix)/lib
     # at this point and will go as such in the Makefile. Expansion will be
@@ -151,20 +166,26 @@ macx {
 }
 
 TRANSLATIONS = \
-	     i18n/recoll_cs.ts \
-	     i18n/recoll_da.ts \
-	     i18n/recoll_de.ts \
-	     i18n/recoll_el.ts \
-	     i18n/recoll_es.ts \
-             i18n/recoll_fr.ts \
-             i18n/recoll_it.ts \
-             i18n/recoll_lt.ts \
-             i18n/recoll_ru.ts \
-             i18n/recoll_tr.ts \
-             i18n/recoll_uk.ts \
-             i18n/recoll_xx.ts \
-             i18n/recoll_zh_CN.ts \
-             i18n/recoll_zh.ts \
+i18n/recoll_cs.ts \
+i18n/recoll_da.ts \
+i18n/recoll_de.ts \
+i18n/recoll_el.ts \
+i18n/recoll_es.ts \
+i18n/recoll_fr.ts \
+i18n/recoll_hu.ts \
+i18n/recoll_it.ts \
+i18n/recoll_ja.ts \
+i18n/recoll_ko.ts \
+i18n/recoll_lt.ts \
+i18n/recoll_nl.ts \
+i18n/recoll_pl.ts \
+i18n/recoll_ru.ts \
+i18n/recoll_sv.ts \
+i18n/recoll_tr.ts \
+i18n/recoll_uk.ts \
+i18n/recoll_xx.ts \
+i18n/recoll_zh_CN.ts \
+i18n/recoll_zh.ts
 
 unix {
   isEmpty(PREFIX) {
@@ -187,7 +208,7 @@ unix {
   iconb.files += @srcdir@/../desktop/recoll.png
   iconb.path = $$PREFIX/share/pixmaps/
   appdata.files = @srcdir@/../desktop/recoll.appdata.xml
-  appdata.path = $$PREFIX/share/appdata/
+  appdata.path = $$PREFIX/share/metainfo/
   INSTALLS += target imdata trdata desktop icona iconb appdata
 
   # The recollinstall script used to do the following to install zh_CN as

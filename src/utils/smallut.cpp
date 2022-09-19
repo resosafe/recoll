@@ -1,4 +1,4 @@
-/* Copyright (C) 2006-2016 J.F.Dockes
+/* Copyright (C) 2006-2022 J.F.Dockes
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -15,19 +15,32 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  *   02110-1301 USA
  */
-#include <stdio.h>
-#include <stdlib.h>
-#include <inttypes.h>
+#include "smallut.h"
+
+#include <algorithm>
+#include <cctype>
+#include <cerrno>
+#include <cinttypes>
+#include <cmath>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <ctime>
+#include <iostream>
+#include <list>
+#include <numeric>
+#include <set>
+#include <string>
+#include <unordered_map>
+#include <unordered_set>
+#include <functional>
 
 #ifdef _WIN32
-// needed for localtime_r under mingw?
-#define _POSIX_THREAD_SAFE_FUNCTIONS
-#endif
-#include <time.h>
-#include <ctype.h>
-#include <errno.h>
-#include <string.h>
-#include <math.h>
+#define strncasecmp _strnicmp
+#define strcasecmp _stricmp
+#define localtime_r(a,b) localtime_s(b,a)
+#endif /* _WIN32 */
+
 
 // Older compilers don't support stdc++ regex, but Windows does not
 // have the Linux one. Have a simple class to solve the simple cases.
@@ -39,56 +52,21 @@
 #include <regex.h>
 #endif
 
-#include <string>
-#include <iostream>
-#include <list>
-#include <unordered_map>
-#include <unordered_set>
-
-#include "smallut.h"
-
 using namespace std;
+using namespace std::placeholders;
+
+namespace MedocUtils {
 
 int stringicmp(const string& s1, const string& s2)
 {
-    string::const_iterator it1 = s1.begin();
-    string::const_iterator it2 = s2.begin();
-    string::size_type size1 = s1.length(), size2 = s2.length();
-    char c1, c2;
-
-    if (size1 < size2) {
-        while (it1 != s1.end()) {
-            c1 = ::toupper(*it1);
-            c2 = ::toupper(*it2);
-            if (c1 != c2) {
-                return c1 > c2 ? 1 : -1;
-            }
-            ++it1;
-            ++it2;
-        }
-        return size1 == size2 ? 0 : -1;
-    } else {
-        while (it2 != s2.end()) {
-            c1 = ::toupper(*it1);
-            c2 = ::toupper(*it2);
-            if (c1 != c2) {
-                return c1 > c2 ? 1 : -1;
-            }
-            ++it1;
-            ++it2;
-        }
-        return size1 == size2 ? 0 : 1;
-    }
+    return strcasecmp(s1.c_str(), s2.c_str());
 }
+
 void stringtolower(string& io)
 {
-    string::iterator it = io.begin();
-    string::iterator ite = io.end();
-    while (it != ite) {
-        *it = ::tolower(*it);
-        it++;
-    }
+    std::transform(io.begin(), io.end(), io.begin(), [](unsigned char c) {return std::tolower(c);});
 }
+
 string stringtolower(const string& i)
 {
     string o = i;
@@ -98,34 +76,14 @@ string stringtolower(const string& i)
 
 void stringtoupper(string& io)
 {
-    string::iterator it = io.begin();
-    string::iterator ite = io.end();
-    while (it != ite) {
-        *it = ::toupper(*it);
-        it++;
-    }
+    std::transform(io.begin(), io.end(), io.begin(), [](unsigned char c) { return std::toupper(c); });
 }
+
 string stringtoupper(const string& i)
 {
     string o = i;
     stringtoupper(o);
     return o;
-}
-
-extern int stringisuffcmp(const string& s1, const string& s2)
-{
-    string::const_reverse_iterator r1 = s1.rbegin(), re1 = s1.rend(),
-                                   r2 = s2.rbegin(), re2 = s2.rend();
-    while (r1 != re1 && r2 != re2) {
-        char c1 = ::toupper(*r1);
-        char c2 = ::toupper(*r2);
-        if (c1 != c2) {
-            return c1 > c2 ? 1 : -1;
-        }
-        ++r1;
-        ++r2;
-    }
-    return 0;
 }
 
 //  s1 is already lowercase
@@ -146,17 +104,17 @@ int stringlowercmp(const string& s1, const string& s2)
             ++it2;
         }
         return size1 == size2 ? 0 : -1;
-    } else {
-        while (it2 != s2.end()) {
-            c2 = ::tolower(*it2);
-            if (*it1 != c2) {
-                return *it1 > c2 ? 1 : -1;
-            }
-            ++it1;
-            ++it2;
-        }
-        return size1 == size2 ? 0 : 1;
     }
+
+    while (it2 != s2.end()) {
+        c2 = ::tolower(*it2);
+        if (*it1 != c2) {
+            return *it1 > c2 ? 1 : -1;
+        }
+        ++it1;
+        ++it2;
+    }
+    return size1 == size2 ? 0 : 1;
 }
 
 //  s1 is already uppercase
@@ -177,43 +135,22 @@ int stringuppercmp(const string& s1, const string& s2)
             ++it2;
         }
         return size1 == size2 ? 0 : -1;
-    } else {
-        while (it2 != s2.end()) {
-            c2 = ::toupper(*it2);
-            if (*it1 != c2) {
-                return *it1 > c2 ? 1 : -1;
-            }
-            ++it1;
-            ++it2;
-        }
-        return size1 == size2 ? 0 : 1;
     }
+
+    while (it2 != s2.end()) {
+        c2 = ::toupper(*it2);
+        if (*it1 != c2) {
+            return *it1 > c2 ? 1 : -1;
+        }
+        ++it1;
+        ++it2;
+    }
+    return size1 == size2 ? 0 : 1;
 }
 
 bool beginswith(const std::string& big, const std::string& small)
 {
-    if (big.compare(0, small.size(), small)) {
-        return false;
-    }
-    return true;
-}
-
-// Compare charset names, removing the more common spelling variations
-bool samecharset(const string& cs1, const string& cs2)
-{
-    string mcs1, mcs2;
-    // Remove all - and _, turn to lowecase
-    for (unsigned int i = 0; i < cs1.length(); i++) {
-        if (cs1[i] != '_' && cs1[i] != '-') {
-            mcs1 += ::tolower(cs1[i]);
-        }
-    }
-    for (unsigned int i = 0; i < cs2.length(); i++) {
-        if (cs2[i] != '_' && cs2[i] != '-') {
-            mcs2 += ::tolower(cs2[i]);
-        }
-    }
-    return mcs1 == mcs2;
+    return big.compare(0, small.size(), small) == 0;
 }
 
 template <class T> bool stringToStrings(const string& s, T& tokens,
@@ -223,8 +160,8 @@ template <class T> bool stringToStrings(const string& s, T& tokens,
     tokens.clear();
     enum states {SPACE, TOKEN, INQUOTE, ESCAPE};
     states state = SPACE;
-    for (unsigned int i = 0; i < s.length(); i++) {
-        switch (s[i]) {
+    for (char i : s) {
+        switch (i) {
         case '"':
             switch (state) {
             case SPACE:
@@ -275,13 +212,13 @@ template <class T> bool stringToStrings(const string& s, T& tokens,
                 continue;
             case INQUOTE:
             case ESCAPE:
-                current += s[i];
+                current += i;
                 continue;
             }
             break;
 
         default:
-            if (!addseps.empty() && addseps.find(s[i]) != string::npos) {
+            if (!addseps.empty() && addseps.find(i) != string::npos) {
                 switch (state) {
                 case ESCAPE:
                     state = INQUOTE;
@@ -289,12 +226,12 @@ template <class T> bool stringToStrings(const string& s, T& tokens,
                 case INQUOTE:
                     break;
                 case SPACE:
-                    tokens.insert(tokens.end(), string(1, s[i]));
+                    tokens.insert(tokens.end(), string(1, i));
                     continue;
                 case TOKEN:
                     tokens.insert(tokens.end(), current);
                     current.erase();
-                    tokens.insert(tokens.end(), string(1, s[i]));
+                    tokens.insert(tokens.end(), string(1, i));
                     state = SPACE;
                     continue;
                 }
@@ -309,7 +246,7 @@ template <class T> bool stringToStrings(const string& s, T& tokens,
                 case INQUOTE:
                     break;
                 }
-            current += s[i];
+            current += i;
         }
     }
     switch (state) {
@@ -325,31 +262,20 @@ template <class T> bool stringToStrings(const string& s, T& tokens,
     return true;
 }
 
-template bool stringToStrings<list<string> >(const string&,
-        list<string>&, const string&);
-template bool stringToStrings<vector<string> >(const string&,
-        vector<string>&, const string&);
-template bool stringToStrings<set<string> >(const string&,
-        set<string>&, const string&);
-template bool stringToStrings<std::unordered_set<string> >
-(const string&, std::unordered_set<string>&, const string&);
-
 template <class T> void stringsToString(const T& tokens, string& s)
 {
-    for (typename T::const_iterator it = tokens.begin();
-            it != tokens.end(); it++) {
-        bool hasblanks = false;
-        if (it->find_first_of(" \t\n") != string::npos) {
-            hasblanks = true;
+    if (tokens.empty())
+        return;
+    for (const auto& tok : tokens) {
+        if (tok.empty()) {
+            s.append("\"\" ");
+            continue;
         }
-        if (it != tokens.begin()) {
-            s.append(1, ' ');
-        }
+        bool hasblanks = tok.find_first_of(" \t\n") != string::npos;
         if (hasblanks) {
             s.append(1, '"');
         }
-        for (unsigned int i = 0; i < it->length(); i++) {
-            char car = it->at(i);
+        for (auto car : tok) {
             if (car == '"') {
                 s.append(1, '\\');
                 s.append(1, car);
@@ -360,42 +286,30 @@ template <class T> void stringsToString(const T& tokens, string& s)
         if (hasblanks) {
             s.append(1, '"');
         }
+        s.append(1, ' ');
     }
+    s.resize(s.size()-1);
 }
-template void stringsToString<list<string> >(const list<string>&, string&);
-template void stringsToString<vector<string> >(const vector<string>&, string&);
-template void stringsToString<set<string> >(const set<string>&, string&);
-template void stringsToString<unordered_set<string> >(const unordered_set<string>&, string&);
+
 template <class T> string stringsToString(const T& tokens)
 {
     string out;
     stringsToString<T>(tokens, out);
     return out;
 }
-template string stringsToString<list<string> >(const list<string>&);
-template string stringsToString<vector<string> >(const vector<string>&);
-template string stringsToString<set<string> >(const set<string>&);
-template string stringsToString<unordered_set<string> >(const unordered_set<string>&);
 
-template <class T> void stringsToCSV(const T& tokens, string& s,
-                                     char sep)
+template <class T> void stringsToCSV(const T& tokens, string& s, char sep)
 {
     s.erase();
-    for (typename T::const_iterator it = tokens.begin();
-            it != tokens.end(); it++) {
+    for (const auto& tok : tokens) {
         bool needquotes = false;
-        if (it->empty() ||
-                it->find_first_of(string(1, sep) + "\"\n") != string::npos) {
+        if (tok.empty() || tok.find_first_of(string(1, sep) + "\"\n") != string::npos) {
             needquotes = true;
-        }
-        if (it != tokens.begin()) {
-            s.append(1, sep);
         }
         if (needquotes) {
             s.append(1, '"');
         }
-        for (unsigned int i = 0; i < it->length(); i++) {
-            char car = it->at(i);
+        for (auto&& car : tok) {
             if (car == '"') {
                 s.append(2, '"');
             } else {
@@ -405,20 +319,69 @@ template <class T> void stringsToCSV(const T& tokens, string& s,
         if (needquotes) {
             s.append(1, '"');
         }
+        s.append(1, sep);
     }
+    // Remove last separator.
+    if (!s.empty())
+        s.pop_back();
 }
+
+template <class T> std::string commonprefix(const T& values)
+{
+    if (values.empty())
+        return std::string();
+    if (values.size() == 1)
+        return *values.begin();
+    unsigned int i = 0;
+    for (;;i++) {
+        auto it = values.begin();
+        if (it->size() <= i) {
+            goto out;
+        }
+        auto val = (*it)[i];
+        it++;
+        for (;it < values.end(); it++) {
+            if (it->size() <= i || (*it)[i] != val) {
+                goto out;
+            }
+        }
+    }
+out:
+    return values.begin()->substr(0, i);
+}
+
+#ifdef SMALLUT_EXTERNAL_INSTANTIATIONS
+#include "smallut_instantiate.h"
+#else
+template bool stringToStrings<list<string> >(const string&,
+                                             list<string>&, const string&);
+template bool stringToStrings<vector<string> >(const string&,
+                                               vector<string>&, const string&);
+template bool stringToStrings<set<string> >(const string&,
+                                            set<string>&, const string&);
+template bool stringToStrings<std::unordered_set<string> >
+(const string&, std::unordered_set<string>&, const string&);
+template void stringsToString<list<string> >(const list<string>&, string&);
+template void stringsToString<vector<string> >(const vector<string>&, string&);
+template void stringsToString<set<string> >(const set<string>&, string&);
+template void stringsToString<unordered_set<string> >(const unordered_set<string>&, string&);
+template string stringsToString<list<string> >(const list<string>&);
+template string stringsToString<vector<string> >(const vector<string>&);
+template string stringsToString<set<string> >(const set<string>&);
+template string stringsToString<unordered_set<string> >(const unordered_set<string>&);
 template void stringsToCSV<list<string> >(const list<string>&, string&, char);
-template void stringsToCSV<vector<string> >(const vector<string>&, string&,
-        char);
+template void stringsToCSV<vector<string> >(const vector<string>&, string&, char);
+template string commonprefix<vector<string>>(const vector<string>&values);
+#endif
 
 void stringToTokens(const string& str, vector<string>& tokens,
-                    const string& delims, bool skipinit)
+                    const string& delims, bool skipinit, bool allowempty)
 {
     string::size_type startPos = 0, pos;
 
     // Skip initial delims, return empty if this eats all.
     if (skipinit &&
-            (startPos = str.find_first_not_of(delims, 0)) == string::npos) {
+        (startPos = str.find_first_not_of(delims, 0)) == string::npos) {
         return;
     }
     while (startPos < str.size()) {
@@ -429,10 +392,11 @@ void stringToTokens(const string& str, vector<string>& tokens,
         if (pos == string::npos) {
             tokens.push_back(str.substr(startPos));
             break;
-        } else if (pos == startPos) {
+        }
+        if (pos == startPos) {
             // Dont' push empty tokens after first
-            if (tokens.empty()) {
-                tokens.push_back(string());
+            if (allowempty || tokens.empty()) {
+                tokens.emplace_back();
             }
             startPos = ++pos;
         } else {
@@ -457,9 +421,10 @@ void stringSplitString(const string& str, vector<string>& tokens,
         if (pos == string::npos) {
             tokens.push_back(str.substr(startPos));
             break;
-        } else if (pos == startPos) {
+        }
+        if (pos == startPos) {
             // Initial or consecutive separators
-            tokens.push_back(string());
+            tokens.emplace_back();
         } else {
             tokens.push_back(str.substr(startPos, pos - startPos));
         }
@@ -474,12 +439,9 @@ bool stringToBool(const string& s)
     }
     if (isdigit(s[0])) {
         int val = atoi(s.c_str());
-        return val ? true : false;
+        return val != 0;
     }
-    if (s.find_first_of("yYtT") == 0) {
-        return true;
-    }
-    return false;
+    return s.find_first_of("yYtT") == 0;
 }
 
 void trimstring(string& s, const char *ws)
@@ -568,14 +530,14 @@ string truncate_to_word(const string& input, string::size_type maxlen)
 string escapeHtml(const string& in)
 {
     string out;
-    for (string::size_type pos = 0; pos < in.length(); pos++) {
-	switch(in.at(pos)) {
-	case '<': out += "&lt;"; break;
-	case '>': out += "&gt;"; break;
-	case '&': out += "&amp;"; break;
-	case '"': out += "&quot;"; break;
-	default: out += in.at(pos); break;
-	}
+    for (char pos : in) {
+        switch(pos) {
+        case '<': out += "&lt;"; break;
+        case '>': out += "&gt;"; break;
+        case '&': out += "&amp;"; break;
+        case '"': out += "&quot;"; break;
+        default: out += pos; break;
+        }
     }
     return out;
 }
@@ -584,8 +546,8 @@ string escapeShell(const string& in)
 {
     string out;
     out += "\"";
-    for (string::size_type pos = 0; pos < in.length(); pos++) {
-        switch (in.at(pos)) {
+    for (char pos : in) {
+        switch (pos) {
         case '$':
             out += "\\$";
             break;
@@ -602,7 +564,7 @@ string escapeShell(const string& in)
             out += "\\\\";
             break;
         default:
-            out += in.at(pos);
+            out += pos;
         }
     }
     out += "\"";
@@ -615,8 +577,8 @@ string makeCString(const string& in)
 {
     string out;
     out += "\"";
-    for (string::size_type pos = 0; pos < in.length(); pos++) {
-        switch (in.at(pos)) {
+    for (char pos : in) {
+        switch (pos) {
         case '"':
             out += "\\\"";
             break;
@@ -630,13 +592,12 @@ string makeCString(const string& in)
             out += "\\\\";
             break;
         default:
-            out += in.at(pos);
+            out += pos;
         }
     }
     out += "\"";
     return out;
 }
-
 
 // Substitute printf-like percent cmds inside a string
 bool pcSubst(const string& in, string& out, const map<char, string>& subs)
@@ -652,12 +613,11 @@ bool pcSubst(const string& in, string& out, const map<char, string>& subs)
                 out += '%';
                 continue;
             }
-            map<char, string>::const_iterator tr;
-            if ((tr = subs.find(*it)) != subs.end()) {
+            auto tr = subs.find(*it);
+            if (tr != subs.end()) {
                 out += tr->second;
             } else {
-                // We used to do "out += *it;" here but this does not make
-                // sense
+                out += std::string("%") + *it;
             }
         } else {
             out += *it;
@@ -666,7 +626,8 @@ bool pcSubst(const string& in, string& out, const map<char, string>& subs)
     return true;
 }
 
-bool pcSubst(const string& in, string& out, const map<string, string>& subs)
+bool pcSubst(const std::string& in, std::string& out,
+             std::function<std::string(const std::string&)> mapper)
 {
     out.erase();
     string::size_type i;
@@ -680,13 +641,13 @@ bool pcSubst(const string& in, string& out, const map<string, string>& subs)
                 out += '%';
                 continue;
             }
-            string key = "";
+            string key;
             if (in[i] == '(') {
                 if (++i == in.size()) {
                     out += string("%(");
                     break;
                 }
-                string::size_type j = in.find_first_of(")", i);
+                string::size_type j = in.find_first_of(')', i);
                 if (j == string::npos) {
                     // ??concatenate remaining part and stop
                     out += in.substr(i - 2);
@@ -697,38 +658,32 @@ bool pcSubst(const string& in, string& out, const map<string, string>& subs)
             } else {
                 key = in[i];
             }
-            map<string, string>::const_iterator tr;
-            if ((tr = subs.find(key)) != subs.end()) {
-                out += tr->second;
-            } else {
-                // Substitute to nothing, that's the reasonable thing to do
-                // instead of keeping the %(key)
-                // out += key.size()==1? key : string("(") + key + string(")");
-            }
+            out += mapper(key);
         } else {
             out += in[i];
         }
     }
     return true;
 }
-inline static int ulltorbuf(uint64_t val, char *rbuf)
-{
-    int idx;
-    for (idx = 0; val; idx++) {
-        rbuf[idx] = '0' + val % 10;
-        val /= 10;
-    }
-    while (val);
-    rbuf[idx] = 0;
-    return idx;
-}
 
-inline static void ullcopyreverse(const char *rbuf, string& buf, int idx)
-{
-    buf.reserve(idx + 1);
-    for (int i = idx - 1; i >= 0; i--) {
-        buf.push_back(rbuf[i]);
+class PcSubstMapMapper {
+public:
+    PcSubstMapMapper(const std::map<std::string, std::string>& subs)
+        : m_subs(subs) {}
+    std::string domap(const std::string& key) {
+        auto it = m_subs.find(key);
+        if (it != m_subs.end())
+            return it->second;
+        return std::string("%") + (key.size() == 1 ? key : string("(") + key + string(")"));
     }
+    const std::map<std::string, std::string>& m_subs;
+};
+
+bool pcSubst(const std::string& in, std::string& out,
+             const std::map<std::string, std::string>& subs)
+{
+    PcSubstMapMapper mapper(subs);
+    return pcSubst(in, out, std::bind(&PcSubstMapMapper::domap, &mapper, _1));
 }
 
 void ulltodecstr(uint64_t val, string& buf)
@@ -740,10 +695,14 @@ void ulltodecstr(uint64_t val, string& buf)
     }
 
     char rbuf[30];
-    int idx = ulltorbuf(val, rbuf);
+    int idx=29;
+    rbuf[idx--] = 0;
+    do {
+        rbuf[idx--] = '0' + val % 10;
+        val /= 10;
+    } while (val);
 
-    ullcopyreverse(rbuf, buf, idx);
-    return;
+    buf.assign(&rbuf[idx+1]);
 }
 
 void lltodecstr(int64_t val, string& buf)
@@ -760,15 +719,16 @@ void lltodecstr(int64_t val, string& buf)
     }
 
     char rbuf[30];
-    int idx = ulltorbuf(val, rbuf);
-
+    int idx=29;
+    rbuf[idx--] = 0;
+    do {
+        rbuf[idx--] = '0' + val % 10;
+        val /= 10;
+    } while (val);
     if (neg) {
-        rbuf[idx++] = '-';
+        rbuf[idx--] = '-';
     }
-    rbuf[idx] = 0;
-
-    ullcopyreverse(rbuf, buf, idx);
-    return;
+    buf.assign(&rbuf[idx+1]);
 }
 
 string lltodecstr(int64_t val)
@@ -817,9 +777,9 @@ string breakIntoLines(const string& in, unsigned int ll,
     while (query.length() > 0) {
         string ss = query.substr(0, ll);
         if (ss.length() == ll) {
-            string::size_type pos = ss.find_last_of(" ");
+            string::size_type pos = ss.find_last_of(' ');
             if (pos == string::npos) {
-                pos = query.find_first_of(" ");
+                pos = query.find_first_of(' ');
                 if (pos != string::npos) {
                     ss = query.substr(0, pos + 1);
                 } else {
@@ -850,7 +810,7 @@ static bool parsedate(vector<string>::const_iterator& it,
 {
     dip->y1 = dip->m1 = dip->d1 = dip->y2 = dip->m2 = dip->d2 = 0;
     if (it->length() > 4 || !it->length() ||
-            it->find_first_not_of("0123456789") != string::npos) {
+        it->find_first_not_of("0123456789") != string::npos) {
         return false;
     }
     if (it == end || sscanf(it++->c_str(), "%d", &dip->y1) != 1) {
@@ -864,7 +824,7 @@ static bool parsedate(vector<string>::const_iterator& it,
     }
 
     if (it->length() > 2 || !it->length() ||
-            it->find_first_not_of("0123456789") != string::npos) {
+        it->find_first_not_of("0123456789") != string::npos) {
         return false;
     }
     if (it == end || sscanf(it++->c_str(), "%d", &dip->m1) != 1) {
@@ -878,7 +838,7 @@ static bool parsedate(vector<string>::const_iterator& it,
     }
 
     if (it->length() > 2 || !it->length() ||
-            it->find_first_not_of("0123456789") != string::npos) {
+        it->find_first_not_of("0123456789") != string::npos) {
         return false;
     }
     if (it == end || sscanf(it++->c_str(), "%d", &dip->d1) != 1) {
@@ -983,10 +943,9 @@ static void cerrdip(const string& s, DateInterval *dip)
 // back
 static bool addperiod(DateInterval *dp, DateInterval *pp)
 {
-    struct tm tm;
     // Create a struct tm with possibly non normalized fields and let
     // timegm sort it out
-    memset(&tm, 0, sizeof(tm));
+    struct tm tm = {};
     tm.tm_year = dp->y1 - 1900 + pp->y1;
     tm.tm_mon = dp->m1 + pp->m1 - 1;
     tm.tm_mday = dp->d1 + pp->d1;
@@ -1001,7 +960,7 @@ static bool addperiod(DateInterval *dp, DateInterval *pp)
 int monthdays(int mon, int year)
 {
     switch (mon) {
-    // We are returning a few too many 29 days februaries, no problem
+        // We are returning a few too many 29 days februaries, no problem
     case 2:
         return (year % 4) == 0 ? 29 : 28;
     case 1:
@@ -1023,7 +982,7 @@ bool parsedateinterval(const string& s, DateInterval *dip)
     DateInterval p1, p2, d1, d2;
     p1 = p2 = d1 = d2 = *dip;
     bool hasp1 = false, hasp2 = false, hasd1 = false, hasd2 = false,
-         hasslash = false;
+        hasslash = false;
 
     if (!stringToStrings(s, vs, "PYMDpymd-/")) {
         return false;
@@ -1032,7 +991,7 @@ bool parsedateinterval(const string& s, DateInterval *dip)
         return false;
     }
 
-    vector<string>::const_iterator it = vs.begin();
+    auto it = vs.cbegin();
     if (*it == "P" || *it == "p") {
         it++;
         if (!parseperiod(it, vs.end(), &p1)) {
@@ -1088,7 +1047,7 @@ secondelt:
 
     // Empty part means today IF other part is period, else means
     // forever (stays at 0)
-    time_t now = time(0);
+    time_t now = time(nullptr);
     struct tm *tmnow = gmtime(&now);
     if ((!hasp1 && !hasd1) && hasp2) {
         d1.y1 = 1900 + tmnow->tm_year;
@@ -1164,6 +1123,32 @@ secondelt:
     return true;
 }
 
+std::string hexprint(const std::string& in, char separ)
+{
+    string out;
+    out.reserve(separ ? (3 *in.size()) : (2 * in.size()));
+    static const char hex[]="0123456789abcdef";
+    auto cp = reinterpret_cast<const unsigned char*>(in.c_str());
+    for (unsigned int i = 0; i < in.size(); i++) {
+        out.append(1, hex[cp[i] >> 4]);
+        out.append(1, hex[cp[i] & 0x0f]);
+        if (separ && i != in.size() - 1)
+            out.append(1, separ);
+    }
+    return out;
+}
+
+
+// We'd like these static, but then, as only one is used, this
+// triggers a 'defined but not used' warning.
+char *_check_strerror_r(int, char *errbuf)
+{
+    return errbuf;
+}
+char *_check_strerror_r(char *cp, char *)
+{
+    return cp;
+}
 
 void catstrerror(string *reason, const char *what, int _errno)
 {
@@ -1186,8 +1171,6 @@ void catstrerror(string *reason, const char *what, int _errno)
     // Note: sun strerror is noted mt-safe ??
     reason->append(strerror(_errno));
 #else
-#define ERRBUFSZ 200
-    char errbuf[ERRBUFSZ];
     // There are 2 versions of strerror_r.
     // - The GNU one returns a pointer to the message (maybe
     //   static storage or supplied buffer).
@@ -1198,71 +1181,19 @@ void catstrerror(string *reason, const char *what, int _errno)
     //   were returned a pointer...
     // Also couldn't find an easy way to disable the gnu version without
     // changing the cxxflags globally, so forget it. Recent gnu lib versions
-    // normally default to the posix version.
-    // At worse we get no message at all here.
+    // normally default to the posix version. (not !)
+    // The feature defines tests are too complicated and seem unreliable.
+    // In short it's a mess, but thanks to c++ function overloading and smart 
+    // people, we have a solution:
+    // https://www.zverovich.net/2015/03/13/reliable-detection-of-strerror-variants.html
+    char errbuf[200];
     errbuf[0] = 0;
-    // We don't use ret, it's there to silence a cc warning
-    auto ret = strerror_r(_errno, errbuf, ERRBUFSZ);
-    (void)ret;
-    reason->append(errbuf);
+    reason->append(_check_strerror_r(
+                       strerror_r(_errno, errbuf, sizeof(errbuf)), errbuf));
 #endif
 }
 
-
-static std::unordered_map<string, string> lang_to_code {
-    {"be", "cp1251"},
-    {"bg", "cp1251"},
-    {"cs", "iso-8859-2"},
-    {"el", "iso-8859-7"},
-    {"he", "iso-8859-8"},
-    {"hr", "iso-8859-2"},
-    {"hu", "iso-8859-2"},
-    {"ja", "eucjp"},
-    {"kk", "pt154"},
-    {"ko", "euckr"},
-    {"lt", "iso-8859-13"},
-    {"lv", "iso-8859-13"},
-    {"pl", "iso-8859-2"},
-    {"rs", "iso-8859-2"},
-    {"ro", "iso-8859-2"},
-    {"ru", "koi8-r"},
-    {"sk", "iso-8859-2"},
-    {"sl", "iso-8859-2"},
-    {"sr", "iso-8859-2"},
-    {"th", "iso-8859-11"},
-    {"tr", "iso-8859-9"},
-    {"uk", "koi8-u"},
-};
-static const string cstr_cp1252("CP1252");
-
-string langtocode(const string& lang)
-{
-    const auto it = lang_to_code.find(lang);
-
-    // Use cp1252 by default...
-    if (it == lang_to_code.end()) {
-        return cstr_cp1252;
-    }
-
-    return it->second;
-}
-
-string localelang()
-{
-    const char *lang = getenv("LANG");
-
-    if (lang == 0 || *lang == 0 || !strcmp(lang, "C") ||
-            !strcmp(lang, "POSIX")) {
-        return "en";
-    }
-    string locale(lang);
-    string::size_type under = locale.find_first_of("_");
-    if (under == string::npos) {
-        return locale;
-    }
-    return locale.substr(0, under);
-}
-
+#ifndef SMALLUT_NO_REGEX
 #ifdef USE_STD_REGEX
 
 class SimpleRegexp::Internal {
@@ -1288,7 +1219,17 @@ bool SimpleRegexp::simpleMatch(const string& val) const
     return regex_search(val, m->res, m->expr);
 }
 
-string SimpleRegexp::getMatch(const string& val, int i) const
+// Substitute one instance of regular expression
+std::string SimpleRegexp::simpleSub(
+    const std::string& in, const std::string& repl)
+{
+    if (!ok()) {
+        return std::string();
+    }
+    return regex_replace(in, m->expr, repl, std::regex_constants::format_first_only);
+}
+
+string SimpleRegexp::getMatch(const string&, int i) const
 {
     return m->res.str(i);
 }
@@ -1298,13 +1239,11 @@ string SimpleRegexp::getMatch(const string& val, int i) const
 class SimpleRegexp::Internal {
 public:
     Internal(const string& exp, int flags, int nm) : nmatch(nm) {
-        if (regcomp(&expr, exp.c_str(), REG_EXTENDED |
-                    ((flags&SRE_ICASE) ? REG_ICASE : 0) |
-                    ((flags&SRE_NOSUB) ? REG_NOSUB : 0)) == 0) {
-            ok = true;
-        } else {
-            ok = false;
-        }
+        ok = regcomp(&expr, exp.c_str(), REG_EXTENDED |
+
+                     ((flags & SRE_ICASE) ? REG_ICASE : 0) |
+
+                     ((flags & SRE_NOSUB) ? REG_NOSUB : 0)) == 0;
         matches.resize(nmatch+1);
     }
     ~Internal() {
@@ -1316,27 +1255,53 @@ public:
     vector<regmatch_t> matches;
 };
 
+// Substitute one instance of regular expression
+std::string SimpleRegexp::simpleSub(
+    const std::string& in, const std::string& repl)
+{
+    if (!ok()) {
+        return {};
+    }
+
+    int err;
+    if ((err = regexec(&m->expr, in.c_str(),
+                       m->nmatch + 1, &m->matches[0], 0))) {
+#if SIMPLESUB_DBG
+        const int ERRSIZE = 200;
+        char errbuf[ERRSIZE + 1];
+        regerror(err, &expr, errbuf, ERRSIZE);
+        std::cerr << "simpleSub: regexec(" << sexp << ") failed: "
+                  <<  errbuf << "\n";
+#endif
+        return in;
+    }
+    if (m->matches[0].rm_so == -1) {
+        // No match
+        return in;
+    }
+    string out = in.substr(0, m->matches[0].rm_so);
+    out += repl;
+    out += in.substr(m->matches[0].rm_eo);
+    return out;
+}
+
 bool SimpleRegexp::simpleMatch(const string& val) const
 {
     if (!ok())
         return false;
-    if (regexec(&m->expr, val.c_str(), m->nmatch+1, &m->matches[0], 0) == 0) {
-        return true;
-    } else {
-        return false;
-    }
+    return regexec(&m->expr, val.c_str(), m->nmatch + 1, &m->matches[0], 0) == 0;
 }
 
 string SimpleRegexp::getMatch(const string& val, int i) const
 {
     if (i > m->nmatch) {
-        return string();
+        return {};
     }
     return val.substr(m->matches[i].rm_so,
                       m->matches[i].rm_eo - m->matches[i].rm_so);
 }
 
-#endif // win/notwinf
+#endif // !windows, using C regexps
 
 SimpleRegexp::SimpleRegexp(const string& exp, int flags, int nmatch)
     : m(new Internal(exp, flags, nmatch))
@@ -1357,12 +1322,13 @@ bool SimpleRegexp::operator() (const string& val) const
 {
     return simpleMatch(val);
 }
+#endif // SMALLUT_NO_REGEX
 
 string flagsToString(const vector<CharFlags>& flags, unsigned int val)
 {
     const char *s;
     string out;
-    for (auto& flag : flags) {
+    for (const auto& flag : flags) {
         if ((val & flag.value) == flag.value) {
             s = flag.yesname;
         } else {
@@ -1383,7 +1349,7 @@ string flagsToString(const vector<CharFlags>& flags, unsigned int val)
 string valToString(const vector<CharFlags>& flags, unsigned int val)
 {
     string out;
-    for (auto& flag : flags) {
+    for (const auto& flag : flags) {
         if (flag.value == val) {
             out = flag.yesname;
             return out;
@@ -1397,31 +1363,10 @@ string valToString(const vector<CharFlags>& flags, unsigned int val)
     return out;
 }
 
-unsigned int stringToFlags(const vector<CharFlags>& flags,
-                           const string& input, const char *sep)
-{
-    unsigned int out = 0;
-
-    vector<string> toks;
-    stringToTokens(input, toks, sep);
-    for (auto& tok: toks) {
-        trimstring(tok);
-        for (auto& flag : flags) {
-            if (!tok.compare(flag.yesname)) {
-                /* Note: we don't break: the same name could conceivably
-                   set several flags. */
-                out |= flag.value;
-            }
-        }
-    }
-    return out;
-}
-
-
 // Initialization for static stuff to be called from main thread before going
 // multiple
 void smallut_init_mt()
 {
-    // Init langtocode() static table
-    langtocode("");
 }
+
+} // End namespace MedocUtils

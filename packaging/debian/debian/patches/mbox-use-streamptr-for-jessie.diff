@@ -1,0 +1,107 @@
+diff --git a/src/internfile/mh_mbox.cpp b/src/internfile/mh_mbox.cpp
+index c77d42c8..ccd6a613 100644
+--- a/internfile/mh_mbox.cpp
++++ b/internfile/mh_mbox.cpp
+@@ -27,6 +27,7 @@
+ #include <map>
+ #include <mutex>
+ #include <fstream>
++#include <memory>
+ 
+ #include "cstr.h"
+ #include "mimehandler.h"
+@@ -285,7 +286,7 @@ public:
+     Internal(MimeHandlerMbox *p) : pthis(p) {}
+     std::string fn;     // File name
+     std::string ipath;
+-    ifstream instream;
++    std::unique_ptr<ifstream> instream;
+     int        msgnum{0}; // Current message number in folder. Starts at 1
+     int64_t    lineno{0}; // debug 
+     int64_t    fsize{0};
+@@ -322,13 +323,6 @@ void MimeHandlerMbox::clear_impl()
+     m->fn.erase();
+     m->ipath.erase();
+ 
+-    // We used to use m->instream = ifstream() which fails with some compilers, as the copy
+-    // constructor is marked deleted in standard c++ (works with many compilers though).
+-    if (m->instream.is_open()) {
+-        m->instream.close();
+-    }
+-    m->instream.clear();
+-
+     m->msgnum = 0;
+     m->lineno = 0;
+     m->fsize = 0;
+@@ -346,8 +340,9 @@ bool MimeHandlerMbox::set_document_file_impl(const string&, const string &fn)
+     LOGDEB("MimeHandlerMbox::set_document_file(" << fn << ")\n");
+     clear_impl();
+     m->fn = fn;
+-    m->instream.open(fn.c_str(), std::ifstream::binary);
+-    if (!m->instream.good()) {
++    m->instream = std::unique_ptr<ifstream>(
++        new ifstream(fn.c_str(), std::ifstream::binary));
++    if (!m->instream->good()) {
+         LOGSYSERR("MimeHandlerMail::set_document_file", "ifstream", fn);
+         return false;
+     }
+@@ -396,13 +391,13 @@ bool MimeHandlerMbox::Internal::tryUseCache(int mtarg)
+                                    fsize)) < 0) {
+         goto out;
+     }
+-    instream.seekg(off);
+-    if (!instream.good()) {
++    instream->seekg(off);
++    if (!instream->good()) {
+         LOGSYSERR("tryUseCache", "seekg", "");
+         goto out;
+     }
+-    getline(instream, line, '\n');
+-    if (!instream.good()) {
++    getline(*instream, line, '\n');
++    if (!instream->good()) {
+         LOGSYSERR("tryUseCache", "getline", "");
+         goto out;
+     }
+@@ -411,7 +406,7 @@ bool MimeHandlerMbox::Internal::tryUseCache(int mtarg)
+     if ((fromregex(line) ||
+          ((quirks & MBOXQUIRK_TBIRD) && minifromregex(line)))  ) {
+         LOGDEB0("MimeHandlerMbox: Cache: From_ Ok\n");
+-        instream.seekg(off);
++        instream->seekg(off);
+         msgnum = mtarg -1;
+         cachefound = true;
+     } else {
+@@ -421,7 +416,7 @@ bool MimeHandlerMbox::Internal::tryUseCache(int mtarg)
+ out:
+     if (!cachefound) {
+         // No cached result: scan.
+-        instream.seekg(0);
++        instream->seekg(0);
+         msgnum = 0;
+     }
+     return cachefound;
+@@ -429,7 +424,7 @@ out:
+ 
+ bool MimeHandlerMbox::next_document()
+ {
+-    if (!m->instream.good()) {
++    if (!m->instream->good()) {
+         LOGERR("MimeHandlerMbox::next_document: not open\n");
+         return false;
+     }
+@@ -465,10 +460,10 @@ bool MimeHandlerMbox::next_document()
+     msgtxt.erase();
+     string line;
+     for (;;) {
+-        message_end = m->instream.tellg();
+-        getline(m->instream, line, '\n');
+-        if (!m->instream.good()) {
+-            ifstream::iostate st = m->instream.rdstate();
++        message_end = m->instream->tellg();
++        getline(*m->instream, line, '\n');
++        if (!m->instream->good()) {
++            ifstream::iostate st = m->instream->rdstate();
+             if (st &  std::ifstream::eofbit) {
+                 LOGDEB0("MimeHandlerMbox:next: eof at " << message_end << endl);
+             } else {

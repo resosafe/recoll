@@ -1,4 +1,4 @@
-/* Copyright (C) 2004 J.F.Dockes 
+/* Copyright (C) 2004-2022 J.F.Dockes 
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation; either version 2 of the License, or
@@ -33,7 +33,6 @@
 #endif
 
 #include <algorithm>
-#include <list>
 #include <iostream>
 #include <sstream>
 #include <cstdlib>
@@ -51,8 +50,20 @@
 #include "fstreewalk.h"
 #include "cpuconf.h"
 #include "execmd.h"
+#include "md5.h"
+#include "idxdiags.h"
 
 using namespace std;
+
+// Naming the directory for platform-specific default config files, overriding the top-level ones
+// E.g. /usr/share/recoll/examples/windows
+#ifdef _WIN32
+static const string confsysdir{"windows"};
+#elif defined(_APPLE__)
+static const string confsysdir{"macos"};
+#else
+static const string confsysdir;
+#endif
 
 // Static, logically const, RclConfig members or module static
 // variables are initialized once from the first object build during
@@ -86,9 +97,8 @@ void RclConfig::setPlusMinus(const string& sbase, const set<string>& upd,
     stringToStrings(sbase, base);
 
     vector<string> diff;
-    auto it =
-        set_difference(base.begin(), base.end(), upd.begin(), upd.end(),
-                       std::inserter(diff, diff.begin()));
+    auto it = set_difference(base.begin(), base.end(), upd.begin(), upd.end(),
+                             std::inserter(diff, diff.begin()));
     sminus = stringsToString(diff);
 
     diff.clear();
@@ -135,7 +145,7 @@ bool ParamStale::needrecompute()
             string newvalue;
             conffile->get(paramnames[i], newvalue, parent->m_keydir);
             LOGDEB1("ParamStale::needrecompute: " << paramnames[i] << " -> " <<
-                    newvalue << " keydir " << parent->m_keydir << endl);
+                    newvalue << " keydir " << parent->m_keydir << "\n");
             if (newvalue.compare(savedvalues[i])) {
                 savedvalues[i] = newvalue;
                 needrecomp = true;
@@ -172,8 +182,7 @@ void ParamStale::init(ConfNull *cnf)
 
 bool RclConfig::isDefaultConfig() const
 {
-    string defaultconf = path_cat(path_homedata(),
-                                  path_defaultrecollconfsubdir());
+    string defaultconf = path_cat(path_homedata(), path_defaultrecollconfsubdir());
     path_catslash(defaultconf);
     string specifiedconf = path_canon(m_confdir);
     path_catslash(specifiedconf);
@@ -183,8 +192,7 @@ bool RclConfig::isDefaultConfig() const
 
 RclConfig::RclConfig(const RclConfig &r) 
     : m_oldstpsuffstate(this, "recoll_noindex"),
-      m_stpsuffstate(this, {"noContentSuffixes", "noContentSuffixes+",
-                  "noContentSuffixes-"}),
+      m_stpsuffstate(this, {"noContentSuffixes", "noContentSuffixes+", "noContentSuffixes-"}),
       m_skpnstate(this, {"skippedNames", "skippedNames+", "skippedNames-"}),
       m_onlnstate(this, "onlyNames"),
       m_rmtstate(this, "indexedmimetypes"),
@@ -196,8 +204,7 @@ RclConfig::RclConfig(const RclConfig &r)
 
 RclConfig::RclConfig(const string *argcnf)
     : m_oldstpsuffstate(this, "recoll_noindex"),
-      m_stpsuffstate(this, {"noContentSuffixes", "noContentSuffixes+",
-                  "noContentSuffixes-"}),
+      m_stpsuffstate(this, {"noContentSuffixes", "noContentSuffixes+", "noContentSuffixes-"}),
       m_skpnstate(this, {"skippedNames", "skippedNames+", "skippedNames-"}),
       m_onlnstate(this, "onlyNames"),
       m_rmtstate(this, "indexedmimetypes"),
@@ -226,8 +233,7 @@ RclConfig::RclConfig(const string *argcnf)
     if (argcnf && !argcnf->empty()) {
         m_confdir = path_absolute(*argcnf);
         if (m_confdir.empty()) {
-            m_reason = 
-                string("Cant turn [") + *argcnf + "] into absolute path";
+            m_reason = string("Cant turn [") + *argcnf + "] into absolute path";
             return;
         }
     } else {
@@ -245,9 +251,8 @@ RclConfig::RclConfig(const string *argcnf)
     // this is the default conf
     if (!autoconfdir && !isDefaultConfig()) {
         if (!path_exists(m_confdir)) {
-            m_reason = "Explicitly specified configuration "
-                "directory must exist"
-                " (won't be automatically created). Use mkdir first";
+            m_reason = std::string("Explicitly specified configuration [") + m_confdir +
+                "] directory must exist (won't be automatically created). Use mkdir first";
             return;
         }
     }
@@ -287,8 +292,7 @@ RclConfig::RclConfig(const string *argcnf)
             o_localecharset = string(cstr_cp1252);
         }
 #endif
-        LOGDEB1("RclConfig::getDefCharset: localecharset ["  <<
-                o_localecharset << "]\n");
+        LOGDEB1("RclConfig::getDefCharset: localecharset ["  << o_localecharset << "]\n");
     }
 
     const char *cp;
@@ -306,8 +310,15 @@ RclConfig::RclConfig(const string *argcnf)
         m_cdirs.push_back(cp);
     } 
 
-    // Base/installation config
-    m_cdirs.push_back(path_cat(m_datadir, "examples"));
+    // Base/installation config, and its platform-specific overrides
+    std::string defaultsdir = path_cat(m_datadir, "examples");
+    if (!confsysdir.empty()) {
+        std::string sdir = path_cat(defaultsdir, confsysdir);
+        if (path_isdir(sdir)) {
+            m_cdirs.push_back(sdir);
+        }
+    }
+    m_cdirs.push_back(defaultsdir);
 
     string cnferrloc;
     for (const auto& dir : m_cdirs) {
@@ -335,17 +346,14 @@ RclConfig::RclConfig(const string *argcnf)
     // there are several. This only uses the distributed file, not any
     // local customization (too complicated).
     if (mime_suffixes.empty()) {
-        ConfSimple mm(
-            path_cat(path_cat(m_datadir, "examples"), "mimemap").c_str());
+        ConfSimple mm(path_cat(path_cat(m_datadir, "examples"), "mimemap").c_str());
         vector<ConfLine> order = mm.getlines();
         for (const auto& entry: order) {
             if (entry.m_kind == ConfLine::CFL_VAR) {
-                LOGDEB1("CONFIG: " << entry.m_data << " -> " << entry.m_value <<
-                        endl);
+                LOGDEB1("CONFIG: " << entry.m_data << " -> " << entry.m_value << "\n");
                 // Remember: insert() only does anything for new keys,
                 // so we only have the first value in the map
-                mime_suffixes.insert(
-                    pair<string,string>(entry.m_value, entry.m_data));
+                mime_suffixes.insert(pair<string,string>(entry.m_value, entry.m_data));
             }
         }
     }
@@ -380,9 +388,9 @@ RclConfig::RclConfig(const string *argcnf)
 
 bool RclConfig::updateMainConfig()
 {
-    ConfStack<ConfTree> *newconf = 
-        new ConfStack<ConfTree>("recoll.conf", m_cdirs, true);
+    ConfStack<ConfTree> *newconf = new ConfStack<ConfTree>("recoll.conf", m_cdirs, true);
     if (newconf == 0 || !newconf->ok()) {
+        std::cerr << "updateMainConfig: new Confstack not ok\n";
         if (m_conf)
             return false;
         m_ok = false;
@@ -512,8 +520,7 @@ bool RclConfig::getConfParam(const string &name, vector<int> *vip,
         char *ep;
         vip->push_back(strtol(vs[i].c_str(), &ep, 0));
         if (ep == vs[i].c_str()) {
-            LOGDEB("RclConfig::getConfParam: bad int value in [" << name <<
-                   "]\n");
+            LOGDEB("RclConfig::getConfParam: bad int value in [" << name << "]\n");
             return false;
         }
     }
@@ -582,12 +589,10 @@ void RclConfig::initThrConf()
 out:
     ostringstream sconf;
     for (unsigned int i = 0; i < 3; i++) {
-        sconf << "(" << m_thrConf[i].first << ", " << m_thrConf[i].second <<
-            ") ";
+        sconf << "(" << m_thrConf[i].first << ", " << m_thrConf[i].second << ") ";
     }
 
-    LOGDEB("RclConfig::initThrConf: chosen config (ql,nt): " << sconf.str() <<
-           "\n");
+    LOGDEB("RclConfig::initThrConf: chosen config (ql,nt): " << sconf.str() << "\n");
 }
 
 pair<int,int> RclConfig::getThrConf(ThrStage who) const
@@ -680,7 +685,7 @@ public:
 class SuffCmp {
 public:
     int operator()(const SfString& s1, const SfString& s2) const {
-        //cout << "Comparing " << s1.m_str << " and " << s2.m_str << endl;
+        //cout << "Comparing " << s1.m_str << " and " << s2.m_str << "\n";
         string::const_reverse_iterator 
             r1 = s1.m_str.rbegin(), re1 = s1.m_str.rend(),
             r2 = s2.m_str.rbegin(), re2 = s2.m_str.rend();
@@ -730,8 +735,7 @@ vector<string>& RclConfig::getStopSuffixes()
                 m_maxsufflen = int(entry.length());
         }
     }
-    LOGDEB1("RclConfig::getStopSuffixes: ->" <<
-            stringsToString(m_stopsuffvec) << endl);
+    LOGDEB1("RclConfig::getStopSuffixes: ->" << stringsToString(m_stopsuffvec) << "\n");
     return m_stopsuffvec;
 }
 
@@ -751,6 +755,7 @@ bool RclConfig::inStopSuffixes(const string& fni)
     if (it != STOPSUFFIXES->end()) {
         LOGDEB2("RclConfig::inStopSuffixes: Found (" << fni << ") ["  <<
                 ((*it).m_str) << "]\n");
+        IdxDiags::theDiags().record(IdxDiags::NoContentSuffix, fni);
         return true;
     } else {
         LOGDEB2("RclConfig::inStopSuffixes: not found [" << fni << "]\n");
@@ -794,7 +799,7 @@ bool RclConfig::getMimeCategories(vector<string>& cats) const
     return true;
 }
 
-bool RclConfig::isMimeCategory(string& cat) const
+bool RclConfig::isMimeCategory(const string& cat) const
 {
     vector<string>cats;
     getMimeCategories(cats);
@@ -819,35 +824,44 @@ bool RclConfig::getMimeCatTypes(const string& cat, vector<string>& tps) const
     return true;
 }
 
-string RclConfig::getMimeHandlerDef(const string &mtype, bool filtertypes)
+string RclConfig::getMimeHandlerDef(const string &mtype, bool filtertypes, const std::string& fn)
 {
     string hs;
 
     if (filtertypes) {
         if(m_rmtstate.needrecompute()) {
             m_restrictMTypes.clear();
-            stringToStrings(stringtolower((const string&)m_rmtstate.getvalue()),
-                            m_restrictMTypes);
+            stringToStrings(stringtolower((const string&)m_rmtstate.getvalue()), m_restrictMTypes);
         }
         if (m_xmtstate.needrecompute()) {
             m_excludeMTypes.clear();
-            stringToStrings(stringtolower((const string&)m_xmtstate.getvalue()),
-                            m_excludeMTypes);
+            stringToStrings(stringtolower((const string&)m_xmtstate.getvalue()), m_excludeMTypes);
         }
-        if (!m_restrictMTypes.empty() && 
-            !m_restrictMTypes.count(stringtolower(mtype))) {
-            LOGDEB2("RclConfig::getMimeHandlerDef: not in mime type list\n");
+        if (!m_restrictMTypes.empty() && !m_restrictMTypes.count(stringtolower(mtype))) {
+            IdxDiags::theDiags().record(IdxDiags::NotIncludedMime, fn, mtype);
+            LOGDEB1("RclConfig::getMimeHandlerDef: " << mtype << " not in mime type list\n");
             return hs;
         }
-        if (!m_excludeMTypes.empty() && 
-            m_excludeMTypes.count(stringtolower(mtype))) {
-            LOGDEB2("RclConfig::getMimeHandlerDef: in excluded mime list\n");
+        if (!m_excludeMTypes.empty() && m_excludeMTypes.count(stringtolower(mtype))) {
+            IdxDiags::theDiags().record(IdxDiags::ExcludedMime, fn, mtype);
+            LOGDEB1("RclConfig::getMimeHandlerDef: " << mtype << " in excluded mime list (fn " <<
+                    fn << ")\n");
             return hs;
         }
     }
 
     if (!mimeconf->get(mtype, hs, "index")) {
-        LOGDEB1("getMimeHandlerDef: no handler for '" << mtype << "'\n");
+        if (mtype.find("text/") == 0) {
+            bool alltext{false};
+            getConfParam("textunknownasplain", &alltext);
+            if (alltext && mimeconf->get("text/plain", hs, "index")) {
+                return hs;
+            }
+        }
+        if (mtype != "inode/directory") {
+            IdxDiags::theDiags().record(IdxDiags::NoHandler, fn, mtype);
+            LOGDEB1("getMimeHandlerDef: no handler for '" << mtype << "' (fn " << fn << ")\n");
+        }
     }
     return hs;
 }
@@ -865,12 +879,11 @@ const vector<MDReaper>& RclConfig::getMDReapers()
         ConfSimple attrs;
         valueSplitAttributes(sreapers, value, attrs);
         vector<string> nmlst = attrs.getNames(cstr_null);
-        for (vector<string>::const_iterator it = nmlst.begin();
-             it != nmlst.end(); it++) {
+        for (const auto& nm : nmlst) {
             MDReaper reaper;
-            reaper.fieldname = fieldCanon(*it);
+            reaper.fieldname = fieldCanon(nm);
             string s;
-            attrs.get(*it, s);
+            attrs.get(nm, s);
             stringToStrings(s, reaper.cmdv);
             m_mdreapers.push_back(reaper);
         }
@@ -896,11 +909,17 @@ bool RclConfig::getGuiFilter(const string& catfiltername, string& frag) const
     return true;
 }
 
-bool RclConfig::valueSplitAttributes(const string& whole, string& value, 
-                                     ConfSimple& attrs)
+bool RclConfig::valueSplitAttributes(const string& whole, string& value, ConfSimple& attrs)
 {
-    /* There is currently no way to escape a semi-colon */
-    string::size_type semicol0 = whole.find_first_of(";");
+    bool inquote{false};
+    string::size_type semicol0;    
+    for (semicol0 = 0; semicol0 < whole.size(); semicol0++) {
+        if (whole[semicol0] == '"') {
+            inquote = !inquote;
+        } else if (whole[semicol0] == ';' && !inquote) {
+            break;
+        }
+    }
     value = whole.substr(0, semicol0);
     trimstring(value);
     string attrstr;
@@ -935,12 +954,9 @@ bool RclConfig::getMissingHelperDesc(string& out) const
 void RclConfig::storeMissingHelperDesc(const string &s)
 {
     string fmiss = path_cat(getCacheDir(), "missing");
-    FILE *fp = fopen(fmiss.c_str(), "w");
-    if (fp) {
-        if (s.size() > 0 && fwrite(s.c_str(), s.size(), 1, fp) != 1) {
-            LOGERR("storeMissingHelperDesc: fwrite failed\n");
-        }
-        fclose(fp);
+    fstream fp;
+    if (path_streamopen(fmiss, ios::trunc | ios::out, fp)) {
+        fp << s;
     }
 }
 
@@ -970,7 +986,7 @@ bool RclConfig::readFieldsConfig(const string& cnferrloc)
                    "]: [" << val << "]\n");
             return 0;
         }
-        ft.wdfinc = attrs.getInt("wdfinc", 1);
+        ft.wdfinc = (int)attrs.getInt("wdfinc", 1);
         ft.boost = attrs.getFloat("boost", 1.0);
         ft.pfxonly = attrs.getBool("pfxonly", false);
         ft.noterms = attrs.getBool("noterms", false);
@@ -1009,15 +1025,14 @@ bool RclConfig::readFieldsConfig(const string& cnferrloc)
                 valuetype = FieldTraits::INT;
             } else {
                 LOGERR("readFieldsConfig: bad type for value for " <<
-                       fieldname << " : " << tval << endl);
+                       fieldname << " : " << tval << "\n");
                 return 0;
             }
         }
-        int valuelen = attrs.getInt("len", 0);
+        int valuelen = (int)attrs.getInt("len", 0);
         // Find or insert traits entry
         const auto pit =
-            m_fldtotraits.insert(
-                pair<string, FieldTraits>(canonic, FieldTraits())).first;
+            m_fldtotraits.insert(pair<string, FieldTraits>(canonic, FieldTraits())).first;
         pit->second.valueslot = valueslot;
         pit->second.valuetype = valuetype;
         pit->second.valuelen = valuelen;
@@ -1094,8 +1109,7 @@ bool RclConfig::getFieldTraits(const string& _fld, const FieldTraits **ftpp,
                 pit->second.pfx << "]\n");
         return true;
     } else {
-        LOGDEB1("RclConfig::getFieldTraits: no prefix for field [" << fld <<
-                "]\n");
+        LOGDEB1("RclConfig::getFieldTraits: no prefix for field [" << fld << "]\n");
         *ftpp = 0;
         return false;
     }
@@ -1115,23 +1129,20 @@ set<string> RclConfig::getIndexedFields() const
 string RclConfig::fieldCanon(const string& f) const
 {
     string fld = stringtolower(f);
-    map<string, string>::const_iterator it = m_aliastocanon.find(fld);
+    const auto it = m_aliastocanon.find(fld);
     if (it != m_aliastocanon.end()) {
-        LOGDEB1("RclConfig::fieldCanon: [" << f << "] -> [" << it->second <<
-                "]\n");
+        LOGDEB1("RclConfig::fieldCanon: [" << f << "] -> [" << it->second << "]\n");
         return it->second;
     }
-    LOGDEB1("RclConfig::fieldCanon: ["  << (f) << "] -> ["  << (fld) << "]\n");
+    LOGDEB1("RclConfig::fieldCanon: [" << f << "] -> [" << fld << "]\n");
     return fld;
 }
 
 string RclConfig::fieldQCanon(const string& f) const
 {
-    string fld = stringtolower(f);
-    map<string, string>::const_iterator it = m_aliastoqcanon.find(fld);
+    const auto it = m_aliastoqcanon.find(stringtolower(f));
     if (it != m_aliastoqcanon.end()) {
-        LOGDEB1("RclConfig::fieldQCanon: [" << f << "] -> ["  << it->second <<
-                "]\n");
+        LOGDEB1("RclConfig::fieldQCanon: [" << f << "] -> ["  << it->second << "]\n");
         return it->second;
     }
     return fieldCanon(f);
@@ -1161,15 +1172,14 @@ set<string> RclConfig::getMimeViewerAllEx() const
 
     string base, plus, minus;
     mimeview->get("xallexcepts", base, "");
-    LOGDEB1("RclConfig::getMimeViewerAllEx(): base: " << s << endl);
+    LOGDEB1("RclConfig::getMimeViewerAllEx(): base: " << base << "\n");
     mimeview->get("xallexcepts+", plus, "");
-    LOGDEB1("RclConfig::getMimeViewerAllEx(): plus: " << plus << endl);
+    LOGDEB1("RclConfig::getMimeViewerAllEx(): plus: " << plus << "\n");
     mimeview->get("xallexcepts-", minus, "");
-    LOGDEB1("RclConfig::getMimeViewerAllEx(): minus: " << minus << endl);
+    LOGDEB1("RclConfig::getMimeViewerAllEx(): minus: " << minus << "\n");
 
     computeBasePlusMinus(res, base, plus, minus);
-    LOGDEB1("RclConfig::getMimeViewerAllEx(): res: " << stringsToString(res)
-            << endl);
+    LOGDEB1("RclConfig::getMimeViewerAllEx(): res: " << stringsToString(res) << "\n");
     return res;
 }
 
@@ -1196,11 +1206,9 @@ bool RclConfig::setMimeViewerAllEx(const set<string>& allex)
     return true;
 }
 
-string RclConfig::getMimeViewerDef(const string &mtype, const string& apptag,
-                                   bool useall) const
+string RclConfig::getMimeViewerDef(const string &mtype, const string& apptag, bool useall) const
 {
-    LOGDEB2("RclConfig::getMimeViewerDef: mtype [" << mtype << "] apptag ["
-            << apptag << "]\n");
+    LOGDEB2("RclConfig::getMimeViewerDef: mtype [" << mtype << "] apptag [" << apptag << "]\n");
     string hs;
     if (mimeview == 0)
         return hs;
@@ -1227,9 +1235,18 @@ string RclConfig::getMimeViewerDef(const string &mtype, const string& apptag,
         // Fallthrough to normal case.
     }
 
-    if (apptag.empty() || !mimeview->get(mtype + string("|") + apptag,
-                                         hs, "view"))
+    if (apptag.empty() || !mimeview->get(mtype + string("|") + apptag, hs, "view"))
         mimeview->get(mtype, hs, "view");
+
+    // Last try for text/xxx if alltext is set
+    if (hs.empty() && mtype.find("text/") == 0 && mtype != "text/plain") {
+        bool alltext{false};
+        getConfParam("textunknownasplain", &alltext);
+        if (alltext) {
+            return getMimeViewerDef("text/plain", apptag, useall);
+        }
+    }
+        
     return hs;
 }
 
@@ -1238,9 +1255,8 @@ bool RclConfig::getMimeViewerDefs(vector<pair<string, string> >& defs) const
     if (mimeview == 0)
         return false;
     vector<string>tps = mimeview->getNames("view");
-    for (vector<string>::const_iterator it = tps.begin(); 
-         it != tps.end();it++) {
-        defs.push_back(pair<string, string>(*it, getMimeViewerDef(*it, "", 0)));
+    for (const auto& tp : tps) {
+        defs.push_back(pair<string, string>(tp, getMimeViewerDef(tp, "", 0)));
     }
     return true;
 }
@@ -1339,9 +1355,23 @@ string RclConfig::getCachedirPath(const char *varname, const char *dflt) const
     return path_canon(result);
 }
 
+// On Windows, try to translate a possibly non-ascii path into the
+// shortpath alias. We first create the target, as this only works if
+// it exists. Used for xapiandb and aspell as these can't handle
+// Unicode paths.
+static string maybeshortpath(const std::string& in)
+{
+#ifdef _WIN32
+    path_makepath(in, 0700);
+    return path_shortpath(in);
+#else
+    return in;
+#endif
+}
+
 string RclConfig::getDbDir() const
 {
-    return getCachedirPath("dbdir", "xapiandb");
+    return maybeshortpath(getCachedirPath("dbdir", "xapiandb"));
 }
 string RclConfig::getWebcacheDir() const
 {
@@ -1353,7 +1383,7 @@ string RclConfig::getMboxcacheDir() const
 }
 string RclConfig::getAspellcacheDir() const
 {
-    return getCachedirPath("aspellDicDir", "");
+    return maybeshortpath(getCachedirPath("aspellDicDir", ""));
 }
 
 string RclConfig::getStopfile() const
@@ -1361,9 +1391,9 @@ string RclConfig::getStopfile() const
     return getConfdirPath("stoplistfile", "stoplist.txt");
 }
 
-string RclConfig::getSynGroupsFile() const
+string RclConfig::getIdxSynGroupsFile() const
 {
-    return getConfdirPath("syngroupsfile", "syngroups.txt");
+    return getConfdirPath("idxsynonyms", "thereisnodefaultidxsynonyms");
 }
 
 // The index status file is fast changing, so it's possible to put it outside
@@ -1373,10 +1403,49 @@ string RclConfig::getIdxStatusFile() const
 {
     return getCachedirPath("idxstatusfile", "idxstatus.txt");
 }
+
+// The pid file is opened r/w every second by the GUI to check if the
+// indexer is running. This is a problem for systems which spin down
+// their disks. Locate it in XDG_RUNTIME_DIR if this is set.
+// Thanks to user Madhu for this fix.
 string RclConfig::getPidfile() const
 {
-    return path_cat(getCacheDir(), "index.pid");
+    static string fn;
+    if (fn.empty()) {
+#ifndef _WIN32
+        const char *p = getenv("XDG_RUNTIME_DIR");
+        string rundir;
+        if (nullptr == p) {
+            // Problem is, we may have been launched outside the desktop, maybe by cron. Basing
+            // everything on XDG_RUNTIME_DIR was a mistake, sometimes resulting in different pidfiles
+            // being used by recollindex instances. So explicitely test for /run/user/$uid, still
+            // leaving open the remote possibility that XDG_RUNTIME_DIR would be set to something
+            // else...
+            rundir = path_cat("/run/user", lltodecstr(getuid()));
+            if (path_isdir(rundir)) {
+                p = rundir.c_str();
+            }
+        }
+        if (p) {
+            string base = path_canon(p);
+            string digest, hex;
+            string cfdir = path_canon(getConfDir());
+            path_catslash(cfdir);
+            MD5String(cfdir, digest);
+            MD5HexPrint(digest, hex);
+            fn =  path_cat(base, "recoll-" + hex + "-index.pid");
+            goto out;
+        }
+#endif // ! _WIN32
+    
+        fn = path_cat(getCacheDir(), "index.pid");
+    out:
+        LOGINF("RclConfig: pid/lock file: " << fn << "\n");
+    }
+    return fn;
 }
+
+
 string RclConfig::getIdxStopFile() const
 {
     return path_cat(getCacheDir(), "index.stop");
@@ -1406,7 +1475,7 @@ static string path_diffstems(const string& p1, const string& p2,
             break;
         }
     }
-    //cerr << "Common length = " << cl << endl;
+    //cerr << "Common length = " << cl << "\n";
     if (cl == 0) {
         reason = "Input paths are empty or have no common part";
         return reason;
@@ -1438,13 +1507,12 @@ void RclConfig::urlrewrite(const string& dbdir, string& url) const
             cur_confdir = m_confdir;
         }
         LOGDEB1("RclConfig::urlrewrite: orgidxconfdir: " << orig_confdir <<
-                " cur_confdir " << cur_confdir << endl);
-        string reason = path_diffstems(orig_confdir, cur_confdir,
-                                       confstemorg, confstemrep);
+                " cur_confdir " << cur_confdir << "\n");
+        string reason = path_diffstems(orig_confdir, cur_confdir, confstemorg, confstemrep);
         if (!reason.empty()) {
             LOGERR("urlrewrite: path_diffstems failed: " << reason <<
                    " : orig_confdir [" << orig_confdir <<
-                   "] cur_confdir [" << cur_confdir << endl);
+                   "] cur_confdir [" << cur_confdir << "\n");
             confstemorg = confstemrep = "";
         }
     }
@@ -1452,8 +1520,7 @@ void RclConfig::urlrewrite(const string& dbdir, string& url) const
     // Do path translations exist for this index ?
     bool needptrans = true;
     if (m_ptrans == 0 || !m_ptrans->hasSubKey(dbdir)) {
-        LOGDEB2("RclConfig::urlrewrite: no paths translations (m_ptrans " <<
-                m_ptrans << ")\n");
+        LOGDEB2("RclConfig::urlrewrite: no paths translations (m_ptrans " << m_ptrans << ")\n");
         needptrans = false;
     }
 
@@ -1558,7 +1625,7 @@ vector<string> RclConfig::getSkippedPaths() const
     skpl.push_back(getDbDir());
     skpl.push_back(getConfDir());
 #ifdef _WIN32
-	skpl.push_back(TempFile::rcltmpdir());
+    skpl.push_back(TempFile::rcltmpdir());
 #endif
     if (getCacheDir().compare(getConfDir())) {
         skpl.push_back(getCacheDir());
@@ -1604,6 +1671,7 @@ vector<string> RclConfig::getDaemSkippedPaths() const
 // and filtersdir from the config file to the PATH, then use execmd::which()
 string RclConfig::findFilter(const string &icmd) const
 {
+    LOGDEB2("findFilter: " << icmd << "\n");
     // If the path is absolute, this is it
     if (path_isabsolute(icmd))
         return icmd;
@@ -1646,6 +1714,46 @@ string RclConfig::findFilter(const string &icmd) const
     }
 }
 
+bool RclConfig::processFilterCmd(std::vector<std::string>& cmd) const
+{
+    LOGDEB0("processFilterCmd: in: " << stringsToString(cmd) << "\n");
+    auto it = cmd.begin();
+
+#ifdef _WIN32
+    // Special-case interpreters on windows: we used to have an additional 1st argument "python" in
+    // mimeconf, but we now rely on the .py extension for better sharing of mimeconf.
+    std::string ext = path_suffix(*it);
+    if ("py" == ext) {
+        it = cmd.insert(it, findFilter("python"));
+        it++;
+    } else if ("pl" == ext) {
+        it = cmd.insert(it, findFilter("perl"));
+        it++;
+    }
+#endif
+    
+    // Note that, if the cmd vector size is 1, post-incrementing the
+    // iterator in the following statement, which works on x86, leads
+    // to a crash on ARM with gcc 6 and 8 (at least), which does not
+    // seem right (it should just become cmd.end() ?) but
+    // whatever... We do it later then.
+    *it = findFilter(*it);
+
+    LOGDEB0("processFilterCmd: out: " << stringsToString(cmd) << "\n");
+    return true;
+}
+
+// This now does nothing more than processFilterCmd (after we changed to relying on the py extension)
+bool RclConfig::pythonCmd(const std::string& scriptname, std::vector<std::string>& cmd) const
+{
+#ifdef _WIN32
+    cmd = {scriptname};
+#else
+    cmd = {scriptname};
+#endif
+    return processFilterCmd(cmd);
+}
+
 /** 
  * Return decompression command line for given mime type
  */
@@ -1662,32 +1770,14 @@ bool RclConfig::getUncompressor(const string &mtype, vector<string>& cmd) const
         LOGERR("getUncompressor: empty spec for mtype " << mtype << "\n");
         return false;
     }
-    vector<string>::iterator it = tokens.begin();
+    auto it = tokens.begin();
     if (tokens.size() < 2)
         return false;
     if (stringlowercmp("uncompress", *it++)) 
         return false;
     cmd.clear();
-    cmd.push_back(findFilter(*it));
-
-    // Special-case python and perl on windows: we need to also locate the
-    // first argument which is the script name "python somescript.py". 
-    // On Unix, thanks to #!, we usually just run "somescript.py", but need
-    // the same change if we ever want to use the same cmdling as windows
-    if (!stringlowercmp("python", *it) || !stringlowercmp("perl", *it)) {
-        it++;
-        if (tokens.size() < 3) {
-            LOGERR("getUncpressor: python/perl cmd: no script?. [" <<
-                   mtype << "]\n");
-        } else {
-            *it = findFilter(*it);
-        }
-    } else {
-        it++;
-    }
-    
     cmd.insert(cmd.end(), it, tokens.end());
-    return true;
+    return processFilterCmd(cmd);
 }
 
 static const char blurb0[] = 
@@ -1729,31 +1819,28 @@ bool RclConfig::initUserConfig()
 
     // Use protective 700 mode to create the top configuration
     // directory: documents can be reconstructed from index data.
-    if (!path_exists(m_confdir) && 
-        mkdir(m_confdir.c_str(), 0700) < 0) {
-        m_reason += string("mkdir(") + m_confdir + ") failed: " + 
-            strerror(errno);
+    if (!path_exists(m_confdir) && !path_makepath(m_confdir, 0700)) {
+        m_reason += string("mkdir(") + m_confdir + ") failed: "+strerror(errno);
         return false;
     }
     string lang = localelang();
     for (int i = 0; i < ncffiles; i++) {
         string dst = path_cat(m_confdir, string(configfiles[i])); 
         if (!path_exists(dst)) {
-            FILE *fp = fopen(dst.c_str(), "w");
-            if (fp) {
-                fprintf(fp, "%s\n", blurb);
+            fstream output;
+            if (path_streamopen(dst, ios::out, output)) {
+                output << blurb << "\n";
                 if (!strcmp(configfiles[i], "recoll.conf")) {
                     // Add improved unac_except_trans for some languages
                     if (lang == "se" || lang == "dk" || lang == "no" || 
                         lang == "fi") {
-                        fprintf(fp, "%s\n", swedish_ex);
+                        output << swedish_ex << "\n";
                     } else if (lang == "de") {
-                        fprintf(fp, "%s\n", german_ex);
+                        output << german_ex << "\n";
                     }
                 }
-                fclose(fp);
             } else {
-                m_reason += string("fopen ") + dst + ": " + strerror(errno);
+                m_reason += string("open ") + dst + ": " + strerror(errno);
                 return false;
             }
         }

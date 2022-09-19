@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-from __future__ import print_function
 
 import rclexecm
 import rclexec1
@@ -51,7 +50,7 @@ class WordProcessData:
                 line = b''
 
         if line:
-            self.out.append(self.em.htmlescape(line) + b'<br>')
+            self.out.append(rclexecm.htmlescape(line) + b'<br>')
         else:
             self.out.append(b'<br>')
 

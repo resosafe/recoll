@@ -32,10 +32,9 @@ class EditTrans : public QDialog, public Ui::EditTransBase
 
 public:
     EditTrans(const std::string& dbdir, QWidget* parent = 0)
-	: QDialog(parent) 
-    {
-	setupUi(this);
-	init(dbdir);
+        : QDialog(parent) {
+        setupUi(this);
+        init(dbdir);
     }
 
 public slots:

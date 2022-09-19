@@ -1,4 +1,4 @@
-/* Copyright (C) 2004-2019 J.F.Dockes
+/* Copyright (C) 2004-2022 J.F.Dockes
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU Lesser General Public License as published by
  *   the Free Software Foundation; either version 2.1 of the License, or
@@ -45,26 +45,115 @@
 #include "config.h"
 #endif
 
-#include <stdio.h>
-#include <math.h>
+#include "pathut.h"
+
+#include "smallut.h"
+#ifdef MDU_INCLUDE_LOG
+#include MDU_INCLUDE_LOG
+#else
+#include "log.h"
+#endif
+
+#include <cstdlib>
+#include <cstring>
 #include <errno.h>
+#include <fstream>
+#include <iostream>
+#include <math.h>
+#include <regex>
+#include <set>
+#include <sstream>
+#include <stack>
+#include <stdio.h>
+#include <vector>
+#include <fcntl.h>
+
+// Listing directories: we include the normal dirent.h on Unix-derived
+// systems, and on MinGW, where it comes with a supplemental wide char
+// interface. When building with MSVC, we use our bundled msvc_dirent.h,
+// which is equivalent to the one in MinGW
+#ifdef _MSC_VER
+#include "msvc_dirent.h"
+#else // !_MSC_VER
 #include <dirent.h>
+#endif // _MSC_VER
+
 
 #ifdef _WIN32
-#include "safefcntl.h"
-#include "safeunistd.h"
-#include "safewindows.h"
-#include "safesysstat.h"
-#include "transcode.h"
+
+#ifndef _MSC_VER
+#undef WINVER
+#define WINVER 0x0601
+#undef _WIN32_WINNT
+#define _WIN32_WINNT 0x0601
+#define LOGFONTW void
+#endif
+
+#ifndef NOMINMAX
+#define NOMINMAX
+#endif
+#define WIN32_LEAN_AND_MEAN
+#define NOGDI
+#include <windows.h>
+#include <io.h>
+#include <sys/stat.h>
+#include <direct.h>
+#include <Shlobj.h>
+#include <Stringapiset.h>
+#include <sys/utime.h>
+
+#if !defined(S_IFLNK)
+#define S_IFLNK 0
+#endif
+#ifndef S_ISDIR
+# define S_ISDIR(ST_MODE) (((ST_MODE) & _S_IFMT) == _S_IFDIR)
+#endif
+#ifndef S_ISREG
+# define S_ISREG(ST_MODE) (((ST_MODE) & _S_IFMT) == _S_IFREG)
+#endif
+#define MAXPATHLEN PATH_MAX
+#ifndef PATH_MAX
+#define PATH_MAX MAX_PATH
+#endif
+#ifndef R_OK
+#define R_OK 4
+#endif
 
 #define STAT _wstati64
 #define LSTAT _wstati64
 #define STATBUF _stati64
 #define ACCESS _waccess
+#define OPENDIR ::_wopendir
+#define DIRHDL _WDIR
+#define CLOSEDIR _wclosedir
+#define READDIR ::_wreaddir
+#define REWINDDIR ::_wrewinddir
+#define DIRENT _wdirent
+#define DIRHDL _WDIR
+#define MKDIR(a,b) _wmkdir(a)
+#define OPEN ::_wopen
+#define UNLINK _wunlink
+#define RMDIR _wrmdir
+#define CHDIR _wchdir
 
-#else // Not windows ->
-#include <fcntl.h>
+#define SYSPATH(PATH, SPATH) wchar_t PATH ## _buf[2048];      \
+    utf8towchar(PATH, PATH ## _buf, 2048);                    \
+    wchar_t *SPATH = PATH ## _buf;
+
+#define ftruncate _chsize_s
+
+#ifdef _MSC_VER
+// For getpid
+#include <process.h>
+#define getpid _getpid
+
+#define PATHUT_SSIZE_T int
+#endif // _MSC_VER
+
+#else /* !_WIN32 -> */
+
 #include <unistd.h>
+#include <sys/time.h>
 #include <sys/param.h>
 #include <pwd.h>
 #include <sys/file.h>
@@ -76,23 +165,132 @@
 #define LSTAT lstat
 #define STATBUF stat
 #define ACCESS access
-#endif
+#define OPENDIR ::opendir
+#define DIRHDL DIR
+#define CLOSEDIR closedir
+#define READDIR ::readdir
+#define REWINDDIR ::rewinddir
+#define DIRENT dirent
+#define DIRHDL DIR
+#define MKDIR(a,b) mkdir(a,b)
+#define OPEN ::open
+#define UNLINK ::unlink
+#define RMDIR ::rmdir
+#define CHDIR ::chdir
 
-#include <cstdlib>
-#include <cstring>
-#include <iostream>
-#include <sstream>
-#include <stack>
-#include <set>
-#include <vector>
-#include <regex>
+#define SYSPATH(PATH, SPATH) const char *SPATH = PATH.c_str()
 
-#include "pathut.h"
-#include "smallut.h"
+
+#endif /* !_WIN32 */
 
 using namespace std;
 
+#ifndef PATHUT_SSIZE_T
+#define PATHUT_SSIZE_T ssize_t
+#endif
+
+namespace MedocUtils {
+
 #ifdef _WIN32
+
+std::string wchartoutf8(const wchar_t *in, size_t len)
+{
+    std::string out;
+    wchartoutf8(in, out, len);
+    return out;
+}
+
+bool wchartoutf8(const wchar_t *in, std::string& out, size_t wlen)
+{
+    LOGDEB1("WCHARTOUTF8: in [" << in << "]\n");
+    out.clear();
+    if (nullptr == in) {
+        return true;
+    }
+    if (wlen == 0) {
+        wlen = wcslen(in);
+    }
+    int flags = WC_ERR_INVALID_CHARS;
+    int bytes = ::WideCharToMultiByte(
+        CP_UTF8, flags, in, wlen, nullptr, 0, nullptr, nullptr);
+    if (bytes <= 0) {
+        LOGERR("wchartoutf8: conversion error1\n");
+        fwprintf(stderr, L"wchartoutf8: conversion error1 for [%s]\n", in);
+        return false;
+    }
+    char *cp = (char *)malloc(bytes+1);
+    if (nullptr == cp) {
+        LOGERR("wchartoutf8: malloc failed\n");
+        return false;
+    }
+    bytes = ::WideCharToMultiByte(
+        CP_UTF8, flags, in, wlen, cp, bytes, nullptr, nullptr);
+    if (bytes <= 0) {
+        LOGERR("wchartoutf8: CONVERSION ERROR2\n");
+        free(cp);
+        return false;
+    }
+    cp[bytes] = 0;
+    out = cp;
+    free(cp);
+    //fwprintf(stderr, L"wchartoutf8: in: [%s]\n", in);
+    //fprintf(stderr, "wchartoutf8: out:  [%s]\n", out.c_str());
+    return true;
+}
+
+bool utf8towchar(const std::string& in, wchar_t *out, size_t obytescap)
+{
+    size_t wcharsavail = obytescap / sizeof(wchar_t);
+    if (nullptr == out || wcharsavail < 1) {
+        return false;
+    }
+    out[0] = 0;
+
+    int wcharcnt = MultiByteToWideChar(
+        CP_UTF8, MB_ERR_INVALID_CHARS, in.c_str(), in.size(), nullptr, 0);
+    if (wcharcnt <= 0) {
+        LOGERR("utf8towchar: conversion error for [" << in << "]\n");
+        return false;
+    }
+    if (wcharcnt + 1 >  int(wcharsavail)) {
+        LOGERR("utf8towchar: not enough space\n");
+        return false;
+    }
+    wcharcnt = MultiByteToWideChar(
+        CP_UTF8, MB_ERR_INVALID_CHARS, in.c_str(), in.size(), out, wcharsavail);
+    if (wcharcnt <= 0) {
+        LOGERR("utf8towchar: conversion error for [" << in << "]\n");
+        return false;
+    }
+    out[wcharcnt] = 0;
+    return true;
+}
+
+std::unique_ptr<wchar_t[]> utf8towchar(const std::string& in)
+{
+    // Note that as we supply in.size(), mbtowch computes the size
+    // without a terminating 0 (and won't write in the second call of
+    // course). We take this into account by allocating one more and
+    // terminating the output.
+    int wcharcnt = MultiByteToWideChar(
+        CP_UTF8, MB_ERR_INVALID_CHARS, in.c_str(), in.size(), nullptr, 0);
+    if (wcharcnt <= 0) {
+        LOGERR("utf8towchar: conversion error for [" << in << "]\n");
+        return std::unique_ptr<wchar_t[]>();
+    }
+    auto buf = unique_ptr<wchar_t[]>(new wchar_t[wcharcnt+1]);
+
+    wcharcnt = MultiByteToWideChar(
+        CP_UTF8, MB_ERR_INVALID_CHARS, in.c_str(), in.size(),
+        buf.get(), wcharcnt);
+    if (wcharcnt <= 0) {
+        LOGERR("utf8towchar: conversion error for [" << in << "]\n");
+        return std::unique_ptr<wchar_t[]>();
+    }
+    buf.get()[wcharcnt] = 0;
+    return buf;
+}
+
 /// Convert \ separators to /
 void path_slashize(string& s)
 {
@@ -137,8 +335,6 @@ static bool path_isdriveabs(const string& s)
 
 /* Can be OR'd in to one of the above.  */
 # define LOCK_NB 4       /* Don't block when locking.  */
-
-#include <io.h>
 
 /* Determine the current size of a file.  Because the other braindead
  * APIs we'll call need lower/upper 32 bit pairs, keep the file size
@@ -266,7 +462,25 @@ flock (int fd, int operation)
     return 0;
 }
 
-#endif // Win32 only section
+std::string path_shortpath(const std::string& path)
+{
+    SYSPATH(path, syspath);
+    wchar_t wspath[MAX_PATH];
+    int ret = GetShortPathNameW(syspath, wspath, MAX_PATH);
+    if (ret == 0) {
+        LOGERR("GetShortPathNameW failed for [" << path << "]\n");
+        return path;
+    } else if (ret >= MAX_PATH) {
+        LOGERR("GetShortPathNameW [" << path << "] too long " <<
+               path.size() << " MAX_PATH " << MAX_PATH << "\n");
+        return path;
+    }
+    string shortpath;
+    wchartoutf8(wspath, shortpath);
+    return shortpath;
+}
+
+#endif /* _WIN32 */
 
 bool fsocc(const string& path, int *pc, long long *avmbs)
 {
@@ -274,8 +488,8 @@ bool fsocc(const string& path, int *pc, long long *avmbs)
 #ifdef _WIN32
     ULARGE_INTEGER freebytesavail;
     ULARGE_INTEGER totalbytes;
-    if (!GetDiskFreeSpaceExA(path.c_str(), &freebytesavail,
-							 &totalbytes, NULL)) {
+    SYSPATH(path, syspath);
+    if (!GetDiskFreeSpaceExW(syspath, &freebytesavail, &totalbytes, NULL)) {
         return false;
     }
     if (pc) {
@@ -285,7 +499,7 @@ bool fsocc(const string& path, int *pc, long long *avmbs)
         *avmbs = int(totalbytes.QuadPart / FSOCC_MB);
     }
     return true;
-#else // not windows ->
+#else /* !_WIN32 */
 
     struct statvfs buf;
     if (statvfs(path.c_str(), &buf) != 0) {
@@ -305,15 +519,15 @@ bool fsocc(const string& path, int *pc, long long *avmbs)
         *avmbs = 0;
         if (buf.f_bsize > 0) {
             int ratio = buf.f_frsize > FSOCC_MB ? buf.f_frsize / FSOCC_MB :
-                        FSOCC_MB / buf.f_frsize;
+                FSOCC_MB / buf.f_frsize;
 
             *avmbs = buf.f_frsize > FSOCC_MB ?
-                     ((long long)buf.f_bavail) * ratio :
-                     ((long long)buf.f_bavail) / ratio;
+                ((long long)buf.f_bavail) * ratio :
+                ((long long)buf.f_bavail) / ratio;
         }
     }
     return true;
-#endif
+#endif /* !_WIN32 */
 }
 
 
@@ -423,60 +637,89 @@ string path_home()
 {
 #ifdef _WIN32
     string dir;
-    const char *cp = getenv("USERPROFILE");
+    // Using wgetenv does not work well, depending on the
+    // environment I get wrong values for the accented chars (works
+    // with recollindex started from msys command window, does not
+    // work when started from recoll. SHGet... fixes this
+    //const wchar_t *cp = _wgetenv(L"USERPROFILE");
+    wchar_t *cp;
+    SHGetKnownFolderPath(FOLDERID_Profile, 0, nullptr, &cp);
     if (cp != 0) {
-        dir = cp;
+        wchartoutf8(cp, dir);
     }
     if (dir.empty()) {
-        cp = getenv("HOMEDRIVE");
+        cp = _wgetenv(L"HOMEDRIVE");
+        wchartoutf8(cp, dir);
         if (cp != 0) {
-            const char *cp1 = getenv("HOMEPATH");
+            string dir1;
+            const wchar_t *cp1 = _wgetenv(L"HOMEPATH");
+            wchartoutf8(cp1, dir1);
             if (cp1 != 0) {
-                dir = string(cp) + string(cp1);
+                dir = path_cat(dir, dir1);
             }
         }
     }
     if (dir.empty()) {
-        dir = "C:\\";
+        dir = "C:/";
     }
     dir = path_canon(dir);
     path_catslash(dir);
     return dir;
 #else
-    uid_t uid = getuid();
-
-    struct passwd *entry = getpwuid(uid);
-    if (entry == 0) {
-        const char *cp = getenv("HOME");
-        if (cp) {
-            return cp;
-        } else {
+    const char *cp = getenv("HOME");
+    if (nullptr == cp) {
+        uid_t uid = getuid();
+        struct passwd *entry = getpwuid(uid);
+        if (nullptr == entry) {
             return "/";
         }
+        cp = entry->pw_dir;
     }
-
-    string homedir = entry->pw_dir;
+    string homedir{cp};
     path_catslash(homedir);
     return homedir;
 #endif
 }
 
-// The default place to store the default config and other stuff (e.g webqueue)
-string path_homedata()
+string path_cachedir()
 {
 #ifdef _WIN32
-    const char *cp = getenv("LOCALAPPDATA");
     string dir;
+    wchar_t *cp;
+    SHGetKnownFolderPath(FOLDERID_InternetCache, 0, nullptr, &cp);
     if (cp != 0) {
-        dir = path_canon(cp);
+        wchartoutf8(cp, dir);
     }
     if (dir.empty()) {
-        dir = path_cat(path_home(), "AppData/Local/");
+        cp = _wgetenv(L"HOMEDRIVE");
+        wchartoutf8(cp, dir);
+        if (cp != 0) {
+            string dir1;
+            const wchar_t *cp1 = _wgetenv(L"HOMEPATH");
+            wchartoutf8(cp1, dir1);
+            if (cp1 != 0) {
+                dir = path_cat(dir, dir1);
+            }
+        }
     }
+    if (dir.empty()) {
+        dir = "C:/";
+    }
+    dir = path_canon(dir);
+    path_catslash(dir);
     return dir;
 #else
-    // We should use an xdg-conforming location, but, history...
-    return path_home();
+    static string xdgcache;
+    if (xdgcache.empty()) {
+        const char *cp = getenv("XDG_CACHE_HOME");
+        if (cp == 0) {
+            xdgcache = path_cat(path_home(), ".cache");
+        } else {
+            xdgcache = string(cp);
+        }
+        path_catslash(xdgcache);
+    }
+    return xdgcache;
 #endif
 }
 
@@ -517,7 +760,7 @@ bool path_isroot(const string& path)
     }
 #ifdef _WIN32
     if (path.size() == 3 && isalpha(path[0]) && path[1] == ':' &&
-            (path[2] == '/' || path[2] == '\\')) {
+        (path[2] == '/' || path[2] == '\\')) {
         return true;
     }
 #endif
@@ -553,7 +796,7 @@ bool path_isabsolute(const string& path)
 #ifdef _WIN32
                           || path_isdriveabs(path)
 #endif
-                         )) {
+            )) {
         return true;
     }
     return false;
@@ -566,14 +809,10 @@ string path_absolute(const string& is)
     }
     string s = is;
 #ifdef _WIN32
-        path_slashize(s);
+    path_slashize(s);
 #endif
     if (!path_isabsolute(s)) {
-        char buf[MAXPATHLEN];
-        if (!getcwd(buf, MAXPATHLEN)) {
-            return string();
-        }
-        s = path_cat(string(buf), s);
+        s = path_cat(path_cwd(), s);
 #ifdef _WIN32
         path_slashize(s);
 #endif
@@ -596,22 +835,17 @@ string path_canon(const string& is, const string* cwd)
 #endif
 
     if (!path_isabsolute(s)) {
-        char buf[MAXPATHLEN];
-        const char *cwdp = buf;
         if (cwd) {
-            cwdp = cwd->c_str();
+            s = path_cat(*cwd, s);
         } else {
-            if (!getcwd(buf, MAXPATHLEN)) {
-                return string();
-            }
+            s = path_cat(path_cwd(), s);
         }
-        s = path_cat(string(cwdp), s);
     }
     vector<string> elems;
     stringToTokens(s, elems, "/");
     vector<string> cleaned;
     for (vector<string>::const_iterator it = elems.begin();
-            it != elems.end(); it++) {
+         it != elems.end(); it++) {
         if (*it == "..") {
             if (!cleaned.empty()) {
                 cleaned.pop_back();
@@ -624,7 +858,7 @@ string path_canon(const string& is, const string* cwd)
     string ret;
     if (!cleaned.empty()) {
         for (vector<string>::const_iterator it = cleaned.begin();
-                it != cleaned.end(); it++) {
+             it != cleaned.end(); it++) {
             ret += "/";
 #ifdef _WIN32
             if (it == cleaned.begin() && path_strlookslikedrive(*it)) {
@@ -656,6 +890,7 @@ bool path_makepath(const string& ipath, int mode)
     path = "/";
     for (const auto& elem : elems) {
 #ifdef _WIN32
+        PRETEND_USE(mode);
         if (path == "/" && path_strlookslikedrive(elem)) {
             path = "";
         }
@@ -663,8 +898,11 @@ bool path_makepath(const string& ipath, int mode)
         path += elem;
         // Not using path_isdir() here, because this cant grok symlinks
         // If we hit an existing file, no worry, mkdir will just fail.
-        if (access(path.c_str(), 0) != 0) {
-            if (mkdir(path.c_str(), mode) != 0)  {
+        LOGDEB1("path_makepath: testing existence: ["  << path << "]\n");
+        if (!path_exists(path)) {
+            LOGDEB1("path_makepath: creating directory ["  << path << "]\n");
+            SYSPATH(path, syspath);
+            if (MKDIR(syspath, mode) != 0)  {
                 //cerr << "mkdir " << path << " failed, errno " << errno << endl;
                 return false;
             }
@@ -674,14 +912,114 @@ bool path_makepath(const string& ipath, int mode)
     return true;
 }
 
-bool path_isdir(const string& path)
+bool path_chdir(const std::string& path)
+{
+    SYSPATH(path, syspath);
+    return CHDIR(syspath) == 0;
+}
+
+std::string path_cwd()
+{
+#ifdef _WIN32
+    wchar_t *wd = _wgetcwd(nullptr, 0);
+    if (nullptr == wd) {
+        return std::string();
+    }
+    string sdname;
+    wchartoutf8(wd, sdname);
+    free(wd);
+    path_slashize(sdname);
+    return sdname;
+#else
+    char wd[MAXPATHLEN+1];
+    if (nullptr == getcwd(wd, MAXPATHLEN+1)) {
+        return string();
+    }
+    return wd;
+#endif
+}
+
+bool path_unlink(const std::string& path)
+{
+    SYSPATH(path, syspath);
+    return UNLINK(syspath) == 0;
+}
+
+bool path_rmdir(const std::string& path)
+{
+    SYSPATH(path, syspath);
+    return RMDIR(syspath) == 0;
+}
+
+bool path_utimes(const std::string& path, struct path_timeval _tv[2])
+{
+#ifdef _WIN32
+    struct _utimbuf times;
+    if (nullptr == _tv) {
+        times.actime = times.modtime = time(0L);
+    } else {
+        times.actime = _tv[0].tv_sec;
+        times.modtime = _tv[1].tv_sec;
+    }
+    SYSPATH(path, syspath);
+    return _wutime(syspath, &times) != -1;
+#else
+    struct timeval tvb[2];
+    if (nullptr == _tv) {
+        gettimeofday(tvb, nullptr);
+        tvb[1].tv_sec = tvb[0].tv_sec;
+        tvb[1].tv_usec = tvb[0].tv_usec;
+    } else {
+        tvb[0].tv_sec = _tv[0].tv_sec;
+        tvb[0].tv_usec = _tv[0].tv_usec;
+        tvb[1].tv_sec = _tv[1].tv_sec;
+        tvb[1].tv_usec = _tv[1].tv_usec;
+    }
+    return utimes(path.c_str(), tvb) == 0;
+#endif
+}
+
+bool path_streamopen(const std::string& path, int mode, std::fstream& outstream)
+{
+#if defined(_WIN32) && defined (_MSC_VER)
+    // MSC STL has support for using wide chars in fstream
+    // constructor. We need this if, e.g. the user name/home directory
+    // is not ASCII. Actually don't know how to do this with gcc
+    wchar_t wpath[MAX_PATH + 1];
+    utf8towchar(path, wpath, MAX_PATH);
+    outstream.open(wpath, std::ios_base::openmode(mode));
+#else
+    outstream.open(path, std::ios_base::openmode(mode));
+#endif
+    if (!outstream.is_open()) {
+        return false;
+    }
+    return true;
+}
+
+bool path_isdir(const string& path, bool follow)
 {
     struct STATBUF st;
     SYSPATH(path, syspath);
-    if (LSTAT(syspath, &st) < 0) {
+    int ret = follow ? STAT(syspath, &st) : LSTAT(syspath, &st);
+    if (ret < 0) {
         return false;
     }
     if (S_ISDIR(st.st_mode)) {
+        return true;
+    }
+    return false;
+}
+
+bool path_isfile(const string& path, bool follow)
+{
+    struct STATBUF st;
+    SYSPATH(path, syspath);
+    int ret = follow ? STAT(syspath, &st) : LSTAT(syspath, &st);
+    if (ret < 0) {
+        return false;
+    }
+    if (S_ISREG(st.st_mode)) {
         return true;
     }
     return false;
@@ -697,30 +1035,56 @@ long long path_filesize(const string& path)
     return (long long)st.st_size;
 }
 
-int path_fileprops(const std::string path, struct stat *stp, bool follow)
+bool path_samefile(const std::string& p1, const std::string& p2)
 {
-    if (!stp) {
+#ifdef _WIN32
+    std::string cp1, cp2;
+    cp1 = path_canon(p1);
+    cp2 = path_canon(p2);
+    return !cp1.compare(cp2);
+#else
+    struct stat st1, st2;
+    if (stat(p1.c_str(), &st1))
+        return false;
+    if (stat(p2.c_str(), &st2))
+        return false;
+    if (st1.st_dev == st2.st_dev && st1.st_ino == st2.st_ino) {
+        return true;
+    }
+    return false;
+#endif
+}
+
+int path_fileprops(const std::string path, struct PathStat *stp, bool follow)
+{
+    if (nullptr == stp) {
         return -1;
     }
-    memset(stp, 0, sizeof(struct stat));
+    memset(stp, 0, sizeof(struct PathStat));
     struct STATBUF mst;
     SYSPATH(path, syspath);
     int ret = follow ? STAT(syspath, &mst) : LSTAT(syspath, &mst);
     if (ret != 0) {
         return ret;
     }
-    stp->st_size = mst.st_size;
-    stp->st_mode = mst.st_mode;
-    stp->st_mtime = mst.st_mtime;
+    stp->pst_size = mst.st_size;
+    stp->pst_mode = mst.st_mode;
+    stp->pst_mtime = mst.st_mtime;
 #ifdef _WIN32
-    stp->st_ctime = mst.st_mtime;
+    stp->pst_ctime = mst.st_mtime;
 #else
-    stp->st_ino = mst.st_ino;
-    stp->st_dev = mst.st_dev;
-    stp->st_ctime = mst.st_ctime;
-    stp->st_blocks = mst.st_blocks;
-    stp->st_blksize = mst.st_blksize;
+    stp->pst_ino = mst.st_ino;
+    stp->pst_dev = mst.st_dev;
+    stp->pst_ctime = mst.st_ctime;
+    stp->pst_blocks = mst.st_blocks;
+    stp->pst_blksize = mst.st_blksize;
 #endif
+    switch (mst.st_mode & S_IFMT) {
+    case S_IFDIR: stp->pst_type = PathStat::PST_DIR;break;
+    case S_IFLNK:  stp->pst_type = PathStat::PST_SYMLINK;break;
+    case S_IFREG: stp->pst_type = PathStat::PST_REGULAR;break;
+    default: stp->pst_type = PathStat::PST_OTHER;break;
+    }
     return 0;
 }
 
@@ -734,178 +1098,13 @@ bool path_readable(const string& path)
     SYSPATH(path, syspath);
     return ACCESS(syspath, R_OK) == 0;
 }
-
-/* There is a lot of vagueness about what should be percent-encoded or
- * not in a file:// url. The constraint that we have is that we may use
- * the encoded URL to compute (MD5) a thumbnail path according to the
- * freedesktop.org thumbnail spec, which itself does not define what
- * should be escaped. We choose to exactly escape what gio does, as
- * implemented in glib/gconvert.c:g_escape_uri_string(uri, UNSAFE_PATH). 
- * Hopefully, the other desktops have the same set of escaped chars. 
- * Note that $ is not encoded, so the value is not shell-safe.
- */
-string url_encode(const string& url, string::size_type offs)
+bool path_access(const std::string& path, int mode)
 {
-    string out = url.substr(0, offs);
-    const char *cp = url.c_str();
-    for (string::size_type i = offs; i < url.size(); i++) {
-        unsigned int c;
-        const char *h = "0123456789ABCDEF";
-        c = cp[i];
-        if (c <= 0x20 ||
-                c >= 0x7f ||
-                c == '"' ||
-                c == '#' ||
-                c == '%' ||
-                c == ';' ||
-                c == '<' ||
-                c == '>' ||
-                c == '?' ||
-                c == '[' ||
-                c == '\\' ||
-                c == ']' ||
-                c == '^' ||
-                c == '`' ||
-                c == '{' ||
-                c == '|' ||
-                c == '}') {
-            out += '%';
-            out += h[(c >> 4) & 0xf];
-            out += h[c & 0xf];
-        } else {
-            out += char(c);
-        }
-    }
-    return out;
+    SYSPATH(path, syspath);
+    return ACCESS(syspath, mode) == 0;
 }
 
-static inline int h2d(int c) {
-    if ('0' <= c && c <= '9')
-        return c - '0';
-    else if ('A' <= c && c <= 'F')
-        return 10 + c - 'A';
-    else 
-        return -1;
-}
-
-string url_decode(const string &in)
-{
-    if (in.size() <= 2)
-        return in;
-    string out;
-    out.reserve(in.size());
-    const char *cp = in.c_str();
-    string::size_type i = 0;
-    for (; i < in.size() - 2; i++) {
-	if (cp[i] == '%') {
-            int d1 = h2d(cp[i+1]);
-            int d2 = h2d(cp[i+2]);
-            if (d1 != -1 && d2 != -1) {
-                out += (d1 << 4) + d2;
-            } else {
-                out += '%';
-                out += cp[i+1];
-                out += cp[i+2];
-            }
-            i += 2;
-	} else {
-            out += cp[i];
-        }
-    }
-    while (i < in.size()) {
-        out += cp[i++];
-    }
-    return out;
-}
-
-string url_gpath(const string& url)
-{
-    // Remove the access schema part (or whatever it's called)
-    string::size_type colon = url.find_first_of(":");
-    if (colon == string::npos || colon == url.size() - 1) {
-        return url;
-    }
-    // If there are non-alphanum chars before the ':', then there
-    // probably is no scheme. Whatever...
-    for (string::size_type i = 0; i < colon; i++) {
-        if (!isalnum(url.at(i))) {
-            return url;
-        }
-    }
-
-    // In addition we canonize the path to remove empty host parts
-    // (for compatibility with older versions of recoll where file://
-    // was hardcoded, but the local path was used for doc
-    // identification.
-    return path_canon(url.substr(colon + 1));
-}
-
-string url_parentfolder(const string& url)
-{
-    // In general, the parent is the directory above the full path
-    string parenturl = path_getfather(url_gpath(url));
-    // But if this is http, make sure to keep the host part. Recoll
-    // only has file or http urls for now.
-    bool isfileurl = urlisfileurl(url);
-    if (!isfileurl && parenturl == "/") {
-        parenturl = url_gpath(url);
-    }
-    return isfileurl ? string("file://") + parenturl :
-           string("http://") + parenturl;
-}
-
-
-// Convert to file path if url is like file:
-// Note: this only works with our internal pseudo-urls which are not
-// encoded/escaped
-string fileurltolocalpath(string url)
-{
-    if (url.find("file://") == 0) {
-        url = url.substr(7, string::npos);
-    } else {
-        return string();
-    }
-
-#ifdef _WIN32
-    // Absolute file urls are like: file:///c:/mydir/...
-    // Get rid of the initial '/'
-    if (url.size() >= 3 && url[0] == '/' && isalpha(url[1]) && url[2] == ':') {
-        url = url.substr(1);
-    }
-#endif
-
-    // Removing the fragment part. This is exclusively used when
-    // executing a viewer for the recoll manual, and we only strip the
-    // part after # if it is preceded by .html
-    string::size_type pos;
-    if ((pos = url.rfind(".html#")) != string::npos) {
-        url.erase(pos + 5);
-    } else if ((pos = url.rfind(".htm#")) != string::npos) {
-        url.erase(pos + 4);
-    }
-
-    return url;
-}
-
-static const string cstr_fileu("file://");
-
-string path_pathtofileurl(const string& path)
-{
-    // We're supposed to receive a canonic absolute path, but on windows we
-    // may need to add a '/' in front of the drive spec
-    string url(cstr_fileu);
-    if (path.empty() || path[0] != '/') {
-        url.push_back('/');
-    }
-    url += path;
-    return url;
-}
-
-bool urlisfileurl(const string& url)
-{
-    return url.find("file://") == 0;
-}
-
+#ifndef NO_STD_REGEX
 static std::regex
 re_uriparse("^(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\\?([^#]*))?(#(.*))?",
             std::regex::extended);
@@ -995,45 +1194,110 @@ ParsedUri::ParsedUri(std::string uri)
         fragment = mr[9].str();
     }
 }
+#endif // NO_STD_REGEX
 
-bool readdir(const string& dir, string& reason, set<string>& entries)
+/// Directory reading interface. UTF-8 on Windows.
+class PathDirContents::Internal {
+public:
+    ~Internal() {
+        if (dirhdl) {
+            CLOSEDIR(dirhdl);
+        }
+    }
+        
+    DIRHDL *dirhdl{nullptr};
+    PathDirContents::Entry entry;
+    std::string dirpath;
+};
+
+PathDirContents::PathDirContents(const std::string& dirpath)
 {
-    struct stat st;
-    int statret;
+    m = new Internal;
+    m->dirpath = dirpath;
+}
+
+PathDirContents::~PathDirContents()
+{
+    delete m;
+}
+
+bool PathDirContents::opendir()
+{
+    if (m->dirhdl) {
+        CLOSEDIR(m->dirhdl);
+        m->dirhdl = nullptr;
+    }
+    const std::string& dp{m->dirpath};
+    SYSPATH(dp, sysdir);
+    m->dirhdl = OPENDIR(sysdir);
+#ifdef _WIN32
+    if (nullptr == m->dirhdl) {
+        int rc = GetLastError();
+        LOGERR("opendir failed: LastError " << rc << endl);
+        if (rc == ERROR_NETNAME_DELETED) {
+            // 64: share disconnected.
+            // Not too sure of the errno in this case.
+            // Make sure it's not one of the permissible ones
+            errno = ENODEV;
+        }
+    }
+#endif
+    return nullptr != m->dirhdl;
+}
+
+void PathDirContents::rewinddir()
+{
+    REWINDDIR(m->dirhdl);
+}
+
+const struct PathDirContents::Entry* PathDirContents::readdir()
+{
+    struct DIRENT *ent = READDIR(m->dirhdl);
+    if (nullptr == ent) {
+        return nullptr;
+    }
+#ifdef _WIN32
+    string sdname;
+    if (!wchartoutf8(ent->d_name, sdname)) {
+        LOGERR("wchartoutf8 failed for " << ent->d_name << endl);
+        return nullptr;
+    }
+    const char *dname = sdname.c_str();
+#else
+    const char *dname = ent->d_name;
+#endif
+    m->entry.d_name = dname;
+    return &m->entry;
+}
+
+
+bool listdir(const string& dir, string& reason, set<string>& entries)
+{
     ostringstream msg;
-    DIR *d = 0;
-    statret = lstat(dir.c_str(), &st);
-    if (statret == -1) {
-        msg << "readdir: cant stat " << dir << " errno " <<  errno;
+    PathDirContents dc(dir);
+    
+    if (!path_isdir(dir)) {
+        msg << "listdir: " << dir <<  " not a directory";
         goto out;
     }
-    if (!S_ISDIR(st.st_mode)) {
-        msg << "readdir: " << dir <<  " not a directory";
-        goto out;
-    }
-    if (access(dir.c_str(), R_OK) < 0) {
-        msg << "readdir: no read access to " << dir;
+    if (!path_access(dir, R_OK)) {
+        msg << "listdir: no read access to " << dir;
         goto out;
     }
 
-    d = opendir(dir.c_str());
-    if (d == 0) {
-        msg << "readdir: cant opendir " << dir << ", errno " << errno;
+    if (!dc.opendir()) {
+        msg << "listdir: cant opendir " << dir << ", errno " << errno;
         goto out;
     }
-
-    struct dirent *ent;
-    while ((ent = readdir(d)) != 0) {
-        if (!strcmp(ent->d_name, ".") || !strcmp(ent->d_name, "..")) {
+    const struct PathDirContents::Entry *ent;
+    while ((ent = dc.readdir()) != 0) {
+        if (ent->d_name == "." || ent->d_name == "..") {
             continue;
         }
         entries.insert(ent->d_name);
     }
 
 out:
-    if (d) {
-        closedir(d);
-    }
     reason = msg.str();
     if (reason.empty()) {
         return true;
@@ -1051,32 +1315,59 @@ Pidfile::~Pidfile()
     this->close();
 }
 
-pid_t Pidfile::read_pid()
+#ifdef _WIN32
+// It appears that we can't read the locked file on Windows, so we use
+// separate files for locking and holding the data.
+static std::string pid_data_path(const std::string& path)
 {
-    int fd = ::open(m_path.c_str(), O_RDONLY);
+    // Remove extension. append -data to name, add back extension.
+    auto ext = path_suffix(path);
+    auto spath = path_cat(path_getfather(path), path_basename(path, ext));
+    if (spath.back() == '.')
+        spath.pop_back();
+    if (!ext.empty())
+        spath += std::string("-data") + "." + ext;
+    return spath;
+}
+#endif // _WIN32
+
+int Pidfile::read_pid()
+{
+#ifdef _WIN32
+    // It appears that we can't read the locked file on Windows, so use an aux file
+    auto path = pid_data_path(m_path);
+    SYSPATH(path, syspath);
+#else
+    SYSPATH(m_path, syspath);
+#endif
+    int fd = OPEN(syspath, O_RDONLY);
     if (fd == -1) {
-        return (pid_t) -1;
+        if (errno != ENOENT)
+            m_reason = "Open RDONLY failed: [" + m_path + "]: " + strerror(errno);
+        return -1;
     }
 
     char buf[16];
     int i = read(fd, buf, sizeof(buf) - 1);
     ::close(fd);
     if (i <= 0) {
-        return (pid_t) -1;
+        m_reason = "Read failed: [" + m_path + "]: " + strerror(errno);
+        return -1;
     }
     buf[i] = '\0';
     char *endptr;
-    pid_t pid = strtol(buf, &endptr, 10);
+    int pid = strtol(buf, &endptr, 10);
     if (endptr != &buf[i]) {
-        return (pid_t) - 1;
+        m_reason = "Bad pid contents: [" + m_path + "]: " + strerror(errno);
+        return - 1;
     }
     return pid;
 }
 
 int Pidfile::flopen()
 {
-    const char *path = m_path.c_str();
-    if ((m_fd = ::open(path, O_RDWR | O_CREAT, 0644)) == -1) {
+    SYSPATH(m_path, syspath);
+    if ((m_fd = OPEN(syspath, O_RDWR | O_CREAT, 0644)) == -1) {
         m_reason = "Open failed: [" + m_path + "]: " + strerror(errno);
         return -1;
     }
@@ -1089,9 +1380,9 @@ int Pidfile::flopen()
     lockdata.l_whence = SEEK_SET;
     if (fcntl(m_fd, F_SETLK,  &lockdata) != 0) {
         int serrno = errno;
-        this->close()
+        this->close();
         errno = serrno;
-         m_reason = "fcntl lock failed";
+        m_reason = "fcntl lock failed";
         return -1;
     }
 #else
@@ -1116,28 +1407,43 @@ int Pidfile::flopen()
     return 0;
 }
 
-pid_t Pidfile::open()
+int Pidfile::open()
 {
     if (flopen() < 0) {
         return read_pid();
     }
-    return (pid_t)0;
+    return 0;
 }
 
 int Pidfile::write_pid()
 {
+#ifdef _WIN32
+    // It appears that we can't read the locked file on Windows, so use an aux file
+    auto path = pid_data_path(m_path);
+    SYSPATH(path, syspath);
+    int fd;
+    if ((fd = OPEN(syspath, O_RDWR | O_CREAT, 0644)) == -1) {
+        m_reason = "Open failed: [" + path + "]: " + strerror(errno);
+        return -1;
+    }
+#else
+    int fd = m_fd;
+#endif
     /* truncate to allow multiple calls */
-    if (ftruncate(m_fd, 0) == -1) {
+    if (ftruncate(fd, 0) == -1) {
         m_reason = "ftruncate failed";
         return -1;
     }
     char pidstr[20];
     sprintf(pidstr, "%u", int(getpid()));
-    lseek(m_fd, 0, 0);
-    if (::write(m_fd, pidstr, strlen(pidstr)) != (ssize_t)strlen(pidstr)) {
+    ::lseek(fd, 0, 0);
+    if (::write(fd, pidstr, strlen(pidstr)) != (PATHUT_SSIZE_T)strlen(pidstr)) {
         m_reason = "write failed";
         return -1;
     }
+#ifdef _WIN32
+    ::close(fd);
+#endif
     return 0;
 }
 
@@ -1153,7 +1459,8 @@ int Pidfile::close()
 
 int Pidfile::remove()
 {
-    return unlink(m_path.c_str());
+    SYSPATH(m_path, syspath);
+    return UNLINK(syspath);
 }
 
 // Call funcs that need static init (not initially reentrant)
@@ -1161,3 +1468,5 @@ void pathut_init_mt()
 {
     path_home();
 }
+
+} // End namespace MedocUtils

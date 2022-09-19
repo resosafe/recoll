@@ -19,12 +19,14 @@
 .libs
 .vs
 \#*
+__pycache__
 build-*-Debug
 build-*-Release
 libtool
 ptrans
+**/Makefile.in
 src/Makefile
-src/Makefile.in
+src/rclgrep/Makefile
 src/TAGS
 src/aclocal.m4
 src/autom4te.cache
@@ -53,8 +55,10 @@ src/m4/ltsugar.m4
 src/m4/ltversion.m4
 src/m4/lt~obsolete.m4
 src/missing
+src/python/pychm/recollchm.egg-info
 src/python/pychm/setup.py
 src/python/recoll/Makefile
+src/python/recoll/Recoll.egg-info
 src/python/recoll/build
 src/python/recoll/recoll/__init__.pyc
 src/python/recoll/setup.py
@@ -74,7 +78,6 @@ src/recollq
 src/sampleconf/rclmon.sh
 src/sampleconf/recoll.conf
 src/testmains/Makefile
-src/testmains/Makefile.in
 src/xadump
 stamp-h1
 tests/casediac/aspdict.en.rws
@@ -89,7 +92,9 @@ tests/config/history
 tests/config/idxstatus.txt
 tests/config/index.pid
 tests/config/missing
+tests/config/ocrcache
 tests/config/xapiandb
+tests/config/recoll.conf
 tests/indexedmimetypes/aspdict.en.rws
 tests/indexedmimetypes/idxstatus.txt
 tests/indexedmimetypes/index.pid 
@@ -106,3 +111,4 @@ website/pages/recoll-webui-install-wsgi.html
 website/pages/recoll-windows-faq.html
 website/pages/recoll-windows.html
 website/usermanual/*
+

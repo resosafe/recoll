@@ -34,9 +34,10 @@ using namespace std;
 bool checkRetryFailed(RclConfig *conf, bool record)
 {
 #ifdef _WIN32
+    PRETEND_USE(record);
     // Under Windows we only retry if the recollindex program is newer
     // than the index
-    struct stat st;
+    struct PathStat st;
     string path(thisprog);
     if (path_suffix(path).empty()) {
         path = path + ".exe";
@@ -46,14 +47,14 @@ bool checkRetryFailed(RclConfig *conf, bool record)
                thisprog << endl);
         return false;
     }
-    time_t exetime = st.st_mtime;
+    time_t exetime = st.pst_mtime;
     if (path_fileprops(conf->getDbDir(), &st) != 0) {
         // Maybe it just does not exist.
         LOGDEB("checkRetryFailed: can't stat the index directory: " <<
                conf->getDbDir() << endl);
         return false;
     }
-    time_t dbtime = st.st_mtime;
+    time_t dbtime = st.pst_mtime;
     return exetime > dbtime;
 #else
     string cmd;

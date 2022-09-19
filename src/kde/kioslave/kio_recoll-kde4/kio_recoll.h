@@ -63,7 +63,7 @@ public:
     int page;
     bool isDetReq;
     bool sameQuery(const QueryDesc& o) const {
-	return !opt.compare(o.opt) && !query.compare(o.query);
+    return !opt.compare(o.opt) && !query.compare(o.query);
     }
 };
 
@@ -74,26 +74,26 @@ public:
     UrlIngester(RecollProtocol *p, const KUrl& url);
     enum RootEntryType {UIRET_NONE, UIRET_ROOT, UIRET_HELP, UIRET_SEARCH};
     bool isRootEntry(RootEntryType *tp) {
-	if (m_type != UIMT_ROOTENTRY) return false;
-	*tp = m_retType;
-	return true;
+    if (m_type != UIMT_ROOTENTRY) return false;
+    *tp = m_retType;
+    return true;
     }
     bool isQuery(QueryDesc *q) {
-	if (m_type != UIMT_QUERY) return false;
-	*q = m_query;
-	return true;
+    if (m_type != UIMT_QUERY) return false;
+    *q = m_query;
+    return true;
     }
     bool isResult(QueryDesc *q, int *num) {
-	if (m_type != UIMT_QUERYRESULT) return false;
-	*q = m_query;
-	*num = m_resnum;
-	return true;
+    if (m_type != UIMT_QUERYRESULT) return false;
+    *q = m_query;
+    *num = m_resnum;
+    return true;
     }
     bool isPreview(QueryDesc *q, int *num) {
-	if (m_type != UIMT_PREVIEW) return false;
-	*q = m_query;
-	*num = m_resnum;
-	return true;
+    if (m_type != UIMT_PREVIEW) return false;
+    *q = m_query;
+    *num = m_resnum;
+    return true;
     }
     bool endSlashQuery() {return m_slashend;}
     bool alwaysDir() {return m_alwaysdir;}
@@ -106,7 +106,7 @@ private:
     RootEntryType   m_retType;
     int             m_resnum;
     enum MyType {UIMT_NONE, UIMT_ROOTENTRY, UIMT_QUERY, UIMT_QUERYRESULT,
-		 UIMT_PREVIEW};
+         UIMT_PREVIEW};
     MyType           m_type;
 };
 

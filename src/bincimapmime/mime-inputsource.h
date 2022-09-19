@@ -1,4 +1,3 @@
-/* -*- mode:c++;c-basic-offset:2 -*- */
 /*  --------------------------------------------------------------------
  *  Filename:
  *    src/mime-inputsource.h
@@ -25,7 +24,6 @@
  */
 #ifndef mime_inputsource_h_included
 #define mime_inputsource_h_included
-#include "autoconfig.h"
 // Data source for MIME parser
 
 // Note about large files: we might want to change the unsigned int
@@ -36,15 +34,15 @@
 // stream input source (from a memory buffer, no file offsets). When
 // parsing a raw message file, it's only one message.
 
-#include <string.h>
+#include <cstring>
 #include "safeunistd.h"
 
 #include <iostream>
 
 namespace Binc {
 
-  class MimeInputSource {
-  public:
+class MimeInputSource {
+public:
     // Note that we do NOT take ownership of fd, won't close it on delete
     inline MimeInputSource(int fd, unsigned int start = 0);
     virtual inline ~MimeInputSource(void);
@@ -60,7 +58,7 @@ namespace Binc {
 
     inline unsigned int getOffset(void) const;
 
-  private:
+private:
     int fd;
     char data[16384];
     unsigned int offset;
@@ -68,10 +66,10 @@ namespace Binc {
     unsigned int head;
     unsigned int start;
     char lastChar;
-  };
+};
 
-  inline MimeInputSource::MimeInputSource(int fd, unsigned int start)
-  {
+inline MimeInputSource::MimeInputSource(int fd, unsigned int start)
+{
     this->fd = fd;
     this->start = start;
     offset = 0;
@@ -81,141 +79,141 @@ namespace Binc {
     memset(data, '\0', sizeof(data));
 
     seek(start);
-  }
+}
 
-  inline MimeInputSource::~MimeInputSource(void)
-  {
-  }
+inline MimeInputSource::~MimeInputSource(void)
+{
+}
 
-  inline ssize_t MimeInputSource::fillRaw(char *raw, size_t nbytes)
-  {
-      return read(fd, raw, nbytes);
-  }
+inline ssize_t MimeInputSource::fillRaw(char *raw, size_t nbytes)
+{
+    return read(fd, raw, nbytes);
+}
 
-  inline bool MimeInputSource::fillInputBuffer(void)
-  {
+inline bool MimeInputSource::fillInputBuffer(void)
+{
     char raw[4096];
     ssize_t nbytes = fillRaw(raw, 4096);
     if (nbytes <= 0) {
-      // FIXME: If ferror(crlffile) we should log this.
-      return false;
+        // FIXME: If ferror(crlffile) we should log this.
+        return false;
     }
 
     for (ssize_t i = 0; i < nbytes; ++i) {
-      const char c = raw[i];
-      if (c == '\r') {
-	if (lastChar == '\r') {
-	  data[tail++ & (0x4000-1)] = '\r';
-	  data[tail++ & (0x4000-1)] = '\n';
-	}
-      } else if (c == '\n') {
-	data[tail++ & (0x4000-1)] = '\r';
-	data[tail++ & (0x4000-1)] = '\n';
-      } else {
-	if (lastChar == '\r') {
-	  data[tail++ & (0x4000-1)] = '\r';
-	  data[tail++ & (0x4000-1)] = '\n';
-	}
+        const char c = raw[i];
+        if (c == '\r') {
+            if (lastChar == '\r') {
+                data[tail++ & (0x4000-1)] = '\r';
+                data[tail++ & (0x4000-1)] = '\n';
+            }
+        } else if (c == '\n') {
+            data[tail++ & (0x4000-1)] = '\r';
+            data[tail++ & (0x4000-1)] = '\n';
+        } else {
+            if (lastChar == '\r') {
+                data[tail++ & (0x4000-1)] = '\r';
+                data[tail++ & (0x4000-1)] = '\n';
+            }
 
-	data[tail++ & (0x4000-1)] = c;
-      }
+            data[tail++ & (0x4000-1)] = c;
+        }
       
-      lastChar = c;
+        lastChar = c;
     }
 
     return true;
-  }
+}
 
-  inline void MimeInputSource::reset(void)
-  {
+inline void MimeInputSource::reset(void)
+{
     offset = head = tail = 0;
     lastChar = '\0';
 
     if (fd != -1)
-      lseek(fd, 0, SEEK_SET);
-  }
+        lseek(fd, 0, SEEK_SET);
+}
 
-  inline void MimeInputSource::seek(unsigned int seekToOffset)
-  {
+inline void MimeInputSource::seek(unsigned int seekToOffset)
+{
     if (offset > seekToOffset)
-      reset();
+        reset();
    
     char c;
     int n = 0;
     while (seekToOffset > offset) {
-      if (!getChar(&c))
-	break;
-      ++n;
+        if (!getChar(&c))
+            break;
+        ++n;
     }
-  }
+}
 
-  inline bool MimeInputSource::getChar(char *c)
-  {
+inline bool MimeInputSource::getChar(char *c)
+{
     if (head == tail && !fillInputBuffer())
-      return false;
+        return false;
 
     *c = data[head++ & (0x4000-1)];
     ++offset;
     return true;
-  }
+}
 
-  inline void MimeInputSource::ungetChar()
-  {
+inline void MimeInputSource::ungetChar()
+{
     --head;
     --offset;
-  }
+}
 
-  inline int MimeInputSource::getFileDescriptor(void) const
-  {
+inline int MimeInputSource::getFileDescriptor(void) const
+{
     return fd;
-  }
+}
 
-  inline unsigned int MimeInputSource::getOffset(void) const
-  {
+inline unsigned int MimeInputSource::getOffset(void) const
+{
     return offset;
-  }
+}
 
-    ///////////////////////////////////
-    class MimeInputSourceStream : public MimeInputSource {
-  public:
-    inline MimeInputSourceStream(istream& s, unsigned int start = 0);
+///////////////////////////////////
+class MimeInputSourceStream : public MimeInputSource {
+public:
+    inline MimeInputSourceStream(std::istream& s, unsigned int start = 0);
     virtual inline ssize_t fillRaw(char *raw, size_t nb);
     virtual inline void reset(void);
-  private:
-      istream& s;
-  };
+private:
+    std::istream& s;
+};
 
-  inline MimeInputSourceStream::MimeInputSourceStream(istream& si, 
-						      unsigned int start)
-      : MimeInputSource(-1, start), s(si)
-  {
-  }
+inline MimeInputSourceStream::MimeInputSourceStream(std::istream& si, 
+                                                    unsigned int start)
+    : MimeInputSource(-1, start), s(si)
+{
+}
 
-  inline ssize_t MimeInputSourceStream::fillRaw(char *raw, size_t nb)
-  {
+inline ssize_t MimeInputSourceStream::fillRaw(char *raw, size_t nb)
+{
     // Why can't streams tell how many characters were actually read
     // when hitting eof ?
     std::streampos st = s.tellg();
-    s.seekg(0, ios::end);
+    s.seekg(0, std::ios::end);
     std::streampos lst = s.tellg();
     s.seekg(st);
     size_t nbytes = size_t(lst - st);
     if (nbytes > nb) {
-	nbytes = nb;
+        nbytes = nb;
     }
     if (nbytes <= 0) {
-	return (ssize_t)-1;
+        return (ssize_t)-1;
     }
 
     s.read(raw, nbytes);
     return static_cast<ssize_t>(nbytes);
-  }
+}
 
-  inline void MimeInputSourceStream::reset(void)
-  {
-      MimeInputSource::reset();
-      s.seekg(0);
-  }
+inline void MimeInputSourceStream::reset(void)
+{
+    MimeInputSource::reset();
+    s.seekg(0);
+}
 
 }
 

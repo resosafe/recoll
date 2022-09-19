@@ -1,4 +1,4 @@
-/* Copyright (C) 2006 J.F.Dockes
+/* Copyright (C) 2006-2022 J.F.Dockes
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation; either version 2 of the License, or
@@ -15,14 +15,17 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 // Takes a query and run it, no gui, results to stdout
+#include "autoconfig.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>
 #include <string.h>
 #include <limits.h>
+#include <getopt.h>
 
 #include <iostream>
+#include <sstream>
 #include <list>
 #include <string>
 
@@ -40,6 +43,8 @@
 #include "smallut.h"
 #include "chrono.h"
 #include "base64.h"
+#include "rclutil.h"
+#include "internfile.h"
 
 using namespace std;
 
@@ -49,46 +54,64 @@ bool dump_contents(RclConfig *rclconfig, Rcl::Doc& idoc)
     Rcl::Doc fdoc;
     string ipath = idoc.ipath;
     if (interner.internfile(fdoc, ipath)) {
-	cout << fdoc.text << endl;
+        cout << fdoc.text << "\n";
     } else {
-	cout << "Cant turn to text:" << idoc.url << " | " << idoc.ipath << endl;
+        cout << "Cant turn to text:" << idoc.url << " | " << idoc.ipath << "\n";
     }
     return true;
 }
 
+string make_abstract(Rcl::Doc& doc, Rcl::Query& query, bool asSnippets,
+                     int snipcount, bool showlines)
+{
+    string abstract;
+    if (asSnippets) {
+        std::vector<Rcl::Snippet> snippets;
+        std::ostringstream str;
+        if (query.makeDocAbstract(doc, snippets, snipcount, -1, true)) {
+            for (const auto& snippet : snippets) {
+                str << (showlines ? snippet.line : snippet.page) << " : " << snippet.snippet << "\n";
+            }
+        }
+        abstract = str.str();
+    } else {
+        query.makeDocAbstract(doc, abstract);
+        abstract += "\n";
+    }
+    return abstract;
+}
+
 void output_fields(vector<string> fields, Rcl::Doc& doc,
-		   Rcl::Query& query, Rcl::Db& rcldb, bool printnames)
+                   Rcl::Query& query, Rcl::Db&, bool printnames,
+                   bool asSnippets, int snipcnt, bool showlines)
 {
     if (fields.empty()) {
-        map<string,string>::const_iterator it;
         for (const auto& entry : doc.meta) {
             fields.push_back(entry.first);
         }
     }
-    for (vector<string>::const_iterator it = fields.begin();
-	 it != fields.end(); it++) {
-	string out;
-	if (!it->compare("abstract")) {
-	    string abstract;
-	    query.makeDocAbstract(doc, abstract);
-	    base64_encode(abstract, out);
-        } else if (!it->compare("xdocid")) {
+    for (const auto& fld : fields) {
+        string out;
+        if (fld == "abstract") {
+            base64_encode(make_abstract(doc, query, asSnippets, snipcnt, showlines), out);
+        } else if (fld == "xdocid") {
             char cdocid[30];
             sprintf(cdocid, "%lu", (unsigned long)doc.xdocid);
             base64_encode(cdocid, out);
-	} else {
-	    base64_encode(doc.meta[*it], out);
-	}
+        } else {
+            base64_encode(doc.meta[fld], out);
+        }
         // Before printnames existed, recollq printed a single blank for empty
         // fields. This is a problem when printing names and using strtok, but
         // have to keep the old behaviour when printnames is not set.
         if (!(out.empty() && printnames)) {
-            if (printnames)
-                cout << *it << " ";
+            if (printnames) {
+                cout << fld << " ";
+            }
             cout << out << " ";
         }
     }
-    cout << endl;
+    cout << "\n";
 }
 
 static char *thisprog;
@@ -116,6 +139,8 @@ static char usage [] =
 " -Q : no result lines, just the processed query and result count.\n"
 " -m : dump the whole document meta[] array for each result.\n"
 " -A : output the document abstracts.\n"
+"    -p <cnt> : show <cnt> snippets, with page numbers instead of the concatenated abstract.\n"
+"    -g <cnt> : show <cnt> snippets, with line numbers instead of the concatenated abstract.\n"
 " -S fld : sort by field <fld>.\n"
 "   -D : sort descending.\n"
 " -s stemlang : set stemming language to use (must exist in index...).\n"
@@ -123,237 +148,234 @@ static char usage [] =
 " -T <synonyms file>: use the parameter (Thesaurus) for word expansion.\n"
 " -i <dbdir> : additional index, several can be given.\n"
 " -e use url encoding (%xx) for urls.\n"
-" -E use exact result count instead of lower bound estimate"
+" -E use exact result count instead of lower bound estimate.\n"
 " -F <field name list> : output exactly these fields for each result.\n"
 "    The field values are encoded in base64, output in one line and \n"
 "    separated by one space character. This is the recommended format \n"
 "    for use by other programs. Use a normal query with option -m to \n"
 "    see the field names. Use -F '' to output all fields, but you probably\n"
 "    also want option -N in this case.\n"
-"  -N : with -F, print the (plain text) field names before the field values.\n"
+"   -N : with -F, print the (plain text) field names before the field values.\n"
+" --extract_to <filepath> : extract the first result to filepath, which must not exist.\n"
+"      Use a -n option with an offset to select the appropriate result.\n"
 ;
-static void
-Usage(void)
+
+static void Usage(std::ostream &os = std::cerr)
 {
-    cerr << thisprog <<  ": usage:" << endl << usage;
+    os << thisprog <<  ": usage:" << "\n" << usage;
     exit(1);
 }
 
 // BEWARE COMPATIBILITY WITH recoll OPTIONS letters
 static int     op_flags;
 
-#define OPT_A     0x1
-// GUI: -a same
-#define OPT_a     0x2
-#define OPT_b     0x4
-#define OPT_C     0x8
-// GUI: -c same
-#define OPT_c     0x10 
-#define OPT_D     0x20 
-#define OPT_d     0x40 
-#define OPT_e     0x80 
-#define OPT_F     0x100
-// GUI: -f same
-#define OPT_f     0x200
-// GUI uses -h for help. us: usage
-#define OPT_i     0x400
-// GUI uses -L to set language of messages
-// GUI: -l same
-#define OPT_l     0x800
-#define OPT_m     0x1000
-#define OPT_N     0x2000
-#define OPT_n     0x4000
-// GUI: -o same
-#define OPT_o     0x8000
-#define OPT_P     0x10000
-#define OPT_Q     0x20000
-// GUI: -q same
-#define OPT_q     0x40000
-#define OPT_S     0x80000
-#define OPT_s     0x100000
-#define OPT_T     0x200000
-// GUI: -t use command line, us: ignored
-#define OPT_t     0x400000
-// GUI uses -v : show version. Us: usage
-// GUI uses -w : open minimized
-#define OPT_E     0x800000
+#define OPT_A 0x1   
+#define OPT_a 0x2   
+#define OPT_b 0x4   
+#define OPT_C 0x8   
+#define OPT_D 0x10  
+#define OPT_d 0x20  
+#define OPT_e 0x40  
+#define OPT_F 0x80  
+#define OPT_g 0x100 
+#define OPT_f 0x200 
+#define OPT_l 0x400 
+#define OPT_m 0x800 
+#define OPT_N 0x1000
+#define OPT_o 0x2000
+#define OPT_p 0x4000
+#define OPT_P 0x8000
+#define OPT_Q 0x10000
+#define OPT_q 0x20000
+#define OPT_S 0x40000
+#define OPT_E 0x80000
+
+static struct option long_options[] = {
+    #define OPTION_EXTRACT 1000
+    {"extract-to", required_argument, 0, OPTION_EXTRACT},
+    {0, 0, 0, 0}
+};
 
 int recollq(RclConfig **cfp, int argc, char **argv)
 {
+    thisprog = argv[0];
+
     string a_config;
     string sortfield;
     string stemlang("english");
     list<string> extra_dbs;
     string sf;
-    vector<string> fields;
     string syngroupsfn;
-    
     int firstres = 0;
     int maxcount = 2000;
-    thisprog = argv[0];
-    argc--; argv++;
-
-    while (argc > 0 && **argv == '-') {
-        (*argv)++;
-        if (!(**argv))
-            /* Cas du "adb - core" */
-            Usage();
-        while (**argv)
-            switch (*(*argv)++) {
-	    case '-': 
-		// -- : end of options
-		if (*(*argv) != 0)
-		    Usage();
-		goto endopts;
-            case 'A':   op_flags |= OPT_A; break;
-            case 'a':   op_flags |= OPT_a; break;
-            case 'b':   op_flags |= OPT_b; break;
-            case 'C':   op_flags |= OPT_C; break;
-	    case 'c':	op_flags |= OPT_c; if (argc < 2)  Usage();
-		a_config = *(++argv);
-		argc--; goto b1;
-            case 'd':   op_flags |= OPT_d; break;
-            case 'D':   op_flags |= OPT_D; break;
-            case 'E':   op_flags |= OPT_E; break;
-            case 'e':   op_flags |= OPT_e; break;
-            case 'f':   op_flags |= OPT_f; break;
-	    case 'F':	op_flags |= OPT_F; if (argc < 2)  Usage();
-		sf = *(++argv);
-		argc--; goto b1;
-	    case 'i':	op_flags |= OPT_i; if (argc < 2)  Usage();
-		extra_dbs.push_back(*(++argv));
-		argc--; goto b1;
-            case 'l':   op_flags |= OPT_l; break;
-            case 'm':   op_flags |= OPT_m; break;
-            case 'N':   op_flags |= OPT_N; break;
-	    case 'n':	op_flags |= OPT_n; if (argc < 2)  Usage();
-	    {
-		string rescnt = *(++argv);
-		string::size_type dash = rescnt.find("-");
-		if (dash != string::npos) {
-		    firstres = atoi(rescnt.substr(0, dash).c_str());
-		    if (dash < rescnt.size()-1) {
-			maxcount = atoi(rescnt.substr(dash+1).c_str());
-		    }
-		} else {
-		    maxcount = atoi(rescnt.c_str());
-		}
-		if (maxcount <= 0) maxcount = INT_MAX;
-	    }
-	    argc--; goto b1;
-            case 'o':   op_flags |= OPT_o; break;
-            case 'P':   op_flags |= OPT_P; break;
-            case 'q':   op_flags |= OPT_q; break;
-            case 'Q':   op_flags |= OPT_Q; break;
-	    case 'S':	op_flags |= OPT_S; if (argc < 2)  Usage();
-		sortfield = *(++argv);
-		argc--; goto b1;
-	    case 's':	op_flags |= OPT_s; if (argc < 2)  Usage();
-		stemlang = *(++argv);
-		argc--; goto b1;
-            case 't':   op_flags |= OPT_t; break;
-	    case 'T':	op_flags |= OPT_T; if (argc < 2)  Usage();
-		syngroupsfn = *(++argv);
-		argc--; goto b1;
-            default: Usage();   break;
+    int snipcnt = -1;
+    std::string extractfile;
+    
+    int ret;
+    while ((ret = getopt_long(argc, argv, "+AabCc:DdEefF:hi:lmNn:oPp:g:QqS:s:tT:v",
+                              long_options, NULL)) != -1) {
+        switch (ret) {
+        case 'A': op_flags |= OPT_A; break;
+            // GUI: -a same
+        case 'a': op_flags |= OPT_a; break;
+        case 'b': op_flags |= OPT_b; break;
+        case 'C': op_flags |= OPT_C; break;
+            // GUI: -c same
+        case 'c': a_config = optarg; break;
+        case 'd': op_flags |= OPT_d; break;
+        case 'D': op_flags |= OPT_D; break;
+        case 'E': op_flags |= OPT_E; break;
+        case 'e': op_flags |= OPT_e; break;
+        case 'F': op_flags |= OPT_F; sf = optarg; break;
+            // GUI: -f same
+        case 'f': op_flags |= OPT_f; break;
+            // GUI: -h same
+        case 'h': Usage(std::cout); // Usage exits
+        case 'i': extra_dbs.push_back(optarg); break;
+            // GUI uses -L to set language of messages
+            // GUI: -l specifies query language, which is the default. Accept and ignore
+        case 'l': op_flags |= OPT_l; break;
+        case 'm': op_flags |= OPT_m; break;
+        case 'N': op_flags |= OPT_N; break;
+        case 'n':   
+        {
+            string rescnt = optarg;
+            string::size_type dash = rescnt.find("-");
+            if (dash != string::npos) {
+                firstres = atoi(rescnt.substr(0, dash).c_str());
+                if (dash < rescnt.size()-1) {
+                    maxcount = atoi(rescnt.substr(dash+1).c_str());
+                }
+            } else {
+                maxcount = atoi(rescnt.c_str());
             }
-    b1: argc--; argv++;
+            if (maxcount <= 0) maxcount = INT_MAX;
+        }
+        break;
+        // GUI: -o same
+        case 'o':   op_flags |= OPT_o; break;
+        case 'P':   op_flags |= OPT_P; break;
+        case 'p':
+            op_flags |= OPT_p;
+            goto porg;
+        case 'g':
+            op_flags |= OPT_g;
+            {
+            porg:
+                const char *cp = optarg;
+                char *cpe;
+                snipcnt = strtol(cp, &cpe, 10);
+                if (*cpe != 0)
+                    Usage();
+            }
+            break;
+        case 'Q':   op_flags |= OPT_Q; break;
+            // GUI: -q same
+        case 'q':   op_flags |= OPT_q; break;
+        case 'S':   op_flags |= OPT_S; sortfield = optarg; break;
+        case 's':   stemlang = optarg; break;
+            // GUI: -t use command line, us: ignored
+        case 't': break;
+        case 'T':   syngroupsfn = optarg; break;
+            // GUI: -v same
+        case 'v': std::cout << Rcl::version_string() << "\n"; return 0;
+            // GUI uses -w : open minimized
+        case OPTION_EXTRACT: extractfile=optarg;break;
+        }
     }
-endopts:
 
     string reason;
     *cfp = recollinit(0, 0, 0, reason, &a_config);
     RclConfig *rclconfig = *cfp;
     if (!rclconfig || !rclconfig->ok()) {
-	fprintf(stderr, "Recoll init failed: %s\n", reason.c_str());
-	exit(1);
+        std::cerr << "Recoll init failed: " << reason << "\n";
+        exit(1);
     }
 
     if (argc < 1 && !(op_flags & OPT_P)) {
-	Usage();
+        Usage();
     }
+    vector<string> fields;
     if (op_flags & OPT_F) {
-	if (op_flags & (OPT_b|OPT_d|OPT_b|OPT_Q|OPT_m|OPT_A))
-	    Usage();
-	stringToStrings(sf, fields);
+        if (op_flags & (OPT_b|OPT_d|OPT_b|OPT_Q|OPT_m|OPT_A))
+            Usage();
+        stringToStrings(sf, fields);
     }
     Rcl::Db rcldb(rclconfig);
     if (!extra_dbs.empty()) {
-        for (list<string>::iterator it = extra_dbs.begin();
-             it != extra_dbs.end(); it++) {
-            if (!rcldb.addQueryDb(*it)) {
-                cerr << "Can't add index: " << *it << endl;
+        for (const auto& db : extra_dbs) {
+            if (!rcldb.addQueryDb(db)) {
+                cerr << "Can't add index: " << db << "\n";
                 exit(1);
             }
         }
     }
     if (!syngroupsfn.empty()) {
         if (!rcldb.setSynGroupsFile(syngroupsfn)) {
-            cerr << "Can't use synonyms file: " << syngroupsfn << endl;
+            cerr << "Can't use synonyms file: " << syngroupsfn << "\n";
             exit(1);
         }
     }
     
     if (!rcldb.open(Rcl::Db::DbRO)) {
-	cerr << "Cant open database in " << rclconfig->getDbDir() << 
-	    " reason: " << rcldb.getReason() << endl;
-	exit(1);
+        cerr << "Cant open database in " << rclconfig->getDbDir() << 
+            " reason: " << rcldb.getReason() << "\n";
+        exit(1);
     }
 
     if (op_flags & OPT_P) {
         int minyear, maxyear;
         if (!rcldb.maxYearSpan(&minyear, &maxyear)) {
-            cerr << "maxYearSpan failed: " << rcldb.getReason() << endl;
-            exit(1);
+            cerr << "maxYearSpan failed: " << rcldb.getReason() << "\n";
+            return 1;
         } else {
-            cout << "Min year " << minyear << " Max year " << maxyear << endl;
-            exit(0);
+            cout << "Min year " << minyear << " Max year " << maxyear << "\n";
+            return 0;
         }
     }
 
-    if (argc < 1) {
-	Usage();
+    if (optind >= argc) {
+        Usage();
     }
-    string qs = *argv++;argc--;
-    while (argc > 0) {
-	qs += string(" ") + *argv++;argc--;
+    string qs;
+    while (optind < argc) {
+        qs += std::string(argv[optind++]) + " ";
     }
 
     {
-	string uq;
-	string charset = rclconfig->getDefCharset(true);
-	int ercnt;
-	if (!transcode(qs, uq, charset, "UTF-8", &ercnt)) {
-	    fprintf(stderr, "Can't convert command line args to utf-8\n");
-	    exit(1);
-	} else if (ercnt) {
-	    fprintf(stderr, "%d errors while converting arguments from %s "
-		    "to utf-8\n", ercnt, charset.c_str());
-	}
-	qs = uq;
+        string uq;
+        string charset = rclconfig->getDefCharset(true);
+        int ercnt;
+        if (!transcode(qs, uq, charset, "UTF-8", &ercnt)) {
+            std::cerr << "Can't convert command line args to utf-8\n";
+            return 1;
+        } else if (ercnt) {
+            std::cerr <<
+                ercnt << " errors while converting arguments from " << charset << "to utf-8\n";
+        }
+        qs = uq;
     }
 
-    Rcl::SearchData *sd = 0;
+    std::shared_ptr<Rcl::SearchData> sd;
 
     if (op_flags & (OPT_a|OPT_o|OPT_f)) {
-	sd = new Rcl::SearchData(Rcl::SCLT_OR, stemlang);
-	Rcl::SearchDataClause *clp = 0;
-	if (op_flags & OPT_f) {
-	    clp = new Rcl::SearchDataClauseFilename(qs);
-	} else {
-	    clp = new Rcl::SearchDataClauseSimple((op_flags & OPT_o)?
-                                                  Rcl::SCLT_OR : Rcl::SCLT_AND, 
-                                                  qs);
-	}
-	if (sd)
-	    sd->addClause(clp);
+        sd = std::make_shared<Rcl::SearchData>(Rcl::SCLT_OR, stemlang);
+        Rcl::SearchDataClause *clp;
+        if (op_flags & OPT_f) {
+            clp = new Rcl::SearchDataClauseFilename(qs);
+        } else {
+            clp = new Rcl::SearchDataClauseSimple(
+                (op_flags & OPT_o) ? Rcl::SCLT_OR : Rcl::SCLT_AND, qs);
+        }
+        if (sd)
+            sd->addClause(clp);
     } else {
-	sd = wasaStringToRcl(rclconfig, stemlang, qs, reason);
+        sd = wasaStringToRcl(rclconfig, stemlang, qs, reason);
     }
 
     if (!sd) {
-	cerr << "Query string interpretation failed: " << reason << endl;
-	return 1;
+        std::cerr << "Query string interpretation failed: " << reason << "\n";
+        return 1;
     }
 
     std::shared_ptr<Rcl::SearchData> rq(sd);
@@ -362,12 +384,12 @@ endopts:
         query.setCollapseDuplicates(true);
     }
     if (op_flags & OPT_S) {
-	query.setSortBy(sortfield, (op_flags & OPT_D) ? false : true);
+        query.setSortBy(sortfield, (op_flags & OPT_D) ? false : true);
     }
     Chrono chron;
     if (!query.setQuery(rq)) {
-	cerr << "Query setup failed: " << query.getReason() << endl;
-	return(1);
+        std::cerr << "Query setup failed: " << query.getReason() << "\n";
+        return 1;
     }
     int cnt;
     if (op_flags & OPT_E) {
@@ -376,76 +398,87 @@ endopts:
         cnt = query.getResCnt();
     }
     if (!(op_flags & OPT_b)) {
-	cout << "Recoll query: " << rq->getDescription() << endl;
-	if (firstres == 0) {
-	    if (cnt <= maxcount)
-		cout << cnt << " results" << endl;
-	    else
-		cout << cnt << " results (printing  " << maxcount << " max):" 
-		     << endl;
-	} else {
-	    cout << "Printing at most " << cnt - (firstres+maxcount) <<
-		" results from first " << firstres << endl;
-	}
+        std::cout << "Recoll query: " << rq->getDescription() << "\n";
+        if (firstres == 0) {
+            if (cnt <= maxcount)
+                std::cout << cnt << " results" << "\n";
+            else
+                std::cout << cnt << " results (printing  " << maxcount << " max):" << "\n";
+        } else {
+            std::cout << "Printing at most " << cnt - (firstres+maxcount) <<
+                " results from first " << firstres << "\n";
+        }
     }
-    if (op_flags & OPT_Q)
-	cout << "Query setup took " << chron.millis() << " mS" << endl;
-
-    if (op_flags & OPT_Q)
-	return(0);
+    if (op_flags & OPT_Q) {
+        std::cout << "Query setup took " << chron.millis() << " mS" << "\n";
+        return 0;
+    }
 
     for (int i = firstres; i < firstres + maxcount; i++) {
-	Rcl::Doc doc;
-	if (!query.getDoc(i, doc))
-	    break;
+        Rcl::Doc doc;
+        if (!query.getDoc(i, doc))
+            break;
 
-	if (op_flags & OPT_F) {
-	    output_fields(fields, doc, query, rcldb, op_flags & OPT_N);
-	    continue;
-	}
+        if (!extractfile.empty()) {
+            if (path_exists(extractfile)) {
+                std::cerr << "Output file must not exist.\n";
+                return 1;
+            }
+            TempFile unused;
+            auto ret = FileInterner::idocToFile(unused, extractfile, rclconfig, doc, false);
+            return ret ? 0 : 1;
+        }
+        
+        if (op_flags & OPT_F) {
+            output_fields(fields, doc, query, rcldb,
+                          op_flags & OPT_N, op_flags & (OPT_p|OPT_g), snipcnt, op_flags & OPT_g);
+            continue;
+        }
 
-	if (op_flags & OPT_e) 
-	    doc.url = url_encode(doc.url);
+        if (op_flags & OPT_e) 
+            doc.url = url_encode(doc.url);
 
-	if (op_flags & OPT_b) {
-		cout << doc.url << endl;
-	} else {
-	    string titleorfn = doc.meta[Rcl::Doc::keytt];
-	    if (titleorfn.empty())
-		titleorfn = doc.meta[Rcl::Doc::keyfn];
-	    if (titleorfn.empty()) {
+        if (op_flags & OPT_b) {
+            cout << doc.url << "\n";
+        } else {
+            string titleorfn = doc.meta[Rcl::Doc::keytt];
+            if (titleorfn.empty())
+                titleorfn = doc.meta[Rcl::Doc::keyfn];
+            if (titleorfn.empty()) {
                 string url;
                 printableUrl(rclconfig->getDefCharset(), doc.url, url);
                 titleorfn = path_getsimple(url);
             }
 
-	    char cpc[20];
-	    sprintf(cpc, "%d", doc.pc);
-	    cout 
-		<< doc.mimetype << "\t"
-		<< "[" << doc.url << "]" << "\t" 
-		<< "[" << titleorfn << "]" << "\t"
-		<< doc.fbytes << "\tbytes" << "\t"
-		<<  endl;
-	    if (op_flags & OPT_m) {
-		for (const auto ent : doc.meta) {
-		    cout << ent.first << " = " << ent.second << endl;
-		}
-	    }
+            char cpc[20];
+            sprintf(cpc, "%d", doc.pc);
+            cout 
+                << doc.mimetype << "\t"
+                << "[" << doc.url << "]" << "\t" 
+                << "[" << titleorfn << "]" << "\t"
+                << doc.fbytes << "\tbytes" << "\t"
+                <<  "\n";
+            if (op_flags & OPT_m) {
+                for (const auto& ent : doc.meta) {
+                    cout << ent.first << " = " << ent.second << "\n";
+                }
+            }
             if (op_flags & OPT_A) {
-                string abstract;
-                if (query.makeDocAbstract(doc, abstract)) {
-                    cout << "ABSTRACT" << endl;
-                    cout << abstract << endl;
-                    cout << "/ABSTRACT" << endl;
+                bool asSnippets = (op_flags & (OPT_p|OPT_g)) != 0;
+                bool showlines = (op_flags & OPT_g) != 0;
+                string abstract = make_abstract(doc, query, asSnippets, snipcnt, showlines);
+                string marker = asSnippets ? "SNIPPETS" : "ABSTRACT";
+                if (!abstract.empty()) {
+                    cout << marker << "\n";
+                    cout << abstract;
+                    cout << string("/") + marker << "\n";
                 }
             }
         }
         if (op_flags & OPT_d) {
             dump_contents(rclconfig, doc);
-        }	
+        }   
     }
 
     return 0;
 }
-

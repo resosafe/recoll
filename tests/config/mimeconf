@@ -8,4 +8,4 @@
 # values is identical.
 
 [index]
-application/x-tar = execm rcltar
+application/x-tar = execm rcltar.py

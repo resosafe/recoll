@@ -23,15 +23,10 @@
 #include "conftree.h"
 
 #include <ctype.h>
+#if defined(BUILDING_RECOLL) || !defined(_WIN32)
 #include <fnmatch.h>
-#ifdef _WIN32
-#include "safesysstat.h"
-#else
+#endif /* BUILDING_RECOLL */
 #include <stdlib.h>
-#include <sys/stat.h>
-#include <unistd.h>
-#include <pwd.h>
-#endif
 
 #include <algorithm>
 #include <cstring>
@@ -235,31 +230,33 @@ ConfSimple::ConfSimple(const char *fname, int readonly, bool tildexp,
       m_fmtime(0), m_holdWrites(false)
 {
     status = readonly ? STATUS_RO : STATUS_RW;
+    int mode = readonly ? ios::in : ios::in | ios::out;
+    if (!readonly && !path_exists(fname)) {
+        mode |= ios::trunc;
+    }
+    fstream input;
+    path_streamopen(fname, mode, input);
+    if (!input.is_open()) {
+        LOGDEB0("ConfSimple::ConfSimple: fstream(w)(" << fname << ", " << mode <<
+                ") errno " << errno << "\n");
+    }
 
-    ifstream input;
-    if (readonly) {
-        input.open(fname, ios::in);
-    } else {
-        ios::openmode mode = ios::in | ios::out;
-        // It seems that there is no separate 'create if not exists'
-        // open flag. Have to truncate to create, but dont want to do
-        // this to an existing file !
-        if (!path_exists(fname)) {
-            mode |= ios::trunc;
-        }
-        input.open(fname, mode);
-        if (input.is_open()) {
-            status = STATUS_RW;
-        } else {
-            input.clear();
-            input.open(fname, ios::in);
-            if (input.is_open()) {
-                status = STATUS_RO;
-            }
-        }
+    if (!readonly && !input.is_open()) {
+        // reset errors
+        input.clear();
+        status = STATUS_RO;
+        // open readonly
+        path_streamopen(fname, ios::in, input);
     }
 
     if (!input.is_open()) {
+        // Don't log ENOENT, this is common with some recoll config files
+        string reason;
+        catstrerror(&reason, nullptr, errno);
+        if (errno != 2) {
+            LOGERR("ConfSimple::ConfSimple: fstream(" << fname << ", " <<
+                   ios::in << ") " << reason << "\n");
+        }
         status = STATUS_ERROR;
         return;
     }
@@ -283,9 +280,9 @@ ConfSimple::StatusCode ConfSimple::getStatus() const
 bool ConfSimple::sourceChanged() const
 {
     if (!m_filename.empty()) {
-        struct stat st;
-        if (stat(m_filename.c_str(), &st) == 0) {
-            if (m_fmtime != st.st_mtime) {
+        PathStat st;
+        if (path_fileprops(m_filename, &st) == 0) {
+            if (m_fmtime != st.pst_mtime) {
                 return true;
             }
         }
@@ -296,11 +293,11 @@ bool ConfSimple::sourceChanged() const
 bool ConfSimple::i_changed(bool upd)
 {
     if (!m_filename.empty()) {
-        struct stat st;
-        if (stat(m_filename.c_str(), &st) == 0) {
-            if (m_fmtime != st.st_mtime) {
+        PathStat st;
+        if (path_fileprops(m_filename, &st) == 0) {
+            if (m_fmtime != st.pst_mtime) {
                 if (upd) {
-                    m_fmtime = st.st_mtime;
+                    m_fmtime = st.pst_mtime;
                 }
                 return true;
             }
@@ -581,7 +578,8 @@ bool ConfSimple::write()
         return true;
     }
     if (m_filename.length()) {
-        ofstream output(m_filename.c_str(), ios::out | ios::trunc);
+        fstream output;
+        path_streamopen(m_filename, ios::out | ios::trunc, output);
         if (!output.is_open()) {
             return 0;
         }
@@ -668,7 +666,14 @@ vector<string> ConfSimple::getNames(const string& sk, const char *pattern) const
     }
     mylist.reserve(ss->second.size());
     for (const auto& item : ss->second) {
-        if (pattern && 0 != fnmatch(pattern, item.first.c_str(), 0)) {
+        if (pattern &&
+#if defined(BUILDING_RECOLL) || !defined(_WIN32)
+            0 != fnmatch(pattern, item.first.c_str(), 0)
+#else
+            /* Default to no match: yields easier to spot errors */
+            1
+#endif
+        ) {
             continue;
         }
         mylist.push_back(item.first);
@@ -715,7 +720,9 @@ bool ConfSimple::commentsAsXML(ostream& out)
         {
             string::size_type pos = line.m_data.find_first_not_of("# ");
             if (pos != string::npos) {
-                out << line.m_data.substr(pos) << endl;
+                out << line.m_data.substr(pos) << "\n";
+            } else {
+                out << "\n";
             }
             break;
         }

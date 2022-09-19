@@ -35,22 +35,24 @@
 class MimeHandlerNull : public RecollFilter {
  public:
     MimeHandlerNull(RclConfig *cnf, const std::string& id) 
-	: RecollFilter(cnf, id) {
+    : RecollFilter(cnf, id) {
     }
     virtual ~MimeHandlerNull() {}
+    MimeHandlerNull(const MimeHandlerNull&) = delete;
+    MimeHandlerNull& operator=(const MimeHandlerNull&) = delete;
 
-    virtual bool is_data_input_ok(DataInput input) const {
+    virtual bool is_data_input_ok(DataInput) const {
         return true;
     }
     
     virtual bool next_document() 
     {
-	if (m_havedoc == false)
-	    return false;
-	m_havedoc = false; 
-	m_metaData[cstr_dj_keycontent] = cstr_null;
-	m_metaData[cstr_dj_keymt] = cstr_textplain;
-	return true;
+    if (m_havedoc == false)
+        return false;
+    m_havedoc = false; 
+    m_metaData[cstr_dj_keycontent] = cstr_null;
+    m_metaData[cstr_dj_keymt] = cstr_textplain;
+    return true;
     }
 };
 

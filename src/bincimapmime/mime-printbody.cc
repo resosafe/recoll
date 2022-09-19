@@ -23,6 +23,7 @@
  *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  *  --------------------------------------------------------------------
  */
+#include "autoconfig.h"
 
 #include "mime.h"
 #include "mime-utils.h"
@@ -33,8 +34,8 @@
 using namespace ::std;
 
 void Binc::MimePart::getBody(string &s,
-			     unsigned int startoffset,
-			     unsigned int length) const
+                 unsigned int startoffset,
+                 unsigned int length) const
 {
   mimeSource->reset();
   mimeSource->seek(bodystartoffsetcrlf + startoffset);

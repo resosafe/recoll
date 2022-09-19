@@ -85,20 +85,20 @@ xapian
 xslt
 xml2
 KF5::KIOCore
+X11
 dl
 z
 pthread
 )
 
-install(FILES recoll.protocol recollf.protocol 
-              DESTINATION ${SERVICES_INSTALL_DIR})
-install(FILES data/welcome.html	data/help.html
-	      DESTINATION  ${DATA_INSTALL_DIR}/kio_recoll)
+#install(FILES recoll.protocol recollf.protocol 
+#     DESTINATION ${SERVICES_INSTALL_DIR})
 
-# Tried but could not use PLUGIN_INSTALL_DIR (/usr/lib64/plugins), or
-# /usr/lib64/qt5/plugins/kf5/kio/recoll.so: the module is not found by
-# dolphin). Actually that's because of the protocol file. recoll has 
-# exec=kio_recoll, file has exec=kf5/kio/file
+install(FILES data/welcome.html	data/help.html
+      DESTINATION  ${DATA_INSTALL_DIR}/kio_recoll)
 
 set_target_properties(kio_recoll PROPERTIES OUTPUT_NAME "kio_recoll")
-install(TARGETS kio_recoll DESTINATION ${LIB_INSTALL_DIR}/qt5/plugins)
+# This is not set on ubuntu focal
+set(QT_MAJOR_VERSION 5)
+install(TARGETS kio_recoll
+      DESTINATION ${KDE_INSTALL_PLUGINDIR}/kf${QT_MAJOR_VERSION}/kio)

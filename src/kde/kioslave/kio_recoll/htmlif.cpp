@@ -146,12 +146,10 @@ void RecollProtocol::searchPage()
     mimeType("text/html");
     if (welcomedata.empty()) {
         QString location =
-            QStandardPaths::locate(QStandardPaths::GenericDataLocation,
-                                   "kio_recoll/welcome.html");
+            QStandardPaths::locate(QStandardPaths::GenericDataLocation, "kio_recoll/welcome.html");
         string reason;
         if (location.isEmpty() ||
-                !file_to_string((const char *)location.toUtf8(),
-                                welcomedata, &reason)) {
+            !file_to_string((const char *)location.toUtf8(), welcomedata, &reason)) {
             welcomedata = "<html><head><title>Recoll Error</title></head>"
                           "<body><p>Could not locate Recoll welcome.html file: ";
             welcomedata += reason;
@@ -191,16 +189,16 @@ void RecollProtocol::queryDetails()
     QByteArray array;
     QTextStream os(&array, QIODevice::WriteOnly);
 
-    os << "<html><head>" << endl;
+    os << "<html><head>" << "\n";
     os << "<meta http-equiv=\"Content-Type\" content=\"text/html;"
-       "charset=utf-8\">" << endl;
-    os << "<title>" << "Recoll query details" << "</title>\n" << endl;
-    os << "</head>" << endl;
-    os << "<body><h3>Query details:</h3>" << endl;
-    os << "<p>" << m_pager.queryDescription().c_str() << "</p>" << endl;
+       "charset=utf-8\">" << "\n";
+    os << "<title>" << "Recoll query details" << "</title>\n" << "\n";
+    os << "</head>" << "\n";
+    os << "<body><h3>Query details:</h3>" << "\n";
+    os << "<p>" << m_pager.queryDescription().c_str() << "</p>" << "\n";
     os << "<p><a href=\"" << makeQueryUrl(m_pager.pageNumber()).c_str() <<
-       "\">Return to results</a>" << endl;
-    os << "</body></html>" << endl;
+       "\">Return to results</a>" << "\n";
+    os << "</body></html>" << "\n";
     data(array);
 }
 
@@ -210,7 +208,7 @@ public:
         : m_name(nm) {
     }
 
-    virtual string header() {
+    virtual string header() override {
         if (m_inputhtml) {
             return cstr_null;
         } else {
@@ -222,11 +220,11 @@ public:
         }
     }
 
-    virtual string startMatch(unsigned int) {
+    virtual string startMatch(unsigned int) override {
         return string("<font color=\"blue\">");
     }
 
-    virtual string endMatch() {
+    virtual string endMatch() override {
         return string("</font>");
     }
 
@@ -266,14 +264,14 @@ void RecollProtocol::showPreview(const Rcl::Doc& idoc)
             it != otextlist.end(); it++) {
         os << (*it).c_str();
     }
-    os << "</body></html>" << endl;
+    os << "</body></html>" << "\n";
     data(array);
 }
 
 void RecollProtocol::htmlDoSearch(const QueryDesc& qd)
 {
     qDebug() << "q" << qd.query << "option" << qd.opt << "page" << qd.page <<
-             "isdet" << qd.isDetReq << endl;
+             "isdet" << qd.isDetReq << "\n";
 
     mimeType("text/html");
 

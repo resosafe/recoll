@@ -32,24 +32,29 @@ namespace Rcl {
 class Query::Native {
 public:
     // The query I belong to
-    Query *m_q;
+    Query *m_q{nullptr};
     // query descriptor: terms and subqueries joined by operators
     // (or/and etc...)
     Xapian::Query xquery; 
     // Open query descriptor.
-    Xapian::Enquire *xenquire;
+    Xapian::Enquire *xenquire{nullptr};
     // Partial result set
     Xapian::MSet xmset;    
     // Term frequencies for current query. See makeAbstract, setQuery
     std::map<std::string, double>  termfreqs; 
-
+    Xapian::MatchDecider *subdecider{nullptr};
+    
     Native(Query *q)
-        : m_q(q), xenquire(0) { }
+        : m_q(q), xenquire(0) {}
     ~Native() {
         clear();
     }
+    Native(const Native &) = delete;
+    Native& operator=(const Native &) = delete;
+    
     void clear() {
-        delete xenquire; xenquire = 0;
+        deleteZ(xenquire);
+        deleteZ(subdecider);
         termfreqs.clear();
     }
     /** Return a list of terms which matched for a specific result document */

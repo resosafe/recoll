@@ -1,4 +1,4 @@
-/*
+/* Copyright (C) 2005-2020 J.F.Dockes
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation; either version 2 of the License, or
@@ -18,8 +18,8 @@
 #define RCLMAIN_W_H
 #include "autoconfig.h"
 
-#include <qvariant.h>
-#include <qmainwindow.h>
+#include <QVariant>
+#include <QMainWindow>
 #include <QFileSystemWatcher>
 
 #include "sortseq.h"
@@ -48,6 +48,10 @@ class SpecIdxW;
 class WebcacheEdit;
 class ConfIndexW;
 class RclTrayIcon;
+class QShortcut;
+class QActionGroup;
+class ActSearchW;
+class IdxTreeModel;
 
 #include "ui_rclmain.h"
 
@@ -62,11 +66,13 @@ public:
         init();
     }
     ~RclMain() {}
+    RclMain(const RclMain&) = delete;
+    RclMain& operator=(const RclMain&) = delete;
 
     QString getQueryDescription();
 
     /** This is only called from main() to set an URL to be displayed (using
-    recoll as a doc extracter for embedded docs */
+        recoll as a doc extracter for embedded docs */
     virtual void setUrlToView(const QString& u) {
         m_urltoview = u;
     }
@@ -87,16 +93,21 @@ public:
         return m_indexerState;
     }
     void enableTrayIcon(bool onoff);
-                            
+    void setupToolbars();
+    void setupStatusBar();
+    void buildMenus();
+    void setupMenus();
+    void setupCategoryFiltering();
+                                 
 public slots:
     virtual void fileExit();
     virtual void periodic100();
     virtual void toggleIndexing();
+    virtual void startMonitor();
     virtual void bumpIndexing();
     virtual void rebuildIndex();
     virtual void specialIndex();
-    virtual void startSearch(std::shared_ptr<Rcl::SearchData> sdata,
-                             bool issimple);
+    virtual void startSearch(std::shared_ptr<Rcl::SearchData> sdata, bool issimple);
     virtual void previewClosed(Preview *w);
     virtual void showAdvSearchDialog();
     virtual void showSpellDialog();
@@ -127,12 +138,14 @@ public slots:
     virtual void docExpand(Rcl::Doc);
     virtual void showSubDocs(Rcl::Doc);
     virtual void showSnippets(Rcl::Doc);
+    virtual void showActionsSearch();
     virtual void startPreview(int docnum, Rcl::Doc doc, int keymods);
     virtual void startPreview(Rcl::Doc);
-    virtual void startNativeViewer(Rcl::Doc, int pagenum = -1,
-                                  QString term = QString());
+    virtual void startNativeViewer(Rcl::Doc, int pagenum = -1, QString term = QString(),
+                                   int line = -1);
     virtual void openWith(Rcl::Doc, string);
     virtual void saveDocToFile(Rcl::Doc);
+    virtual void populateSideFilters(bool init = false);
     virtual void previewNextInTab(Preview *, int sid, int docnum);
     virtual void previewPrevInTab(Preview *, int sid, int docnum);
     virtual void previewExposed(Preview *, int sid, int docnum);
@@ -158,16 +171,29 @@ public slots:
     virtual void setFilterCtlStyle(int stl);
     virtual void showTrayMessage(const QString& text);
     virtual void onSetDescription(QString);
+    virtual void onNewShortcuts();
+    virtual void toggleTable();
+    virtual void clearDirFilter();
+    virtual void hideToolTip();
+    virtual void zoomIn();
+    virtual void zoomOut();
+    virtual void setFiltSpec();
+    virtual void onSSearchTypeChanged(int);
+    virtual void enableSideFilters(bool enable);
                                           
 private slots:
-    virtual void updateIdxStatus();
+    virtual bool updateIdxStatus();
     virtual void onWebcacheDestroyed(QObject *);
+    virtual void onSSTypMenu(QAction *act);
+    virtual void onSSTypCMB(int);
+    
 signals:
     void docSourceChanged(std::shared_ptr<DocSequence>);
     void stemLangChanged(const QString& lang);
     void sortDataChanged(DocSeqSortSpec);
     void resultsReady();
     void searchReset();
+    void uiPrefsChanged();
 
 protected:
     virtual void closeEvent(QCloseEvent *);
@@ -193,7 +219,9 @@ private:
     QTimer         *periodictimer{0};
     WebcacheEdit   *webcache{0};
     ResTable       *restable{0};
+    ResTable       *m_dupsw{0};
     bool            displayingTable{false};
+    ActSearchW     *actsearchw{0};
     QAction        *m_idNoStem{0};
     QAction        *m_idAllStem{0};
     QToolBar       *m_toolsTB{0};
@@ -202,6 +230,13 @@ private:
     QComboBox      *m_filtCMB{0};
     QButtonGroup   *m_filtBGRP{0};
     QMenu          *m_filtMN{0};
+    QShortcut      *m_focustotablesc{0};
+    QShortcut      *m_focustosearchsc{0};
+    QShortcut      *m_focustosearcholdsc{0};
+    QShortcut      *m_clearsearchsc{0};
+    QShortcut      *m_toggletablesc{0};
+    QShortcut      *m_actionssearchsc{0};
+    QShortcut      *m_cleardirfiltersc{0};
     QFileSystemWatcher m_watcher;
     vector<ExecCmd*>  m_viewers;
     ExecCmd          *m_idxproc{0}; // Indexing process
@@ -229,6 +264,20 @@ private:
     RclTrayIcon     *m_trayicon{0};
     // We sometimes take the indexer lock (e.g.: when editing the webcache)
     Pidfile         *m_pidfile{0};
+    IdxTreeModel    *m_idxtreemodel{nullptr};
+    
+    // Menu for the button version of the top menu.
+    QMenu *buttonTopMenu;
+    // Entries/submenus for the top menu.
+    QMenu *fileMenu;
+    QMenu *viewMenu;
+    QMenu *toolsMenu;
+    QMenu *preferencesMenu;
+    QMenu *helpMenu;
+    QMenu *resultsMenu;
+    QActionGroup *sstypGroup;
+    QMenu *queryMenu;
+    QShortcut *butmenuSC{nullptr};
     
     virtual void init();
     virtual void setupResTB(bool combo);
@@ -247,8 +296,9 @@ private:
     virtual void updateIdxForDocs(vector<Rcl::Doc>&);
     virtual void initiateQuery();
     virtual bool containerUpToDate(Rcl::Doc& doc);
-    virtual void setFiltSpec();
     virtual bool checkIdxPaths();
+    virtual std::vector<std::string> idxTreeGetDirs();
+    virtual void resultsSetFixedGeometry();
 };
 
 #endif // RCLMAIN_W_H

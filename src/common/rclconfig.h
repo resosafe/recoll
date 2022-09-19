@@ -72,8 +72,8 @@ private:
 
 // Hold the description for an external metadata-gathering command
 struct MDReaper {
-  string fieldname;
-  vector<string> cmdv;
+    string fieldname;
+    vector<string> cmdv;
 };
 
 // Data associated to a indexed field name: 
@@ -90,7 +90,7 @@ struct FieldTraits {
 };
 
 class RclConfig {
- public:
+public:
 
     // Constructor: we normally look for a configuration file, except
     // if this was specified on the command line and passed through
@@ -100,7 +100,15 @@ class RclConfig {
     RclConfig(const RclConfig &r);
 
     ~RclConfig() {
-	freeAll();
+        freeAll();
+    }
+
+    RclConfig& operator=(const RclConfig &r) {
+        if (this != &r) {
+            freeAll();
+            initFrom(r);
+        }
+        return *this;
     }
 
     // Return a writable clone of the main config. This belongs to the
@@ -133,18 +141,16 @@ class RclConfig {
     string getKeyDir() const {return m_keydir;}
 
     /** Get generic configuration parameter according to current keydir */
-    bool getConfParam(const string &name, string &value, 
-                      bool shallow=false) const
-    {
-	if (m_conf == 0)
-	    return false;
-	return m_conf->get(name, value, m_keydir, shallow);
+    bool getConfParam(const string& name, string& value, 
+                      bool shallow=false) const {
+            if (m_conf == 0)
+                return false;
+            return m_conf->get(name, value, m_keydir, shallow);
     }
     /** Variant with autoconversion to int */
     bool getConfParam(const string &name, int *value, bool shallow=false) const;
     /** Variant with autoconversion to bool */
-    bool getConfParam(const string &name, bool *value, 
-                      bool shallow=false) const;
+    bool getConfParam(const string &name, bool *value, bool shallow=false) const;
     /** Variant with conversion to vector<string>
      *  (stringToStrings). Can fail if the string is malformed. */
     bool getConfParam(const string &name, vector<string> *value, 
@@ -164,17 +170,14 @@ class RclConfig {
      * Get list of config names under current sk, with possible 
      * wildcard filtering 
      */
-    vector<string> getConfNames(const char *pattern = 0) const
-    {
-	return m_conf->getNames(m_keydir, pattern);
+    vector<string> getConfNames(const char *pattern = 0) const {
+        return m_conf->getNames(m_keydir, pattern);
     }
 
     /** Check if name exists anywhere in config */
-    bool hasNameAnywhere(const string& nm) const
-    {
+    bool hasNameAnywhere(const string& nm) const {
         return m_conf? m_conf->hasNameAnywhere(nm) : false;
     }
-
 
     /** Get default charset for current keydir (was set during setKeydir) 
      * filenames are handled differently */
@@ -198,7 +201,7 @@ class RclConfig {
     /** Get stoplist file name */
     string getStopfile() const;
     /** Get synonym groups file name */
-    string getSynGroupsFile() const;
+    string getIdxSynGroupsFile() const;
     /** Get indexing pid file name */
     string getPidfile() const;
     /** Get indexing status file name */
@@ -207,7 +210,7 @@ class RclConfig {
     /** Do path translation according to the ptrans table */
     void urlrewrite(const string& dbdir, string& url) const;
     ConfSimple *getPTrans() {
-	return m_ptrans;
+        return m_ptrans;
     }
     /** Get Web Queue directory name */
     string getWebQueueDir() const;
@@ -215,13 +218,13 @@ class RclConfig {
     /** Get list of skipped file names for current keydir */
     vector<string>& getSkippedNames();
     /** Get list of file name filters for current keydir (only those
-       names indexed) */
+        names indexed) */
     vector<string>& getOnlyNames();
 
     /** Get list of skipped paths patterns. Doesn't depend on the keydir */
     vector<string> getSkippedPaths() const;
     /** Get list of skipped paths patterns, daemon version (may add some)
-	Doesn't depend on the keydir */
+        Doesn't depend on the keydir */
     vector<string> getDaemSkippedPaths() const;
 
     /** Return list of no content suffixes. Used by confgui, indexing uses
@@ -253,14 +256,21 @@ class RclConfig {
     string getSuffixFromMimeType(const string &mt) const;
 
     /** mimeconf: get input filter for mimetype */
-    string getMimeHandlerDef(const string &mimetype, bool filtertypes=false);
+    string getMimeHandlerDef(const string &mimetype, bool filtertypes=false,
+                             const std::string& fn = std::string());
 
-    /** For lines like: "name = some value; attr1 = value1; attr2 = val2"
+    /** For lines like: [name = some value; attr1 = value1; attr2 = val2]
      * Separate the value and store the attributes in a ConfSimple 
-     * @param whole the raw value. No way to escape a semi-colon in there.
+     *
+     * In the value part, semi-colons inside double quotes are ignored, and double quotes are
+     * conserved. In the common case where the string is then processed by stringToStrings() to
+     * build a command line, this allows having semi-colons inside arguments. However, no backslash
+     * escaping is possible, so that, for example "bla\"1;2\"" would not work (the value part
+     * would stop at the semi-colon).
+     *
+     * @param whole the raw value.
      */
-    static bool valueSplitAttributes(const string& whole, string& value, 
-				     ConfSimple& attrs) ;
+    static bool valueSplitAttributes(const string& whole, string& value, ConfSimple& attrs) ;
 
     /** Compute difference between 'base' and 'changed', as elements to be
      * added and substracted from base. Input and output strings are in
@@ -278,7 +288,7 @@ class RclConfig {
     /** mimeconf: get list of file categories */
     bool getMimeCategories(vector<string>&) const;
     /** mimeconf: is parameter one of the categories ? */
-    bool isMimeCategory(string&) const;
+    bool isMimeCategory(const string&) const;
     /** mimeconf: get list of mime types for category */
     bool getMimeCatTypes(const string& cat, vector<string>&) const;
 
@@ -288,9 +298,9 @@ class RclConfig {
     bool getGuiFilter(const string& filtername, string& frag) const;
 
     /** fields: get field prefix from field name. Use additional query
-       aliases if isquery is set */
+        aliases if isquery is set */
     bool getFieldTraits(const string& fldname, const FieldTraits **,
-        bool isquery = false) const;
+                        bool isquery = false) const;
 
     const set<string>& getStoredFields() const {return m_storedFields;}
 
@@ -311,11 +321,11 @@ class RclConfig {
      */
     vector<string> getFieldSectNames(const string &sk, const char* = 0) const;
     bool getFieldConfParam(const string &name, const string &sk, string &value)
-    const;
+        const;
 
     /** mimeview: get/set external viewer exec string(s) for mimetype(s) */
     string getMimeViewerDef(const string &mimetype, const string& apptag, 
-			    bool useall) const;
+                            bool useall) const;
     set<string> getMimeViewerAllEx() const;
     bool setMimeViewerAllEx(const set<string>& allex);
     bool getMimeViewerDefs(vector<pair<string, string> >&) const;
@@ -332,6 +342,16 @@ class RclConfig {
     bool getMissingHelperDesc(string&) const;
     void storeMissingHelperDesc(const string &s);
 
+    /** Replace simple command name(s) inside vector with full
+     * paths. May have to replace two if the first entry is an
+     * interpreter name */
+    bool processFilterCmd(std::vector<std::string>& cmd) const;
+
+    /** Build command vector for python script, possibly prepending 
+        interpreter on Windows */
+    bool pythonCmd(
+        const std::string& script,  std::vector<std::string>& cmd) const;
+    
     /** Find exec file for external filter. 
      *
      * If the input is an absolute path, we just return it. Else We
@@ -348,26 +368,17 @@ class RclConfig {
     string findFilter(const string& cmd) const;
 
     /** Thread config init is not done automatically because not all
-	programs need it and it uses the debug log so that it's better to
-	call it after primary init */
+        programs need it and it uses the debug log so that it's better to
+        call it after primary init */
     void initThrConf();
 
-    const string& getOrigCwd() 
-    {
-	return o_origcwd;
-    }
-
-    RclConfig& operator=(const RclConfig &r) {
-	if (this != &r) {
-	    freeAll();
-	    initFrom(r);
-	}
-	return *this;
+    const string& getOrigCwd() {
+        return o_origcwd;
     }
 
     friend class ParamStale;
 
- private:
+private:
     int m_ok;
     string m_reason;    // Explanation for bad state
     string m_confdir;   // User directory where the customized files are stored

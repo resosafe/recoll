@@ -36,7 +36,7 @@
 #error dlib.cpp not ported on this system
 #endif
 
-void *dlib_open(const std::string& libname, int flags)
+void *dlib_open(const std::string& libname, int)
 {
 #ifdef _WIN32
     return LoadLibraryA(libname.c_str());

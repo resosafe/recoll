@@ -18,18 +18,25 @@
 #define _FSFETCHER_H_INCLUDED_
 
 #include "fetcher.h"
+#include "pathut.h"
 
 /** 
  * The file-system fetcher: 
  */
-class FSDocFetcher : public DocFetcher{
+class FSDocFetcher : public DocFetcher {
+public:
     /** FSDocFetcher::fetch always returns a file name */
     virtual bool fetch(RclConfig* cnf, const Rcl::Doc& idoc, RawDoc& out);
     
     /** Calls stat to retrieve file signature data */
     virtual bool makesig(RclConfig* cnf,const Rcl::Doc& idoc, std::string& sig);
     virtual DocFetcher::Reason testAccess(RclConfig* cnf, const Rcl::Doc& idoc);
+    FSDocFetcher() {}
     virtual ~FSDocFetcher() {}
+    FSDocFetcher(const FSDocFetcher&) = delete;
+    FSDocFetcher& operator=(const FSDocFetcher&) = delete;
 };
+
+extern void fsmakesig(const struct PathStat *stp, std::string& out);
 
 #endif /* _FSFETCHER_H_INCLUDED_ */

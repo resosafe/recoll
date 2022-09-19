@@ -47,7 +47,7 @@ RclDynConf::RclDynConf(const std::string &fn)
 }
 
 bool RclDynConf::insertNew(const string &sk, DynConfEntry &n, DynConfEntry &s,
-			   int maxlen)
+               int maxlen)
 {
     if (!rw()) {
         LOGDEB("RclDynConf::insertNew: not writable\n");
@@ -58,38 +58,38 @@ bool RclDynConf::insertNew(const string &sk, DynConfEntry &n, DynConfEntry &s,
     vector<string>::const_iterator it;
     bool changed = false;
     for (it = names.begin(); it != names.end(); it++) {
-	string oval;
-	if (!m_data.get(*it, oval, sk)) {
-	    LOGDEB("No data for " << *it << "\n");
-	    continue;
-	}
-	s.decode(oval);
+    string oval;
+    if (!m_data.get(*it, oval, sk)) {
+        LOGDEB("No data for " << *it << "\n");
+        continue;
+    }
+    s.decode(oval);
 
-	if (s.equal(n)) {
-	    LOGDEB("Erasing old entry\n");
-	    m_data.erase(*it, sk);
-	    changed = true;
-	}
+    if (s.equal(n)) {
+        LOGDEB("Erasing old entry\n");
+        m_data.erase(*it, sk);
+        changed = true;
+    }
     }
 
     // Maybe reget things
     if (changed)
-	names = m_data.getNames(sk);
+    names = m_data.getNames(sk);
 
     // Need to prune ?
     if (maxlen > 0 && names.size() >= (unsigned int)maxlen) {
-	// Need to erase entries until we're back to size. Note that
-	// we don't ever reset numbers. Problems will arise when
-	// history is 4 billion entries old
-	it = names.begin();
-	for (unsigned int i = 0; i < names.size() - maxlen + 1; i++, it++) {
-	    m_data.erase(*it, sk);
-	}
+    // Need to erase entries until we're back to size. Note that
+    // we don't ever reset numbers. Problems will arise when
+    // history is 4 billion entries old
+    it = names.begin();
+    for (unsigned int i = 0; i < names.size() - maxlen + 1; i++, it++) {
+        m_data.erase(*it, sk);
+    }
     }
 
     // Increment highest number
     unsigned int hi = names.empty() ? 0 : 
-	(unsigned int)atoi(names.back().c_str());
+    (unsigned int)atoi(names.back().c_str());
     hi++;
     char nname[20];
     sprintf(nname, "%010u", hi);
@@ -98,8 +98,8 @@ bool RclDynConf::insertNew(const string &sk, DynConfEntry &n, DynConfEntry &s,
     n.encode(value);
     LOGDEB1("Encoded value [" << value << "] (" << value.size() << ")\n");
     if (!m_data.set(string(nname), value, sk)) {
-	LOGERR("RclDynConf::insertNew: set failed\n");
-	return false;
+    LOGERR("RclDynConf::insertNew: set failed\n");
+    return false;
     }
     return true;
 }
@@ -111,7 +111,7 @@ bool RclDynConf::eraseAll(const string &sk)
         return false;
     }
     for (const auto& nm : m_data.getNames(sk)) {
-	m_data.erase(nm, sk);
+    m_data.erase(nm, sk);
     }
     return true;
 }
@@ -173,25 +173,25 @@ int main(int argc, char **argv)
     argc--; argv++;
 
     while (argc > 0 && **argv == '-') {
-	(*argv)++;
-	if (!(**argv))
-	    /* Cas du "adb - core" */
-	    Usage();
-	while (**argv)
-	    switch (*(*argv)++) {
-	    case 'a':	op_flags |= OPT_a; if (argc < 2)  Usage();
-		value = *(++argv); argc--; 
-		goto b1;
-	    case 's':	op_flags |= OPT_s; if (argc < 2)  Usage();
-		sk = *(++argv);	argc--; 
-		goto b1;
-	    case 'e':	op_flags |= OPT_e; break;
-	    default: Usage();	break;
-	    }
+    (*argv)++;
+    if (!(**argv))
+        /* Cas du "adb - core" */
+        Usage();
+    while (**argv)
+        switch (*(*argv)++) {
+        case 'a':    op_flags |= OPT_a; if (argc < 2)  Usage();
+        value = *(++argv); argc--; 
+        goto b1;
+        case 's':    op_flags |= OPT_s; if (argc < 2)  Usage();
+        sk = *(++argv);    argc--; 
+        goto b1;
+        case 'e':    op_flags |= OPT_e; break;
+        default: Usage();    break;
+        }
     b1: argc--; argv++;
     }
     if (argc != 1)
-	Usage();
+    Usage();
     string filename = *argv++;argc--;
 
     RclDynConf hist(filename, 5);
@@ -199,26 +199,26 @@ int main(int argc, char **argv)
     DebugLog::setfilename("stderr");
 
     if (op_flags & OPT_e) {
-	hist.eraseAll(sk);
+    hist.eraseAll(sk);
     } else if (op_flags & OPT_a) {
-	if (!(op_flags & OPT_s)) 
-	    Usage();
-	hist.enterString(sk, value);
+    if (!(op_flags & OPT_s)) 
+        Usage();
+    hist.enterString(sk, value);
     } else {
-	for (int i = 0; i < 10; i++) {
-	    char docname[200];
-	    sprintf(docname, "A very long document document name"
-		    "is very long indeed and this is the end of "
-		    "it here and exactly here:\n%d",	i);
-	    hist.enterDoc(string(docname), "ipathx");
-	}
+    for (int i = 0; i < 10; i++) {
+        char docname[200];
+        sprintf(docname, "A very long document document name"
+            "is very long indeed and this is the end of "
+            "it here and exactly here:\n%d",    i);
+        hist.enterDoc(string(docname), "ipathx");
+    }
 
-	list<RclDHistoryEntry> hlist = hist.getDocHistory();
-	for (list<RclDHistoryEntry>::const_iterator it = hlist.begin();
-	     it != hlist.end(); it++) {
-	    printf("[%ld] [%s] [%s]\n", it->unixtime, 
-		   it->fn.c_str(), it->ipath.c_str());
-	}
+    list<RclDHistoryEntry> hlist = hist.getDocHistory();
+    for (list<RclDHistoryEntry>::const_iterator it = hlist.begin();
+         it != hlist.end(); it++) {
+        printf("[%ld] [%s] [%s]\n", it->unixtime, 
+           it->fn.c_str(), it->ipath.c_str());
+    }
     }
 }
 

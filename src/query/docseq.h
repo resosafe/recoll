@@ -78,6 +78,8 @@ class DocSequence {
 public:
     DocSequence(const std::string &t) : m_title(t) {}
     virtual ~DocSequence() {}
+    DocSequence(const DocSequence&) = delete;
+    DocSequence& operator=(const DocSequence&) = delete;
 
     /** Get document at given rank. 
      *
@@ -109,44 +111,45 @@ public:
     virtual int getFirstMatchPage(Rcl::Doc&, std::string&) {
         return -1;
     }
+    virtual int getFirstMatchLine(const Rcl::Doc&, const std::string&) {
+        return 1;
+    }
     /** Get duplicates. */
     virtual bool docDups(const Rcl::Doc&, std::vector<Rcl::Doc>&) {
         return false;
     }
 
+    /** For an embedded document: get the immediately enclosing doc
+     * (e.g., for an attachment, the message it is attached to. Only
+     * makes sense is ipath is not empty. */
     virtual bool getEnclosing(Rcl::Doc&, Rcl::Doc&);
 
     /** Get estimated total count in results */
     virtual int getResCnt() = 0;
 
     /** Get title for result list */
-    virtual std::string title() 
-        {
-            return m_title;
-        }
+    virtual std::string title() {
+        return m_title;
+    }
 
     /** Can do snippets ? */
-    virtual bool snippetsCapable()
-        {
-            return false;
-        }
+    virtual bool snippetsCapable() {
+        return false;
+    }
     /** Get description for underlying query */
     virtual std::string getDescription() = 0;
 
     /** Get search terms (for highlighting abstracts). Some sequences
      * may have no associated search terms. Implement this for them. */
-    virtual void getTerms(HighlightData& hld)                     
-        {
-            hld.clear();
-        }
-    virtual std::list<std::string> expand(Rcl::Doc &) 
-        {
-            return std::list<std::string>();
-        }
-    virtual std::string getReason() 
-        {
-            return m_reason;
-        }
+    virtual void getTerms(HighlightData& hld) {
+        hld.clear();
+    }
+    virtual std::list<std::string> expand(Rcl::Doc &) {
+        return std::list<std::string>();
+    }
+    virtual std::string getReason() {
+        return m_reason;
+    }
     /** Optional functionality. */
     virtual bool canFilter() {return false;}
     virtual bool canSort() {return false;}
@@ -183,6 +186,8 @@ public:
         : DocSequence(""), m_seq(iseq) 
         {}
     virtual ~DocSeqModifier() {}
+    DocSeqModifier(const DocSeqModifier&) = delete;
+    DocSeqModifier& operator=(const DocSeqModifier&) = delete;
 
     virtual bool getAbstract(Rcl::Doc& doc, std::vector<std::string>& abs)
         override{
@@ -255,21 +260,21 @@ public:
     DocSource(RclConfig *config, std::shared_ptr<DocSequence> iseq) 
         : DocSeqModifier(iseq), m_config(config)
         {}
-    virtual bool canFilter() {return true;}
-    virtual bool canSort() {return true;}
-    virtual bool setFiltSpec(const DocSeqFiltSpec &);
-    virtual bool setSortSpec(const DocSeqSortSpec &);
-    virtual bool getDoc(int num, Rcl::Doc &doc, std::string *sh = 0) {
+    virtual bool canFilter() override {return true;}
+    virtual bool canSort() override {return true;}
+    virtual bool setFiltSpec(const DocSeqFiltSpec &) override;
+    virtual bool setSortSpec(const DocSeqSortSpec &) override;
+    virtual bool getDoc(int num, Rcl::Doc &doc, std::string *sh = 0) override {
         if (!m_seq)
             return false;
         return m_seq->getDoc(num, doc, sh);
     }
-    virtual int getResCnt() {
+    virtual int getResCnt() override {
         if (!m_seq)
             return 0;
         return m_seq->getResCnt();
     }
-    virtual std::string title();
+    virtual std::string title() override;
 private:
     bool buildStack();
     void stripStack();

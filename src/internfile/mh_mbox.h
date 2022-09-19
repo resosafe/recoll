@@ -32,6 +32,8 @@ class MimeHandlerMbox : public RecollFilter {
 public:
     MimeHandlerMbox(RclConfig *cnf, const std::string& id);
     virtual ~MimeHandlerMbox();
+    MimeHandlerMbox(const MimeHandlerMbox&) = delete;
+    MimeHandlerMbox& operator=(const MimeHandlerMbox&) = delete;
     virtual bool next_document() override;
     virtual bool skip_to_document(const std::string& ipath) override;
     virtual void clear_impl() override;

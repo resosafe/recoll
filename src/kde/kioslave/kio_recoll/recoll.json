@@ -1,0 +1,24 @@
+{
+    "KDE-KIO-Protocols": {
+        "recoll": {
+            "Class": ":local",
+            "Icon": "recoll",
+            "deleting": true,
+            "input": "none",
+            "linking": false,
+            "listing": [
+                "Name",
+                "Type",
+                "Size",
+		"Date"
+            ],
+            "makedir":false,
+            "moving": false,
+            "output": "filesystem",
+            "protocol": "recoll",
+            "reading": true,
+            "source": false,
+            "writing": false
+        }
+    }
+}

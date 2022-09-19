@@ -35,7 +35,7 @@ using namespace ::std;
 #endif /* NO_NAMESPACES */
 
 inline bool compareStringToQueue(const char *s_in, char *bqueue,
-				 int pos, int size)
+                 int pos, int size)
 {
   for (int i = 0; i < size; ++i)  {
     if (s_in[i] != bqueue[pos])

@@ -71,6 +71,24 @@ public:
             setTerminateAndWait();
         }
     }
+    WorkQueue(const WorkQueue&) = delete;
+    WorkQueue& operator=(const WorkQueue&) = delete;
+
+    /** Task deleter
+     * If put() is called with the flush option, and the tasks allocate memory,
+     * you need to set this function, which will be called on each task popped 
+     * from the queue. Tasks which go through normally must be freed by the 
+     * worker function.
+     */
+    void setTaskFreeFunc(void (*func)(T&)) {
+        m_taskfreefunc = func;
+    }
+
+    /// Forbid inputting new tasks. This is mostly useful for abnormal terminations as some data will
+    /// probably be lost, depending on how the upstream handles the put() error.
+    void closeShop() {
+        m_openforbusiness = false;
+    }
 
     /** Start the worker threads.
      *
@@ -102,10 +120,12 @@ public:
      */
     bool put(T t, bool flushprevious = false) {
         std::unique_lock<std::mutex> lock(m_mutex);
-        if (!ok()) {
-            LOGERR("WorkQueue::put:"  << m_name << ": !ok\n");
+        if (!ok() || !m_openforbusiness) {
+            LOGERR("WorkQueue::put: "  << m_name << ": ok: " << ok() << " openforbusiness " << 
+                   m_openforbusiness << "\n");
             return false;
         }
+        LOGDEB2("WorkQueue::put: "  << m_name << "\n");
 
         while (ok() && m_high > 0 && m_queue.size() >= m_high) {
             m_clientsleeps++;
@@ -120,6 +140,10 @@ public:
         }
         if (flushprevious) {
             while (!m_queue.empty()) {
+                if (m_taskfreefunc) {
+                    T& d = m_queue.front();
+                    m_taskfreefunc(d);
+                }
                 m_queue.pop();
             }
         }
@@ -138,7 +162,7 @@ public:
     /** Wait until the queue is inactive. Called from client.
      *
      * Waits until the task queue is empty and the workers are all
-     * back sleeping. Used by the client to wait for all current work
+     * back sleeping (or exited). Used by the client to wait for all current work
      * to be completed, when it needs to perform work that couldn't be
      * done in parallel with the worker's tasks, or before shutting
      * down. Work can be resumed after calling this. Note that the
@@ -153,15 +177,14 @@ public:
      */
     bool waitIdle() {
         std::unique_lock<std::mutex> lock(m_mutex);
-        if (!ok()) {
-            LOGERR("WorkQueue::waitIdle:"  << m_name << ": not ok\n");
-            return false;
-        }
-
-        // We're done when the queue is empty AND all workers are back
-        // waiting for a task.
-        while (ok() && (m_queue.size() > 0 ||
-                        m_workers_waiting != m_worker_threads.size())) {
+        // We're not done while:
+        //  - the queue is not empty and we have some workers left
+        //  - OR some workers are working (not exited or back waiting for a task).
+        while (((m_queue.size() > 0 && m_workers_exited < m_worker_threads.size()) ||
+                (m_workers_waiting + m_workers_exited) < m_worker_threads.size())) {
+            LOGDEB0("waitIdle: " << m_name << " qsz " << m_queue.size() <<
+                    " wwaiting " << m_workers_waiting << " wexit " << m_workers_exited << " nthr " <<
+                    m_worker_threads.size() << "\n");
             m_clients_waiting++;
             m_ccond.wait(lock);
             m_clients_waiting--;
@@ -193,7 +216,7 @@ public:
             m_clients_waiting--;
         }
 
-        LOGINFO(""  << m_name << ": tasks "  << m_tottasks << " nowakes "  <<
+        LOGDEB(""  << m_name << ": tasks "  << m_tottasks << " nowakes "  <<
                 m_nowake << " wsleeps "  << m_workersleeps << " csleeps "  <<
                 m_clientsleeps << "\n");
         // Perform the thread joins and compute overall status
@@ -325,6 +348,7 @@ private:
 #endif
     };
     
+    void (*m_taskfreefunc)(T&){nullptr};
     // Configuration
     std::string m_name;
     size_t m_high;
@@ -335,6 +359,9 @@ private:
     // Status
     bool m_ok;
 
+    // Accepting new tasks
+    bool m_openforbusiness{true};
+    
     // Our threads. 
     std::list<Worker> m_worker_threads;
 

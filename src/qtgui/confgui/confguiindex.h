@@ -50,6 +50,9 @@ public slots:
     void showPrefs(bool modal);
     void acceptChanges();
     QWidget *getDialog() {return m_w;}
+
+signals:
+    void idxConfigPossiblyChanged();
     
 private:
     void initPanels();
